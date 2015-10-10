@@ -32,4 +32,4 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
-[assembly: AssemblyProduct("Controlz 1.0.0-alpha001")]
+[assembly: AssemblyProduct("Controlz 1.0.0")]
