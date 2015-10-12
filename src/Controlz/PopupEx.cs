@@ -21,9 +21,9 @@ namespace Controlz
     {
         public static readonly DependencyProperty CloseOnMouseLeftButtonDownProperty
             = DependencyProperty.Register("CloseOnMouseLeftButtonDown",
-                typeof(bool),
-                typeof(PopupEx),
-                new PropertyMetadata(false));
+                                          typeof(bool),
+                                          typeof(PopupEx),
+                                          new PropertyMetadata(false));
 
         /// <summary>
         /// Gets/sets if the popup can be closed by left mouse button down.
