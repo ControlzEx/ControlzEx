@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Security;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interactivity;
@@ -9,6 +8,8 @@ using Controlz.Microsoft.Windows.Shell;
 
 namespace Controlz.Behaviours
 {
+    using Standard;
+
     /// <summary>
     /// With this class we can make custom window styles.
     /// </summary>
@@ -26,7 +27,7 @@ namespace Controlz.Behaviours
         {
             windowChrome = new WindowChrome
             {
-#if NET4_5
+#if NET45
                 ResizeBorderThickness = SystemParameters.WindowResizeBorderThickness, 
 #else
                 ResizeBorderThickness = SystemParameters2.Current.WindowResizeBorderThickness,
@@ -66,16 +67,16 @@ namespace Controlz.Behaviours
             AssociatedObject.WindowStyle = WindowStyle.None;
 
             savedBorderThickness = AssociatedObject.BorderThickness;
-            borderThicknessChangeNotifier = new PropertyChangeNotifier(this.AssociatedObject, Window.BorderThicknessProperty);
+            borderThicknessChangeNotifier = new PropertyChangeNotifier(this.AssociatedObject, Control.BorderThicknessProperty);
             borderThicknessChangeNotifier.ValueChanged += BorderThicknessChangeNotifierOnValueChanged;
 
             savedTopMost = AssociatedObject.Topmost;
             topMostChangeNotifier = new PropertyChangeNotifier(this.AssociatedObject, Window.TopmostProperty);
             topMostChangeNotifier.ValueChanged += TopMostChangeNotifierOnValueChanged;
 
-            AssociatedObject.Loaded += AssociatedObject_Loaded;
+            AssociatedObject.Loaded += OnAssociatedObjectLoaded;
             AssociatedObject.Unloaded += AssociatedObject_Unloaded;
-            AssociatedObject.SourceInitialized += AssociatedObject_SourceInitialized;
+            AssociatedObject.SourceInitialized += OnAssociatedObjectSourceInitialized;
             AssociatedObject.StateChanged += OnAssociatedObjectHandleMaximize;
 
             // handle the maximized state here too (to handle the border in a correct way)
@@ -120,41 +121,15 @@ namespace Controlz.Behaviours
                     // WindowState="Maximized"
                     // IgnoreTaskbarOnMaximize="True"
                     // this only happens if we change this at runtime
-                    var removed = _ModifyStyle(Standard.WS.MAXIMIZEBOX | Standard.WS.MINIMIZEBOX | Standard.WS.THICKFRAME, 0);
+                    var removed = this.handle._ModifyStyle(WS.MAXIMIZEBOX | WS.MINIMIZEBOX | WS.THICKFRAME, 0);
                     windowChrome.IgnoreTaskbarOnMaximize = metroWindow.IgnoreTaskbarOnMaximize;
                     this.ForceRedrawWindowFromPropertyChanged();
                     if (removed)
                     {
-                        _ModifyStyle(0, Standard.WS.MAXIMIZEBOX | Standard.WS.MINIMIZEBOX | Standard.WS.THICKFRAME);
+                        this.handle._ModifyStyle(0, WS.MAXIMIZEBOX | WS.MINIMIZEBOX | WS.THICKFRAME);
                     }
                 }
             }
-        }
-
-        /// <summary>Add and remove a native WindowStyle from the HWND.</summary>
-        /// <param name="removeStyle">The styles to be removed.  These can be bitwise combined.</param>
-        /// <param name="addStyle">The styles to be added.  These can be bitwise combined.</param>
-        /// <returns>Whether the styles of the HWND were modified as a result of this call.</returns>
-        /// <SecurityNote>
-        ///   Critical : Calls critical methods
-        /// </SecurityNote>
-        [SecurityCritical]
-        private bool _ModifyStyle(Standard.WS removeStyle, Standard.WS addStyle)
-        {
-            if (this.handle == IntPtr.Zero)
-            {
-                return false;
-            }
-            var intPtr = Standard.NativeMethods.GetWindowLongPtr(this.handle, Standard.GWL.STYLE);
-            var dwStyle = (Standard.WS)(Environment.Is64BitProcess ? intPtr.ToInt64() : intPtr.ToInt32());
-            var dwNewStyle = (dwStyle & ~removeStyle) | addStyle;
-            if (dwStyle == dwNewStyle)
-            {
-                return false;
-            }
-
-            Standard.NativeMethods.SetWindowLongPtr(this.handle, Standard.GWL.STYLE, new IntPtr((int)dwNewStyle));
-            return true;
         }
 
         private void ForceRedrawWindowFromPropertyChanged()
@@ -162,13 +137,13 @@ namespace Controlz.Behaviours
             this.HandleMaximize();
             if (this.handle != IntPtr.Zero)
             {
-                UnsafeNativeMethods.RedrawWindow(this.handle, IntPtr.Zero, IntPtr.Zero, Constants.RedrawWindowFlags.Invalidate | Constants.RedrawWindowFlags.Frame);
+                NativeMethods.RedrawWindow(this.handle, IntPtr.Zero, IntPtr.Zero, RedrawWindowFlags.Invalidate | RedrawWindowFlags.Frame);
             }
         }
 
-        private bool isCleanedUp;
+        protected bool isCleanedUp;
 
-        private void Cleanup()
+        protected virtual void Cleanup()
         {
             if (!isCleanedUp)
             {
@@ -182,9 +157,9 @@ namespace Controlz.Behaviours
                     System.ComponentModel.DependencyPropertyDescriptor.FromProperty(MetroWindow.UseNoneWindowStyleProperty, typeof(MetroWindow))
                           .RemoveValueChanged(AssociatedObject, UseNoneWindowStylePropertyChangedCallback);
                 }
-                AssociatedObject.Loaded -= AssociatedObject_Loaded;
+                AssociatedObject.Loaded -= OnAssociatedObjectLoaded;
                 AssociatedObject.Unloaded -= AssociatedObject_Unloaded;
-                AssociatedObject.SourceInitialized -= AssociatedObject_SourceInitialized;
+                AssociatedObject.SourceInitialized -= OnAssociatedObjectSourceInitialized;
                 AssociatedObject.StateChanged -= OnAssociatedObjectHandleMaximize;
                 if (hwndSource != null)
                 {
@@ -208,14 +183,16 @@ namespace Controlz.Behaviours
         private IntPtr WindowProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             var returnval = IntPtr.Zero;
-            
-            switch (msg) {
-                case Constants.WM_NCPAINT:
+
+            var message = (WM)msg;
+            switch (message)
+            {
+                case WM.NCPAINT:
                     handled = true;
                     break;
-                case Constants.WM_NCACTIVATE:
+                case WM.NCACTIVATE:
                     /* As per http://msdn.microsoft.com/en-us/library/ms632633(VS.85).aspx , "-1" lParam "does not repaint the nonclient area to reflect the state change." */
-                    returnval = UnsafeNativeMethods.DefWindowProc(hwnd, msg, wParam, new IntPtr(-1));
+                    returnval = NativeMethods.DefWindowProc(hwnd, message, wParam, new IntPtr(-1));
                     handled = true;
                     break;
             }
@@ -228,17 +205,13 @@ namespace Controlz.Behaviours
             HandleMaximize();
         }
 
-        private void HandleMaximize()
+        protected virtual void HandleMaximize()
         {
             borderThicknessChangeNotifier.ValueChanged -= BorderThicknessChangeNotifierOnValueChanged;
             topMostChangeNotifier.ValueChanged -= TopMostChangeNotifierOnValueChanged;
 
             var metroWindow = AssociatedObject as MetroWindow;
-            var enableDWMDropShadow = EnableDWMDropShadow;
-            if (metroWindow != null)
-            {
-                enableDWMDropShadow = metroWindow.GlowBrush == null && (metroWindow.EnableDWMDropShadow || EnableDWMDropShadow);
-            }
+            var enableDWMDropShadow = metroWindow != null && metroWindow.GlowBrush == null;
             
             if (AssociatedObject.WindowState == WindowState.Maximized)
             {
@@ -252,25 +225,24 @@ namespace Controlz.Behaviours
                 {
                     // WindowChrome handles the size false if the main monitor is lesser the monitor where the window is maximized
                     // so set the window pos/size twice
-                    IntPtr monitor = UnsafeNativeMethods.MonitorFromWindow(handle, Constants.MONITOR_DEFAULTTONEAREST);
+                    IntPtr monitor = NativeMethods.MonitorFromWindow(this.handle, (uint)MonitorOptions.MONITOR_DEFAULTTONEAREST);
                     if (monitor != IntPtr.Zero)
                     {
-                        var monitorInfo = new MahApps.Metro.Native.MONITORINFO();
-                        UnsafeNativeMethods.GetMonitorInfo(monitor, monitorInfo);
+                        MONITORINFO monitorInfo = NativeMethods.GetMonitorInfoW(monitor);
 
                         //ignoreTaskBar = metroWindow.IgnoreTaskbarOnMaximize || metroWindow.UseNoneWindowStyle;
-                        var x = ignoreTaskBar ? monitorInfo.rcMonitor.left : monitorInfo.rcWork.left;
-                        var y = ignoreTaskBar ? monitorInfo.rcMonitor.top : monitorInfo.rcWork.top;
-                        var cx = ignoreTaskBar ? Math.Abs(monitorInfo.rcMonitor.right - x) : Math.Abs(monitorInfo.rcWork.right - x);
-                        var cy = ignoreTaskBar ? Math.Abs(monitorInfo.rcMonitor.bottom - y) : Math.Abs(monitorInfo.rcWork.bottom - y);
-                        UnsafeNativeMethods.SetWindowPos(handle, new IntPtr(-2), x, y, cx, cy, 0x0040);
+                        var x = ignoreTaskBar ? monitorInfo.rcMonitor.Left : monitorInfo.rcWork.Left;
+                        var y = ignoreTaskBar ? monitorInfo.rcMonitor.Top : monitorInfo.rcWork.Top;
+                        var cx = ignoreTaskBar ? Math.Abs(monitorInfo.rcMonitor.Right - x) : Math.Abs(monitorInfo.rcWork.Right - x);
+                        var cy = ignoreTaskBar ? Math.Abs(monitorInfo.rcMonitor.Bottom - y) : Math.Abs(monitorInfo.rcWork.Bottom - y);
+                        NativeMethods.SetWindowPos(handle, new IntPtr(-2), x, y, cx, cy, (SWP)0x0040);
                     }
                 }
             }
             else
             {
                 // note (punker76): check this, maybe we doesn't need this anymore
-#if NET4_5
+#if NET45
                 windowChrome.ResizeBorderThickness = SystemParameters.WindowResizeBorderThickness;
 #else
                 windowChrome.ResizeBorderThickness = SystemParameters2.Current.WindowResizeBorderThickness;
@@ -302,12 +274,12 @@ namespace Controlz.Behaviours
             topMostChangeNotifier.ValueChanged += TopMostChangeNotifierOnValueChanged;
         }
 
-        private void AssociatedObject_SourceInitialized(object sender, EventArgs e)
+        protected virtual void OnAssociatedObjectSourceInitialized(object sender, EventArgs e)
         {
             handle = new WindowInteropHelper(AssociatedObject).Handle;
             if (null == handle)
             {
-                throw new MahAppsException("Uups, at this point we really need the Handle from the associated object!");
+                throw new Exception("Uups, at this point we really need the Handle from the associated object!");
             }
             hwndSource = HwndSource.FromHwnd(handle);
             if (hwndSource != null)
@@ -329,31 +301,9 @@ namespace Controlz.Behaviours
             }
         }
 
-        private void AssociatedObject_Loaded(object sender, RoutedEventArgs e)
+        protected virtual void OnAssociatedObjectLoaded(object sender, RoutedEventArgs e)
         {
-            var window = sender as MetroWindow;
-            if (window == null)
-            {
-                return;
-            }
-
-            window.SetIsHitTestVisibleInChromeProperty<UIElement>("PART_Icon");
-            window.SetIsHitTestVisibleInChromeProperty<UIElement>("PART_TitleBar");
-            window.SetIsHitTestVisibleInChromeProperty<ContentPresenter>("PART_LeftWindowCommands");
-            window.SetIsHitTestVisibleInChromeProperty<ContentPresenter>("PART_RightWindowCommands");
-            window.SetIsHitTestVisibleInChromeProperty<ContentControl>("PART_WindowButtonCommands");
-
-            window.SetWindowChromeResizeGripDirection("WindowResizeGrip", ResizeGripDirection.BottomRight);
-        }
-
-        [Obsolete(@"This property will be deleted in the next release. You should use BorderThickness=""0"" and a GlowBrush=""Black"" properties in your Window to get a drop shadow around it.")]
-        public static readonly DependencyProperty EnableDWMDropShadowProperty = DependencyProperty.Register("EnableDWMDropShadow", typeof(bool), typeof(BorderlessWindowBehavior), new PropertyMetadata(false));
-
-        [Obsolete(@"This property will be deleted in the next release. You should use BorderThickness=""0"" and a GlowBrush=""Black"" properties in your Window to get a drop shadow around it.")]
-        public bool EnableDWMDropShadow
-        {
-            get { return (bool)GetValue(EnableDWMDropShadowProperty); }
-            set { SetValue(EnableDWMDropShadowProperty, value); }
+            // nothing here
         }
     }
 }
