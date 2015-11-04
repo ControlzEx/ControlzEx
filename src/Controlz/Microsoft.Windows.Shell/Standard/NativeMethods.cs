@@ -2548,6 +2548,30 @@
     // Some native methods are shimmed through public versions that handle converting failures into thrown exceptions.
     internal static class NativeMethods
     {
+        /// <summary>Add and remove a native WindowStyle from the HWND.</summary>
+        /// <param name="_hwnd">A HWND for a window.</param>
+        /// <param name="removeStyle">The styles to be removed.  These can be bitwise combined.</param>
+        /// <param name="addStyle">The styles to be added.  These can be bitwise combined.</param>
+        /// <returns>Whether the styles of the HWND were modified as a result of this call.</returns>
+        /// <SecurityNote>
+        ///   Critical : Calls critical methods
+        /// </SecurityNote>
+        [SecurityCritical]
+        public static bool _ModifyStyle(this IntPtr _hwnd, WS removeStyle, WS addStyle)
+        {
+            Assert.IsNotDefault(_hwnd);
+            var intPtr = NativeMethods.GetWindowLongPtr(_hwnd, GWL.STYLE);
+            var dwStyle = (WS)(Environment.Is64BitProcess ? intPtr.ToInt64() : intPtr.ToInt32());
+            var dwNewStyle = (dwStyle & ~removeStyle) | addStyle;
+            if (dwStyle == dwNewStyle)
+            {
+                return false;
+            }
+
+            NativeMethods.SetWindowLongPtr(_hwnd, GWL.STYLE, new IntPtr((int)dwNewStyle));
+            return true;
+        }
+
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("user32.dll", EntryPoint = "AdjustWindowRectEx", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]

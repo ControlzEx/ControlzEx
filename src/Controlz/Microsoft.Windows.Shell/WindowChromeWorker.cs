@@ -349,7 +349,7 @@ namespace Controlz.Microsoft.Windows.Shell
             }
 
             // allow animation
-            _ModifyStyle(0, WS.CAPTION);
+            _hwnd._ModifyStyle(0, WS.CAPTION);
 
             _FixupTemplateIssues();
 
@@ -628,7 +628,7 @@ namespace Controlz.Microsoft.Windows.Shell
         {
             if (false == _window.ShowInTaskbar && _GetHwndState() == WindowState.Minimized)
             {
-                bool modified = _ModifyStyle(WS.VISIBLE, 0);
+                bool modified = _hwnd._ModifyStyle(WS.VISIBLE, 0);
 
                 // Minimize the window with ShowInTaskbar == false cause Windows to redraw the caption.
                 // Letting the default WndProc handle the message without the WS_VISIBLE
@@ -638,7 +638,7 @@ namespace Controlz.Microsoft.Windows.Shell
                 // Put back the style we removed.
                 if (modified)
                 {
-                    _ModifyStyle(0, WS.VISIBLE);
+                    _hwnd._ModifyStyle(0, WS.VISIBLE);
                 }
                 handled = true;
                 return lRet;
@@ -652,7 +652,7 @@ namespace Controlz.Microsoft.Windows.Shell
 
         private IntPtr _HandleSetTextOrIcon(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
-            bool modified = _ModifyStyle(WS.VISIBLE, 0);
+            bool modified = _hwnd._ModifyStyle(WS.VISIBLE, 0);
 
             // Setting the caption text and icon cause Windows to redraw the caption.
             // Letting the default WndProc handle the message without the WS_VISIBLE
@@ -662,7 +662,7 @@ namespace Controlz.Microsoft.Windows.Shell
             // Put back the style we removed.
             if (modified)
             {
-                _ModifyStyle(0, WS.VISIBLE);
+                _hwnd._ModifyStyle(0, WS.VISIBLE);
             }
             handled = true;
             return lRet;
@@ -678,14 +678,14 @@ namespace Controlz.Microsoft.Windows.Shell
             var sc = (SC)(Environment.Is64BitProcess ? wParam.ToInt64() : wParam.ToInt32());
             if (SC.RESTORE == sc && wpl.showCmd == SW.SHOWMAXIMIZED && _MinimizeAnimation)
             {
-                var modified = _ModifyStyle(WS.SYSMENU, 0);
+                var modified = _hwnd._ModifyStyle(WS.SYSMENU, 0);
 
                 IntPtr lRet = NativeMethods.DefWindowProc(_hwnd, uMsg, wParam, lParam);
 
                 // Put back the style we removed.
                 if (modified)
                 {
-                    modified = _ModifyStyle(0, WS.SYSMENU);
+                    modified = _hwnd._ModifyStyle(0, WS.SYSMENU);
                 }
                 
                 handled = true;
@@ -1139,7 +1139,7 @@ namespace Controlz.Microsoft.Windows.Shell
                  * will call this method, resulting in a 2px black border on the side
                  * when maximized.
                  */
-                _ModifyStyle(WS.DLGFRAME, 0);
+                _hwnd._ModifyStyle(WS.DLGFRAME, 0);
             }
             handled = false;
             return IntPtr.Zero;
@@ -1198,7 +1198,7 @@ namespace Controlz.Microsoft.Windows.Shell
             if (_MinimizeAnimation)
             {
                 // restore DLGFRAME
-                if (_ModifyStyle(0, WS.DLGFRAME))
+                if (_hwnd._ModifyStyle(0, WS.DLGFRAME))
                 {
                     _UpdateFrameState(true);
                 }
@@ -1243,29 +1243,6 @@ namespace Controlz.Microsoft.Windows.Shell
         }
 
         #endregion
-
-        /// <summary>Add and remove a native WindowStyle from the HWND.</summary>
-        /// <param name="removeStyle">The styles to be removed.  These can be bitwise combined.</param>
-        /// <param name="addStyle">The styles to be added.  These can be bitwise combined.</param>
-        /// <returns>Whether the styles of the HWND were modified as a result of this call.</returns>
-        /// <SecurityNote>
-        ///   Critical : Calls critical methods
-        /// </SecurityNote>
-        [SecurityCritical]
-        private bool _ModifyStyle(WS removeStyle, WS addStyle)
-        {
-            Assert.IsNotDefault(_hwnd);
-            var intPtr = NativeMethods.GetWindowLongPtr(_hwnd, GWL.STYLE);
-            var dwStyle = (WS)(Environment.Is64BitProcess ? intPtr.ToInt64() : intPtr.ToInt32());
-            var dwNewStyle = (dwStyle & ~removeStyle) | addStyle;
-            if (dwStyle == dwNewStyle)
-            {
-                return false;
-            }
-
-            NativeMethods.SetWindowLongPtr(_hwnd, GWL.STYLE, new IntPtr((int)dwNewStyle));
-            return true;
-        }
 
         /// <summary>
         /// Get the WindowState as the native HWND knows it to be.  This isn't necessarily the same as what Window thinks.
@@ -1393,12 +1370,12 @@ namespace Controlz.Microsoft.Windows.Shell
                 if (_MinimizeAnimation)
                 {
                     // allow animation
-                    _ModifyStyle(0, WS.CAPTION);
+                    _hwnd._ModifyStyle(0, WS.CAPTION);
                 }
                 else
                 {
                     // no animation
-                    _ModifyStyle(WS.CAPTION, 0);
+                    _hwnd._ModifyStyle(WS.CAPTION, 0);
                 }
 
                 NativeMethods.SetWindowPos(_hwnd, IntPtr.Zero, 0, 0, 0, 0, _SwpFlags);
