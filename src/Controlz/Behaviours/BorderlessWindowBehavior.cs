@@ -25,7 +25,7 @@ namespace Controlz.Behaviours
 
         protected override void OnAttached()
         {
-            windowChrome = new WindowChrome
+            this.windowChrome = new WindowChrome
             {
 #if NET45
                 ResizeBorderThickness = SystemParameters.WindowResizeBorderThickness, 
@@ -38,46 +38,46 @@ namespace Controlz.Behaviours
                 UseAeroCaptionButtons = false
             };
 
-            var metroWindow = AssociatedObject as MetroWindow;
+            var metroWindow = this.AssociatedObject as MetroWindow;
             if (metroWindow != null)
             {
-                windowChrome.IgnoreTaskbarOnMaximize = metroWindow.IgnoreTaskbarOnMaximize;
-                windowChrome.UseNoneWindowStyle = metroWindow.UseNoneWindowStyle;
+                this.windowChrome.IgnoreTaskbarOnMaximize = metroWindow.IgnoreTaskbarOnMaximize;
+                this.windowChrome.UseNoneWindowStyle = metroWindow.UseNoneWindowStyle;
                 System.ComponentModel.DependencyPropertyDescriptor.FromProperty(MetroWindow.IgnoreTaskbarOnMaximizeProperty, typeof(MetroWindow))
-                      .AddValueChanged(AssociatedObject, IgnoreTaskbarOnMaximizePropertyChangedCallback);
+                      .AddValueChanged(this.AssociatedObject, this.IgnoreTaskbarOnMaximizePropertyChangedCallback);
                 System.ComponentModel.DependencyPropertyDescriptor.FromProperty(MetroWindow.UseNoneWindowStyleProperty, typeof(MetroWindow))
-                      .AddValueChanged(AssociatedObject, UseNoneWindowStylePropertyChangedCallback);
+                      .AddValueChanged(this.AssociatedObject, this.UseNoneWindowStylePropertyChangedCallback);
             }
 
-            AssociatedObject.SetValue(WindowChrome.WindowChromeProperty, windowChrome);
+            this.AssociatedObject.SetValue(WindowChrome.WindowChromeProperty, this.windowChrome);
 
             // no transparany, because it hase more then one unwanted issues
-            var windowHandle = new WindowInteropHelper(AssociatedObject).Handle;
-            if (!AssociatedObject.IsLoaded && windowHandle == IntPtr.Zero)
+            var windowHandle = new WindowInteropHelper(this.AssociatedObject).Handle;
+            if (!this.AssociatedObject.IsLoaded && windowHandle == IntPtr.Zero)
             {
                 try
                 {
-                    AssociatedObject.AllowsTransparency = false;
+                    this.AssociatedObject.AllowsTransparency = false;
                 }
                 catch (Exception)
                 {
                     //For some reason, we can't determine if the window has loaded or not, so we swallow the exception.
                 }
             }
-            AssociatedObject.WindowStyle = WindowStyle.None;
+            this.AssociatedObject.WindowStyle = WindowStyle.None;
 
-            savedBorderThickness = AssociatedObject.BorderThickness;
-            borderThicknessChangeNotifier = new PropertyChangeNotifier(this.AssociatedObject, Control.BorderThicknessProperty);
-            borderThicknessChangeNotifier.ValueChanged += BorderThicknessChangeNotifierOnValueChanged;
+            this.savedBorderThickness = this.AssociatedObject.BorderThickness;
+            this.borderThicknessChangeNotifier = new PropertyChangeNotifier(this.AssociatedObject, Control.BorderThicknessProperty);
+            this.borderThicknessChangeNotifier.ValueChanged += this.BorderThicknessChangeNotifierOnValueChanged;
 
-            savedTopMost = AssociatedObject.Topmost;
-            topMostChangeNotifier = new PropertyChangeNotifier(this.AssociatedObject, Window.TopmostProperty);
-            topMostChangeNotifier.ValueChanged += TopMostChangeNotifierOnValueChanged;
+            this.savedTopMost = this.AssociatedObject.Topmost;
+            this.topMostChangeNotifier = new PropertyChangeNotifier(this.AssociatedObject, Window.TopmostProperty);
+            this.topMostChangeNotifier.ValueChanged += this.TopMostChangeNotifierOnValueChanged;
 
-            AssociatedObject.Loaded += OnAssociatedObjectLoaded;
-            AssociatedObject.Unloaded += AssociatedObject_Unloaded;
-            AssociatedObject.SourceInitialized += OnAssociatedObjectSourceInitialized;
-            AssociatedObject.StateChanged += OnAssociatedObjectHandleMaximize;
+            this.AssociatedObject.Loaded += this.OnAssociatedObjectLoaded;
+            this.AssociatedObject.Unloaded += this.AssociatedObject_Unloaded;
+            this.AssociatedObject.SourceInitialized += this.OnAssociatedObjectSourceInitialized;
+            this.AssociatedObject.StateChanged += this.OnAssociatedObjectHandleMaximize;
 
             // handle the maximized state here too (to handle the border in a correct way)
             this.HandleMaximize();
@@ -87,22 +87,23 @@ namespace Controlz.Behaviours
 
         private void BorderThicknessChangeNotifierOnValueChanged(object sender, EventArgs e)
         {
-            savedBorderThickness = AssociatedObject.BorderThickness;
+            this.savedBorderThickness = this.AssociatedObject.BorderThickness;
         }
 
         private void TopMostChangeNotifierOnValueChanged(object sender, EventArgs e)
         {
-            savedTopMost = AssociatedObject.Topmost;
+            this.savedTopMost = this.AssociatedObject.Topmost;
         }
 
         private void UseNoneWindowStylePropertyChangedCallback(object sender, EventArgs e)
         {
             var metroWindow = sender as MetroWindow;
-            if (metroWindow != null && windowChrome != null)
+            if (metroWindow != null &&
+                this.windowChrome != null)
             {
-                if (!Equals(windowChrome.UseNoneWindowStyle, metroWindow.UseNoneWindowStyle))
+                if (!Equals(this.windowChrome.UseNoneWindowStyle, metroWindow.UseNoneWindowStyle))
                 {
-                    windowChrome.UseNoneWindowStyle = metroWindow.UseNoneWindowStyle;
+                    this.windowChrome.UseNoneWindowStyle = metroWindow.UseNoneWindowStyle;
                     this.ForceRedrawWindowFromPropertyChanged();
                 }
             }
@@ -111,9 +112,10 @@ namespace Controlz.Behaviours
         private void IgnoreTaskbarOnMaximizePropertyChangedCallback(object sender, EventArgs e)
         {
             var metroWindow = sender as MetroWindow;
-            if (metroWindow != null && windowChrome != null)
+            if (metroWindow != null &&
+                this.windowChrome != null)
             {
-                if (!Equals(windowChrome.IgnoreTaskbarOnMaximize, metroWindow.IgnoreTaskbarOnMaximize))
+                if (!Equals(this.windowChrome.IgnoreTaskbarOnMaximize, metroWindow.IgnoreTaskbarOnMaximize))
                 {
                     // another special hack to avoid nasty resizing
                     // repro
@@ -122,7 +124,7 @@ namespace Controlz.Behaviours
                     // IgnoreTaskbarOnMaximize="True"
                     // this only happens if we change this at runtime
                     var removed = this.handle._ModifyStyle(WS.MAXIMIZEBOX | WS.MINIMIZEBOX | WS.THICKFRAME, 0);
-                    windowChrome.IgnoreTaskbarOnMaximize = metroWindow.IgnoreTaskbarOnMaximize;
+                    this.windowChrome.IgnoreTaskbarOnMaximize = metroWindow.IgnoreTaskbarOnMaximize;
                     this.ForceRedrawWindowFromPropertyChanged();
                     if (removed)
                     {
@@ -145,39 +147,39 @@ namespace Controlz.Behaviours
 
         protected virtual void Cleanup()
         {
-            if (!isCleanedUp)
+            if (!this.isCleanedUp)
             {
-                isCleanedUp = true;
+                this.isCleanedUp = true;
 
                 // clean up events
-                if (AssociatedObject is MetroWindow)
+                if (this.AssociatedObject is MetroWindow)
                 {
                     System.ComponentModel.DependencyPropertyDescriptor.FromProperty(MetroWindow.IgnoreTaskbarOnMaximizeProperty, typeof(MetroWindow))
-                          .RemoveValueChanged(AssociatedObject, IgnoreTaskbarOnMaximizePropertyChangedCallback);
+                          .RemoveValueChanged(this.AssociatedObject, this.IgnoreTaskbarOnMaximizePropertyChangedCallback);
                     System.ComponentModel.DependencyPropertyDescriptor.FromProperty(MetroWindow.UseNoneWindowStyleProperty, typeof(MetroWindow))
-                          .RemoveValueChanged(AssociatedObject, UseNoneWindowStylePropertyChangedCallback);
+                          .RemoveValueChanged(this.AssociatedObject, this.UseNoneWindowStylePropertyChangedCallback);
                 }
-                AssociatedObject.Loaded -= OnAssociatedObjectLoaded;
-                AssociatedObject.Unloaded -= AssociatedObject_Unloaded;
-                AssociatedObject.SourceInitialized -= OnAssociatedObjectSourceInitialized;
-                AssociatedObject.StateChanged -= OnAssociatedObjectHandleMaximize;
-                if (hwndSource != null)
+                this.AssociatedObject.Loaded -= this.OnAssociatedObjectLoaded;
+                this.AssociatedObject.Unloaded -= this.AssociatedObject_Unloaded;
+                this.AssociatedObject.SourceInitialized -= this.OnAssociatedObjectSourceInitialized;
+                this.AssociatedObject.StateChanged -= this.OnAssociatedObjectHandleMaximize;
+                if (this.hwndSource != null)
                 {
-                    hwndSource.RemoveHook(WindowProc);
+                    this.hwndSource.RemoveHook(this.WindowProc);
                 }
-                windowChrome = null;
+                this.windowChrome = null;
             }
         }
 
         protected override void OnDetaching()
         {
-            Cleanup();
+            this.Cleanup();
             base.OnDetaching();
         }
 
         private void AssociatedObject_Unloaded(object sender, RoutedEventArgs e)
         {
-            Cleanup();
+            this.Cleanup();
         }
 
         private IntPtr WindowProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
@@ -202,26 +204,26 @@ namespace Controlz.Behaviours
 
         private void OnAssociatedObjectHandleMaximize(object sender, EventArgs e)
         {
-            HandleMaximize();
+            this.HandleMaximize();
         }
 
         protected virtual void HandleMaximize()
         {
-            borderThicknessChangeNotifier.ValueChanged -= BorderThicknessChangeNotifierOnValueChanged;
-            topMostChangeNotifier.ValueChanged -= TopMostChangeNotifierOnValueChanged;
+            this.borderThicknessChangeNotifier.ValueChanged -= this.BorderThicknessChangeNotifierOnValueChanged;
+            this.topMostChangeNotifier.ValueChanged -= this.TopMostChangeNotifierOnValueChanged;
 
-            var metroWindow = AssociatedObject as MetroWindow;
+            var metroWindow = this.AssociatedObject as MetroWindow;
             var enableDWMDropShadow = metroWindow != null && metroWindow.GlowBrush == null;
             
-            if (AssociatedObject.WindowState == WindowState.Maximized)
+            if (this.AssociatedObject.WindowState == WindowState.Maximized)
             {
                 // remove resize border and window border, so we can move the window from top monitor position
                 // note (punker76): check this, maybe we doesn't need this anymore
-                windowChrome.ResizeBorderThickness = new Thickness(0);
-                AssociatedObject.BorderThickness = new Thickness(0);
+                this.windowChrome.ResizeBorderThickness = new Thickness(0);
+                this.AssociatedObject.BorderThickness = new Thickness(0);
 
                 var ignoreTaskBar = metroWindow != null && metroWindow.IgnoreTaskbarOnMaximize;
-                if (ignoreTaskBar && handle != IntPtr.Zero)
+                if (ignoreTaskBar && this.handle != IntPtr.Zero)
                 {
                     // WindowChrome handles the size false if the main monitor is lesser the monitor where the window is maximized
                     // so set the window pos/size twice
@@ -235,7 +237,7 @@ namespace Controlz.Behaviours
                         var y = ignoreTaskBar ? monitorInfo.rcMonitor.Top : monitorInfo.rcWork.Top;
                         var cx = ignoreTaskBar ? Math.Abs(monitorInfo.rcMonitor.Right - x) : Math.Abs(monitorInfo.rcWork.Right - x);
                         var cy = ignoreTaskBar ? Math.Abs(monitorInfo.rcMonitor.Bottom - y) : Math.Abs(monitorInfo.rcWork.Bottom - y);
-                        NativeMethods.SetWindowPos(handle, new IntPtr(-2), x, y, cx, cy, (SWP)0x0040);
+                        NativeMethods.SetWindowPos(this.handle, new IntPtr(-2), x, y, cx, cy, (SWP)0x0040);
                     }
                 }
             }
@@ -245,11 +247,11 @@ namespace Controlz.Behaviours
 #if NET45
                 windowChrome.ResizeBorderThickness = SystemParameters.WindowResizeBorderThickness;
 #else
-                windowChrome.ResizeBorderThickness = SystemParameters2.Current.WindowResizeBorderThickness;
+                this.windowChrome.ResizeBorderThickness = SystemParameters2.Current.WindowResizeBorderThickness;
 #endif
                 if (!enableDWMDropShadow)
                 {
-                    AssociatedObject.BorderThickness = savedBorderThickness.GetValueOrDefault(new Thickness(0));
+                    this.AssociatedObject.BorderThickness = this.savedBorderThickness.GetValueOrDefault(new Thickness(0));
                 }
             }
 
@@ -267,37 +269,37 @@ namespace Controlz.Behaviours
             // Note that the minimize animation in this case does actually run, but somehow the other
             // application (Google Chrome in this example) is instantly switched to being the top window,
             // and so blocking the animation view.
-            AssociatedObject.Topmost = false;
-            AssociatedObject.Topmost = AssociatedObject.WindowState == WindowState.Minimized || savedTopMost;
-            
-            borderThicknessChangeNotifier.ValueChanged += BorderThicknessChangeNotifierOnValueChanged;
-            topMostChangeNotifier.ValueChanged += TopMostChangeNotifierOnValueChanged;
+            this.AssociatedObject.Topmost = false;
+            this.AssociatedObject.Topmost = this.AssociatedObject.WindowState == WindowState.Minimized || this.savedTopMost;
+
+            this.borderThicknessChangeNotifier.ValueChanged += this.BorderThicknessChangeNotifierOnValueChanged;
+            this.topMostChangeNotifier.ValueChanged += this.TopMostChangeNotifierOnValueChanged;
         }
 
         protected virtual void OnAssociatedObjectSourceInitialized(object sender, EventArgs e)
         {
-            handle = new WindowInteropHelper(AssociatedObject).Handle;
-            if (null == handle)
+            this.handle = new WindowInteropHelper(this.AssociatedObject).Handle;
+            if (null == this.handle)
             {
                 throw new Exception("Uups, at this point we really need the Handle from the associated object!");
             }
-            hwndSource = HwndSource.FromHwnd(handle);
-            if (hwndSource != null)
+            this.hwndSource = HwndSource.FromHwnd(this.handle);
+            if (this.hwndSource != null)
             {
-                hwndSource.AddHook(WindowProc);
+                this.hwndSource.AddHook(this.WindowProc);
             }
 
-            if (AssociatedObject.ResizeMode != ResizeMode.NoResize)
+            if (this.AssociatedObject.ResizeMode != ResizeMode.NoResize)
             {
                 // handle size to content (thanks @lynnx).
                 // This is necessary when ResizeMode != NoResize. Without this workaround,
                 // black bars appear at the right and bottom edge of the window.
-                var sizeToContent = AssociatedObject.SizeToContent;
-                var snapsToDevicePixels = AssociatedObject.SnapsToDevicePixels;
-                AssociatedObject.SnapsToDevicePixels = true;
-                AssociatedObject.SizeToContent = sizeToContent == SizeToContent.WidthAndHeight ? SizeToContent.Height : SizeToContent.Manual;
-                AssociatedObject.SizeToContent = sizeToContent;
-                AssociatedObject.SnapsToDevicePixels = snapsToDevicePixels;
+                var sizeToContent = this.AssociatedObject.SizeToContent;
+                var snapsToDevicePixels = this.AssociatedObject.SnapsToDevicePixels;
+                this.AssociatedObject.SnapsToDevicePixels = true;
+                this.AssociatedObject.SizeToContent = sizeToContent == SizeToContent.WidthAndHeight ? SizeToContent.Height : SizeToContent.Manual;
+                this.AssociatedObject.SizeToContent = sizeToContent;
+                this.AssociatedObject.SnapsToDevicePixels = snapsToDevicePixels;
             }
         }
 
