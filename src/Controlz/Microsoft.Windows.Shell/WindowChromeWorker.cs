@@ -7,7 +7,6 @@ namespace Controlz.Microsoft.Windows.Shell
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
-    using System.Reflection;
     using System.Runtime.InteropServices;
     using System.Security;
     using System.Security.Permissions;
@@ -22,20 +21,6 @@ namespace Controlz.Microsoft.Windows.Shell
 
     internal class WindowChromeWorker : DependencyObject
     {
-        private static readonly Version _presentationFrameworkVersion = Assembly.GetAssembly(typeof(Window)).GetName().Version;
-
-        /// <summary>
-        /// Is this using WPF4?
-        /// </summary>
-        /// <remarks>
-        /// There are a few specific bugs in Window in 3.5SP1 and below that require workarounds
-        /// when handling WM_NCCALCSIZE on the HWND.
-        /// </remarks>
-        private static bool IsPresentationFrameworkVersionLessThan4
-        {
-            get { return _presentationFrameworkVersion < new Version(4, 0); }
-        }
-
         // Delegate signature used for Dispatcher.BeginInvoke.
         private delegate void _Action();
 
@@ -51,14 +36,14 @@ namespace Controlz.Microsoft.Windows.Shell
         /// <summary>Underlying HWND for the _window.</summary>
         /// <SecurityNote>
         ///   Critical : Critical member
-        /// </SecurityNote>
+        /// <SecurityNote>
         [SecurityCritical]
         private IntPtr _hwnd;
 
         /// <summary>Underlying HWND for the _window.</summary>
         /// <SecurityNote>
         ///   Critical : Critical member provides access to HWND's window messages which are critical
-        /// </SecurityNote>
+        /// <SecurityNote>
         [SecurityCritical]
         private HwndSource _hwndSource = null;
 
@@ -84,9 +69,17 @@ namespace Controlz.Microsoft.Windows.Shell
         #endregion
 
         /// <SecurityNote>
+        ///   Critical : Initializes critical members
+        /// <SecurityNote>
+        [SecurityCritical]
+        static WindowChromeWorker()
+        {
+        }
+
+        /// <SecurityNote>
         ///   Critical : Store critical methods in critical callback table
         ///   Safe     : Demands full trust permissions
-        /// </SecurityNote>
+        /// <SecurityNote>
         [SecuritySafeCritical]
         [PermissionSet(SecurityAction.Demand, Name="FullTrust")]
         public WindowChromeWorker()
@@ -111,7 +104,7 @@ namespace Controlz.Microsoft.Windows.Shell
                 new HANDLE_MESSAGE(WM.EXITSIZEMOVE,          _HandleExitSizeMoveForAnimation),
             };
 
-            if (IsPresentationFrameworkVersionLessThan4)
+            if (Utility.IsPresentationFrameworkVersionLessThan4)
             {
                 _messageTable.AddRange(new[]
                 {
@@ -126,7 +119,7 @@ namespace Controlz.Microsoft.Windows.Shell
         /// <SecurityNote>
         ///   Critical : Calls critical methods
         ///   Safe     : Demands full trust permissions
-        /// </SecurityNote>
+        /// <SecurityNote>
         [SecuritySafeCritical]
         [PermissionSet(SecurityAction.Demand, Name="FullTrust")]
         public void SetWindowChrome(WindowChrome newChrome)
@@ -157,7 +150,7 @@ namespace Controlz.Microsoft.Windows.Shell
         /// <SecurityNote>
         ///   Critical : Calls critical methods
         ///   Safe     : Demands full trust permissions
-        /// </SecurityNote>
+        /// <SecurityNote>
         [SecuritySafeCritical]
         [PermissionSet(SecurityAction.Demand, Name="FullTrust")]
         private void _OnChromePropertyChangedThatRequiresRepaint(object sender, EventArgs e)
@@ -174,7 +167,7 @@ namespace Controlz.Microsoft.Windows.Shell
         /// <SecurityNote>
         ///   Critical : Calls critical methods
         ///   Safe     : Demands full trust permissions
-        /// </SecurityNote>
+        /// <SecurityNote>
         [SecuritySafeCritical]
         [PermissionSet(SecurityAction.Demand, Name="FullTrust")]
         private static void _OnChromeWorkerChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -192,7 +185,7 @@ namespace Controlz.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Calls critical methods
-        /// </SecurityNote>
+        /// <SecurityNote>
         [SecurityCritical]
         private void _SetWindow(Window window)
         {
@@ -211,9 +204,6 @@ namespace Controlz.Microsoft.Windows.Shell
 
             // On older versions of the framework the client size of the window is incorrectly calculated.
             // We need to modify the template to fix this on behalf of the user.
-
-            // This should only be required on older versions of the framework, but because of a DWM bug in Windows 7 we're exposing
-            // the SacrificialEdge property which requires this kind of fixup to be a bit more ubiquitous.
             Utility.AddDependencyPropertyChangeListener(_window, Window.TemplateProperty, _OnWindowPropertyChangedThatRequiresTemplateFixup);
             Utility.AddDependencyPropertyChangeListener(_window, Window.FlowDirectionProperty, _OnWindowPropertyChangedThatRequiresTemplateFixup);
 
@@ -242,7 +232,7 @@ namespace Controlz.Microsoft.Windows.Shell
         /// <SecurityNote>
         ///   Critical : Store critical methods in critical callback table
         ///   Safe     : Demands full trust permissions
-        /// </SecurityNote>
+        /// <SecurityNote>
         [SecuritySafeCritical]
         [PermissionSet(SecurityAction.Demand, Name="FullTrust")]
         private void _WindowSourceInitialized(object sender, EventArgs e)
@@ -260,7 +250,7 @@ namespace Controlz.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : References critical methods
-        /// </SecurityNote>
+        /// <SecurityNote>
         [SecurityCritical]
         private void UnsubscribeWindowEvents()
         {
@@ -276,7 +266,7 @@ namespace Controlz.Microsoft.Windows.Shell
         /// <SecurityNote>
         ///   Critical : Store critical methods in critical callback table
         ///   Safe     : Demands full trust permissions
-        /// </SecurityNote>
+        /// <SecurityNote>
         [SecuritySafeCritical]
         [PermissionSet(SecurityAction.Demand, Name="FullTrust")]
         private void _UnsetWindow(object sender, EventArgs e)
@@ -308,7 +298,7 @@ namespace Controlz.Microsoft.Windows.Shell
         /// <SecurityNote>
         ///   Critical : Accesses critical _hwnd field
         ///   Safe     : Demands full trust permissions
-        /// </SecurityNote>
+        /// <SecurityNote>
         [SecuritySafeCritical]
         [PermissionSet(SecurityAction.Demand, Name="FullTrust")]
         private void _OnWindowPropertyChangedThatRequiresTemplateFixup(object sender, EventArgs e)
@@ -326,7 +316,7 @@ namespace Controlz.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Calls critical methods
-        /// </SecurityNote>
+        /// <SecurityNote>
         [SecurityCritical]
         private void _ApplyNewCustomChrome()
         {
@@ -362,7 +352,7 @@ namespace Controlz.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Calls critical methods
-        /// </SecurityNote>
+        /// <SecurityNote>
         [SecurityCritical]
         private void _FixupTemplateIssues()
         {
@@ -425,7 +415,7 @@ namespace Controlz.Microsoft.Windows.Shell
                 }
             }
 
-            if (IsPresentationFrameworkVersionLessThan4)
+            if (Utility.IsPresentationFrameworkVersionLessThan4)
             {
                 RECT rcWindow = NativeMethods.GetWindowRect(_hwnd);
                 RECT rcAdjustedClient = _GetAdjustedWindowRect(rcWindow);
@@ -501,7 +491,7 @@ namespace Controlz.Microsoft.Windows.Shell
 
             rootElement.Margin = templateFixupMargin;
 
-            if (IsPresentationFrameworkVersionLessThan4)
+            if (Utility.IsPresentationFrameworkVersionLessThan4)
             {
                 if (!_isFixedUp)
                 {
@@ -516,12 +506,12 @@ namespace Controlz.Microsoft.Windows.Shell
         /// <SecurityNote>
         ///   Critical : Store critical methods in critical callback table
         ///   Safe     : Demands full trust permissions
-        /// </SecurityNote>
+        /// <SecurityNote>
         [SecuritySafeCritical]
         [PermissionSet(SecurityAction.Demand, Name="FullTrust")]
         private void _FixupRestoreBounds(object sender, EventArgs e)
         {
-            Assert.IsTrue(IsPresentationFrameworkVersionLessThan4);
+            Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
             if (_window.WindowState == WindowState.Maximized || _window.WindowState == WindowState.Minimized)
             {
                 // Old versions of WPF sometimes force their incorrect idea of the Window's location
@@ -546,12 +536,12 @@ namespace Controlz.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Calls critical methods
-        /// </SecurityNote>
+        /// <SecurityNote>
         [SecurityCritical]
         private RECT _GetAdjustedWindowRect(RECT rcWindow)
         {
             // This should only be used to work around issues in the Framework that were fixed in 4.0
-            Assert.IsTrue(IsPresentationFrameworkVersionLessThan4);
+            Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
 
             var style = (WS)NativeMethods.GetWindowLongPtr(_hwnd, GWL.STYLE);
             var exstyle = (WS_EX)NativeMethods.GetWindowLongPtr(_hwnd, GWL.EXSTYLE);
@@ -566,7 +556,7 @@ namespace Controlz.Microsoft.Windows.Shell
         // different orders, so this isn't absolutely reliable.
         /// <SecurityNote>
         ///   Critical : Calls critical method
-        /// </SecurityNote>
+        /// <SecurityNote>
         private bool _IsWindowDocked
         {
             [SecurityCritical]
@@ -574,7 +564,7 @@ namespace Controlz.Microsoft.Windows.Shell
             {
                 // We're only detecting this state to work around .Net 3.5 issues.
                 // This logic won't work correctly when those issues are fixed.
-                Assert.IsTrue(IsPresentationFrameworkVersionLessThan4);
+                Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
 
                 if (_window.WindowState != WindowState.Normal)
                 {
@@ -602,7 +592,7 @@ namespace Controlz.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Accesses critical _hwnd
-        /// </SecurityNote>
+        /// <SecurityNote>
         [SecurityCritical]
         private IntPtr _WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
@@ -622,7 +612,7 @@ namespace Controlz.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Calls critical methods
-        /// </SecurityNote>
+        /// <SecurityNote>
         [SecurityCritical]
         private IntPtr _HandleNCUAHDrawCaption(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
@@ -699,8 +689,6 @@ namespace Controlz.Microsoft.Windows.Shell
         }
 
         /// <SecurityNote>
-        ///   Critical : Calls critical methods
-        /// </SecurityNote>
         [SecurityCritical]
         private IntPtr _HandleNCActivate(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
@@ -769,7 +757,7 @@ namespace Controlz.Microsoft.Windows.Shell
         // area, so we added the SacrificialEdge property.
         /// <SecurityNote>
         ///   Critical : Calls critical Marshal.PtrToStructure
-        /// </SecurityNote>
+        /// <SecurityNote>
         [SecurityCritical]
         private IntPtr _HandleNCCalcSize(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
@@ -863,7 +851,7 @@ namespace Controlz.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Calls critical methods
-        /// </SecurityNote>
+        /// <SecurityNote>
         [SecurityCritical]
         private IntPtr _HandleNCHitTest(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
@@ -922,7 +910,7 @@ namespace Controlz.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Calls critical method
-        /// </SecurityNote>
+        /// <SecurityNote>
         [SecurityCritical]
         private IntPtr _HandleNCRButtonUp(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
@@ -938,7 +926,7 @@ namespace Controlz.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Calls critical method
-        /// </SecurityNote>
+        /// <SecurityNote>
         [SecurityCritical]
         private IntPtr _HandleSize(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
@@ -1066,8 +1054,6 @@ namespace Controlz.Microsoft.Windows.Shell
         }
 
         /// <SecurityNote>
-        ///   Critical : Calls critical methods
-        /// </SecurityNote>
         [SecurityCritical]
         private IntPtr _HandleDwmCompositionChanged(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
@@ -1079,13 +1065,13 @@ namespace Controlz.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Calls critical methods
-        /// </SecurityNote>
+        /// <SecurityNote>
         [SecurityCritical]
         private IntPtr _HandleSettingChange(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
             // There are several settings that can cause fixups for the template to become invalid when changed.
             // These shouldn't be required on the v4 framework.
-            Assert.IsTrue(IsPresentationFrameworkVersionLessThan4);
+            Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
 
             _FixupTemplateIssues();
 
@@ -1095,12 +1081,12 @@ namespace Controlz.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Calls critical methods
-        /// </SecurityNote>
+        /// <SecurityNote>
         [SecurityCritical]
         private IntPtr _HandleEnterSizeMove(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
             // This is only intercepted to deal with bugs in Window in .Net 3.5 and below.
-            Assert.IsTrue(IsPresentationFrameworkVersionLessThan4);
+            Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
 
             _isUserResizing = true;
 
@@ -1211,7 +1197,7 @@ namespace Controlz.Microsoft.Windows.Shell
         private IntPtr _HandleExitSizeMove(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
             // This is only intercepted to deal with bugs in Window in .Net 3.5 and below.
-            Assert.IsTrue(IsPresentationFrameworkVersionLessThan4);
+            Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
 
             _isUserResizing = false;
 
@@ -1231,7 +1217,7 @@ namespace Controlz.Microsoft.Windows.Shell
         private IntPtr _HandleMove(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
             // This is only intercepted to deal with bugs in Window in .Net 3.5 and below.
-            Assert.IsTrue(IsPresentationFrameworkVersionLessThan4);
+            Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
 
             if (_isUserResizing)
             {
@@ -1249,7 +1235,7 @@ namespace Controlz.Microsoft.Windows.Shell
         /// </summary>
         /// <SecurityNote>
         ///   Critical : Calls critical methods
-        /// </SecurityNote>
+        /// <SecurityNote>
         [SecurityCritical]
         private WindowState _GetHwndState()
         {
@@ -1268,7 +1254,7 @@ namespace Controlz.Microsoft.Windows.Shell
         /// <returns>The bounding rectangle for the window.</returns>
         /// <SecurityNote>
         ///   Critical : Calls critical methods
-        /// </SecurityNote>
+        /// <SecurityNote>
         [SecurityCritical]
         private Rect _GetWindowRect()
         {
@@ -1288,7 +1274,7 @@ namespace Controlz.Microsoft.Windows.Shell
         /// </remarks>
         /// <SecurityNote>
         ///   Critical : Calls critical methods
-        /// </SecurityNote>
+        /// <SecurityNote>
         [SecurityCritical]
         private void _UpdateSystemMenu(WindowState? assumeState)
         {
@@ -1301,6 +1287,7 @@ namespace Controlz.Microsoft.Windows.Shell
             {
                 _lastMenuState = state;
 
+                bool modified = _hwnd._ModifyStyle(WS.VISIBLE, 0);
                 IntPtr hmenu = NativeMethods.GetSystemMenu(_hwnd, false);
                 if (IntPtr.Zero != hmenu)
                 {
@@ -1336,12 +1323,17 @@ namespace Controlz.Microsoft.Windows.Shell
                             break;
                     }
                 }
+
+                if (modified)
+                {
+                    _hwnd._ModifyStyle(0, WS.VISIBLE);
+                }
             }
         }
 
         /// <SecurityNote>
         ///   Critical : Calls critical methods
-        /// </SecurityNote>
+        /// <SecurityNote>
         [SecurityCritical]
         private void _UpdateFrameState(bool force)
         {
@@ -1384,7 +1376,7 @@ namespace Controlz.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Calls critical methods
-        /// </SecurityNote>
+        /// <SecurityNote>
         [SecurityCritical]
         private void _ClearRoundingRegion()
         {
@@ -1548,7 +1540,7 @@ namespace Controlz.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Calls critical methods
-        /// </SecurityNote>
+        /// <SecurityNote>
         [SecurityCritical]
         private static IntPtr _CreateRoundRectRgn(Rect region, double radius)
         {
@@ -1575,7 +1567,7 @@ namespace Controlz.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Calls critical methods
-        /// </SecurityNote>
+        /// <SecurityNote>
         [SecurityCritical]
         [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "HRGNs")]
         private static void _CreateAndCombineRoundRectRgn(IntPtr hrgnSource, Rect region, double radius)
@@ -1619,7 +1611,7 @@ namespace Controlz.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Calls critical methods
-        /// </SecurityNote>
+        /// <SecurityNote>
         [SecurityCritical]
         private void _ExtendGlassFrame()
         {
@@ -1769,7 +1761,7 @@ namespace Controlz.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Calls critical methods
-        /// </SecurityNote>
+        /// <SecurityNote>
         [SecurityCritical]
         private void _RestoreStandardChromeState(bool isClosing)
         {
@@ -1789,7 +1781,7 @@ namespace Controlz.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Unsubscribes event handler from critical _hwndSource
-        /// </SecurityNote>
+        /// <SecurityNote>
         [SecurityCritical]
         private void _UnhookCustomChrome()
         {
@@ -1806,7 +1798,7 @@ namespace Controlz.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Unsubscribes critical event handler
-        /// </SecurityNote>
+        /// <SecurityNote>
         [SecurityCritical]
         private void _RestoreFrameworkIssueFixups()
         {
@@ -1817,7 +1809,7 @@ namespace Controlz.Microsoft.Windows.Shell
 
             // This margin is only necessary if the client rect is going to be calculated incorrectly by WPF.
             // This bug was fixed in V4 of the framework.
-            if (IsPresentationFrameworkVersionLessThan4)
+            if (Utility.IsPresentationFrameworkVersionLessThan4)
             {
                 Assert.IsTrue(_isFixedUp);
                 _window.StateChanged -= _FixupRestoreBounds;
@@ -1827,7 +1819,7 @@ namespace Controlz.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Calls critical methods
-        /// </SecurityNote>
+        /// <SecurityNote>
         [SecurityCritical]
         private void _RestoreGlassFrame()
         {
@@ -1853,7 +1845,7 @@ namespace Controlz.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Calls critical methods
-        /// </SecurityNote>
+        /// <SecurityNote>
         [SecurityCritical]
         private void _RestoreHrgn()
         {

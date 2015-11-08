@@ -1,7 +1,6 @@
 ﻿namespace Controlz.Behaviours
 {
     using System;
-    using System.Diagnostics;
     using System.Windows;
     using System.Windows.Interactivity;
     using System.Windows.Interop;
