@@ -141,9 +141,18 @@
             this.topMostChangeNotifier.ValueChanged += this.TopMostChangeNotifierOnValueChanged;
 
             this.AssociatedObject.Loaded += this.OnAssociatedObjectLoaded;
-            this.AssociatedObject.Unloaded += this.AssociatedObject_Unloaded;
-            this.AssociatedObject.SourceInitialized += this.OnAssociatedObjectSourceInitialized;
+            this.AssociatedObject.Unloaded += this.AssociatedObject_Unloaded;            
             this.AssociatedObject.StateChanged += this.OnAssociatedObjectHandleMaximize;
+
+            // If Window is already initialized
+            if (PresentationSource.FromVisual(this.AssociatedObject) != null)
+            {
+                this.HandleSourceInitialized();
+            }
+            else
+            {
+                this.AssociatedObject.SourceInitialized += this.OnAssociatedObjectSourceInitialized;
+            }
 
             // handle the maximized state here too (to handle the border in a correct way)
             this.HandleMaximize();
@@ -273,7 +282,7 @@
             switch (message)
             {
                 case WM.NCPAINT:
-                    handled = true;
+                    handled = this.AssociatedObject.WindowStyle == WindowStyle.None;
                     break;
                 case WM.NCACTIVATE:
                     /* As per http://msdn.microsoft.com/en-us/library/ms632633(VS.85).aspx , "-1" lParam "does not repaint the nonclient area to reflect the state change." */
@@ -361,7 +370,7 @@
             this.topMostChangeNotifier.ValueChanged += this.TopMostChangeNotifierOnValueChanged;
         }
 
-        protected virtual void OnAssociatedObjectSourceInitialized(object sender, EventArgs e)
+        protected virtual void HandleSourceInitialized()
         {
             this.handle = new WindowInteropHelper(this.AssociatedObject).Handle;
 
@@ -385,10 +394,17 @@
                 var sizeToContent = this.AssociatedObject.SizeToContent;
                 var snapsToDevicePixels = this.AssociatedObject.SnapsToDevicePixels;
                 this.AssociatedObject.SnapsToDevicePixels = true;
-                this.AssociatedObject.SizeToContent = sizeToContent == SizeToContent.WidthAndHeight ? SizeToContent.Height : SizeToContent.Manual;
+                this.AssociatedObject.SizeToContent = sizeToContent == SizeToContent.WidthAndHeight
+                                                          ? SizeToContent.Height
+                                                          : SizeToContent.Manual;
                 this.AssociatedObject.SizeToContent = sizeToContent;
                 this.AssociatedObject.SnapsToDevicePixels = snapsToDevicePixels;
             }
+        }
+
+        private void OnAssociatedObjectSourceInitialized(object sender, EventArgs e)
+        {
+            this.HandleSourceInitialized();
         }
 
         protected virtual void OnAssociatedObjectLoaded(object sender, RoutedEventArgs e)
