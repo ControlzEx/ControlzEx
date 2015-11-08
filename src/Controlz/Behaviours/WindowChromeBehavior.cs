@@ -25,7 +25,7 @@
     //    </Trigger>
     //</Style.Triggers>
     /// </remarks>
-    public class BorderlessWindowBehavior : Behavior<Window>
+    public class WindowChromeBehavior : Behavior<Window>
     {
         private IntPtr handle;
         private HwndSource hwndSource;
@@ -47,7 +47,7 @@
 
         // Using a DependencyProperty as the backing store for ResizeBorderThickness.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ResizeBorderThicknessProperty =
-            DependencyProperty.Register("ResizeBorderThickness", typeof(Thickness), typeof(BorderlessWindowBehavior), new PropertyMetadata(GetDefaultResizeBorderThickness()));
+            DependencyProperty.Register("ResizeBorderThickness", typeof(Thickness), typeof(WindowChromeBehavior), new PropertyMetadata(GetDefaultResizeBorderThickness()));
 
         public double CaptionHeight
         {
@@ -57,7 +57,7 @@
 
         // Using a DependencyProperty as the backing store for CaptionHeight.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty CaptionHeightProperty =
-            DependencyProperty.Register("CaptionHeight", typeof(double), typeof(BorderlessWindowBehavior), new PropertyMetadata(0D));
+            DependencyProperty.Register("CaptionHeight", typeof(double), typeof(WindowChromeBehavior), new PropertyMetadata(0D));
 
         public CornerRadius CornerRadius
         {
@@ -67,7 +67,7 @@
 
         // Using a DependencyProperty as the backing store for CornerRadius.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty CornerRadiusProperty =
-            DependencyProperty.Register("CornerRadius", typeof(CornerRadius), typeof(BorderlessWindowBehavior), new PropertyMetadata(new CornerRadius(0D)));
+            DependencyProperty.Register("CornerRadius", typeof(CornerRadius), typeof(WindowChromeBehavior), new PropertyMetadata(new CornerRadius(0D)));
 
         public Thickness GlassFrameThickness
         {
@@ -77,7 +77,7 @@
 
         // Using a DependencyProperty as the backing store for GlassFrameThickness.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty GlassFrameThicknessProperty =
-            DependencyProperty.Register("GlassFrameThickness", typeof(Thickness), typeof(BorderlessWindowBehavior), new PropertyMetadata(new Thickness(0D)));
+            DependencyProperty.Register("GlassFrameThickness", typeof(Thickness), typeof(WindowChromeBehavior), new PropertyMetadata(new Thickness(0D)));
 
         public bool UseAeroCaptionButtons
         {
@@ -87,7 +87,7 @@
 
         // Using a DependencyProperty as the backing store for UseAeroCaptionButtons.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty UseAeroCaptionButtonsProperty =
-            DependencyProperty.Register("UseAeroCaptionButtons", typeof(bool), typeof(BorderlessWindowBehavior), new PropertyMetadata(false));
+            DependencyProperty.Register("UseAeroCaptionButtons", typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(false));
 
         #endregion
 
@@ -99,7 +99,7 @@
 
         // Using a DependencyProperty as the backing store for IgnoreTaskbarOnMaximize.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IgnoreTaskbarOnMaximizeProperty =
-            DependencyProperty.Register("IgnoreTaskbarOnMaximize", typeof(bool), typeof(BorderlessWindowBehavior), new PropertyMetadata(false, IgnoreTaskbarOnMaximizePropertyChangedCallback));
+            DependencyProperty.Register("IgnoreTaskbarOnMaximize", typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(false, IgnoreTaskbarOnMaximizePropertyChangedCallback));
 
         public bool UseNoneWindowStyle
         {
@@ -109,7 +109,7 @@
 
         // Using a DependencyProperty as the backing store for UseNoneWindowStyle.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty UseNoneWindowStyleProperty =
-            DependencyProperty.Register("UseNoneWindowStyle", typeof(bool), typeof(BorderlessWindowBehavior), new PropertyMetadata(false, UseNoneWindowStylePropertyChangedCallback));
+            DependencyProperty.Register("UseNoneWindowStyle", typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(false, UseNoneWindowStylePropertyChangedCallback));
 
         protected override void OnAttached()
         {
@@ -187,7 +187,7 @@
 
         private static void UseNoneWindowStylePropertyChangedCallback(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            var behavior = sender as BorderlessWindowBehavior;
+            var behavior = sender as WindowChromeBehavior;
 
             if (behavior == null)
             {
@@ -199,7 +199,7 @@
 
         private static void IgnoreTaskbarOnMaximizePropertyChangedCallback(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            var behavior = sender as BorderlessWindowBehavior;
+            var behavior = sender as WindowChromeBehavior;
 
             if (behavior == null)
             {
