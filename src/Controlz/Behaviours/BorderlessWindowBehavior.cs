@@ -181,7 +181,7 @@
 #if NET45
                 return SystemParameters.WindowResizeBorderThickness;
 #else
-            return SystemParameters2.Current.WindowResizeBorderThickness;
+            return Controlz.Microsoft.Windows.Shell.SystemParameters2.Current.WindowResizeBorderThickness;
 #endif
         }
 
