@@ -1659,7 +1659,7 @@ namespace Controlz.Microsoft.Windows.Shell
 
                 // Apply the transparent background to the HWND
                 // but only if the window has the flag AllowsTransparency turned on
-                if (_window.AllowsTransparency)
+                if (_window.AllowsTransparency || _window.WindowStyle != WindowStyle.None)
                 {
                     _hwndSource.CompositionTarget.BackgroundColor = Colors.Transparent;
                 }
