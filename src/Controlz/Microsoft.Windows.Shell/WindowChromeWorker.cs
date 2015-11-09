@@ -1287,7 +1287,10 @@ namespace Controlz.Microsoft.Windows.Shell
             {
                 _lastMenuState = state;
 
-                bool modified = _hwnd._ModifyStyle(WS.VISIBLE, 0);
+                // Disabled because it sometimes makes the window disappear from the taskbar.
+                // https://github.com/MahApps/MahApps.Metro/commit/5a5d3cc6266b9476bc14e861803a34970bf5b34f
+                //bool modified = _hwnd._ModifyStyle(WS.VISIBLE, 0);
+
                 IntPtr hmenu = NativeMethods.GetSystemMenu(_hwnd, false);
                 if (IntPtr.Zero != hmenu)
                 {
@@ -1324,10 +1327,12 @@ namespace Controlz.Microsoft.Windows.Shell
                     }
                 }
 
-                if (modified)
-                {
-                    _hwnd._ModifyStyle(0, WS.VISIBLE);
-                }
+                // Disabled because it sometimes makes the window disappear from the taskbar.
+                // https://github.com/MahApps/MahApps.Metro/commit/5a5d3cc6266b9476bc14e861803a34970bf5b34f
+                //if (modified)
+                //{
+                //    _hwnd._ModifyStyle(0, WS.VISIBLE);
+                //}
             }
         }
 
