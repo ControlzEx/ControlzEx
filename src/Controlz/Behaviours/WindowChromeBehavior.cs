@@ -32,6 +32,7 @@
         //private PropertyChangeNotifier borderThicknessChangeNotifier;
         //private Thickness? savedBorderThickness;
         private PropertyChangeNotifier topMostChangeNotifier;
+        private PropertyChangeNotifier windowStyleChangeNotifier;
         private bool savedTopMost;
 
         protected bool isCleanedUp;
@@ -98,22 +99,12 @@
 
         // Using a DependencyProperty as the backing store for IgnoreTaskbarOnMaximize.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IgnoreTaskbarOnMaximizeProperty =
-            DependencyProperty.Register("IgnoreTaskbarOnMaximize", typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(false, IgnoreTaskbarOnMaximizePropertyChangedCallback));
-
-        public bool UseNoneWindowStyle
-        {
-            get { return (bool)this.GetValue(UseNoneWindowStyleProperty); }
-            set { this.SetValue(UseNoneWindowStyleProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for UseNoneWindowStyle.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty UseNoneWindowStyleProperty =
-            DependencyProperty.Register("UseNoneWindowStyle", typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(false, UseNoneWindowStylePropertyChangedCallback));
+            DependencyProperty.Register("IgnoreTaskbarOnMaximize", typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(false, IgnoreTaskbarOnMaximizePropertyChangedCallback));        
 
         protected override void OnAttached()
         {
             this.InitializeWindowChrome();
-            
+
             this.AssociatedObject.SetValue(WindowChrome.WindowChromeProperty, this.windowChrome);
 
             // no transparany, because it hase more then one unwanted issues            
@@ -140,8 +131,11 @@
             this.topMostChangeNotifier = new PropertyChangeNotifier(this.AssociatedObject, Window.TopmostProperty);
             this.topMostChangeNotifier.ValueChanged += this.TopMostChangeNotifierOnValueChanged;
 
+            this.windowStyleChangeNotifier = new PropertyChangeNotifier(this.AssociatedObject, Window.WindowStyleProperty);
+            this.windowStyleChangeNotifier.ValueChanged += this.WindowStyleNotifierChangedCallback;
+
             this.AssociatedObject.Loaded += this.OnAssociatedObjectLoaded;
-            this.AssociatedObject.Unloaded += this.AssociatedObject_Unloaded;            
+            this.AssociatedObject.Unloaded += this.AssociatedObject_Unloaded;
             this.AssociatedObject.StateChanged += this.OnAssociatedObjectHandleMaximize;
 
             // If Window is already initialized
@@ -184,25 +178,18 @@
             this.savedTopMost = this.AssociatedObject.Topmost;
         }
 
+        private void WindowStyleNotifierChangedCallback(object sender, EventArgs e)
+        {
+            this.ForceRedrawWindowFromPropertyChanged();
+        }
+
         private static Thickness GetDefaultResizeBorderThickness()
         {
 #if NET45
-                return SystemParameters.WindowResizeBorderThickness;
+            return SystemParameters.WindowResizeBorderThickness;
 #else
             return Controlz.Microsoft.Windows.Shell.SystemParameters2.Current.WindowResizeBorderThickness;
 #endif
-        }
-
-        private static void UseNoneWindowStylePropertyChangedCallback(DependencyObject sender, DependencyPropertyChangedEventArgs e)
-        {
-            var behavior = sender as WindowChromeBehavior;
-
-            if (behavior == null)
-            {
-                return;
-            }
-
-            behavior.ForceRedrawWindowFromPropertyChanged();
         }
 
         private static void IgnoreTaskbarOnMaximizePropertyChangedCallback(DependencyObject sender, DependencyPropertyChangedEventArgs e)
@@ -254,13 +241,14 @@
 
             //this.borderThicknessChangeNotifier.ValueChanged -= this.BorderThicknessChangeNotifierOnValueChanged;
             this.topMostChangeNotifier.ValueChanged -= this.TopMostChangeNotifierOnValueChanged;
+            this.windowStyleChangeNotifier.ValueChanged -= this.WindowStyleNotifierChangedCallback;
 
             if (this.hwndSource != null)
             {
                 this.hwndSource.RemoveHook(this.WindowProc);
             }
 
-            this.windowChrome = null;            
+            this.windowChrome = null;
         }
 
         protected override void OnDetaching()
@@ -346,11 +334,11 @@
             else
             {
                 // note (punker76): check this, maybe we doesn't need this anymore
-//#if NET45
-//                windowChrome.ResizeBorderThickness = SystemParameters.WindowResizeBorderThickness;
-//#else
-//                this.windowChrome.ResizeBorderThickness = SystemParameters2.Current.WindowResizeBorderThickness;
-//#endif
+                //#if NET45
+                //                windowChrome.ResizeBorderThickness = SystemParameters.WindowResizeBorderThickness;
+                //#else
+                //                this.windowChrome.ResizeBorderThickness = SystemParameters2.Current.WindowResizeBorderThickness;
+                //#endif
                 // todo batzen: Handle enableDWMDropShadow
                 //if (!enableDWMDropShadow)
                 //{

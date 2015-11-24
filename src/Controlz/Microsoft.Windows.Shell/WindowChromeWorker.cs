@@ -584,7 +584,7 @@ namespace Controlz.Microsoft.Windows.Shell
         {
             get
             {
-                return SystemParameters.MinimizeAnimation && _chromeInfo.IgnoreTaskbarOnMaximize == false;// && _chromeInfo.UseNoneWindowStyle == false;
+                return SystemParameters.MinimizeAnimation && _chromeInfo.IgnoreTaskbarOnMaximize == false;
             }
         }
 
@@ -677,7 +677,7 @@ namespace Controlz.Microsoft.Windows.Shell
                 {
                     modified = _hwnd._ModifyStyle(0, WS.SYSMENU);
                 }
-                
+
                 handled = true;
                 return lRet;
             }
@@ -709,7 +709,7 @@ namespace Controlz.Microsoft.Windows.Shell
         ///   Critical : Calls critical methods
         /// </SecurityNote>
         [SecurityCritical]
-        private static RECT AdjustWorkingAreaForAutoHide(IntPtr monitorContainingApplication, RECT area )
+        private static RECT AdjustWorkingAreaForAutoHide(IntPtr monitorContainingApplication, RECT area)
         {
             // maybe we can use ReBarWindow32 isntead Shell_TrayWnd
             IntPtr hwnd = NativeMethods.FindWindow("Shell_TrayWnd", null);
@@ -772,10 +772,10 @@ namespace Controlz.Microsoft.Windows.Shell
                     IntPtr mon = NativeMethods.MonitorFromWindow(_hwnd, (uint)MonitorOptions.MONITOR_DEFAULTTONEAREST);
                     MONITORINFO mi = NativeMethods.GetMonitorInfo(mon);
 
-                    RECT rc = (RECT) Marshal.PtrToStructure(lParam, typeof(RECT));
+                    RECT rc = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT));
                     NativeMethods.DefWindowProc(_hwnd, WM.NCCALCSIZE, wParam, lParam);
-                    RECT def = (RECT) Marshal.PtrToStructure(lParam, typeof(RECT));
-                    
+                    RECT def = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT));
+
                     var cyWindowBorders = NativeMethods.GetWindowInfo(this._hwnd).cyWindowBorders;
 
                     if (this._isGlassEnabled == false)
@@ -790,7 +790,7 @@ namespace Controlz.Microsoft.Windows.Shell
                     // monitor an work area will be equal if taskbar is hidden
                     if (mi.rcMonitor.Height == mi.rcWork.Height && mi.rcMonitor.Width == mi.rcWork.Width)
                     {
-                        def = AdjustWorkingAreaForAutoHide(mon, def);                        
+                        def = AdjustWorkingAreaForAutoHide(mon, def);
                     }
 
                     Marshal.StructureToPtr(def, lParam, true);
@@ -970,11 +970,11 @@ namespace Controlz.Microsoft.Windows.Shell
             if (!_isGlassEnabled)
             {
                 Assert.IsNotDefault(lParam);
-                var wp = (WINDOWPOS) Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
+                var wp = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
 
                 // we don't do bitwise operations cuz we're checking for this flag being the only one there
                 // I have no clue why this works, I tried this because VS2013 has this flag removed on fullscreen window movws
-                if (_chromeInfo.IgnoreTaskbarOnMaximize && _GetHwndState() == WindowState.Maximized && wp.flags == (int) SWP.FRAMECHANGED)
+                if (_chromeInfo.IgnoreTaskbarOnMaximize && _GetHwndState() == WindowState.Maximized && wp.flags == (int)SWP.FRAMECHANGED)
                 {
                     wp.flags = 0;
                     Marshal.StructureToPtr(wp, lParam, true);
@@ -1012,11 +1012,11 @@ namespace Controlz.Microsoft.Windows.Shell
                 }
                 _previousWP = wp;
 
-//                if (wp.Equals(_previousWP) && wp.flags.Equals(_previousWP.flags))
-//                {
-//                    handled = true;
-//                    return IntPtr.Zero;
-//                }
+                //                if (wp.Equals(_previousWP) && wp.flags.Equals(_previousWP.flags))
+                //                {
+                //                    handled = true;
+                //                    return IntPtr.Zero;
+                //                }
             }
 
             // Still want to pass this to DefWndProc
@@ -1038,7 +1038,7 @@ namespace Controlz.Microsoft.Windows.Shell
              * This fix is not really a full fix. Moving the Window back gives us the wrong size, because
              * MonitorFromWindow gives us the wrong (old) monitor! This is fixed in _HandleMoveForRealSize.
              */
-            var ignoreTaskBar = _chromeInfo.IgnoreTaskbarOnMaximize;// || _chromeInfo.UseNoneWindowStyle;
+            var ignoreTaskBar = _chromeInfo.IgnoreTaskbarOnMaximize;
             if (ignoreTaskBar && NativeMethods.IsZoomed(_hwnd))
             {
                 MINMAXINFO mmi = (MINMAXINFO)Marshal.PtrToStructure(lParam, typeof(MINMAXINFO));
@@ -1048,7 +1048,7 @@ namespace Controlz.Microsoft.Windows.Shell
                     MONITORINFO monitorInfo = NativeMethods.GetMonitorInfoW(monitor);
                     RECT rcWorkArea = monitorInfo.rcWork;
                     RECT rcMonitorArea = monitorInfo.rcMonitor;
-                    
+
                     mmi.ptMaxPosition.x = Math.Abs(rcWorkArea.Left - rcMonitorArea.Left);
                     mmi.ptMaxPosition.y = Math.Abs(rcWorkArea.Top - rcMonitorArea.Top);
 
@@ -1157,11 +1157,12 @@ namespace Controlz.Microsoft.Windows.Shell
              * But after moving to the previous monitor we got a wrong size (from the old monitor dimension).
              */
             WindowState state = _GetHwndState();
-            if (state == WindowState.Maximized) {
+            if (state == WindowState.Maximized)
+            {
                 IntPtr monitorFromWindow = NativeMethods.MonitorFromWindow(_hwnd, (uint)MonitorOptions.MONITOR_DEFAULTTONEAREST);
                 if (monitorFromWindow != IntPtr.Zero)
                 {
-                    var ignoreTaskBar = _chromeInfo.IgnoreTaskbarOnMaximize;// || _chromeInfo.UseNoneWindowStyle;
+                    var ignoreTaskBar = _chromeInfo.IgnoreTaskbarOnMaximize;
                     MONITORINFO monitorInfo = NativeMethods.GetMonitorInfoW(monitorFromWindow);
                     RECT rcMonitorArea = ignoreTaskBar ? monitorInfo.rcMonitor : monitorInfo.rcWork;
                     /*
