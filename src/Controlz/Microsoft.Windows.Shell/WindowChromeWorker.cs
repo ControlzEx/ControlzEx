@@ -374,7 +374,7 @@ namespace Controlz.Microsoft.Windows.Shell
                 return;
             }
 
-            Thickness templateFixupMargin = default(Thickness);
+            Thickness templateFixupMargin = this.GetDefaultFixupMargin();
             Transform templateFixupTransform = null;
 
             var rootElement = (FrameworkElement)VisualTreeHelper.GetChild(_window, 0);
@@ -775,16 +775,29 @@ namespace Controlz.Microsoft.Windows.Shell
                     RECT rc = (RECT) Marshal.PtrToStructure(lParam, typeof(RECT));
                     NativeMethods.DefWindowProc(_hwnd, WM.NCCALCSIZE, wParam, lParam);
                     RECT def = (RECT) Marshal.PtrToStructure(lParam, typeof(RECT));
-                    def.Top = (int) (rc.Top + NativeMethods.GetWindowInfo(_hwnd).cyWindowBorders);
+                    
+                    var cyWindowBorders = NativeMethods.GetWindowInfo(this._hwnd).cyWindowBorders;
+
+                    if (this._isGlassEnabled == false)
+                    {
+                        def.Top = (int)(rc.Top + cyWindowBorders);
+                    }
+                    else
+                    {
+                        def.Top = (int)(-1 * cyWindowBorders);
+                    }
 
                     // monitor an work area will be equal if taskbar is hidden
                     if (mi.rcMonitor.Height == mi.rcWork.Height && mi.rcMonitor.Width == mi.rcWork.Width)
                     {
-                        def = AdjustWorkingAreaForAutoHide(mon, def);
+                        def = AdjustWorkingAreaForAutoHide(mon, def);                        
                     }
+
                     Marshal.StructureToPtr(def, lParam, true);
                 }
             }
+
+            this.FixupMarginWhenGlassIsEnabled();
 
             if (_chromeInfo.SacrificialEdge != SacrificialEdge.None)
             {
@@ -1859,5 +1872,52 @@ namespace Controlz.Microsoft.Windows.Shell
         }
 
         #endregion
+
+        #region Workarounds
+
+        private void FixupMarginWhenGlassIsEnabled()
+        {
+            if (this._isGlassEnabled == false)
+            {
+                return;
+            }
+
+            if (_window.Template == null)
+            {
+                // Nothing to fixup yet.
+                return;
+            }
+
+            // Guard against the visual tree being empty.
+            if (VisualTreeHelper.GetChildrenCount(_window) == 0)
+            {
+                // The template isn't null, but we don't have a visual tree.
+                // Hope that ApplyTemplate is in the queue and repost this, because there's not much we can do right now.
+                _window.Dispatcher.BeginInvoke(DispatcherPriority.Loaded, (_Action)FixupMarginWhenGlassIsEnabled);
+                return;
+            }
+
+            var rootElement = (FrameworkElement)VisualTreeHelper.GetChild(_window, 0);
+            var defaultFixupMargin = this.GetDefaultFixupMargin();
+            if (rootElement.Margin != defaultFixupMargin)
+            {
+                rootElement.Margin = defaultFixupMargin;
+            }
+        }
+
+        private Thickness GetDefaultFixupMargin()
+        {
+            // We only need to fixup something if glass is enabled and the window is maximized
+            if (this._isGlassEnabled
+                && NativeMethods.GetWindowPlacement(_hwnd).showCmd == SW.MAXIMIZE)
+            {
+                var cyWindowBorders = NativeMethods.GetWindowInfo(this._hwnd).cyWindowBorders;
+                return new Thickness(0, cyWindowBorders, 0, 0);
+            }
+
+            return default(Thickness);
+        }
+
+        #endregion Workarounds
     }
 }
