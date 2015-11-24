@@ -316,8 +316,8 @@
                 //this.windowChrome.ResizeBorderThickness = new Thickness(0);
                 //this.AssociatedObject.BorderThickness = new Thickness(0);
 
-                if (this.IgnoreTaskbarOnMaximize
-                    && this.handle != IntPtr.Zero)
+                if (this.handle != IntPtr.Zero
+                    && (this.IgnoreTaskbarOnMaximize || this.AssociatedObject.WindowStyle != WindowStyle.None))
                 {
                     // WindowChrome handles the size false if the main monitor is lesser the monitor where the window is maximized
                     // so set the window pos/size twice
@@ -330,7 +330,16 @@
                         var y = this.IgnoreTaskbarOnMaximize ? monitorInfo.rcMonitor.Top : monitorInfo.rcWork.Top;
                         var cx = this.IgnoreTaskbarOnMaximize ? Math.Abs(monitorInfo.rcMonitor.Right - x) : Math.Abs(monitorInfo.rcWork.Right - x);
                         var cy = this.IgnoreTaskbarOnMaximize ? Math.Abs(monitorInfo.rcMonitor.Bottom - y) : Math.Abs(monitorInfo.rcWork.Bottom - y);
-                        NativeMethods.SetWindowPos(this.handle, new IntPtr(-2), x, y, cx, cy, (SWP)0x0040);
+
+                        // Fixes nasty bug when window is partially covered by taskbar and WindowStyle is not none
+                        // - move x by 1
+                        // - move back to originally desired location
+                        if (this.AssociatedObject.WindowStyle != WindowStyle.None)
+                        {
+                            NativeMethods.SetWindowPos(this.handle, new IntPtr(-2), x + 1, y, cx, cy, SWP.SHOWWINDOW);
+                        }
+
+                        NativeMethods.SetWindowPos(this.handle, new IntPtr(-2), x, y, cx, cy, SWP.SHOWWINDOW);
                     }
                 }
             }
