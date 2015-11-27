@@ -1,6 +1,6 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:controlz="clr-namespace:Controlz">
+                    xmlns:controlz="clr-namespace:ControlzEx">
 
     <ResourceDictionary.MergedDictionaries>
     </ResourceDictionary.MergedDictionaries>

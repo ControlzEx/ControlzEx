@@ -1,5 +1,5 @@
 ﻿
-namespace Controlz.Microsoft.Windows.Shell
+namespace ControlzEx.Microsoft.Windows.Shell
 {
     using System;
     using System.Windows;

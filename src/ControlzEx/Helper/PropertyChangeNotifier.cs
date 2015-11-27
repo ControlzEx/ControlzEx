@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Data;
 
-namespace Controlz.Helper
+namespace ControlzEx.Helper
 {
     /// <summary>
     /// AddValueChanged of dependency property descriptor results in memory leak as you already know.

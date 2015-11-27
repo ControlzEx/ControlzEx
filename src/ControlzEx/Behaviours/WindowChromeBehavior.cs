@@ -1,15 +1,15 @@
-﻿namespace Controlz.Behaviours
+﻿namespace ControlzEx.Behaviours
 {
     using System;
     using System.Windows;
     using System.Windows.Interactivity;
     using System.Windows.Interop;
-    using Controlz.Helper;
+    using ControlzEx.Helper;
     using System.Windows.Data;
     using Standard;
 
     //using WindowChrome = System.Windows.Shell.WindowChrome;
-    using WindowChrome = Controlz.Microsoft.Windows.Shell.WindowChrome;
+    using WindowChrome = ControlzEx.Microsoft.Windows.Shell.WindowChrome;
 
     /// <summary>
     /// With this class we can make custom window styles.
@@ -188,7 +188,7 @@
 #if NET45
             return SystemParameters.WindowResizeBorderThickness;
 #else
-            return Controlz.Microsoft.Windows.Shell.SystemParameters2.Current.WindowResizeBorderThickness;
+            return ControlzEx.Microsoft.Windows.Shell.SystemParameters2.Current.WindowResizeBorderThickness;
 #endif
         }
 

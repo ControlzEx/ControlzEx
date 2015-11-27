@@ -2,7 +2,7 @@
     Copyright Microsoft Corporation. All Rights Reserved.
 \**************************************************************************/
 
-namespace Controlz.Microsoft.Windows.Shell
+namespace ControlzEx.Microsoft.Windows.Shell
 {
     using System;
     using System.Collections.Generic;

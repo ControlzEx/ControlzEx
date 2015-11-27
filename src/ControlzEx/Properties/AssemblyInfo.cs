@@ -5,11 +5,11 @@ using System.Windows;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Controlz")]
-[assembly: AssemblyDescription("Shared Controlz files for WPF and...")]
+[assembly: AssemblyTitle("ControlzEx")]
+[assembly: AssemblyDescription("Shared Controlz for WPF and...")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("punker76/Jan Karger")]
-[assembly: AssemblyCopyright("Copyright © 2015 Jan Karger")]
+[assembly: AssemblyCopyright("Copyright © 2015 Jan Karger, Bastian Schmidt")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -44,4 +44,4 @@ using System.Windows;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.1.0.0")]
 [assembly: AssemblyFileVersion("1.1.0.0")]
-[assembly: AssemblyProduct("Controlz 1.1.0")]
+[assembly: AssemblyProduct("ControlzEx 1.1.0")]

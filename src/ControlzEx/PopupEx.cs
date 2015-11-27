@@ -8,7 +8,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Interop;
 
-namespace Controlz
+namespace ControlzEx
 {
     /// <summary>
     /// This custom popup can be used by validation error templates or something else.

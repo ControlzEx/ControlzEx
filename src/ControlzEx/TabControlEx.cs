@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 
-namespace Controlz
+namespace ControlzEx
 {
     /// <summary>
     /// The standard WPF TabControl is quite bad in the fact that it only
