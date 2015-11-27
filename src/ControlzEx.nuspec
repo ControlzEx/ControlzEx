@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>ControlzEx</id>
+    <version>1.1.0</version>
+    <title>ControlzEx Suite</title>
+    <authors>Jan Karger, Bastian Schmidt</authors>
+    <owners>Jan Karger</owners>
+    <licenseUrl>https://raw.githubusercontent.com/ControlzEx/ControlzEx/develop/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/ControlzEx/ControlzEx</projectUrl>    
+    <iconUrl></iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>ControlzEx</summary>
+    <description>ControlzEx</description>
+    <releaseNotes>https://github.com/ControlzEx/ControlzEx/releases</releaseNotes>
+    <copyright>Copyright 2015 Jan Karger, Bastian Schmidt</copyright>
+    <tags>WPF XAML Controls WinRT UI UX Windows</tags>
+  </metadata>
+  <files>
+  </files>  
+</package>
