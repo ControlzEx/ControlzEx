@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>ControlzEx</id>
+    <version>$Version$</version>
+    <title>ControlzEx Suite</title>
+    <authors>Jan Karger, Bastian Schmidt</authors>
+    <owners>Jan Karger,batzen</owners>
+    <licenseUrl>https://raw.githubusercontent.com/ControlzEx/ControlzEx/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/ControlzEx/ControlzEx</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/ControlzEx/ControlzEx/master/logo.ico</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>ControlzEx</summary>
+    <description>ControlzEx</description>
+    <releaseNotes>https://github.com/ControlzEx/ControlzEx/releases</releaseNotes>
+    <copyright>Copyright 2015 Jan Karger, Bastian Schmidt</copyright>
+    <tags>WPF XAML Controls WinRT UI UX Windows</tags>
+  </metadata>
+  <files>
+    <file src="src\bin\$Configuration$\NET4\ControlzEx.dll" target="lib\net40" />
+    <file src="src\bin\$Configuration$\NET4\ControlzEx.pdb" target="lib\net40" />
+    <file src="src\bin\$Configuration$\NET4\System.Windows.Interactivity.dll" target="lib\net40" />
+               
+    <file src="src\bin\$Configuration$\NET45\ControlzEx.dll" target="lib\net45" />
+    <file src="src\bin\$Configuration$\NET45\ControlzEx.pdb" target="lib\net45" />
+    <file src="src\bin\$Configuration$\NET45\System.Windows.Interactivity.dll" target="lib\net45" />
+  </files>  
+</package>
