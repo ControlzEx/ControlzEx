@@ -16,13 +16,13 @@
     /// </summary>
     /// <remarks>
     /// - ResizeBorderThickness manipulation in Behavior can be replaced with:
-    //<Style.Triggers>
-    //    <Trigger Property = "WindowState"
-    //             Value="Maximized">
-    //        <Setter Property = "ResizeBorderThickness"
-    //                Value="0" />
-    //    </Trigger>
-    //</Style.Triggers>
+    ///<Style.Triggers>
+    ///    <Trigger Property = "WindowState"
+    ///             Value="Maximized">
+    ///        <Setter Property = "ResizeBorderThickness"
+    ///                Value="0" />
+    ///    </Trigger>
+    ///</Style.Triggers>
     /// </remarks>
     public class WindowChromeBehavior : Behavior<Window>
     {
