@@ -5,7 +5,7 @@
     <version>$Version$</version>
     <title>ControlzEx Suite</title>
     <authors>Jan Karger, Bastian Schmidt</authors>
-    <owners>Jan Karger,batzen</owners>
+    <owners>punker76,batzen</owners>
     <licenseUrl>https://raw.githubusercontent.com/ControlzEx/ControlzEx/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/ControlzEx/ControlzEx</projectUrl>
     <iconUrl>https://raw.githubusercontent.com/ControlzEx/ControlzEx/master/logo.ico</iconUrl>
