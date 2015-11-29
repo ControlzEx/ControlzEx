@@ -1,28 +1,67 @@
 # http://www.appveyor.com/docs/appveyor-yml
 
-version: 1.1.0.{build}
-configuration: Release
+# configuration for develop/CI branch
+-
+  branches:
+    only:
+      - develop
 
-# Install scripts. (runs after repo cloning)
-install:
-  - nuget restore
+  version: 1.1.0-dev{build}
+  configuration: Release
+  
+  # Install scripts. (runs after repo cloning)
+  install:
+    - nuget restore
+  
+  build:
+    verbosity: minimal
+  
+  after_build:
+    - cmd: Tools\GitLink.exe . -u https://github.com/ControlzEx/ControlzEx
+    - cmd: nuget pack ControlzEx.nuspec -Version %appveyor_build_version% -Properties Configuration=%configuration%
+    - ps: Get-ChildItem .\*.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
+  
+  assembly_info:
+    patch: true
+    file: src\GlobalAssemblyInfo.*
+    assembly_version: "{version}"
+    assembly_file_version: "{version}"
+    assembly_informational_version: "{version}"
+  
+  artifacts:
+    - path: src/bin
+      name: ControlzEx.$(appveyor_build_version)
+      type: zip
 
-build:
-  verbosity: minimal
+# configuration for master/Release branch
+-
+  branches:
+    only:
+      - master
 
-after_build:
-  - cmd: Tools\GitLink.exe . -u https://github.com/ControlzEx/ControlzEx
-  - cmd: nuget pack ControlzEx.nuspec -Version %appveyor_build_version% -Properties Configuration=%configuration%
-  - ps: Get-ChildItem .\*.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
-
-assembly_info:
-  patch: true
-  file: src\GlobalAssemblyInfo.*
-  assembly_version: "{version}"
-  assembly_file_version: "{version}"
-  assembly_informational_version: "{version}"
-
-artifacts:
-  - path: src/bin
-    name: ControlzEx.$(appveyor_build_version)
-    type: zip
+  version: 1.1.0.{build}
+  configuration: Release
+  
+  # Install scripts. (runs after repo cloning)
+  install:
+    - nuget restore
+  
+  build:
+    verbosity: minimal
+  
+  after_build:
+    - cmd: Tools\GitLink.exe . -u https://github.com/ControlzEx/ControlzEx
+    - cmd: nuget pack ControlzEx.nuspec -Version %appveyor_build_version% -Properties Configuration=%configuration%
+    - ps: Get-ChildItem .\*.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
+  
+  assembly_info:
+    patch: true
+    file: src\GlobalAssemblyInfo.*
+    assembly_version: "{version}"
+    assembly_file_version: "{version}"
+    assembly_informational_version: "{version}"
+  
+  artifacts:
+    - path: src/bin
+      name: ControlzEx.$(appveyor_build_version)
+      type: zip
