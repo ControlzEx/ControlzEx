@@ -772,20 +772,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
                     IntPtr mon = NativeMethods.MonitorFromWindow(_hwnd, (uint)MonitorOptions.MONITOR_DEFAULTTONEAREST);
                     MONITORINFO mi = NativeMethods.GetMonitorInfo(mon);
 
-                    RECT rc = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT));
-                    NativeMethods.DefWindowProc(_hwnd, WM.NCCALCSIZE, wParam, lParam);
                     RECT def = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT));
-
-                    var cyWindowBorders = NativeMethods.GetWindowInfo(this._hwnd).cyWindowBorders;
-
-                    if (this._isGlassEnabled == false)
-                    {
-                        def.Top = (int)(rc.Top + cyWindowBorders);
-                    }
-                    else
-                    {
-                        def.Top = (int)(-1 * cyWindowBorders);
-                    }
 
                     // monitor an work area will be equal if taskbar is hidden
                     if (mi.rcMonitor.Height == mi.rcWork.Height && mi.rcMonitor.Width == mi.rcWork.Width)
@@ -797,7 +784,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
                 }
             }
 
-            this.FixupMarginWhenGlassIsEnabled();
+            this.FixupRootElementMargin();
 
             if (_chromeInfo.SacrificialEdge != SacrificialEdge.None)
             {
@@ -1876,29 +1863,24 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
         #region Workarounds
 
-        private void FixupMarginWhenGlassIsEnabled()
+        private void FixupRootElementMargin()
         {
-            if (this._isGlassEnabled == false)
-            {
-                return;
-            }
-
-            if (_window.Template == null)
+            if (this._window.Template == null)
             {
                 // Nothing to fixup yet.
                 return;
             }
 
             // Guard against the visual tree being empty.
-            if (VisualTreeHelper.GetChildrenCount(_window) == 0)
+            if (VisualTreeHelper.GetChildrenCount(this._window) == 0)
             {
                 // The template isn't null, but we don't have a visual tree.
                 // Hope that ApplyTemplate is in the queue and repost this, because there's not much we can do right now.
-                _window.Dispatcher.BeginInvoke(DispatcherPriority.Loaded, (_Action)FixupMarginWhenGlassIsEnabled);
+                this._window.Dispatcher.BeginInvoke(DispatcherPriority.Loaded, (_Action)this.FixupRootElementMargin);
                 return;
             }
 
-            var rootElement = (FrameworkElement)VisualTreeHelper.GetChild(_window, 0);
+            var rootElement = (FrameworkElement)VisualTreeHelper.GetChild(this._window, 0);
             var defaultFixupMargin = this.GetDefaultFixupMargin();
             if (rootElement.Margin != defaultFixupMargin)
             {
@@ -1908,12 +1890,11 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
         private Thickness GetDefaultFixupMargin()
         {
-            // We only need to fixup something if glass is enabled and the window is maximized
-            if (this._isGlassEnabled
-                && NativeMethods.GetWindowPlacement(_hwnd).showCmd == SW.MAXIMIZE)
+            // We only need to fixup something if the window is maximized
+            if (NativeMethods.GetWindowPlacement(this._hwnd).showCmd == SW.MAXIMIZE)
             {
-                var cyWindowBorders = NativeMethods.GetWindowInfo(this._hwnd).cyWindowBorders;
-                return new Thickness(0, cyWindowBorders, 0, 0);
+                var windowInfo = NativeMethods.GetWindowInfo(this._hwnd);
+                return new Thickness(windowInfo.cxWindowBorders, windowInfo.cyWindowBorders, windowInfo.cxWindowBorders, windowInfo.cyWindowBorders);
             }
 
             return default(Thickness);
