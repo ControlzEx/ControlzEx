@@ -14,7 +14,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
     using Standard;
 
     [SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable")]
-    internal class SystemParameters2 : INotifyPropertyChanged
+    public class SystemParameters2 : INotifyPropertyChanged
     {
         private delegate void _SystemMetricUpdate(IntPtr wParam, IntPtr lParam);
 
