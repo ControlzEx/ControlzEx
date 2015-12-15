@@ -10,7 +10,7 @@
   configuration: Release
 
   init:
-    - ps: Update-AppveyorBuild -Version "$version$($env:appveyor_build_number.PadLeft(3, '0'))"
+    - ps: Update-AppveyorBuild -Version "{version}$($env:appveyor_build_number.PadLeft(3, '0'))"
   
   # Install scripts. (runs after repo cloning)
   install:
