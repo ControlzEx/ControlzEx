@@ -2,6 +2,8 @@
     Copyright Microsoft Corporation. All Rights Reserved.
 \**************************************************************************/
 
+#pragma warning disable 1591
+
 namespace ControlzEx.Microsoft.Windows.Shell
 {
     using System;
