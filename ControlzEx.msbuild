@@ -16,12 +16,12 @@
   <Target Name="ReadVersion" DependsOnTargets="Build">
     <!-- Read assembly version from the DLL -->
     <GetAssemblyIdentity AssemblyFiles="$(Src)/bin/$(Configuration)/NET45//ControlzEx.dll">
-        <Output TaskParameter="Assemblies" ItemName="ControlzAssembly"/>
+        <Output TaskParameter="Assemblies" ItemName="ControlzExAssembly"/>
     </GetAssemblyIdentity>
     <PropertyGroup>
         <!-- Construct NuGet package version according to SemVer -->
         <PrereleaseSuffix Condition="$(Prerelease) != ''">-$(Prerelease)</PrereleaseSuffix>
-        <Version>$([System.String]::new(%(ControlzAssembly.Version)).TrimEnd('0').TrimEnd('.'))$(PrereleaseSuffix)</Version>
+        <Version>$([System.String]::new(%(ControlzExAssembly.Version)).TrimEnd('0').TrimEnd('.'))$(PrereleaseSuffix)</Version>
     </PropertyGroup>
   </Target>
 
