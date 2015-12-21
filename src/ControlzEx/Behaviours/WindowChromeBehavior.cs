@@ -159,7 +159,6 @@
             BindingOperations.SetBinding(this.windowChrome, WindowChrome.UseAeroCaptionButtonsProperty, new Binding("UseAeroCaptionButtons") { Source = this });
 
             BindingOperations.SetBinding(this.windowChrome, WindowChrome.IgnoreTaskbarOnMaximizeProperty, new Binding("IgnoreTaskbarOnMaximize") { Source = this });
-            BindingOperations.SetBinding(this.windowChrome, WindowChrome.UseNoneWindowStyleProperty, new Binding("UseNoneWindowStyle") { Source = this });
         }
 
         private void TopMostChangeNotifierOnValueChanged(object sender, EventArgs e)
