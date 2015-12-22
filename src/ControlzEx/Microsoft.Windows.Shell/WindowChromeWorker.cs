@@ -379,9 +379,9 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
             var rootElement = (FrameworkElement)VisualTreeHelper.GetChild(_window, 0);
 
-            if (_chromeInfo.SacrificialEdge != SacrificialEdge.None)
+            if (_chromeInfo.NonClientFrameEdges != NonClientFrameEdges.None)
             {
-                if (Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Top))
+                if (Utility.IsFlagSet((int)_chromeInfo.NonClientFrameEdges, (int)NonClientFrameEdges.Top))
                 {
 #if NET45
                     templateFixupMargin.Top -= SystemParameters.WindowResizeBorderThickness.Top;
@@ -389,7 +389,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
                     templateFixupMargin.Top -= SystemParameters2.Current.WindowResizeBorderThickness.Top;
 #endif
                 }
-                if (Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Left))
+                if (Utility.IsFlagSet((int)_chromeInfo.NonClientFrameEdges, (int)NonClientFrameEdges.Left))
                 {
 #if NET45
                     templateFixupMargin.Left -= SystemParameters.WindowResizeBorderThickness.Left;
@@ -397,7 +397,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
                     templateFixupMargin.Left -= SystemParameters2.Current.WindowResizeBorderThickness.Left;
 #endif
                 }
-                if (Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Bottom))
+                if (Utility.IsFlagSet((int)_chromeInfo.NonClientFrameEdges, (int)NonClientFrameEdges.Bottom))
                 {
 #if NET45
                     templateFixupMargin.Bottom -= SystemParameters.WindowResizeBorderThickness.Bottom;
@@ -405,7 +405,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
                     templateFixupMargin.Bottom -= SystemParameters2.Current.WindowResizeBorderThickness.Bottom;
 #endif
                 }
-                if (Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Right))
+                if (Utility.IsFlagSet((int)_chromeInfo.NonClientFrameEdges, (int)NonClientFrameEdges.Right))
                 {
 #if NET45
                     templateFixupMargin.Right -= SystemParameters.WindowResizeBorderThickness.Right;
@@ -423,7 +423,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
                 Rect rcLogicalWindow = DpiHelper.DeviceRectToLogical(new Rect(rcWindow.Left, rcWindow.Top, rcWindow.Width, rcWindow.Height));
                 Rect rcLogicalClient = DpiHelper.DeviceRectToLogical(new Rect(rcAdjustedClient.Left, rcAdjustedClient.Top, rcAdjustedClient.Width, rcAdjustedClient.Height));
 
-                if (!Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Left))
+                if (!Utility.IsFlagSet((int)_chromeInfo.NonClientFrameEdges, (int)NonClientFrameEdges.Left))
                 {
 #if NET45
                     templateFixupMargin.Right -= SystemParameters.WindowResizeBorderThickness.Left;
@@ -432,7 +432,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
 #endif
                 }
 
-                if (!Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Right))
+                if (!Utility.IsFlagSet((int)_chromeInfo.NonClientFrameEdges, (int)NonClientFrameEdges.Right))
                 {
 #if NET45
                     templateFixupMargin.Right -= SystemParameters.WindowResizeBorderThickness.Right;
@@ -441,7 +441,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
 #endif
                 }
 
-                if (!Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Top))
+                if (!Utility.IsFlagSet((int)_chromeInfo.NonClientFrameEdges, (int)NonClientFrameEdges.Top))
                 {
 #if NET45
                     templateFixupMargin.Bottom -= SystemParameters.WindowResizeBorderThickness.Top;
@@ -450,7 +450,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
 #endif
                 }
 
-                if (!Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Bottom))
+                if (!Utility.IsFlagSet((int)_chromeInfo.NonClientFrameEdges, (int)NonClientFrameEdges.Bottom))
                 {
 #if NET45
                     templateFixupMargin.Bottom -= SystemParameters.WindowResizeBorderThickness.Bottom;
@@ -754,7 +754,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
         // Also, when windows are resized they tend to flicker black, sometimes staying that way until resized again.
         //
         // At least on RTM Win7 we can avoid the problem by making the client area not extactly match the non-client
-        // area, so we added the SacrificialEdge property.
+        // area, so we added the NonClientFrameEdges property.
         /// <SecurityNote>
         ///   Critical : Calls critical Marshal.PtrToStructure
         /// <SecurityNote>
@@ -786,7 +786,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
             this.FixupRootElementMargin();
 
-            if (_chromeInfo.SacrificialEdge != SacrificialEdge.None)
+            if (_chromeInfo.NonClientFrameEdges != NonClientFrameEdges.None)
             {
 #if NET45
                 Thickness windowResizeBorderThicknessDevice = DpiHelper.LogicalThicknessToDevice(SystemParameters.WindowResizeBorderThickness);
@@ -794,19 +794,19 @@ namespace ControlzEx.Microsoft.Windows.Shell
                 Thickness windowResizeBorderThicknessDevice = DpiHelper.LogicalThicknessToDevice(SystemParameters2.Current.WindowResizeBorderThickness);
 #endif
                 var rcClientArea = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT));
-                if (Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Top))
+                if (Utility.IsFlagSet((int)_chromeInfo.NonClientFrameEdges, (int)NonClientFrameEdges.Top))
                 {
                     rcClientArea.Top += (int)windowResizeBorderThicknessDevice.Top;
                 }
-                if (Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Left))
+                if (Utility.IsFlagSet((int)_chromeInfo.NonClientFrameEdges, (int)NonClientFrameEdges.Left))
                 {
                     rcClientArea.Left += (int)windowResizeBorderThicknessDevice.Left;
                 }
-                if (Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Bottom))
+                if (Utility.IsFlagSet((int)_chromeInfo.NonClientFrameEdges, (int)NonClientFrameEdges.Bottom))
                 {
                     rcClientArea.Bottom -= (int)windowResizeBorderThicknessDevice.Bottom;
                 }
-                if (Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Right))
+                if (Utility.IsFlagSet((int)_chromeInfo.NonClientFrameEdges, (int)NonClientFrameEdges.Right))
                 {
                     rcClientArea.Right -= (int)windowResizeBorderThicknessDevice.Right;
                 }
@@ -816,9 +816,19 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
             handled = true;
 
-            // Using the combination of WVR.VALIDRECTS and WVR.REDRAW gives the smoothest
-            // resize behavior we can achieve here.
-            return new IntPtr((int)(WVR.VALIDRECTS | WVR.REDRAW));
+            // Per MSDN for NCCALCSIZE, always return 0 when wParam == FALSE
+            // 
+            // Returning 0 when wParam == TRUE is not appropriate - it will preserve
+            // the old client area and align it with the upper-left corner of the new 
+            // client area. So we simply ask for a redraw (WVR_REDRAW)
+
+            IntPtr retVal = IntPtr.Zero;
+            if (wParam.ToInt32() != 0) // wParam == TRUE
+            {
+                retVal = new IntPtr((int) (WVR.VALIDRECTS | WVR.REDRAW));
+            }
+
+            return retVal; 
         }
 
         private HT _GetHTFromResizeGripDirection(ResizeGripDirection direction)
@@ -1665,29 +1675,29 @@ namespace ControlzEx.Microsoft.Windows.Shell
                 // Thickness is going to be DIPs, need to convert to system coordinates.
                 Thickness deviceGlassThickness = DpiHelper.LogicalThicknessToDevice(_chromeInfo.GlassFrameThickness);
 
-                if (_chromeInfo.SacrificialEdge != SacrificialEdge.None)
+                if (_chromeInfo.NonClientFrameEdges != NonClientFrameEdges.None)
                 {
 #if NET45
                     Thickness windowResizeBorderThicknessDevice = DpiHelper.LogicalThicknessToDevice(SystemParameters.WindowResizeBorderThickness);
 #else
                     Thickness windowResizeBorderThicknessDevice = DpiHelper.LogicalThicknessToDevice(SystemParameters2.Current.WindowResizeBorderThickness);
 #endif
-                    if (Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Top))
+                    if (Utility.IsFlagSet((int)_chromeInfo.NonClientFrameEdges, (int)NonClientFrameEdges.Top))
                     {
                         deviceGlassThickness.Top -= windowResizeBorderThicknessDevice.Top;
                         deviceGlassThickness.Top = Math.Max(0, deviceGlassThickness.Top);
                     }
-                    if (Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Left))
+                    if (Utility.IsFlagSet((int)_chromeInfo.NonClientFrameEdges, (int)NonClientFrameEdges.Left))
                     {
                         deviceGlassThickness.Left -= windowResizeBorderThicknessDevice.Left;
                         deviceGlassThickness.Left = Math.Max(0, deviceGlassThickness.Left);
                     }
-                    if (Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Bottom))
+                    if (Utility.IsFlagSet((int)_chromeInfo.NonClientFrameEdges, (int)NonClientFrameEdges.Bottom))
                     {
                         deviceGlassThickness.Bottom -= windowResizeBorderThicknessDevice.Bottom;
                         deviceGlassThickness.Bottom = Math.Max(0, deviceGlassThickness.Bottom);
                     }
-                    if (Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Right))
+                    if (Utility.IsFlagSet((int)_chromeInfo.NonClientFrameEdges, (int)NonClientFrameEdges.Right))
                     {
                         deviceGlassThickness.Right -= windowResizeBorderThicknessDevice.Right;
                         deviceGlassThickness.Right = Math.Max(0, deviceGlassThickness.Right);
