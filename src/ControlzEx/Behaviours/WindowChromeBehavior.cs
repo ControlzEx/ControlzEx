@@ -152,13 +152,13 @@
         {
             this.windowChrome = new WindowChrome();
 
-            BindingOperations.SetBinding(this.windowChrome, WindowChrome.ResizeBorderThicknessProperty, new Binding("ResizeBorderThickness") { Source = this });
-            BindingOperations.SetBinding(this.windowChrome, WindowChrome.CaptionHeightProperty, new Binding("CaptionHeight") { Source = this });
-            BindingOperations.SetBinding(this.windowChrome, WindowChrome.CornerRadiusProperty, new Binding("CornerRadius") { Source = this });
-            BindingOperations.SetBinding(this.windowChrome, WindowChrome.GlassFrameThicknessProperty, new Binding("GlassFrameThickness") { Source = this });
-            BindingOperations.SetBinding(this.windowChrome, WindowChrome.UseAeroCaptionButtonsProperty, new Binding("UseAeroCaptionButtons") { Source = this });
+            BindingOperations.SetBinding(this.windowChrome, WindowChrome.ResizeBorderThicknessProperty, new Binding { Path = new PropertyPath(ResizeBorderThicknessProperty), Source = this });
+            BindingOperations.SetBinding(this.windowChrome, WindowChrome.CaptionHeightProperty, new Binding { Path = new PropertyPath(CaptionHeightProperty), Source = this });
+            BindingOperations.SetBinding(this.windowChrome, WindowChrome.CornerRadiusProperty, new Binding { Path = new PropertyPath(CornerRadiusProperty), Source = this });
+            BindingOperations.SetBinding(this.windowChrome, WindowChrome.GlassFrameThicknessProperty, new Binding { Path = new PropertyPath(GlassFrameThicknessProperty), Source = this });
+            BindingOperations.SetBinding(this.windowChrome, WindowChrome.UseAeroCaptionButtonsProperty, new Binding { Path = new PropertyPath(UseAeroCaptionButtonsProperty), Source = this });
 
-            BindingOperations.SetBinding(this.windowChrome, WindowChrome.IgnoreTaskbarOnMaximizeProperty, new Binding("IgnoreTaskbarOnMaximize") { Source = this });
+            BindingOperations.SetBinding(this.windowChrome, WindowChrome.IgnoreTaskbarOnMaximizeProperty, new Binding { Path = new PropertyPath(IgnoreTaskbarOnMaximizeProperty), Source = this });
         }
 
         private void TopMostChangeNotifierOnValueChanged(object sender, EventArgs e)
