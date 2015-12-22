@@ -1028,7 +1028,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
         private IntPtr _HandleGetMinMaxInfo(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
             /*
-             * This is a workaround for wrong windows behaviour.
+             * This is a workaround for wrong windows behavior.
              * If a Window sets the WindoStyle to None and WindowState to maximized and we have a multi monitor system
              * we can move the Window only one time. After that it's not possible to move the Window back to the
              * previous monitor.
@@ -1148,7 +1148,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
         private IntPtr _HandleMoveForRealSize(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
             /*
-             * This is a workaround for wrong windows behaviour (with multi monitor system).
+             * This is a workaround for wrong windows behavior (with multi monitor system).
              * If a Window sets the WindoStyle to None and WindowState to maximized
              * we can move the Window to different monitor with maybe different dimension.
              * But after moving to the previous monitor we got a wrong size (from the old monitor dimension).

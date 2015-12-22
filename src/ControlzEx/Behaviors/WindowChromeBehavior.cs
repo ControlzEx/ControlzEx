@@ -1,4 +1,4 @@
-﻿namespace ControlzEx.Behaviours
+﻿namespace ControlzEx.Behaviors
 {
     using System;
     using System.Windows;
