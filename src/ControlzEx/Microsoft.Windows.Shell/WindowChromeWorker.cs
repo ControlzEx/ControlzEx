@@ -666,7 +666,8 @@ namespace ControlzEx.Microsoft.Windows.Shell
         {
             WINDOWPLACEMENT wpl = NativeMethods.GetWindowPlacement(_hwnd);
             var sc = (SC)(Environment.Is64BitProcess ? wParam.ToInt64() : wParam.ToInt32());
-            if (SC.RESTORE == sc && wpl.showCmd == SW.SHOWMAXIMIZED && _MinimizeAnimation)
+            if (SC.RESTORE == sc && wpl.showCmd == SW.SHOWMAXIMIZED 
+                && (_MinimizeAnimation || _chromeInfo.UseAeroCaptionButtons))
             {
                 var modified = _hwnd._ModifyStyle(WS.SYSMENU, 0);
 
@@ -767,7 +768,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
             if (NativeMethods.GetWindowPlacement(_hwnd).showCmd == SW.MAXIMIZE)
             {
-                if (_MinimizeAnimation)
+                if (_chromeInfo.IgnoreTaskbarOnMaximize == false)
                 {
                     IntPtr mon = NativeMethods.MonitorFromWindow(_hwnd, (uint)MonitorOptions.MONITOR_DEFAULTTONEAREST);
                     MONITORINFO mi = NativeMethods.GetMonitorInfo(mon);
@@ -1375,7 +1376,8 @@ namespace ControlzEx.Microsoft.Windows.Shell
                     _ExtendGlassFrame();
                 }
 
-                if (_MinimizeAnimation)
+                if (_MinimizeAnimation
+                    || _chromeInfo.UseAeroCaptionButtons)
                 {
                     // allow animation
                     _hwnd._ModifyStyle(0, WS.CAPTION);
