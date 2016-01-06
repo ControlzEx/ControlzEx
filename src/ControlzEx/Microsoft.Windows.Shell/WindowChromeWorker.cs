@@ -1376,8 +1376,9 @@ namespace ControlzEx.Microsoft.Windows.Shell
                     _ExtendGlassFrame();
                 }
 
+                // todo: Maybe we can remove the condition and simply always enable the caption as windows seems to take care of showing the animation by itself
                 if (_MinimizeAnimation
-                    || _chromeInfo.UseAeroCaptionButtons)
+                    || _isGlassEnabled)
                 {
                     // allow animation
                     _hwnd._ModifyStyle(0, WS.CAPTION);
