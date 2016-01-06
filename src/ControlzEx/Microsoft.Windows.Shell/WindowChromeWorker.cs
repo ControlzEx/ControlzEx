@@ -1377,17 +1377,18 @@ namespace ControlzEx.Microsoft.Windows.Shell
                 }
 
                 // todo: Maybe we can remove the condition and simply always enable the caption as windows seems to take care of showing the animation by itself
-                if (_MinimizeAnimation
-                    || _isGlassEnabled)
-                {
+                // If this causes problems for windows with windowstyle = none we have to take that property into account
+                //if (_MinimizeAnimation
+                //    || _isGlassEnabled)
+                //{
                     // allow animation
                     _hwnd._ModifyStyle(0, WS.CAPTION);
-                }
-                else
-                {
-                    // no animation
-                    _hwnd._ModifyStyle(WS.CAPTION, 0);
-                }
+                //}
+                //else
+                //{
+                //    // no animation
+                //    _hwnd._ModifyStyle(WS.CAPTION, 0);
+                //}
 
                 NativeMethods.SetWindowPos(_hwnd, IntPtr.Zero, 0, 0, 0, 0, _SwpFlags);
             }
