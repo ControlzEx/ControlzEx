@@ -97,7 +97,7 @@
 
         // Using a DependencyProperty as the backing store for IgnoreTaskbarOnMaximize.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IgnoreTaskbarOnMaximizeProperty =
-            DependencyProperty.Register("IgnoreTaskbarOnMaximize", typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(false, IgnoreTaskbarOnMaximizePropertyChangedCallback));        
+            DependencyProperty.Register("IgnoreTaskbarOnMaximize", typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(false, IgnoreTaskbarOnMaximizePropertyChangedCallback));
 
         protected override void OnAttached()
         {
@@ -130,7 +130,7 @@
 
             this.AssociatedObject.Loaded += this.OnAssociatedObjectLoaded;
             this.AssociatedObject.Unloaded += this.AssociatedObject_Unloaded;
-            this.AssociatedObject.StateChanged += this.OnAssociatedObjectHandleMaximize;
+            this.AssociatedObject.StateChanged += this.OnAssociatedObjectHandleWindowStateChanged;
 
             // If Window is already initialized
             if (PresentationSource.FromVisual(this.AssociatedObject) != null)
@@ -143,7 +143,7 @@
             }
 
             // handle the maximized state here too (to handle the border in a correct way)
-            this.HandleMaximize();
+            this.HandleWindowStateChange();
 
             base.OnAttached();
         }
@@ -205,7 +205,7 @@
 
         private void ForceRedrawWindowFromPropertyChanged()
         {
-            this.HandleMaximize();
+            this.HandleWindowStateChange();
             if (this.handle != IntPtr.Zero)
             {
                 NativeMethods.RedrawWindow(this.handle, IntPtr.Zero, IntPtr.Zero, RedrawWindowFlags.Invalidate | RedrawWindowFlags.Frame);
@@ -225,7 +225,7 @@
             this.AssociatedObject.Loaded -= this.OnAssociatedObjectLoaded;
             this.AssociatedObject.Unloaded -= this.AssociatedObject_Unloaded;
             this.AssociatedObject.SourceInitialized -= this.OnAssociatedObjectSourceInitialized;
-            this.AssociatedObject.StateChanged -= this.OnAssociatedObjectHandleMaximize;
+            this.AssociatedObject.StateChanged -= this.OnAssociatedObjectHandleWindowStateChanged;
 
             this.topMostChangeNotifier.ValueChanged -= this.TopMostChangeNotifierOnValueChanged;
             this.windowStyleChangeNotifier.ValueChanged -= this.WindowStyleNotifierChangedCallback;
@@ -270,14 +270,47 @@
             return returnval;
         }
 
-        private void OnAssociatedObjectHandleMaximize(object sender, EventArgs e)
+        private void OnAssociatedObjectHandleWindowStateChanged(object sender, EventArgs e)
         {
-            this.HandleMaximize();
+            this.HandleWindowStateChange();
         }
 
-        protected virtual void HandleMaximize()
+        protected virtual void HandleWindowStateChange()
         {
             this.topMostChangeNotifier.ValueChanged -= this.TopMostChangeNotifierOnValueChanged;
+
+            if (this.AssociatedObject.WindowState == WindowState.Maximized)
+            {
+                if (this.handle != IntPtr.Zero
+                    && (this.IgnoreTaskbarOnMaximize || this.AssociatedObject.WindowStyle != WindowStyle.None))
+                {
+                    // WindowChrome handles the size false if the main monitor is lesser the monitor where the window is maximized
+                    // so set the window pos/size twice
+                    var monitor = NativeMethods.MonitorFromWindow(this.handle, (uint)MonitorOptions.MONITOR_DEFAULTTONEAREST);
+                    if (monitor != IntPtr.Zero)
+                    {
+                        var monitorInfo = NativeMethods.GetMonitorInfoW(monitor);
+                        var rcMonitorArea = this.IgnoreTaskbarOnMaximize ? monitorInfo.rcMonitor : monitorInfo.rcWork;
+
+                        var x = rcMonitorArea.Left;
+                        var y = rcMonitorArea.Top;
+                        var cx = Math.Abs(rcMonitorArea.Right - x);
+                        var cy = Math.Abs(rcMonitorArea.Bottom - y);
+
+                        // This fixes a bug with multiple monitors on Windows 7. Without this workaround the WindowChrome turns black.
+                        // Don't know if the fix is needed on Windows 8.
+                        // This fix is not needed on Windows 10, but there is no reliable and fast way to tell if we are on Windows 10.                        
+                        // - move x by 1
+                        // - move back to originally desired location
+                        if (this.AssociatedObject.WindowStyle != WindowStyle.None)
+                        {
+                            NativeMethods.SetWindowPos(this.handle, new IntPtr(-2), x + 1, y, cx, cy, SWP.SHOWWINDOW);
+                        }
+
+                        NativeMethods.SetWindowPos(this.handle, new IntPtr(-2), x, y, cx, cy, SWP.SHOWWINDOW);
+                    }
+                }
+            }
 
             // fix nasty TopMost bug
             // - set TopMost="True"
