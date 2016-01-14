@@ -59,7 +59,7 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Behaviours\WindowChromeBehavior.cs" />
+    <Compile Include="Behaviors\WindowChromeBehavior.cs" />
     <Compile Include="Helper\PropertyChangeNotifier.cs" />
     <Compile Include="Microsoft.Windows.Shell\Standard\ComGuids.cs" />
     <Compile Include="Microsoft.Windows.Shell\Standard\Debug.cs" />

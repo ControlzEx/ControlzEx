@@ -27,15 +27,13 @@ namespace ControlzEx.Microsoft.Windows.Shell
     }
 
     [Flags]
-    public enum SacrificialEdge
+    public enum NonClientFrameEdges
     {
         None = 0,
         Left = 1,
         Top = 2,
         Right = 4,
         Bottom = 8,
-
-        Office = Left | Right | Bottom,
     }
 
     public class WindowChrome : Freezable
@@ -76,7 +74,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
             // Update the ChromeWorker with this new object.
 
             // If there isn't currently a worker associated with the Window then assign a new one.
-            // There can be a many:1 relationship of Window to WindowChrome objects, but a 1:1 for a Window and a WindowChromeWorker.
+            // There can be a many:1 relationship of to Window to WindowChrome objects, but a 1:1 for a Window and a WindowChromeWorker.
             WindowChromeWorker chromeWorker = WindowChromeWorker.GetWindowChromeWorker(window);
             if (chromeWorker == null)
             {
@@ -251,18 +249,6 @@ namespace ControlzEx.Microsoft.Windows.Shell
             set { SetValue(IgnoreTaskbarOnMaximizeProperty, value); }
         }
 
-        public static readonly DependencyProperty UseNoneWindowStyleProperty = DependencyProperty.Register(
-            "UseNoneWindowStyle",
-            typeof(bool),
-            typeof(WindowChrome),
-            new FrameworkPropertyMetadata(false, (d, e) => ((WindowChrome)d)._OnPropertyChangedThatRequiresRepaint()));
-
-        public bool UseNoneWindowStyle
-        {
-            get { return (bool)GetValue(UseNoneWindowStyleProperty); }
-            set { SetValue(UseNoneWindowStyleProperty, value); }
-        }
-
         public static readonly DependencyProperty CornerRadiusProperty = DependencyProperty.Register(
             "CornerRadius",
             typeof(CornerRadius),
@@ -278,42 +264,42 @@ namespace ControlzEx.Microsoft.Windows.Shell
             set { SetValue(CornerRadiusProperty, value); }
         }
 
-        public static readonly DependencyProperty SacrificialEdgeProperty = DependencyProperty.Register(
-            "SacrificialEdge",
-            typeof(SacrificialEdge),
+        public static readonly DependencyProperty NonClientFrameEdgesProperty = DependencyProperty.Register(
+            "NonClientFrameEdges",
+            typeof(NonClientFrameEdges),
             typeof(WindowChrome),
             new PropertyMetadata(
-                SacrificialEdge.None,
+                NonClientFrameEdges.None,
                 (d, e) => ((WindowChrome)d)._OnPropertyChangedThatRequiresRepaint()),
-                _IsValidSacrificialEdge);
+            _NonClientFrameEdgesAreValid);
 
-        private static readonly SacrificialEdge SacrificialEdge_All = SacrificialEdge.Bottom | SacrificialEdge.Top | SacrificialEdge.Left | SacrificialEdge.Right;
+        private static readonly NonClientFrameEdges NonClientFrameEdges_All = NonClientFrameEdges.Left | NonClientFrameEdges.Top | NonClientFrameEdges.Right | NonClientFrameEdges.Bottom;
 
-        private static bool _IsValidSacrificialEdge(object value)
+        private static bool _NonClientFrameEdgesAreValid(object value)
         {
-            SacrificialEdge se = SacrificialEdge.None;
+            NonClientFrameEdges ncEdges = NonClientFrameEdges.None;
             try
             {
-                se = (SacrificialEdge)value;
+                ncEdges = (NonClientFrameEdges)value;
             }
             catch (InvalidCastException)
             {
                 return false;
             }
 
-            if (se == SacrificialEdge.None)
+            if (ncEdges == NonClientFrameEdges.None)
             {
                 return true;
             }
 
             // Does this only contain valid bits?
-            if ((se | SacrificialEdge_All) != SacrificialEdge_All)
+            if ((ncEdges | NonClientFrameEdges_All) != NonClientFrameEdges_All)
             {
                 return false;
             }
 
             // It can't sacrifice all 4 edges.  Weird things happen.
-            if (se == SacrificialEdge_All)
+            if (ncEdges == NonClientFrameEdges_All)
             {
                 return false;
             }
@@ -321,10 +307,10 @@ namespace ControlzEx.Microsoft.Windows.Shell
             return true; 
         }
 
-        public SacrificialEdge SacrificialEdge
+        public NonClientFrameEdges NonClientFrameEdges
         {
-            get { return (SacrificialEdge)GetValue(SacrificialEdgeProperty); }
-            set { SetValue(SacrificialEdgeProperty, value); }
+            get { return (NonClientFrameEdges)GetValue(NonClientFrameEdgesProperty); }
+            set { SetValue(NonClientFrameEdgesProperty, value); }
         }
 
         #endregion
