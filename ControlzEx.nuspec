@@ -3,7 +3,7 @@
   <metadata>
     <id>ControlzEx</id>
     <version>$Version$</version>
-    <title>ControlzEx Suite</title>
+    <title>ControlzEx</title>
     <authors>Jan Karger, Bastian Schmidt</authors>
     <owners>punker76,batzen</owners>
     <licenseUrl>https://raw.githubusercontent.com/ControlzEx/ControlzEx/master/LICENSE</licenseUrl>
@@ -13,16 +13,16 @@
     <summary>ControlzEx</summary>
     <description>ControlzEx</description>
     <releaseNotes>https://github.com/ControlzEx/ControlzEx/releases</releaseNotes>
-    <copyright>Copyright 2015 Jan Karger, Bastian Schmidt</copyright>
-    <tags>WPF XAML Controls WinRT UI UX Windows</tags>
+    <copyright>Copyright 2015 - 2016 Jan Karger, Bastian Schmidt</copyright>
+    <tags>WPF XAML Controls WinRT UI UX Windows WindowChrome</tags>
   </metadata>
   <files>
     <file src="src\bin\$Configuration$\NET4\ControlzEx.dll" target="lib\net40" />
     <file src="src\bin\$Configuration$\NET4\ControlzEx.pdb" target="lib\net40" />
     <file src="src\bin\$Configuration$\NET4\System.Windows.Interactivity.dll" target="lib\net40" />
-               
+
     <file src="src\bin\$Configuration$\NET45\ControlzEx.dll" target="lib\net45" />
     <file src="src\bin\$Configuration$\NET45\ControlzEx.pdb" target="lib\net45" />
     <file src="src\bin\$Configuration$\NET45\System.Windows.Interactivity.dll" target="lib\net45" />
-  </files>  
+  </files>
 </package>
