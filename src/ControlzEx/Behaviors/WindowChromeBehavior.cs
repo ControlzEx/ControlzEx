@@ -10,6 +10,7 @@
 
     //using WindowChrome = System.Windows.Shell.WindowChrome;
     using WindowChrome = ControlzEx.Microsoft.Windows.Shell.WindowChrome;
+    using Microsoft.Windows.Shell;
 
     /// <summary>
     /// With this class we can make custom window styles.
@@ -55,7 +56,7 @@
 
         // Using a DependencyProperty as the backing store for CaptionHeight.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty CaptionHeightProperty =
-            DependencyProperty.Register("CaptionHeight", typeof(double), typeof(WindowChromeBehavior), new PropertyMetadata(0D));
+            DependencyProperty.Register("CaptionHeight", typeof(double), typeof(WindowChromeBehavior), new PropertyMetadata(SystemParameters.CaptionHeight));
 
         public CornerRadius CornerRadius
         {
@@ -75,7 +76,7 @@
 
         // Using a DependencyProperty as the backing store for GlassFrameThickness.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty GlassFrameThicknessProperty =
-            DependencyProperty.Register("GlassFrameThickness", typeof(Thickness), typeof(WindowChromeBehavior), new PropertyMetadata(new Thickness(0D)));
+            DependencyProperty.Register("GlassFrameThickness", typeof(Thickness), typeof(WindowChromeBehavior), new PropertyMetadata(SystemParameters2.Current.WindowNonClientFrameThickness));
 
         public bool UseAeroCaptionButtons
         {
@@ -85,7 +86,7 @@
 
         // Using a DependencyProperty as the backing store for UseAeroCaptionButtons.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty UseAeroCaptionButtonsProperty =
-            DependencyProperty.Register("UseAeroCaptionButtons", typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(false));
+            DependencyProperty.Register("UseAeroCaptionButtons", typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(true));
 
         #endregion
 
