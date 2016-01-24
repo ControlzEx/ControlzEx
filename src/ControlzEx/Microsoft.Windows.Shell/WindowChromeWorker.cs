@@ -81,7 +81,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
         ///   Safe     : Demands full trust permissions
         /// <SecurityNote>
         [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name="FullTrust")]
+        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         public WindowChromeWorker()
         {
             _messageTable = new List<HANDLE_MESSAGE>
@@ -95,7 +95,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
                 new HANDLE_MESSAGE(WM.NCHITTEST,             _HandleNCHitTest),
                 new HANDLE_MESSAGE(WM.NCRBUTTONUP,           _HandleNCRButtonUp),
                 new HANDLE_MESSAGE(WM.SIZE,                  _HandleSize),
-                new HANDLE_MESSAGE(WM.WINDOWPOSCHANGING,     _HandleWindowPosChanging),   
+                new HANDLE_MESSAGE(WM.WINDOWPOSCHANGING,     _HandleWindowPosChanging),
                 new HANDLE_MESSAGE(WM.WINDOWPOSCHANGED,      _HandleWindowPosChanged),
                 new HANDLE_MESSAGE(WM.GETMINMAXINFO,         _HandleGetMinMaxInfo),
                 new HANDLE_MESSAGE(WM.DWMCOMPOSITIONCHANGED, _HandleDwmCompositionChanged),
@@ -121,7 +121,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
         ///   Safe     : Demands full trust permissions
         /// <SecurityNote>
         [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name="FullTrust")]
+        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         public void SetWindowChrome(WindowChrome newChrome)
         {
             VerifyAccess();
@@ -152,7 +152,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
         ///   Safe     : Demands full trust permissions
         /// <SecurityNote>
         [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name="FullTrust")]
+        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         private void _OnChromePropertyChangedThatRequiresRepaint(object sender, EventArgs e)
         {
             _UpdateFrameState(true);
@@ -169,7 +169,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
         ///   Safe     : Demands full trust permissions
         /// <SecurityNote>
         [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name="FullTrust")]
+        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         private static void _OnChromeWorkerChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var w = (Window)d;
@@ -234,7 +234,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
         ///   Safe     : Demands full trust permissions
         /// <SecurityNote>
         [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name="FullTrust")]
+        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         private void _WindowSourceInitialized(object sender, EventArgs e)
         {
             _hwnd = new WindowInteropHelper(_window).Handle;
@@ -268,7 +268,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
         ///   Safe     : Demands full trust permissions
         /// <SecurityNote>
         [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name="FullTrust")]
+        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         private void _UnsetWindow(object sender, EventArgs e)
         {
             UnsubscribeWindowEvents();
@@ -300,7 +300,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
         ///   Safe     : Demands full trust permissions
         /// <SecurityNote>
         [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name="FullTrust")]
+        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         private void _OnWindowPropertyChangedThatRequiresTemplateFixup(object sender, EventArgs e)
         {
             if (_chromeInfo != null && _hwnd != IntPtr.Zero)
@@ -508,7 +508,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
         ///   Safe     : Demands full trust permissions
         /// <SecurityNote>
         [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name="FullTrust")]
+        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         private void _FixupRestoreBounds(object sender, EventArgs e)
         {
             Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
@@ -664,9 +664,9 @@ namespace ControlzEx.Microsoft.Windows.Shell
         [SecurityCritical]
         private IntPtr _HandleRestoreWindow(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
-            WINDOWPLACEMENT wpl = NativeMethods.GetWindowPlacement(_hwnd);
             var sc = (SC)(Environment.Is64BitProcess ? wParam.ToInt64() : wParam.ToInt32());
-            if (SC.RESTORE == sc && wpl.showCmd == SW.SHOWMAXIMIZED 
+            if (SC.RESTORE == sc
+                && _GetHwndState() == WindowState.Maximized
                 && (_MinimizeAnimation || _chromeInfo.UseAeroCaptionButtons))
             {
                 var modified = _hwnd._ModifyStyle(WS.SYSMENU, 0);
@@ -766,7 +766,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
             // Since the first field of NCCALCSIZE_PARAMS is a RECT and is the only field we care about
             // we can unconditionally treat it as a RECT.
 
-            if (NativeMethods.GetWindowPlacement(_hwnd).showCmd == SW.MAXIMIZE)
+            if (_GetHwndState() == WindowState.Maximized)
             {
                 if (_chromeInfo.IgnoreTaskbarOnMaximize == false)
                 {
@@ -826,10 +826,10 @@ namespace ControlzEx.Microsoft.Windows.Shell
             IntPtr retVal = IntPtr.Zero;
             if (wParam.ToInt32() != 0) // wParam == TRUE
             {
-                retVal = new IntPtr((int) (WVR.VALIDRECTS | WVR.REDRAW));
+                retVal = new IntPtr((int)(WVR.VALIDRECTS | WVR.REDRAW));
             }
 
-            return retVal; 
+            return retVal;
         }
 
         private HT _GetHTFromResizeGripDirection(ResizeGripDirection direction)
@@ -1037,7 +1037,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
              * MonitorFromWindow gives us the wrong (old) monitor! This is fixed in _HandleMoveForRealSize.
              */
             var ignoreTaskBar = _chromeInfo.IgnoreTaskbarOnMaximize;
-            if (ignoreTaskBar && NativeMethods.IsZoomed(_hwnd))
+            if (ignoreTaskBar && _GetHwndState() == WindowState.Maximized)
             {
                 MINMAXINFO mmi = (MINMAXINFO)Marshal.PtrToStructure(lParam, typeof(MINMAXINFO));
                 IntPtr monitor = NativeMethods.MonitorFromWindow(_hwnd, (uint)MonitorOptions.MONITOR_DEFAULTTONEAREST);
@@ -1381,8 +1381,8 @@ namespace ControlzEx.Microsoft.Windows.Shell
                 //if (_MinimizeAnimation
                 //    || _isGlassEnabled)
                 //{
-                    // allow animation
-                    _hwnd._ModifyStyle(0, WS.CAPTION);
+                // allow animation
+                _hwnd._ModifyStyle(0, WS.CAPTION);
                 //}
                 //else
                 //{
@@ -1904,8 +1904,13 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
         private Thickness GetDefaultFixupMargin()
         {
+            if (_chromeInfo.IgnoreTaskbarOnMaximize)
+            {
+                return default(Thickness);
+            }
+
             // We only need to fixup something if the window is maximized
-            if (NativeMethods.GetWindowPlacement(this._hwnd).showCmd == SW.MAXIMIZE)
+            if (_GetHwndState() == WindowState.Maximized)
             {
                 var windowInfo = NativeMethods.GetWindowInfo(this._hwnd);
                 return new Thickness(windowInfo.cxWindowBorders, windowInfo.cyWindowBorders, windowInfo.cxWindowBorders, windowInfo.cyWindowBorders);
