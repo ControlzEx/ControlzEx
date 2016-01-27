@@ -13,6 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		ControlzEx.msbuild = ControlzEx.msbuild
 		ControlzEx.nuspec = ControlzEx.nuspec
 		src\GlobalAssemblyInfo.cs = src\GlobalAssemblyInfo.cs
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlzEx.Showcase.NET45", "src\ControlzEx.Showcase\ControlzEx.Showcase.NET45.csproj", "{C1697AD3-8A69-4DDB-83A5-E8C845A0583C}"
