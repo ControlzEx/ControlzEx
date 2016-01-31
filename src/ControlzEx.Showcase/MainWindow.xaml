@@ -11,9 +11,8 @@
                           Title="ControlzEx.Showcase"
                           Background="Transparent"
                           Style="{Binding ElementName=StyleComboBox, Path=SelectedValue}"
-                          Height="350"
-                          Width="525"
-                          WindowState="Maximized">
+                          Height="480"
+                          Width="600">
     <local:WindowChromeWindow.Resources>
         <ObjectDataProvider MethodName="GetValues"
                             ObjectType="{x:Type ResizeMode}"
