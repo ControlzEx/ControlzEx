@@ -11,30 +11,20 @@
     //using WindowChrome = System.Windows.Shell.WindowChrome;
     using WindowChrome = ControlzEx.Microsoft.Windows.Shell.WindowChrome;
     using Microsoft.Windows.Shell;
+    using System.Windows.Threading;
 
     /// <summary>
     /// With this class we can make custom window styles.
     /// </summary>
-    /// <remarks>
-    /// - ResizeBorderThickness manipulation in Behavior can be replaced with:
-    ///<Style.Triggers>
-    ///    <Trigger Property = "WindowState"
-    ///             Value="Maximized">
-    ///        <Setter Property = "ResizeBorderThickness"
-    ///                Value="0" />
-    ///    </Trigger>
-    ///</Style.Triggers>
-    /// </remarks>
     public class WindowChromeBehavior : Behavior<Window>
     {
         private IntPtr handle;
         private HwndSource hwndSource;
         private WindowChrome windowChrome;
-        private PropertyChangeNotifier topMostChangeNotifier;
         private PropertyChangeNotifier windowStyleChangeNotifier;
-        private bool savedTopMost;
+        private PropertyChangeNotifier resizeModeChangeNotifier;
 
-        protected bool isCleanedUp;
+        protected bool IsCleanedUp;
 
         #region Mirror properties for WindowChrome
 
@@ -56,7 +46,7 @@
 
         // Using a DependencyProperty as the backing store for CaptionHeight.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty CaptionHeightProperty =
-            DependencyProperty.Register("CaptionHeight", typeof(double), typeof(WindowChromeBehavior), new PropertyMetadata(SystemParameters.CaptionHeight));
+            DependencyProperty.Register("CaptionHeight", typeof(double), typeof(WindowChromeBehavior), new PropertyMetadata(SystemParameters.WindowCaptionHeight));
 
         public CornerRadius CornerRadius
         {
@@ -90,6 +80,10 @@
 
         #endregion
 
+        /// <summary>
+        /// Defines if the Taskbar should be ignored when maximizing a Window.
+        /// This only works with WindowStyle = None.
+        /// </summary>
         public bool IgnoreTaskbarOnMaximize
         {
             get { return (bool)this.GetValue(IgnoreTaskbarOnMaximizeProperty); }
@@ -98,10 +92,12 @@
 
         // Using a DependencyProperty as the backing store for IgnoreTaskbarOnMaximize.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IgnoreTaskbarOnMaximizeProperty =
-            DependencyProperty.Register("IgnoreTaskbarOnMaximize", typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(false, IgnoreTaskbarOnMaximizePropertyChangedCallback));
+            DependencyProperty.Register("IgnoreTaskbarOnMaximize", typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(false, IgnoreTaskbarOnMaximizePropertyChangedCallback, CoerceIgnoreTaskbarOnMaximize));
 
         protected override void OnAttached()
         {
+            base.OnAttached();
+
             this.InitializeWindowChrome();
 
             this.AssociatedObject.SetValue(WindowChrome.WindowChromeProperty, this.windowChrome);
@@ -122,12 +118,11 @@
                 }
             }
 
-            this.savedTopMost = this.AssociatedObject.Topmost;
-            this.topMostChangeNotifier = new PropertyChangeNotifier(this.AssociatedObject, Window.TopmostProperty);
-            this.topMostChangeNotifier.ValueChanged += this.TopMostChangeNotifierOnValueChanged;
-
             this.windowStyleChangeNotifier = new PropertyChangeNotifier(this.AssociatedObject, Window.WindowStyleProperty);
-            this.windowStyleChangeNotifier.ValueChanged += this.WindowStyleNotifierChangedCallback;
+            this.windowStyleChangeNotifier.ValueChanged += this.OnPropertyChangedThatRequiresForceRedrawWindow;
+
+            this.resizeModeChangeNotifier = new PropertyChangeNotifier(this.AssociatedObject, Window.ResizeModeProperty);
+            this.resizeModeChangeNotifier.ValueChanged += this.OnPropertyChangedThatRequiresForceRedrawWindow;
 
             this.AssociatedObject.Loaded += this.OnAssociatedObjectLoaded;
             this.AssociatedObject.Unloaded += this.AssociatedObject_Unloaded;
@@ -144,9 +139,7 @@
             }
 
             // handle the maximized state here too (to handle the border in a correct way)
-            this.HandleWindowStateChange();
-
-            base.OnAttached();
+            this.FixMaximizedWindow();
         }
 
         private void InitializeWindowChrome()
@@ -162,16 +155,6 @@
             BindingOperations.SetBinding(this.windowChrome, WindowChrome.IgnoreTaskbarOnMaximizeProperty, new Binding { Path = new PropertyPath(IgnoreTaskbarOnMaximizeProperty), Source = this });
         }
 
-        private void TopMostChangeNotifierOnValueChanged(object sender, EventArgs e)
-        {
-            this.savedTopMost = this.AssociatedObject.Topmost;
-        }
-
-        private void WindowStyleNotifierChangedCallback(object sender, EventArgs e)
-        {
-            this.ForceRedrawWindowFromPropertyChanged();
-        }
-
         private static Thickness GetDefaultResizeBorderThickness()
         {
 #if NET45
@@ -181,32 +164,47 @@
 #endif
         }
 
+        private void OnPropertyChangedThatRequiresForceRedrawWindow(object sender, EventArgs e)
+        {
+            this.ForceRedrawWindowFromPropertyChanged();
+        }
+
+        private static object CoerceIgnoreTaskbarOnMaximize(DependencyObject d, object baseValue)
+        {
+            var behavior = (WindowChromeBehavior)d;
+
+            // Only works with WindowStyle = None
+            if (behavior.AssociatedObject.WindowStyle == WindowStyle.None)
+            {
+                return baseValue;
+            }
+
+            return false;
+        }
+
         private static void IgnoreTaskbarOnMaximizePropertyChangedCallback(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            var behavior = sender as WindowChromeBehavior;
+            var behavior = (WindowChromeBehavior)sender;
 
-            if (behavior == null)
+            // Async because WindowChromeWorker has to be able to react to the change before we can fix anything
+            behavior.ForceRedrawWindowFromPropertyChangedAsync();
+        }
+
+        private void ForceRedrawWindowFromPropertyChangedAsync()
+        {
+            if (this.AssociatedObject == null)
             {
                 return;
             }
 
-            // another special hack to avoid nasty resizing
-            // repro
-            // ResizeMode="NoResize"
-            // WindowState="Maximized"
-            // IgnoreTaskbarOnMaximize="True"
-            // this only happens if we change this at runtime
-            var removed = behavior.handle._ModifyStyle(WS.MAXIMIZEBOX | WS.MINIMIZEBOX | WS.THICKFRAME, 0);
-            behavior.ForceRedrawWindowFromPropertyChanged();
-            if (removed)
-            {
-                behavior.handle._ModifyStyle(0, WS.MAXIMIZEBOX | WS.MINIMIZEBOX | WS.THICKFRAME);
-            }
+            this.AssociatedObject.Dispatcher.BeginInvoke(DispatcherPriority.Background, (Action)(() => this.ForceRedrawWindowFromPropertyChanged()));
         }
 
         private void ForceRedrawWindowFromPropertyChanged()
         {
-            this.HandleWindowStateChange();
+            //this.windowChrome?._OnPropertyChangedThatRequiresRepaint();
+            this.FixMaximizedWindow();
+
             if (this.handle != IntPtr.Zero)
             {
                 NativeMethods.RedrawWindow(this.handle, IntPtr.Zero, IntPtr.Zero, RedrawWindowFlags.Invalidate | RedrawWindowFlags.Frame);
@@ -215,12 +213,12 @@
 
         protected virtual void Cleanup()
         {
-            if (this.isCleanedUp)
+            if (this.IsCleanedUp)
             {
                 return;
             }
 
-            this.isCleanedUp = true;
+            this.IsCleanedUp = true;
 
             // clean up events
             this.AssociatedObject.Loaded -= this.OnAssociatedObjectLoaded;
@@ -228,13 +226,10 @@
             this.AssociatedObject.SourceInitialized -= this.OnAssociatedObjectSourceInitialized;
             this.AssociatedObject.StateChanged -= this.OnAssociatedObjectHandleWindowStateChanged;
 
-            this.topMostChangeNotifier.ValueChanged -= this.TopMostChangeNotifierOnValueChanged;
-            this.windowStyleChangeNotifier.ValueChanged -= this.WindowStyleNotifierChangedCallback;
+            this.windowStyleChangeNotifier.ValueChanged -= this.OnPropertyChangedThatRequiresForceRedrawWindow;
+            this.resizeModeChangeNotifier.ValueChanged -= this.OnPropertyChangedThatRequiresForceRedrawWindow;
 
-            if (this.hwndSource != null)
-            {
-                this.hwndSource.RemoveHook(this.WindowProc);
-            }
+            this.hwndSource?.RemoveHook(this.WindowProc);
 
             this.windowChrome = null;
         }
@@ -257,9 +252,9 @@
             var message = (WM)msg;
             switch (message)
             {
-                case WM.NCPAINT:
-                    handled = this.AssociatedObject.WindowStyle == WindowStyle.None;
-                    break;
+                //case WM.NCPAINT:
+                //    handled = this.AssociatedObject.WindowStyle == WindowStyle.None;
+                //    break;
 
                 case WM.NCACTIVATE:
                     /* As per http://msdn.microsoft.com/en-us/library/ms632633(VS.85).aspx , "-1" lParam "does not repaint the nonclient area to reflect the state change." */
@@ -273,64 +268,46 @@
 
         private void OnAssociatedObjectHandleWindowStateChanged(object sender, EventArgs e)
         {
-            this.HandleWindowStateChange();
+            this.windowChrome._OnPropertyChangedThatRequiresRepaint();
+            this.FixMaximizedWindow();
         }
 
-        protected virtual void HandleWindowStateChange()
+        protected virtual void FixMaximizedWindow()
         {
-            this.topMostChangeNotifier.ValueChanged -= this.TopMostChangeNotifierOnValueChanged;
-
-            if (this.AssociatedObject.WindowState == WindowState.Maximized)
+            if (this.AssociatedObject == null
+                || this.AssociatedObject.WindowState != WindowState.Maximized
+                || this.handle == IntPtr.Zero)
             {
-                if (this.handle != IntPtr.Zero
-                    && (this.IgnoreTaskbarOnMaximize || this.AssociatedObject.WindowStyle != WindowStyle.None))
-                {
-                    // WindowChrome handles the size false if the main monitor is lesser the monitor where the window is maximized
-                    // so set the window pos/size twice
-                    var monitor = NativeMethods.MonitorFromWindow(this.handle, (uint)MonitorOptions.MONITOR_DEFAULTTONEAREST);
-                    if (monitor != IntPtr.Zero)
-                    {
-                        var monitorInfo = NativeMethods.GetMonitorInfoW(monitor);
-                        var rcMonitorArea = this.IgnoreTaskbarOnMaximize ? monitorInfo.rcMonitor : monitorInfo.rcWork;
-
-                        var x = rcMonitorArea.Left;
-                        var y = rcMonitorArea.Top;
-                        var cx = Math.Abs(rcMonitorArea.Right - x);
-                        var cy = Math.Abs(rcMonitorArea.Bottom - y);
-
-                        // This fixes a bug with multiple monitors on Windows 7. Without this workaround the WindowChrome turns black.
-                        // Don't know if the fix is needed on Windows 8.
-                        // This fix is not needed on Windows 10, but there is no reliable and fast way to tell if we are on Windows 10.                        
-                        // - move x by 1
-                        // - move back to originally desired location
-                        if (this.AssociatedObject.WindowStyle != WindowStyle.None)
-                        {
-                            NativeMethods.SetWindowPos(this.handle, new IntPtr(-2), x + 1, y, cx, cy, SWP.SHOWWINDOW);
-                        }
-
-                        NativeMethods.SetWindowPos(this.handle, new IntPtr(-2), x, y, cx, cy, SWP.SHOWWINDOW);
-                    }
-                }
+                return;
             }
 
-            // fix nasty TopMost bug
-            // - set TopMost="True"
-            // - start mahapps demo
-            // - TopMost works
-            // - maximize window and back to normal
-            // - TopMost is gone
-            //
-            // Problem with minimize animation when window is maximized #1528
-            // 1. Activate another application (such as Google Chrome).
-            // 2. Run the demo and maximize it.
-            // 3. Minimize the demo by clicking on the taskbar button.
-            // Note that the minimize animation in this case does actually run, but somehow the other
-            // application (Google Chrome in this example) is instantly switched to being the top window,
-            // and so blocking the animation view.
-            this.AssociatedObject.Topmost = false;
-            this.AssociatedObject.Topmost = this.AssociatedObject.WindowState == WindowState.Minimized || this.savedTopMost;
+            // WindowChrome handles the size false if the main monitor is lesser the monitor where the window is maximized
+            // so set the window pos/size twice
+            var monitor = NativeMethods.MonitorFromWindow(this.handle, (uint)MonitorOptions.MONITOR_DEFAULTTONEAREST);
+            if (monitor == IntPtr.Zero)
+            {
+                return;
+            }
 
-            this.topMostChangeNotifier.ValueChanged += this.TopMostChangeNotifierOnValueChanged;
+            var monitorInfo = NativeMethods.GetMonitorInfoW(monitor);
+            var rcMonitorArea = this.IgnoreTaskbarOnMaximize ? monitorInfo.rcMonitor : monitorInfo.rcWork;
+
+            var x = rcMonitorArea.Left;
+            var y = rcMonitorArea.Top;
+            var cx = Math.Abs(rcMonitorArea.Right - x);
+            var cy = Math.Abs(rcMonitorArea.Bottom - y);
+
+            // This fixes a bug with multiple monitors on Windows 7. Without this workaround the WindowChrome turns black.
+            // Don't know if the fix is needed on Windows 8.
+            // This fix is not needed on Windows 10, but there is no reliable and fast way to tell if we are on Windows 10.                        
+            // - move x by 1
+            // - move back to originally desired location
+            if (this.AssociatedObject.WindowStyle != WindowStyle.None)
+            {
+                NativeMethods.SetWindowPos(this.handle, new IntPtr(-2), x + 1, y, cx, cy, SWP.SHOWWINDOW);
+            }
+
+            NativeMethods.SetWindowPos(this.handle, new IntPtr(-2), x, y, cx, cy, SWP.SHOWWINDOW);
         }
 
         protected virtual void HandleSourceInitialized()

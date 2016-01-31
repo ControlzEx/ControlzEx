@@ -304,7 +304,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
                 return false;
             }
 
-            return true; 
+            return true;
         }
 
         public NonClientFrameEdges NonClientFrameEdges
@@ -356,7 +356,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
             }
         }
 
-        private void _OnPropertyChangedThatRequiresRepaint()
+        internal void _OnPropertyChangedThatRequiresRepaint()
         {
             var handler = PropertyChangedThatRequiresRepaint;
             if (handler != null)

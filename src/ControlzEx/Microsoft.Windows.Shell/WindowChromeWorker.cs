@@ -89,7 +89,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
                 new HANDLE_MESSAGE(WM.NCUAHDRAWCAPTION,      _HandleNCUAHDrawCaption),
                 new HANDLE_MESSAGE(WM.SETTEXT,               _HandleSetTextOrIcon),
                 new HANDLE_MESSAGE(WM.SETICON,               _HandleSetTextOrIcon),
-                new HANDLE_MESSAGE(WM.SYSCOMMAND,            _HandleRestoreWindow),
+                new HANDLE_MESSAGE(WM.SYSCOMMAND,            _HandleSysCommand),
                 new HANDLE_MESSAGE(WM.NCACTIVATE,            _HandleNCActivate),
                 new HANDLE_MESSAGE(WM.NCCALCSIZE,            _HandleNCCalcSize),
                 new HANDLE_MESSAGE(WM.NCHITTEST,             _HandleNCHitTest),
@@ -337,9 +337,6 @@ namespace ControlzEx.Microsoft.Windows.Shell
                 _hwndSource.AddHook(_WndProc);
                 _isHooked = true;
             }
-
-            // allow animation
-            _hwnd._ModifyStyle(0, WS.CAPTION);
 
             _FixupTemplateIssues();
 
@@ -662,7 +659,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
         ///   Critical : Calls critical methods
         /// </SecurityNote>
         [SecurityCritical]
-        private IntPtr _HandleRestoreWindow(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        private IntPtr _HandleSysCommand(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
             var sc = (SC)(Environment.Is64BitProcess ? wParam.ToInt64() : wParam.ToInt32());
             if (SC.RESTORE == sc
@@ -676,7 +673,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
                 // Put back the style we removed.
                 if (modified)
                 {
-                    modified = _hwnd._ModifyStyle(0, WS.SYSMENU);
+                    _hwnd._ModifyStyle(0, WS.SYSMENU);
                 }
 
                 handled = true;
@@ -952,6 +949,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
             {
                 state = WindowState.Maximized;
             }
+
             _UpdateSystemMenu(state);
 
             // Still let the default WndProc handle this.
@@ -1376,19 +1374,17 @@ namespace ControlzEx.Microsoft.Windows.Shell
                     _ExtendGlassFrame();
                 }
 
-                // todo: Maybe we can remove the condition and simply always enable the caption as windows seems to take care of showing the animation by itself
-                // If this causes problems for windows with windowstyle = none we have to take that property into account
-                //if (_MinimizeAnimation
-                //    || _isGlassEnabled)
-                //{
-                // allow animation
-                _hwnd._ModifyStyle(0, WS.CAPTION);
-                //}
-                //else
-                //{
-                //    // no animation
-                //    _hwnd._ModifyStyle(WS.CAPTION, 0);
-                //}
+                if (_window.WindowStyle == WindowStyle.None)
+                {
+                    if (_chromeInfo.IgnoreTaskbarOnMaximize == false)
+                    {
+                        _hwnd._ModifyStyle(0, WS.CAPTION);
+                    }
+                    else
+                    {
+                        _hwnd._ModifyStyle(WS.CAPTION, 0);
+                    }
+                }
 
                 NativeMethods.SetWindowPos(_hwnd, IntPtr.Zero, 0, 0, 0, 0, _SwpFlags);
             }
@@ -1668,13 +1664,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
             {
                 // This makes the glass visible at a Win32 level so long as nothing else is covering it.
                 // The Window's Background needs to be changed independent of this.
-
-                // Apply the transparent background to the HWND
-                // but only if the window has the flag AllowsTransparency turned on
-                if (_window.AllowsTransparency || _window.WindowStyle != WindowStyle.None)
-                {
-                    _hwndSource.CompositionTarget.BackgroundColor = Colors.Transparent;
-                }
+                _hwndSource.CompositionTarget.BackgroundColor = Colors.Transparent;
 
                 // Thickness is going to be DIPs, need to convert to system coordinates.
                 Thickness deviceGlassThickness = DpiHelper.LogicalThicknessToDevice(_chromeInfo.GlassFrameThickness);
@@ -1904,14 +1894,23 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
         private Thickness GetDefaultFixupMargin()
         {
-            if (_chromeInfo.IgnoreTaskbarOnMaximize)
-            {
-                return default(Thickness);
-            }
-
             // We only need to fixup something if the window is maximized
             if (_GetHwndState() == WindowState.Maximized)
             {
+                if (_window.ResizeMode == ResizeMode.NoResize
+                    || _window.ResizeMode == ResizeMode.CanMinimize)
+                {
+                    return default(Thickness);
+                }
+
+                var intPtr = NativeMethods.GetWindowLongPtr(_hwnd, GWL.STYLE);
+                var dwStyle = (WS)(Environment.Is64BitProcess ? intPtr.ToInt64() : intPtr.ToInt32());
+
+                if (dwStyle.HasFlag(WS.CAPTION) == false)
+                {
+                    return default(Thickness);
+                }
+
                 var windowInfo = NativeMethods.GetWindowInfo(this._hwnd);
                 return new Thickness(windowInfo.cxWindowBorders, windowInfo.cyWindowBorders, windowInfo.cxWindowBorders, windowInfo.cyWindowBorders);
             }
