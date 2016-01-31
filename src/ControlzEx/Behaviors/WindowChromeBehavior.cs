@@ -21,6 +21,9 @@
         private IntPtr handle;
         private HwndSource hwndSource;
         private WindowChrome windowChrome;
+
+        private bool isWindows7OrLower;
+
         private PropertyChangeNotifier windowStyleChangeNotifier;
         private PropertyChangeNotifier resizeModeChangeNotifier;
 
@@ -98,6 +101,9 @@
         {
             base.OnAttached();
 
+            // 6.2 = Windows 8 => https://msdn.microsoft.com/library/windows/desktop/ms724832.aspx
+            this.isWindows7OrLower = Environment.OSVersion.Version <= new Version(6, 2);
+
             this.InitializeWindowChrome();
 
             this.AssociatedObject.SetValue(WindowChrome.WindowChromeProperty, this.windowChrome);
@@ -166,7 +172,7 @@
 
         private void OnPropertyChangedThatRequiresForceRedrawWindow(object sender, EventArgs e)
         {
-            this.ForceRedrawWindowFromPropertyChanged();
+            this.ForceRedrawWindow();
         }
 
         private static object CoerceIgnoreTaskbarOnMaximize(DependencyObject d, object baseValue)
@@ -187,20 +193,20 @@
             var behavior = (WindowChromeBehavior)sender;
 
             // Async because WindowChromeWorker has to be able to react to the change before we can fix anything
-            behavior.ForceRedrawWindowFromPropertyChangedAsync();
+            behavior.ForceRedrawWindowAsync();
         }
 
-        private void ForceRedrawWindowFromPropertyChangedAsync()
+        private void ForceRedrawWindowAsync()
         {
             if (this.AssociatedObject == null)
             {
                 return;
             }
 
-            this.AssociatedObject.Dispatcher.BeginInvoke(DispatcherPriority.Background, (Action)(() => this.ForceRedrawWindowFromPropertyChanged()));
+            this.AssociatedObject.Dispatcher.BeginInvoke(DispatcherPriority.Background, (Action)(() => this.ForceRedrawWindow()));
         }
 
-        private void ForceRedrawWindowFromPropertyChanged()
+        private void ForceRedrawWindow()
         {
             //this.windowChrome?._OnPropertyChangedThatRequiresRepaint();
             this.FixMaximizedWindow();
@@ -269,7 +275,7 @@
         private void OnAssociatedObjectHandleWindowStateChanged(object sender, EventArgs e)
         {
             this.windowChrome._OnPropertyChangedThatRequiresRepaint();
-            this.FixMaximizedWindow();
+            this.ForceRedrawWindow();
         }
 
         protected virtual void FixMaximizedWindow()
@@ -298,13 +304,12 @@
             var cy = Math.Abs(rcMonitorArea.Bottom - y);
 
             // This fixes a bug with multiple monitors on Windows 7. Without this workaround the WindowChrome turns black.
-            // Don't know if the fix is needed on Windows 8.
-            // This fix is not needed on Windows 10, but there is no reliable and fast way to tell if we are on Windows 10.                        
+            // This only has to be done on Windows 7.
             // - move x by 1
             // - move back to originally desired location
-            if (this.AssociatedObject.WindowStyle != WindowStyle.None)
+            if (this.isWindows7OrLower)
             {
-                NativeMethods.SetWindowPos(this.handle, new IntPtr(-2), x + 1, y, cx, cy, SWP.SHOWWINDOW);
+                NativeMethods.SetWindowPos(this.handle, new IntPtr(-2), x - 1, y, cx, cy, SWP.SHOWWINDOW);
             }
 
             NativeMethods.SetWindowPos(this.handle, new IntPtr(-2), x, y, cx, cy, SWP.SHOWWINDOW);
