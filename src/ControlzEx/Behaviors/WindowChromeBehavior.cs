@@ -309,7 +309,7 @@
             // - move back to originally desired location
             if (this.isWindows7OrLower)
             {
-                NativeMethods.SetWindowPos(this.handle, new IntPtr(-2), x - 1, y, cx, cy, SWP.SHOWWINDOW);
+                NativeMethods.SetWindowPos(this.handle, new IntPtr(-2), x + 1, y, cx, cy, SWP.SHOWWINDOW);
             }
 
             NativeMethods.SetWindowPos(this.handle, new IntPtr(-2), x, y, cx, cy, SWP.SHOWWINDOW);
