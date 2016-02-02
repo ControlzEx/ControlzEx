@@ -22,7 +22,7 @@
         private HwndSource hwndSource;
         private WindowChrome windowChrome;
 
-        private bool isWindows7OrLower;
+        private bool isWindwos10OrHigher;
 
         private PropertyChangeNotifier windowStyleChangeNotifier;
         private PropertyChangeNotifier resizeModeChangeNotifier;
@@ -101,8 +101,8 @@
         {
             base.OnAttached();
 
-            // 6.2 = Windows 8 => https://msdn.microsoft.com/library/windows/desktop/ms724832.aspx
-            this.isWindows7OrLower = Environment.OSVersion.Version <= new Version(6, 2);
+            // Versions can be taken from https://msdn.microsoft.com/library/windows/desktop/ms724832.aspx
+            this.isWindwos10OrHigher = Environment.OSVersion.Version >= new Version(10, 0);
 
             this.InitializeWindowChrome();
 
@@ -208,7 +208,7 @@
 
         private void ForceRedrawWindow()
         {
-            //this.windowChrome?._OnPropertyChangedThatRequiresRepaint();
+            this.windowChrome?._OnPropertyChangedThatRequiresRepaint();
             this.FixMaximizedWindow();
 
             if (this.handle != IntPtr.Zero)
@@ -274,8 +274,7 @@
 
         private void OnAssociatedObjectHandleWindowStateChanged(object sender, EventArgs e)
         {
-            this.windowChrome._OnPropertyChangedThatRequiresRepaint();
-            this.ForceRedrawWindow();
+            this.ForceRedrawWindowAsync();
         }
 
         protected virtual void FixMaximizedWindow()
@@ -300,19 +299,26 @@
 
             var x = rcMonitorArea.Left;
             var y = rcMonitorArea.Top;
-            var cx = Math.Abs(rcMonitorArea.Right - x);
-            var cy = Math.Abs(rcMonitorArea.Bottom - y);
 
-            // This fixes a bug with multiple monitors on Windows 7. Without this workaround the WindowChrome turns black.
-            // This only has to be done on Windows 7.
-            // - move x by 1
-            // - move back to originally desired location
-            if (this.isWindows7OrLower)
+            // This fixes a bug with multiple monitors on Windows 7 and Windows 8. Without this workaround the WindowChrome turns black.
+            // This only has to be done on Windows 7 and Windows 8.
+            if (this.isWindwos10OrHigher == false)
             {
-                NativeMethods.SetWindowPos(this.handle, new IntPtr(-2), x + 1, y, cx, cy, SWP.SHOWWINDOW);
-            }
+                // Removing, redrawing and adding DLGFRAME forces windows to draw correctly
+                var style = WS.DLGFRAME;
+                var modified = this.handle._ModifyStyle(style, 0);
 
-            NativeMethods.SetWindowPos(this.handle, new IntPtr(-2), x, y, cx, cy, SWP.SHOWWINDOW);
+                NativeMethods.SetWindowPos(this.handle, IntPtr.Zero, x, y, 0, 0, SWP.NOSIZE | SWP.SHOWWINDOW);
+
+                if (modified)
+                {
+                    this.handle._ModifyStyle(0, style);
+                }
+            }
+            else
+            {
+                NativeMethods.SetWindowPos(this.handle, IntPtr.Zero, x, y, 0, 0, SWP.NOSIZE | SWP.SHOWWINDOW);
+            }
         }
 
         protected virtual void HandleSourceInitialized()
