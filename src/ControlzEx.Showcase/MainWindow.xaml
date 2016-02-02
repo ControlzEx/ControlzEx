@@ -39,7 +39,7 @@
 
         <Grid Grid.Row="0">
             <Border Background="{Binding Source={x:Static SystemColors.WindowBrush}}"
-                    Margin="0,0,130,0" />
+                    Margin="0,0,150,0" />
             <TextBlock x:Name="TitlebarText"
                        Margin="4,0,0,0"
                        Text="Use GridSplitter below to move content above titlebar" />
@@ -88,6 +88,7 @@
                               SelectedValuePath="Tag">
                         <TextBlock Tag="{StaticResource SingleBorderWindowStyle}">SingleBorderWindowStyle</TextBlock>
                         <TextBlock Tag="{StaticResource NoneWindowStyle}">NoneWindowStyle</TextBlock>
+                        <TextBlock Tag="{StaticResource NoneWindowStyleWithGlassFrame}">NoneWindowStyleWithGlassFrame</TextBlock>
                     </ComboBox>
 
                     <Label Grid.Row="1"

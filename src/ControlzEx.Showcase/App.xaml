@@ -16,6 +16,8 @@
                              Value="Maximized">
                         <Setter Property="Margin"
                                 Value="0" />
+                        <Setter Property="ResizeBorderThickness"
+                                Value="0" />
                     </Trigger>
                 </Style.Triggers>
             </Style>
@@ -38,6 +40,15 @@
 
             <Style TargetType="{x:Type local:WindowChromeWindow}"
                    x:Key="NoneWindowStyle"
+                   BasedOn="{StaticResource {x:Type local:WindowChromeWindow}}">
+                <Setter Property="WindowStyle"
+                        Value="None" />
+                <Setter Property="GlassFrameThickness"
+                        Value="0" />
+            </Style>
+
+            <Style TargetType="{x:Type local:WindowChromeWindow}"
+                   x:Key="NoneWindowStyleWithGlassFrame"
                    BasedOn="{StaticResource {x:Type local:WindowChromeWindow}}">
                 <Setter Property="WindowStyle"
                         Value="None" />
