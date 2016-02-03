@@ -180,7 +180,8 @@
             var behavior = (WindowChromeBehavior)d;
 
             // Only works with WindowStyle = None
-            if (behavior.AssociatedObject.WindowStyle == WindowStyle.None)
+            if (behavior.AssociatedObject == null
+                || behavior.AssociatedObject.WindowStyle == WindowStyle.None)
             {
                 return baseValue;
             }
