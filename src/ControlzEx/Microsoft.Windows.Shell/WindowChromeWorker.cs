@@ -767,10 +767,10 @@ namespace ControlzEx.Microsoft.Windows.Shell
             {
                 if (_chromeInfo.IgnoreTaskbarOnMaximize == false)
                 {
-                    IntPtr mon = NativeMethods.MonitorFromWindow(_hwnd, (uint)MonitorOptions.MONITOR_DEFAULTTONEAREST);
-                    MONITORINFO mi = NativeMethods.GetMonitorInfo(mon);
+                    var mon = NativeMethods.MonitorFromWindow(_hwnd, (uint)MonitorOptions.MONITOR_DEFAULTTONEAREST);
+                    var mi = NativeMethods.GetMonitorInfo(mon);
 
-                    RECT def = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT));
+                    var def = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT));
 
                     // monitor an work area will be equal if taskbar is hidden
                     if (mi.rcMonitor.Height == mi.rcWork.Height && mi.rcMonitor.Width == mi.rcWork.Width)
@@ -780,6 +780,27 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
                     Marshal.StructureToPtr(def, lParam, true);
                 }
+            }
+            else if (
+                this._isGlassEnabled
+                && _GetHwndState() == WindowState.Normal)
+            {
+                var intPtr = NativeMethods.GetWindowLongPtr(_hwnd, GWL.STYLE);
+                var dwStyle = (WS)(Environment.Is64BitProcess ? intPtr.ToInt64() : intPtr.ToInt32());
+
+                var def = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT));
+
+                def.Left += (int)_chromeInfo.ResizeBorderThickness.Left;
+                def.Right -= (int)_chromeInfo.ResizeBorderThickness.Right;
+
+                if (dwStyle.HasFlag(WS.CAPTION) == false)
+                {
+                    def.Top += (int)_chromeInfo.ResizeBorderThickness.Top;
+                }
+
+                def.Bottom -= (int)_chromeInfo.ResizeBorderThickness.Bottom;
+
+                Marshal.StructureToPtr(def, lParam, true);
             }
 
             this.FixupRootElementMargin();
@@ -869,6 +890,10 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
             Point mousePosWindow = mousePosScreen;
             mousePosWindow.Offset(-windowPosition.X, -windowPosition.Y);
+
+            var clientRect = _GetClientRectRelativeToWindowRect(this._hwnd);
+            mousePosWindow.Offset(-clientRect.Left, -clientRect.Top);
+
             mousePosWindow = DpiHelper.DevicePixelsToLogical(mousePosWindow);
 
             // If the app is asking for content to be treated as client then that takes precedence over _everything_, even DWM caption buttons.
