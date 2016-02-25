@@ -8,15 +8,11 @@
             <Style TargetType="{x:Type local:WindowChromeWindow}"
                    x:Key="{x:Type local:WindowChromeWindow}">
                 <Setter Property="ResizeBorderThickness"
-                        Value="4" />
-                <Setter Property="Margin"
-                        Value="{Binding RelativeSource={RelativeSource Self}, Path=ResizeBorderThickness}" />
+                        Value="8" />
                 <Style.Triggers>
                     <Trigger Property="WindowState"
                              Value="Maximized">
                         <Setter Property="Margin"
-                                Value="0" />
-                        <Setter Property="ResizeBorderThickness"
                                 Value="0" />
                     </Trigger>
                 </Style.Triggers>
@@ -28,7 +24,7 @@
                 <Setter Property="WindowStyle"
                         Value="SingleBorderWindow" />
                 <Setter Property="GlassFrameThickness"
-                        Value="4,27,4,4" />
+                        Value="0,27,0,0" />
                 <Style.Triggers>
                     <Trigger Property="WindowState"
                              Value="Maximized">
