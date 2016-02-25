@@ -52,8 +52,7 @@
                       ControlzEx:WindowChrome.IsHitTestVisibleInChrome="True" />
 
         <Grid Grid.Row="2"
-              Background="{Binding Source={x:Static SystemColors.WindowBrush}}"
-              ControlzEx:WindowChrome.IsHitTestVisibleInChrome="True">
+              Background="{Binding Source={x:Static SystemColors.WindowBrush}}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition />
