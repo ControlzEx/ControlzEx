@@ -1150,7 +1150,9 @@ namespace ControlzEx.Microsoft.Windows.Shell
         [SecurityCritical]
         private IntPtr _HandleEnterSizeMoveForAnimation(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
-            if (_MinimizeAnimation && _GetHwndState() == WindowState.Maximized)
+            if (_MinimizeAnimation
+                && _isGlassEnabled == false
+                && _GetHwndState() == WindowState.Maximized)
             {
                 /* we only need to remove DLGFRAME ( CAPTION = BORDER | DLGFRAME )
                  * to prevent nasty drawing
@@ -1216,7 +1218,8 @@ namespace ControlzEx.Microsoft.Windows.Shell
         [SecurityCritical]
         private IntPtr _HandleExitSizeMoveForAnimation(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
-            if (_MinimizeAnimation)
+            if (_MinimizeAnimation
+                && _isGlassEnabled == false)
             {
                 // restore DLGFRAME
                 if (_hwnd._ModifyStyle(0, WS.DLGFRAME))
