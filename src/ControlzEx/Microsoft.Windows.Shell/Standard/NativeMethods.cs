@@ -2136,7 +2136,7 @@
     };
 
     [StructLayout(LayoutKind.Sequential)]
-    internal class MONITORINFO
+    public class MONITORINFO
     {
         public int cbSize = Marshal.SizeOf(typeof(MONITORINFO));
         public RECT rcMonitor;
@@ -2145,7 +2145,7 @@
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    internal struct POINT
+    public struct POINT
     {
         public int x;
         public int y;
@@ -2160,7 +2160,7 @@
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    internal struct RECT
+    public struct RECT
     {
         private int _left;
         private int _top;
@@ -2331,7 +2331,7 @@
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    internal struct SIZE
+    public struct SIZE
     {
         public int cx;
         public int cy;
