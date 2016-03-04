@@ -5,6 +5,43 @@
 
 Shared Controlz for WPF and...
 
+## AutoMove ToolTip
+
+An auto moving ToolTip. More [Info](http://jkarger.de/archive/2014/11/02/how-to-make-the-tooltip-follow-the-mouse/).
+
+```csharp
+<Button Margin="5"
+        Padding="5"
+        Content="Test Button 2"
+        ToolTipService.ShowDuration="20000">
+    <Button.ToolTip>
+        <ToolTip local:ToolTipAssist.AutoMove="True">
+            <ToolTip.Template>
+                <ControlTemplate>
+                    <Grid>
+                        <Border Background="Gray"
+                                BorderBrush="Black"
+                                BorderThickness="1"
+                                Opacity="0.9"
+                                SnapsToDevicePixels="True" />
+                        <TextBlock Margin="5"
+                                    Foreground="WhiteSmoke"
+                                    FontSize="22"
+                                    Text="ToolTipHelper AutoMove sample"
+                                    TextOptions.TextFormattingMode="Display"
+                                    TextOptions.TextRenderingMode="ClearType" />
+                    </Grid>
+                </ControlTemplate>
+            </ToolTip.Template>
+        </ToolTip>
+    </Button.ToolTip>
+</Button>
+```
+
+![automove_tooltip2](https://cloud.githubusercontent.com/assets/658431/13525375/d708a9e8-e200-11e5-9bd9-035d50632b34.gif)  
+
+![automove_tooltip](https://cloud.githubusercontent.com/assets/658431/13509772/7ff7406a-e18d-11e5-9238-e48c6e4fa2fa.gif)
+
 ## WindowChromeBehavior
 
 ControlzEx provides a custom chrome for WPF windows and some other deeper fixes for it.
