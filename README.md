@@ -9,7 +9,7 @@ Shared Controlz for WPF and...
 
 An auto moving ToolTip. More [Info](http://jkarger.de/archive/2014/11/02/how-to-make-the-tooltip-follow-the-mouse/).
 
-```csharp
+```xaml
 <Button Margin="5"
         Padding="5"
         Content="Test Button 2"
@@ -73,7 +73,7 @@ Custom `TabControl` that keeps the `TabItem` content in the VisualTree after uns
 
 Usage:
 
-```csharp
+```xaml
 <controlz:TabControlEx Style="{StaticResource {x:Type TabControl}}">
     <TabItem Header="Lorem">
         <TextBlock Text="Modern UI with MahApps.Metro"
@@ -95,7 +95,8 @@ A base class to help drive a common method for creating icon packs in WPF.
 To create a new icon pack follow these steps:  
 
 Define a key (typically an ```enum```):
-```
+
+```csharp
 public enum PackIconKind
 {
     Happy,
@@ -106,7 +107,8 @@ public enum PackIconKind
 Subclass ```PackIconBase```, adding
 * Default style key
 * A factory providing Path data for each key
-```
+
+```csharp
 public class PackIcon : PackIconBase<PackIconKind>
 {        
     static PackIcon()
@@ -129,7 +131,8 @@ public class PackIcon : PackIconBase<PackIconKind>
 ```
 
 Provide a default style (typically in your Generic.xaml, e.g:
-```
+
+```xaml
 <Style TargetType="{x:Type local:PackIcon}">
     <Setter Property="Height" Value="16" />
     <Setter Property="Width" Value="16" />
@@ -153,7 +156,8 @@ Provide a default style (typically in your Generic.xaml, e.g:
 ### and finally...
 
 Your users should now have a simple way to use your icon pack in their applications:
-```
+
+```xaml
 <ns:PackIcon Kind="HappyIcon" />
 ```
 
