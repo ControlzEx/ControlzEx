@@ -5,6 +5,15 @@
 
 Shared Controlz for WPF and...
 
+Available on [NuGet](https://www.nuget.org/packages/ControlzEx/)
+
+Made by...
+
+[![Twitter Jan](https://img.shields.io/badge/twitter-%40punker76-55acee.svg?style=flat-square)](https://twitter.com/punker76)
+[![Twitter James](https://img.shields.io/badge/twitter-%40James_Willock-55acee.svg?style=flat-square)](https://twitter.com/James_Willock)
+[![Twitter Bastian](https://img.shields.io/badge/twitter-%40batzendev-55acee.svg?style=flat-square)](https://twitter.com/batzendev)
+
+
 ## AutoMove ToolTip
 
 An auto moving ToolTip. More [Info](http://jkarger.de/archive/2014/11/02/how-to-make-the-tooltip-follow-the-mouse/).
