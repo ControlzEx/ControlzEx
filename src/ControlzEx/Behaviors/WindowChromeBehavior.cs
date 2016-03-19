@@ -106,7 +106,16 @@
 
             this.InitializeWindowChrome();
 
-            this.AssociatedObject.SetValue(WindowChrome.WindowChromeProperty, this.windowChrome);
+            // Setting the WindowChrome before the Window has loaded causes the Loaded event to be fired early. 
+            // To prevent this issue we dalay setting the WindowChrome.
+            if (this.AssociatedObject.IsLoaded)
+            {
+                this.AssociatedObject.SetValue(WindowChrome.WindowChromeProperty, this.windowChrome);
+            }
+            else
+            {
+                this.AssociatedObject.Loaded += this.HandleAssociatedObject_Loaded;
+            }
 
             // no transparany, because it hase more then one unwanted issues            
             var windowHandle = new WindowInteropHelper(this.AssociatedObject).Handle;
@@ -146,6 +155,12 @@
 
             // handle the maximized state here too (to handle the border in a correct way)
             this.FixMaximizedWindow();
+        }
+
+        private void HandleAssociatedObject_Loaded(object sender, RoutedEventArgs e)
+        {
+            this.AssociatedObject.Loaded -= this.HandleAssociatedObject_Loaded;
+            this.AssociatedObject.SetValue(WindowChrome.WindowChromeProperty, this.windowChrome);
         }
 
         private void InitializeWindowChrome()
