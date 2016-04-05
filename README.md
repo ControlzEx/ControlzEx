@@ -1,6 +1,6 @@
 ![automove_tooltip2](./logo.jpg)  
 
-[![Join the chat at https://gitter.im/ControlzEx/ControlzEx](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ControlzEx/ControlzEx?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://gitter.im/ControlzEx/ControlzEx](https://img.shields.io/badge/GITTER-join%20chat-green.svg?style=flat-square)](https://gitter.im/ControlzEx/ControlzEx?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 [![Build status](https://img.shields.io/appveyor/ci/punker76/controlzex.svg?style=flat-square)](https://ci.appveyor.com/project/punker76/controlzex)
 [![Release](https://img.shields.io/github/release/ControlzEx/ControlzEx.svg?style=flat-square)](https://github.com/ControlzEx/ControlzEx/releases/latest)
