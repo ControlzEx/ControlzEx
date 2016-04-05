@@ -1,11 +1,15 @@
 ![automove_tooltip2](./logo.jpg)  
 
-[![Build status](https://ci.appveyor.com/api/projects/status/ij69o79y9rgdl450/branch/develop?svg=true)](https://ci.appveyor.com/project/punker76/controlzex/branch/develop)
 [![Join the chat at https://gitter.im/ControlzEx/ControlzEx](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ControlzEx/ControlzEx?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-Shared Controlz for WPF and...
+[![Build status](https://img.shields.io/appveyor/ci/punker76/controlzex.svg?style=flat-square)](https://ci.appveyor.com/project/punker76/controlzex)
+[![Release](https://img.shields.io/github/release/ControlzEx/ControlzEx.svg?style=flat-square)](https://github.com/ControlzEx/ControlzEx/releases/latest)
+[![Issues](https://img.shields.io/github/issues/ControlzEx/ControlzEx.svg?style=flat-square)](https://github.com/ControlzEx/ControlzEx/issues)
+[![Downloads](https://img.shields.io/nuget/dt/ControlzEx.svg?style=flat-square)](http://www.nuget.org/packages/ControlzEx/)
+[![Nuget](https://img.shields.io/nuget/vpre/ControlzEx.svg?style=flat-square)](http://nuget.org/packages/ControlzEx)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/ControlzEx/ControlzEx/blob/master/License.txt)
 
-Available on [NuGet](https://www.nuget.org/packages/ControlzEx/)
+Shared Controlz for WPF and...
 
 Made by...
 
