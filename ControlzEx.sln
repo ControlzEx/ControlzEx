@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlzEx.NET4", "src\ControlzEx\ControlzEx.NET4.csproj", "{CBA7A977-88F5-4E19-B802-6E63AC3FA548}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlzEx.NET45", "src\ControlzEx\ControlzEx.NET45.csproj", "{782510C1-BD4B-4137-97DE-A8B26154FFBF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4A8A36F7-129E-4867-9134-EF4651CB8018}"
+	ProjectSection(SolutionItems) = preProject
+		appveyor.yml = appveyor.yml
+		ControlzEx.msbuild = ControlzEx.msbuild
+		ControlzEx.nuspec = ControlzEx.nuspec
+		src\GlobalAssemblyInfo.cs = src\GlobalAssemblyInfo.cs
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlzEx.Showcase.NET45", "src\ControlzEx.Showcase\ControlzEx.Showcase.NET45.csproj", "{C1697AD3-8A69-4DDB-83A5-E8C845A0583C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CBA7A977-88F5-4E19-B802-6E63AC3FA548}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBA7A977-88F5-4E19-B802-6E63AC3FA548}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBA7A977-88F5-4E19-B802-6E63AC3FA548}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBA7A977-88F5-4E19-B802-6E63AC3FA548}.Release|Any CPU.Build.0 = Release|Any CPU
+		{782510C1-BD4B-4137-97DE-A8B26154FFBF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{782510C1-BD4B-4137-97DE-A8B26154FFBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{782510C1-BD4B-4137-97DE-A8B26154FFBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{782510C1-BD4B-4137-97DE-A8B26154FFBF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1697AD3-8A69-4DDB-83A5-E8C845A0583C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1697AD3-8A69-4DDB-83A5-E8C845A0583C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1697AD3-8A69-4DDB-83A5-E8C845A0583C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1697AD3-8A69-4DDB-83A5-E8C845A0583C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

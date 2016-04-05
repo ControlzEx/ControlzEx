@@ -1,0 +1,173 @@
+﻿<local:WindowChromeWindow x:Class="ControlzEx.Showcase.MainWindow"
+                          xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                          xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+                          xmlns:local="clr-namespace:ControlzEx.Showcase"
+                          xmlns:ControlzEx="urn:controlzex"
+                          x:Name="Window"
+                          mc:Ignorable="d"
+                          Title="ControlzEx.Showcase"
+                          Background="Transparent"
+                          Style="{Binding ElementName=StyleComboBox, Path=SelectedValue}"
+                          Height="480"
+                          Width="600">
+    <local:WindowChromeWindow.Resources>
+        <ObjectDataProvider MethodName="GetValues"
+                            ObjectType="{x:Type ResizeMode}"
+                            x:Key="ResizeModeEnumValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="ResizeMode" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </local:WindowChromeWindow.Resources>
+
+    <i:Interaction.Behaviors>
+        <ControlzEx:WindowChromeBehavior x:Name="WindowChromeBehavior"
+                                         GlassFrameThickness="{Binding ElementName=Window, Path=GlassFrameThickness}"
+                                         ResizeBorderThickness="{Binding ElementName=Window, Path=ResizeBorderThickness}" />
+    </i:Interaction.Behaviors>
+
+    <Grid SnapsToDevicePixels="True"
+          Margin="{Binding ElementName=Window, Path=Margin}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="{Binding ElementName=WindowChromeBehavior, Path=CaptionHeight}" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Border Background="{Binding Source={x:Static SystemColors.WindowBrush}}"
+                    Margin="0,0,150,0" />
+            <TextBlock x:Name="TitlebarText"
+                       Margin="4,0,0,0"
+                       Text="Use GridSplitter below to move content above titlebar" />
+        </Grid>
+
+        <GridSplitter Grid.Row="1"
+                      Height="8"
+                      HorizontalAlignment="Stretch"
+                      Background="Green"
+                      ControlzEx:WindowChrome.IsHitTestVisibleInChrome="True" />
+
+        <Grid Grid.Row="2"
+              Background="{Binding Source={x:Static SystemColors.WindowBrush}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <GroupBox Header="Options"
+                      Grid.Row="0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <Label Grid.Row="0"
+                           Grid.Column="0">Style</Label>
+                    <ComboBox Grid.Row="0"
+                              Grid.Column="1"
+                              x:Name="StyleComboBox"
+                              SelectedValue="{StaticResource SingleBorderWindowStyle}"
+                              SelectedValuePath="Tag">
+                        <TextBlock Tag="{StaticResource SingleBorderWindowStyle}">SingleBorderWindowStyle</TextBlock>
+                        <TextBlock Tag="{StaticResource NoneWindowStyle}">NoneWindowStyle</TextBlock>
+                        <TextBlock Tag="{StaticResource NoneWindowStyleWithGlassFrame}">NoneWindowStyleWithGlassFrame</TextBlock>
+                    </ComboBox>
+
+                    <Label Grid.Row="1"
+                           Grid.Column="0">ResizeMode</Label>
+                    <ComboBox Grid.Row="1"
+                              Grid.Column="1"
+                              x:Name="ResizeModeComboBox"
+                              ItemsSource="{Binding Source={StaticResource ResizeModeEnumValues}}"
+                              SelectedItem="{Binding ElementName=Window, Path=ResizeMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                    <CheckBox Grid.Row="2"
+                              Grid.Column="0"
+                              Grid.ColumnSpan="2"
+                              IsChecked="{Binding ElementName=WindowChromeBehavior, Path=UseAeroCaptionButtons, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                              Content="UseAeroCaptionButtons (only disables behavior, not the visual buttons)" />
+
+                    <CheckBox Grid.Row="3"
+                              Grid.Column="0"
+                              Grid.ColumnSpan="2"
+                              IsChecked="{Binding ElementName=WindowChromeBehavior, Path=IgnoreTaskbarOnMaximize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                              Content="IgnoreTaskbarOnMaximize (only works with WindowStyle = None)" />
+                </Grid>
+            </GroupBox>
+
+            <GroupBox Grid.Row="1"
+                      Header="Current values (readonly)">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <Label Grid.Row="1"
+                           Grid.Column="0">WindowStyle</Label>
+                    <TextBox Grid.Row="1"
+                             Grid.Column="1"
+                             IsReadOnly="True"
+                             Text="{Binding ElementName=Window, Path=WindowStyle}" />
+
+                    <Label Grid.Row="2"
+                           Grid.Column="0">CaptionHeight</Label>
+                    <TextBox Grid.Row="2"
+                             Grid.Column="1"
+                             IsReadOnly="True"
+                             Text="{Binding ElementName=WindowChromeBehavior, Path=CaptionHeight, Mode=TwoWay}" />
+
+                    <Label Grid.Row="3"
+                           Grid.Column="0">CornerRadius</Label>
+                    <TextBox Grid.Row="3"
+                             Grid.Column="1"
+                             IsReadOnly="True"
+                             Text="{Binding ElementName=WindowChromeBehavior, Path=CornerRadius, Mode=OneWay}" />
+
+                    <Label Grid.Row="4"
+                           Grid.Column="0">GlassFrameThickness</Label>
+                    <TextBox Grid.Row="4"
+                             Grid.Column="1"
+                             IsReadOnly="True"
+                             Text="{Binding ElementName=WindowChromeBehavior, Path=GlassFrameThickness, Mode=TwoWay}" />
+
+                    <Label Grid.Row="5"
+                           Grid.Column="0">ResizeBorderThickness</Label>
+                    <TextBox Grid.Row="5"
+                             Grid.Column="1"
+                             IsReadOnly="True"
+                             Text="{Binding ElementName=WindowChromeBehavior, Path=ResizeBorderThickness, Mode=TwoWay}" />
+                </Grid>
+            </GroupBox>
+        </Grid>
+    </Grid>
+</local:WindowChromeWindow>
