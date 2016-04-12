@@ -781,27 +781,6 @@ namespace ControlzEx.Microsoft.Windows.Shell
                     Marshal.StructureToPtr(def, lParam, true);
                 }
             }
-            else if (
-                this._isGlassEnabled
-                && _GetHwndState() == WindowState.Normal)
-            {
-                var intPtr = NativeMethods.GetWindowLongPtr(_hwnd, GWL.STYLE);
-                var dwStyle = (WS)(Environment.Is64BitProcess ? intPtr.ToInt64() : intPtr.ToInt32());
-
-                var def = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT));
-
-                def.Left += (int)_chromeInfo.ResizeBorderThickness.Left;
-                def.Right -= (int)_chromeInfo.ResizeBorderThickness.Right;
-
-                if (dwStyle.HasFlag(WS.CAPTION) == false)
-                {
-                    def.Top += (int)_chromeInfo.ResizeBorderThickness.Top;
-                }
-
-                def.Bottom -= (int)_chromeInfo.ResizeBorderThickness.Bottom;
-
-                Marshal.StructureToPtr(def, lParam, true);
-            }
 
             this.FixupRootElementMargin();
 
