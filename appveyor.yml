@@ -42,7 +42,7 @@
     only:
       - master
 
-  version: 2.1.0.{build}
+  version: 2.1.1.{build}
   configuration: Release
   
   # Install scripts. (runs after repo cloning)
