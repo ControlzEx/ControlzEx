@@ -36,11 +36,11 @@ namespace ControlzEx.Helper
         {
             if (null == propertySource)
             {
-                throw new ArgumentNullException("propertySource");
+                throw new ArgumentNullException(nameof(propertySource));
             }
             if (null == property)
             {
-                throw new ArgumentNullException("property");
+                throw new ArgumentNullException(nameof(property));
             }
             this._propertySource = new WeakReference(propertySource);
             var binding = new Binding();
@@ -59,9 +59,7 @@ namespace ControlzEx.Helper
                     // note, it is possible that accessing the target property
                     // will result in an exception so i’ve wrapped this check
                     // in a try catch
-                    return this._propertySource.IsAlive
-                        ? this._propertySource.Target as DependencyObject
-                        : null;
+                    return this._propertySource.IsAlive ? this._propertySource.Target as DependencyObject : null;
                 }
                 catch
                 {
@@ -74,8 +72,7 @@ namespace ControlzEx.Helper
         /// Identifies the <see cref="Value"/> dependency property
         /// </summary>
         public static readonly DependencyProperty ValueProperty
-            = DependencyProperty.Register("Value", typeof(object), typeof(PropertyChangeNotifier),
-                                          new FrameworkPropertyMetadata(null, new PropertyChangedCallback(OnPropertyChanged)));
+            = DependencyProperty.Register(nameof(Value), typeof(object), typeof(PropertyChangeNotifier), new FrameworkPropertyMetadata(null, OnPropertyChanged));
 
         /// <summary>
         /// Returns/sets the value of the property
@@ -93,10 +90,7 @@ namespace ControlzEx.Helper
         private static void OnPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var notifier = (PropertyChangeNotifier)d;
-            if (null != notifier.ValueChanged)
-            {
-                notifier.ValueChanged(notifier.PropertySource, EventArgs.Empty);
-            }
+            notifier.ValueChanged?.Invoke(notifier.PropertySource, EventArgs.Empty);
         }
 
         public event EventHandler ValueChanged;
