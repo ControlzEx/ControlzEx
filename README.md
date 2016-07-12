@@ -17,6 +17,35 @@ Made by...
 [![Twitter James](https://img.shields.io/badge/twitter-%40James_Willock-55acee.svg?style=flat-square)](https://twitter.com/James_Willock)
 [![Twitter Bastian](https://img.shields.io/badge/twitter-%40batzendev-55acee.svg?style=flat-square)](https://twitter.com/batzendev)
 
+## KeyboardNavigationEx
+
+KeyboardNavigationEx is a helper class for a common focusing problem. The focus of an UI element itself isn't the problem. But if we use the common focusing methods, the control get the focus, but it doesn't get the focus visual style.
+
+The KeyboardNavigation class handles the visual style only if the control get the focus from a keyboard device or if the SystemParameters.KeyboardCues is true.
+
+With the KeyboardNavigationEx you can fix this in two simple ways.
+
+First in code behind:
+
+```csharp
+public partial class MainWindow : Window
+{
+    public MainWindow()
+    {
+        InitializeComponent();
+        this.Loaded += (s, e) => { KeyboardNavigationEx.Focus(this.TheElementWhichShouldGetTheFocus); };
+    }
+}
+
+```
+
+Or in XAML code:
+
+```xaml
+<Button controlzex:KeyboardNavigationEx.AlwaysShowFocusVisual="True">Hey, I get the focus visual style on mouse click! />
+```
+
+![keyboardfocusex](https://cloud.githubusercontent.com/assets/658431/15276251/143b9b3e-1ae3-11e6-9fe0-dc704675ad3b.gif)
 
 ## AutoMove ToolTip
 

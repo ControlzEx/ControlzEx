@@ -28,7 +28,7 @@ namespace ControlzEx
     public class TabControlEx : TabControl
     {
         public static readonly DependencyProperty ChildContentVisibilityProperty
-            = DependencyProperty.Register("ChildContentVisibility",
+            = DependencyProperty.Register(nameof(ChildContentVisibility),
                                           typeof(Visibility),
                                           typeof(TabControlEx),
                                           new PropertyMetadata(Visibility.Collapsed));
@@ -143,7 +143,6 @@ namespace ControlzEx
         /// <summary>
         /// generate a ContentPresenter for the selected item
         /// </summary>
-        /// <param name="selectedTabItem"></param>
         private void UpdateSelectedItem()
         {
             if (this._itemsHolder == null)
@@ -185,13 +184,14 @@ namespace ControlzEx
             }
 
             // the actual child to be added.  cp.Tag is a reference to the TabItem
+            var tabItem = item as TabItem;
             cp = new ContentPresenter();
-            cp.Content = (item is TabItem) ? (item as TabItem).Content : item;
+            cp.Content = tabItem != null ? tabItem.Content : item;
             cp.ContentTemplate = this.SelectedContentTemplate;
             cp.ContentTemplateSelector = this.SelectedContentTemplateSelector;
             cp.ContentStringFormat = this.SelectedContentStringFormat;
             cp.Visibility = this.ChildContentVisibility;
-            cp.Tag = (item is TabItem) ? item : (this.ItemContainerGenerator.ContainerFromItem(item));
+            cp.Tag = tabItem ?? this.ItemContainerGenerator.ContainerFromItem(item);
             this._itemsHolder.Children.Add(cp);
             return cp;
         }

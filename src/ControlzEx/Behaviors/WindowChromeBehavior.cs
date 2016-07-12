@@ -39,7 +39,7 @@
 
         // Using a DependencyProperty as the backing store for ResizeBorderThickness.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ResizeBorderThicknessProperty =
-            DependencyProperty.Register("ResizeBorderThickness", typeof(Thickness), typeof(WindowChromeBehavior), new PropertyMetadata(GetDefaultResizeBorderThickness()));
+            DependencyProperty.Register(nameof(ResizeBorderThickness), typeof(Thickness), typeof(WindowChromeBehavior), new PropertyMetadata(GetDefaultResizeBorderThickness()));
 
         public double CaptionHeight
         {
@@ -49,7 +49,7 @@
 
         // Using a DependencyProperty as the backing store for CaptionHeight.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty CaptionHeightProperty =
-            DependencyProperty.Register("CaptionHeight", typeof(double), typeof(WindowChromeBehavior), new PropertyMetadata(SystemParameters.WindowCaptionHeight));
+            DependencyProperty.Register(nameof(CaptionHeight), typeof(double), typeof(WindowChromeBehavior), new PropertyMetadata(SystemParameters.WindowCaptionHeight));
 
         public CornerRadius CornerRadius
         {
@@ -59,7 +59,7 @@
 
         // Using a DependencyProperty as the backing store for CornerRadius.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty CornerRadiusProperty =
-            DependencyProperty.Register("CornerRadius", typeof(CornerRadius), typeof(WindowChromeBehavior), new PropertyMetadata(new CornerRadius(0D)));
+            DependencyProperty.Register(nameof(CornerRadius), typeof(CornerRadius), typeof(WindowChromeBehavior), new PropertyMetadata(new CornerRadius(0D)));
 
         public Thickness GlassFrameThickness
         {
@@ -69,7 +69,7 @@
 
         // Using a DependencyProperty as the backing store for GlassFrameThickness.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty GlassFrameThicknessProperty =
-            DependencyProperty.Register("GlassFrameThickness", typeof(Thickness), typeof(WindowChromeBehavior), new PropertyMetadata(SystemParameters2.Current.WindowNonClientFrameThickness));
+            DependencyProperty.Register(nameof(GlassFrameThickness), typeof(Thickness), typeof(WindowChromeBehavior), new PropertyMetadata(SystemParameters2.Current.WindowNonClientFrameThickness));
 
         public bool UseAeroCaptionButtons
         {
@@ -79,7 +79,7 @@
 
         // Using a DependencyProperty as the backing store for UseAeroCaptionButtons.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty UseAeroCaptionButtonsProperty =
-            DependencyProperty.Register("UseAeroCaptionButtons", typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(true));
+            DependencyProperty.Register(nameof(UseAeroCaptionButtons), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(true));
 
         #endregion
 
@@ -95,7 +95,7 @@
 
         // Using a DependencyProperty as the backing store for IgnoreTaskbarOnMaximize.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IgnoreTaskbarOnMaximizeProperty =
-            DependencyProperty.Register("IgnoreTaskbarOnMaximize", typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(false, IgnoreTaskbarOnMaximizePropertyChangedCallback, CoerceIgnoreTaskbarOnMaximize));
+            DependencyProperty.Register(nameof(IgnoreTaskbarOnMaximize), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(false, IgnoreTaskbarOnMaximizePropertyChangedCallback, CoerceIgnoreTaskbarOnMaximize));
 
         protected override void OnAttached()
         {
@@ -111,8 +111,7 @@
             // no transparany, because it hase more then one unwanted issues            
             var windowHandle = new WindowInteropHelper(this.AssociatedObject).Handle;
 
-            if (this.AssociatedObject.IsLoaded == false
-                && windowHandle == IntPtr.Zero)
+            if (this.AssociatedObject.IsLoaded == false && windowHandle == IntPtr.Zero)
             {
                 try
                 {
@@ -199,12 +198,7 @@
 
         private void ForceRedrawWindowAsync()
         {
-            if (this.AssociatedObject == null)
-            {
-                return;
-            }
-
-            this.AssociatedObject.Dispatcher.BeginInvoke(DispatcherPriority.Background, (Action)(() => this.ForceRedrawWindow()));
+            this.AssociatedObject?.Dispatcher.BeginInvoke(DispatcherPriority.Background, (Action)(() => this.ForceRedrawWindow()));
         }
 
         private void ForceRedrawWindow()
@@ -333,10 +327,7 @@
 
             this.hwndSource = HwndSource.FromHwnd(this.handle);
 
-            if (this.hwndSource != null)
-            {
-                this.hwndSource.AddHook(this.WindowProc);
-            }
+            this.hwndSource?.AddHook(this.WindowProc);
 
             if (this.AssociatedObject.ResizeMode != ResizeMode.NoResize)
             {
@@ -346,9 +337,7 @@
                 var sizeToContent = this.AssociatedObject.SizeToContent;
                 var snapsToDevicePixels = this.AssociatedObject.SnapsToDevicePixels;
                 this.AssociatedObject.SnapsToDevicePixels = true;
-                this.AssociatedObject.SizeToContent = sizeToContent == SizeToContent.WidthAndHeight
-                                                          ? SizeToContent.Height
-                                                          : SizeToContent.Manual;
+                this.AssociatedObject.SizeToContent = sizeToContent == SizeToContent.WidthAndHeight ? SizeToContent.Height : SizeToContent.Manual;
                 this.AssociatedObject.SizeToContent = sizeToContent;
                 this.AssociatedObject.SnapsToDevicePixels = snapsToDevicePixels;
             }

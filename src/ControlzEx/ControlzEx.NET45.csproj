@@ -63,6 +63,7 @@
     <Compile Include="Helper\DpiHelper.cs" />
     <Compile Include="Helper\MonitorHelper.cs" />
     <Compile Include="Helper\PropertyChangeNotifier.cs" />
+    <Compile Include="KeyboardNavigationEx.cs" />
     <Compile Include="Microsoft.Windows.Shell\Standard\ComGuids.cs" />
     <Compile Include="Microsoft.Windows.Shell\Standard\Debug.cs" />
     <Compile Include="Microsoft.Windows.Shell\Standard\DoubleUtil.cs" />
