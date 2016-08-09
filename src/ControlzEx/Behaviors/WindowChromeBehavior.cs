@@ -198,7 +198,7 @@
 
         private void ForceRedrawWindowAsync()
         {
-            this.AssociatedObject?.Dispatcher.BeginInvoke(DispatcherPriority.Background, (Action)(() => this.ForceRedrawWindow()));
+            this.AssociatedObject?.Dispatcher.BeginInvoke(DispatcherPriority.Background, (Action)this.ForceRedrawWindow);
         }
 
         private void ForceRedrawWindow()
@@ -300,7 +300,7 @@
             if (this.isWindwos10OrHigher == false)
             {
                 // Removing, redrawing and adding DLGFRAME forces windows to draw correctly
-                var style = WS.DLGFRAME;
+                const WS style = WS.DLGFRAME;
                 var modified = this.handle._ModifyStyle(style, 0);
 
                 NativeMethods.SetWindowPos(this.handle, IntPtr.Zero, x, y, 0, 0, SWP.NOSIZE | SWP.SHOWWINDOW);
@@ -320,9 +320,11 @@
         {
             this.handle = new WindowInteropHelper(this.AssociatedObject).Handle;
 
-            if (null == this.handle)
+            if (IntPtr.Zero == this.handle)
             {
-                throw new Exception("Uups, at this point we really need the Handle from the associated object!");
+                // If the window got closed very early
+                this.Detach();
+                return;
             }
 
             this.hwndSource = HwndSource.FromHwnd(this.handle);

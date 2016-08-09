@@ -260,6 +260,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
                 Utility.RemoveDependencyPropertyChangeListener(_window, Window.FlowDirectionProperty, _OnWindowPropertyChangedThatRequiresTemplateFixup);
                 _window.SourceInitialized -= _WindowSourceInitialized;
                 _window.StateChanged -= _FixupRestoreBounds;
+                _window.Closed -= _UnsetWindow;
             }
         }
 
@@ -343,6 +344,13 @@ namespace ControlzEx.Microsoft.Windows.Shell
             // Force this the first time.
             _UpdateSystemMenu(_window.WindowState);
             _UpdateFrameState(true);
+
+            if (_hwndSource.IsDisposed)
+            {
+                // If the window got closed very early
+                _UnsetWindow(this._window, EventArgs.Empty);
+                return;
+            }
 
             NativeMethods.SetWindowPos(_hwnd, IntPtr.Zero, 0, 0, 0, 0, _SwpFlags);
         }
@@ -1388,6 +1396,12 @@ namespace ControlzEx.Microsoft.Windows.Shell
                     _ExtendGlassFrame();
                 }
 
+                if (_hwndSource.IsDisposed)
+                {
+                    // If the window got closed very early
+                    return;
+                }
+
                 if (_window.WindowStyle == WindowStyle.None)
                 {
                     if (_chromeInfo.IgnoreTaskbarOnMaximize == false)
@@ -1657,6 +1671,12 @@ namespace ControlzEx.Microsoft.Windows.Shell
             if (IntPtr.Zero == _hwnd)
             {
                 // Can't do anything with this call until the Window has been shown.
+                return;
+            }
+
+            if (_hwndSource.IsDisposed)
+            {
+                // If the window got closed very early
                 return;
             }
 
