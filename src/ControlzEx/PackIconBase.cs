@@ -1,9 +1,14 @@
 using System;
 using System.Collections.Generic;
+#if NETFX_CORE
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+#else
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+#endif
 
 namespace ControlzEx
 {
@@ -49,23 +54,34 @@ namespace ControlzEx
             set { SetValue(KindProperty, value); }
         }
 
+#if NETFX_CORE
+        private static readonly DependencyProperty DataProperty
+            = DependencyProperty.Register(nameof(Data), typeof(string), typeof(PackIconBase<TKind>), new PropertyMetadata(""));
+#else
         private static readonly DependencyPropertyKey DataPropertyKey
             = DependencyProperty.RegisterReadOnly(nameof(Data), typeof(string), typeof(PackIconBase<TKind>), new PropertyMetadata(""));
 
         // ReSharper disable once StaticMemberInGenericType
         public static readonly DependencyProperty DataProperty = DataPropertyKey.DependencyProperty;
+#endif
 
         /// <summary>
         /// Gets the icon path data for the current <see cref="Kind"/>.
         /// </summary>
+#if !NETFX_CORE
         [TypeConverter(typeof(GeometryConverter))]
+#endif
         public string Data
         {
             get { return (string)GetValue(DataProperty); }
-            private set { SetValue(DataPropertyKey, value); }
+            private set { SetValue(DataProperty, value); }
         }
 
+#if NETFX_CORE
+        protected override void OnApplyTemplate()
+#else
         public override void OnApplyTemplate()
+#endif
         {
             base.OnApplyTemplate();
 
