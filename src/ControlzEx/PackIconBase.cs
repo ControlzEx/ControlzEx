@@ -74,7 +74,7 @@ namespace ControlzEx
         public string Data
         {
             get { return (string)GetValue(DataProperty); }
-            private set { SetValue(DataProperty, value); }
+            private set { SetValue(DataPropertyKey, value); }
         }
 
 #if NETFX_CORE
