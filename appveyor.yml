@@ -6,7 +6,7 @@
     only:
       - develop
 
-  version: 2.1.2-dev
+  version: 2.1.4-dev
   configuration: Release
 
   init:
@@ -42,7 +42,7 @@
     only:
       - master
 
-  version: 2.1.2.{build}
+  version: 2.1.4.{build}
   configuration: Release
   
   # Install scripts. (runs after repo cloning)

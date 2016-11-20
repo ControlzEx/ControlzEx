@@ -1932,7 +1932,8 @@ namespace ControlzEx.Microsoft.Windows.Shell
             if (_GetHwndState() == WindowState.Maximized)
             {
                 if (_window.ResizeMode == ResizeMode.NoResize
-                    || _window.ResizeMode == ResizeMode.CanMinimize)
+                    || _window.ResizeMode == ResizeMode.CanMinimize
+                    || _window.SizeToContent != SizeToContent.Manual)
                 {
                     return default(Thickness);
                 }

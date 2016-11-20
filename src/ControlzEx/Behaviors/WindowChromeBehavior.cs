@@ -289,6 +289,10 @@
                 return;
             }
 
+            // Disable "SizeToContent", this is usually done in "DisableSizeToContent" of "HwndSource" if window is maximized.
+            // But setting "WindowState" in code does not cause that method to be called.
+            this.AssociatedObject.SizeToContent = SizeToContent.Manual;
+
             var monitorInfo = NativeMethods.GetMonitorInfoW(monitor);
             var rcMonitorArea = this.IgnoreTaskbarOnMaximize ? monitorInfo.rcMonitor : monitorInfo.rcWork;
 
