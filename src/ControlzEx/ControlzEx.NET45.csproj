@@ -59,6 +59,7 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="BadgedEx.cs" />
     <Compile Include="Behaviors\WindowChromeBehavior.cs" />
     <Compile Include="Helper\DpiHelper.cs" />
     <Compile Include="Helper\MonitorHelper.cs" />

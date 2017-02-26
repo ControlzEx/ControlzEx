@@ -11,12 +11,12 @@ using System.Windows;
 #endif
 [assembly: AssemblyCompany("https://github.com/ControlzEx/ControlzEx")]
 [assembly: AssemblyProduct("ControlzEx")]
-[assembly: AssemblyCopyright("Copyright © 2015 Jan Karger, Bastian Schmidt")]
+[assembly: AssemblyCopyright("Copyright © 2015 - 2017 Jan Karger, Bastian Schmidt, James Willock")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
-[assembly: AssemblyVersion("2.1.4.0")]
-[assembly: AssemblyFileVersion("2.1.4.0")]
+[assembly: AssemblyVersion("2.2.0.0")]
+[assembly: AssemblyFileVersion("2.2.0.0")]
 [assembly: AssemblyInformationalVersion("SRC")]
 
 [assembly: ComVisible(false)]
