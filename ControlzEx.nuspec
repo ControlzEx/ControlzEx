@@ -13,7 +13,7 @@
     <summary>ControlzEx</summary>
     <description>ControlzEx</description>
     <releaseNotes>https://github.com/ControlzEx/ControlzEx/releases</releaseNotes>
-    <copyright>Copyright 2015 - 2016 Jan Karger, Bastian Schmidt, James Willock</copyright>
+    <copyright>Copyright 2015 - 2017 Jan Karger, Bastian Schmidt, James Willock</copyright>
     <tags>WPF XAML Controls WinRT UI UX Windows WindowChrome</tags>
   </metadata>
   <files>
