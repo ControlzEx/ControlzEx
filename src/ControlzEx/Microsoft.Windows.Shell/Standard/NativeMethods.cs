@@ -8,14 +8,11 @@
     using System.Runtime.InteropServices;
     using System.Runtime.InteropServices.ComTypes;
     using System.Security;
-    using System.Security.Permissions;
     using System.Text;
     using Microsoft.Win32.SafeHandles;
 
     // Some COM interfaces and Win32 structures are already declared in the framework.
     // Interesting ones to remember in System.Runtime.InteropServices.ComTypes are:
-    using FILETIME = System.Runtime.InteropServices.ComTypes.FILETIME;
-    using IPersistFile = System.Runtime.InteropServices.ComTypes.IPersistFile;
     using IStream = System.Runtime.InteropServices.ComTypes.IStream;
 
     #region Native Values
@@ -1160,6 +1157,7 @@
     {
         SIZE = 0xF000,
         MOVE = 0xF010,
+        MOUSEMOVE = 0xF012,
         MINIMIZE = 0xF020,
         MAXIMIZE = 0xF030,
         NEXTWINDOW = 0xF040,
@@ -1392,56 +1390,6 @@
         ABM_SETAUTOHIDEBAR = 8,
         ABM_WINDOWPOSCHANGED = 9,
         ABM_SETSTATE = 10
-    }
-
-    [Flags()]
-    internal enum RedrawWindowFlags : uint
-    {
-        /// <summary>
-        /// Invalidates the rectangle or region that you specify in lprcUpdate or hrgnUpdate.
-        /// You can set only one of these parameters to a non-NULL value. If both are NULL, RDW_INVALIDATE invalidates the entire window.
-        /// </summary>
-        Invalidate = 0x1,
-
-        /// <summary>Causes the OS to post a WM_PAINT message to the window regardless of whether a portion of the window is invalid.</summary>
-        InternalPaint = 0x2,
-
-        /// <summary>
-        /// Causes the window to receive a WM_ERASEBKGND message when the window is repainted.
-        /// Specify this value in combination with the RDW_INVALIDATE value; otherwise, RDW_ERASE has no effect.
-        /// </summary>
-        Erase = 0x4,
-
-        /// <summary>
-        /// Validates the rectangle or region that you specify in lprcUpdate or hrgnUpdate.
-        /// You can set only one of these parameters to a non-NULL value. If both are NULL, RDW_VALIDATE validates the entire window.
-        /// This value does not affect internal WM_PAINT messages.
-        /// </summary>
-        Validate = 0x8,
-
-        NoInternalPaint = 0x10,
-
-        /// <summary>Suppresses any pending WM_ERASEBKGND messages.</summary>
-        NoErase = 0x20,
-
-        /// <summary>Excludes child windows, if any, from the repainting operation.</summary>
-        NoChildren = 0x40,
-
-        /// <summary>Includes child windows, if any, in the repainting operation.</summary>
-        AllChildren = 0x80,
-
-        /// <summary>Causes the affected windows, which you specify by setting the RDW_ALLCHILDREN and RDW_NOCHILDREN values, to receive WM_ERASEBKGND and WM_PAINT messages before the RedrawWindow returns, if necessary.</summary>
-        UpdateNow = 0x100,
-
-        /// <summary>
-        /// Causes the affected windows, which you specify by setting the RDW_ALLCHILDREN and RDW_NOCHILDREN values, to receive WM_ERASEBKGND messages before RedrawWindow returns, if necessary.
-        /// The affected windows receive WM_PAINT messages at the ordinary time.
-        /// </summary>
-        EraseNow = 0x200,
-
-        Frame = 0x400,
-
-        NoFrame = 0x800
     }
 
     #endregion
@@ -2136,7 +2084,7 @@
     };
 
     [StructLayout(LayoutKind.Sequential)]
-    public class MONITORINFO
+    internal class MONITORINFO
     {
         public int cbSize = Marshal.SizeOf(typeof(MONITORINFO));
         public RECT rcMonitor;
@@ -2145,7 +2093,7 @@
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct POINT
+    internal struct POINT
     {
         public int x;
         public int y;
@@ -2160,7 +2108,7 @@
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct RECT
+    internal struct RECT
     {
         private int _left;
         private int _top;
@@ -2331,7 +2279,7 @@
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct SIZE
+    internal struct SIZE
     {
         public int cx;
         public int cy;
@@ -2598,40 +2546,6 @@
     // Some native methods are shimmed through public versions that handle converting failures into thrown exceptions.
     internal static class NativeMethods
     {
-        /// <summary>Add and remove a native WindowStyle from the HWND.</summary>
-        /// <param name="_hwnd">A HWND for a window.</param>
-        /// <param name="removeStyle">The styles to be removed.  These can be bitwise combined.</param>
-        /// <param name="addStyle">The styles to be added.  These can be bitwise combined.</param>
-        /// <returns>Whether the styles of the HWND were modified as a result of this call.</returns>
-        /// <SecurityNote>
-        ///   Critical : Calls critical methods
-        /// </SecurityNote>
-        [SecurityCritical]
-        public static bool _ModifyStyle(this IntPtr _hwnd, WS removeStyle, WS addStyle)
-        {
-            Assert.IsNotDefault(_hwnd);
-            var intPtr = NativeMethods.GetWindowLongPtr(_hwnd, GWL.STYLE);
-            var dwStyle = (WS)(Environment.Is64BitProcess ? intPtr.ToInt64() : intPtr.ToInt32());
-            var dwNewStyle = (dwStyle & ~removeStyle) | addStyle;
-            if (dwStyle == dwNewStyle)
-            {
-                return false;
-            }
-
-            NativeMethods.SetWindowLongPtr(_hwnd, GWL.STYLE, new IntPtr((int)dwNewStyle));
-            return true;
-        }
-
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        [DllImport("user32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool RedrawWindow(IntPtr hWnd, [In] ref RECT lprcUpdate, IntPtr hrgnUpdate, RedrawWindowFlags flags);
-
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        [DllImport("user32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool RedrawWindow(IntPtr hWnd, IntPtr lprcUpdate, IntPtr hrgnUpdate, RedrawWindowFlags flags);
-        
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("user32.dll", EntryPoint = "AdjustWindowRectEx", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -2724,6 +2638,10 @@
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("user32.dll", CharSet = CharSet.None, SetLastError = true, EntryPoint = "ClientToScreen")]
         public static extern bool ClientToScreen(IntPtr hWnd, ref POINT point);
+
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [DllImport("user32.dll", CharSet = CharSet.None, SetLastError = true, EntryPoint = "ScreenToClient")]
+        public static extern bool ScreenToClient(IntPtr hWnd, ref POINT point);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("gdi32.dll")]
@@ -3079,11 +2997,13 @@
             return rc;
         }
 
+        [SecurityCritical]
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        [DllImport("user32.dll", EntryPoint = "GetCursorPos", SetLastError = true)]
+        [DllImport("user32.dll", EntryPoint = "GetCursorPos", ExactSpelling = true, CharSet = CharSet.Auto, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool _GetCursorPos(out POINT lpPoint);
 
+        [SecurityCritical]
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static POINT GetCursorPos()
         {
@@ -3092,8 +3012,59 @@
             {
                 HRESULT.ThrowLastError();
             }
-
             return pt;
+        }
+
+        [SecurityCritical]
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        public static bool TryGetCursorPos(out POINT pt)
+        {
+            var returnValue = _GetCursorPos(out pt);
+            // Sometimes Win32 will fail this call, such as if you are
+            // not running in the interactive desktop. For example,
+            // a secure screen saver may be running.
+            if (!returnValue)
+            {
+                System.Diagnostics.Debug.WriteLine("GetCursorPos failed!");
+                pt.x = 0;
+                pt.y = 0;
+            }
+            return returnValue;
+        }
+
+        [SecurityCritical]
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [DllImport("user32.dll", EntryPoint = "GetPhysicalCursorPos", ExactSpelling = true, CharSet = CharSet.Auto, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool _GetPhysicalCursorPos(out POINT lpPoint);
+
+        [SecurityCritical]
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        public static POINT GetPhysicalCursorPos()
+        {
+            POINT pt;
+            if (!_GetPhysicalCursorPos(out pt))
+            {
+                HRESULT.ThrowLastError();
+            }
+            return pt;
+        }
+
+        [SecurityCritical]
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        public static bool TryGetPhysicalCursorPos(out POINT pt)
+        {
+            var returnValue = _GetPhysicalCursorPos(out pt);
+            // Sometimes Win32 will fail this call, such as if you are
+            // not running in the interactive desktop. For example,
+            // a secure screen saver may be running.
+            if (!returnValue)
+            {
+                System.Diagnostics.Debug.WriteLine("GetPhysicalCursorPos failed!");
+                pt.x = 0;
+                pt.y = 0;
+            }
+            return returnValue;
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]

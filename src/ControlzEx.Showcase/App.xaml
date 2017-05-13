@@ -21,22 +21,6 @@
             </Style>
 
             <Style TargetType="{x:Type local:WindowChromeWindow}"
-                   x:Key="SingleBorderWindowStyle"
-                   BasedOn="{StaticResource {x:Type local:WindowChromeWindow}}">
-                <Setter Property="WindowStyle"
-                        Value="SingleBorderWindow" />
-                <Setter Property="GlassFrameThickness"
-                        Value="0,27,0,0" />
-                <Style.Triggers>
-                    <Trigger Property="WindowState"
-                             Value="Maximized">
-                        <Setter Property="GlassFrameThickness"
-                                Value="0,31,0,0" />
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-
-            <Style TargetType="{x:Type local:WindowChromeWindow}"
                    x:Key="NoneWindowStyle"
                    BasedOn="{StaticResource {x:Type local:WindowChromeWindow}}">
                 <Setter Property="WindowStyle"

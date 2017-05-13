@@ -4,10 +4,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using ControlzEx.Helper;
 
 namespace ControlzEx
 {
+    using Standard;
+
     public static class ToolTipAssist
     {
         public static readonly DependencyProperty AutoMoveProperty =

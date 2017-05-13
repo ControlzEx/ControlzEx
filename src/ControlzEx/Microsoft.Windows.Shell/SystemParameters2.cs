@@ -2,9 +2,7 @@
     Copyright Microsoft Corporation. All Rights Reserved.
 \**************************************************************************/
 
-#pragma warning disable 1591
-
-namespace ControlzEx.Microsoft.Windows.Shell
+namespace Microsoft.Windows.Shell
 {
     using System;
     using System.Collections.Generic;
@@ -16,7 +14,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
     using Standard;
 
     [SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable")]
-    public class SystemParameters2 : INotifyPropertyChanged
+    internal class SystemParameters2 : INotifyPropertyChanged
     {
         private delegate void _SystemMetricUpdate(IntPtr wParam, IntPtr lParam);
 

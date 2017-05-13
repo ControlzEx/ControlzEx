@@ -1,16 +1,16 @@
 ﻿/**************************************************************************\
     Copyright Microsoft Corporation. All Rights Reserved.
 \**************************************************************************/
-#pragma warning disable 1570,1591
-namespace ControlzEx.Microsoft.Windows.Shell
+
+namespace Microsoft.Windows.Shell
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using System.Reflection;
     using System.Runtime.InteropServices;
     using System.Security;
     using System.Security.Permissions;
-    using System.Threading;
     using System.Windows;
     using System.Windows.Interop;
     using System.Windows.Media;
@@ -21,6 +21,20 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
     internal class WindowChromeWorker : DependencyObject
     {
+        private static readonly Version _presentationFrameworkVersion = Assembly.GetAssembly(typeof(Window)).GetName().Version;
+
+        /// <summary>
+        /// Is this using WPF4?
+        /// </summary>
+        /// <remarks>
+        /// There are a few specific bugs in Window in 3.5SP1 and below that require workarounds
+        /// when handling WM_NCCALCSIZE on the HWND.
+        /// </remarks>
+        private static bool IsPresentationFrameworkVersionLessThan4
+        {
+            get { return _presentationFrameworkVersion < new Version(4, 0); }
+        }
+
         // Delegate signature used for Dispatcher.BeginInvoke.
         private delegate void _Action();
 
@@ -36,14 +50,14 @@ namespace ControlzEx.Microsoft.Windows.Shell
         /// <summary>Underlying HWND for the _window.</summary>
         /// <SecurityNote>
         ///   Critical : Critical member
-        /// <SecurityNote>
+        /// </SecurityNote>
         [SecurityCritical]
         private IntPtr _hwnd;
 
         /// <summary>Underlying HWND for the _window.</summary>
         /// <SecurityNote>
         ///   Critical : Critical member provides access to HWND's window messages which are critical
-        /// <SecurityNote>
+        /// </SecurityNote>
         [SecurityCritical]
         private HwndSource _hwndSource = null;
 
@@ -69,19 +83,11 @@ namespace ControlzEx.Microsoft.Windows.Shell
         #endregion
 
         /// <SecurityNote>
-        ///   Critical : Initializes critical members
-        /// <SecurityNote>
-        [SecurityCritical]
-        static WindowChromeWorker()
-        {
-        }
-
-        /// <SecurityNote>
         ///   Critical : Store critical methods in critical callback table
         ///   Safe     : Demands full trust permissions
-        /// <SecurityNote>
+        /// </SecurityNote>
         [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
+        [PermissionSet(SecurityAction.Demand, Name="FullTrust")]
         public WindowChromeWorker()
         {
             _messageTable = new List<HANDLE_MESSAGE>
@@ -89,13 +95,13 @@ namespace ControlzEx.Microsoft.Windows.Shell
                 new HANDLE_MESSAGE(WM.NCUAHDRAWCAPTION,      _HandleNCUAHDrawCaption),
                 new HANDLE_MESSAGE(WM.SETTEXT,               _HandleSetTextOrIcon),
                 new HANDLE_MESSAGE(WM.SETICON,               _HandleSetTextOrIcon),
-                new HANDLE_MESSAGE(WM.SYSCOMMAND,            _HandleSysCommand),
+                new HANDLE_MESSAGE(WM.SYSCOMMAND,            _HandleRestoreWindow),
                 new HANDLE_MESSAGE(WM.NCACTIVATE,            _HandleNCActivate),
                 new HANDLE_MESSAGE(WM.NCCALCSIZE,            _HandleNCCalcSize),
                 new HANDLE_MESSAGE(WM.NCHITTEST,             _HandleNCHitTest),
                 new HANDLE_MESSAGE(WM.NCRBUTTONUP,           _HandleNCRButtonUp),
                 new HANDLE_MESSAGE(WM.SIZE,                  _HandleSize),
-                new HANDLE_MESSAGE(WM.WINDOWPOSCHANGING,     _HandleWindowPosChanging),
+                new HANDLE_MESSAGE(WM.WINDOWPOSCHANGING,     _HandleWindowPosChanging),   
                 new HANDLE_MESSAGE(WM.WINDOWPOSCHANGED,      _HandleWindowPosChanged),
                 new HANDLE_MESSAGE(WM.GETMINMAXINFO,         _HandleGetMinMaxInfo),
                 new HANDLE_MESSAGE(WM.DWMCOMPOSITIONCHANGED, _HandleDwmCompositionChanged),
@@ -104,7 +110,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
                 new HANDLE_MESSAGE(WM.EXITSIZEMOVE,          _HandleExitSizeMoveForAnimation),
             };
 
-            if (Utility.IsPresentationFrameworkVersionLessThan4)
+            if (IsPresentationFrameworkVersionLessThan4)
             {
                 _messageTable.AddRange(new[]
                 {
@@ -119,9 +125,9 @@ namespace ControlzEx.Microsoft.Windows.Shell
         /// <SecurityNote>
         ///   Critical : Calls critical methods
         ///   Safe     : Demands full trust permissions
-        /// <SecurityNote>
+        /// </SecurityNote>
         [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
+        [PermissionSet(SecurityAction.Demand, Name="FullTrust")]
         public void SetWindowChrome(WindowChrome newChrome)
         {
             VerifyAccess();
@@ -150,9 +156,9 @@ namespace ControlzEx.Microsoft.Windows.Shell
         /// <SecurityNote>
         ///   Critical : Calls critical methods
         ///   Safe     : Demands full trust permissions
-        /// <SecurityNote>
+        /// </SecurityNote>
         [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
+        [PermissionSet(SecurityAction.Demand, Name="FullTrust")]
         private void _OnChromePropertyChangedThatRequiresRepaint(object sender, EventArgs e)
         {
             _UpdateFrameState(true);
@@ -167,9 +173,9 @@ namespace ControlzEx.Microsoft.Windows.Shell
         /// <SecurityNote>
         ///   Critical : Calls critical methods
         ///   Safe     : Demands full trust permissions
-        /// <SecurityNote>
+        /// </SecurityNote>
         [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
+        [PermissionSet(SecurityAction.Demand, Name="FullTrust")]
         private static void _OnChromeWorkerChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var w = (Window)d;
@@ -185,7 +191,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Calls critical methods
-        /// <SecurityNote>
+        /// </SecurityNote>
         [SecurityCritical]
         private void _SetWindow(Window window)
         {
@@ -204,6 +210,9 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
             // On older versions of the framework the client size of the window is incorrectly calculated.
             // We need to modify the template to fix this on behalf of the user.
+
+            // This should only be required on older versions of the framework, but because of a DWM bug in Windows 7 we're exposing
+            // the SacrificialEdge property which requires this kind of fixup to be a bit more ubiquitous.
             Utility.AddDependencyPropertyChangeListener(_window, Window.TemplateProperty, _OnWindowPropertyChangedThatRequiresTemplateFixup);
             Utility.AddDependencyPropertyChangeListener(_window, Window.FlowDirectionProperty, _OnWindowPropertyChangedThatRequiresTemplateFixup);
 
@@ -232,9 +241,9 @@ namespace ControlzEx.Microsoft.Windows.Shell
         /// <SecurityNote>
         ///   Critical : Store critical methods in critical callback table
         ///   Safe     : Demands full trust permissions
-        /// <SecurityNote>
+        /// </SecurityNote>
         [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
+        [PermissionSet(SecurityAction.Demand, Name="FullTrust")]
         private void _WindowSourceInitialized(object sender, EventArgs e)
         {
             _hwnd = new WindowInteropHelper(_window).Handle;
@@ -250,7 +259,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : References critical methods
-        /// <SecurityNote>
+        /// </SecurityNote>
         [SecurityCritical]
         private void UnsubscribeWindowEvents()
         {
@@ -260,16 +269,16 @@ namespace ControlzEx.Microsoft.Windows.Shell
                 Utility.RemoveDependencyPropertyChangeListener(_window, Window.FlowDirectionProperty, _OnWindowPropertyChangedThatRequiresTemplateFixup);
                 _window.SourceInitialized -= _WindowSourceInitialized;
                 _window.StateChanged -= _FixupRestoreBounds;
-                _window.Closed -= _UnsetWindow;
+                _window.Closed -= _UnsetWindow; 
             }
         }
 
         /// <SecurityNote>
         ///   Critical : Store critical methods in critical callback table
         ///   Safe     : Demands full trust permissions
-        /// <SecurityNote>
+        /// </SecurityNote>
         [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
+        [PermissionSet(SecurityAction.Demand, Name="FullTrust")]
         private void _UnsetWindow(object sender, EventArgs e)
         {
             UnsubscribeWindowEvents();
@@ -299,9 +308,9 @@ namespace ControlzEx.Microsoft.Windows.Shell
         /// <SecurityNote>
         ///   Critical : Accesses critical _hwnd field
         ///   Safe     : Demands full trust permissions
-        /// <SecurityNote>
+        /// </SecurityNote>
         [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
+        [PermissionSet(SecurityAction.Demand, Name="FullTrust")]
         private void _OnWindowPropertyChangedThatRequiresTemplateFixup(object sender, EventArgs e)
         {
             if (_chromeInfo != null && _hwnd != IntPtr.Zero)
@@ -317,7 +326,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Calls critical methods
-        /// <SecurityNote>
+        /// </SecurityNote>
         [SecurityCritical]
         private void _ApplyNewCustomChrome()
         {
@@ -339,6 +348,12 @@ namespace ControlzEx.Microsoft.Windows.Shell
                 _isHooked = true;
             }
 
+            if (_MinimizeAnimation)
+            {
+                // allow animation
+                _ModifyStyle(0, WS.CAPTION);
+            }
+
             _FixupTemplateIssues();
 
             // Force this the first time.
@@ -357,7 +372,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Calls critical methods
-        /// <SecurityNote>
+        /// </SecurityNote>
         [SecurityCritical]
         private void _FixupTemplateIssues()
         {
@@ -379,40 +394,40 @@ namespace ControlzEx.Microsoft.Windows.Shell
                 return;
             }
 
-            Thickness templateFixupMargin = this.GetDefaultFixupMargin();
+            Thickness templateFixupMargin = default(Thickness);
             Transform templateFixupTransform = null;
 
             var rootElement = (FrameworkElement)VisualTreeHelper.GetChild(_window, 0);
 
-            if (_chromeInfo.NonClientFrameEdges != NonClientFrameEdges.None)
+            if (_chromeInfo.SacrificialEdge != SacrificialEdge.None)
             {
-                if (Utility.IsFlagSet((int)_chromeInfo.NonClientFrameEdges, (int)NonClientFrameEdges.Top))
+                if (Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Top))
                 {
-#if NET45
+#if NET4_5
                     templateFixupMargin.Top -= SystemParameters.WindowResizeBorderThickness.Top;
 #else
                     templateFixupMargin.Top -= SystemParameters2.Current.WindowResizeBorderThickness.Top;
 #endif
                 }
-                if (Utility.IsFlagSet((int)_chromeInfo.NonClientFrameEdges, (int)NonClientFrameEdges.Left))
+                if (Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Left))
                 {
-#if NET45
+#if NET4_5
                     templateFixupMargin.Left -= SystemParameters.WindowResizeBorderThickness.Left;
 #else
                     templateFixupMargin.Left -= SystemParameters2.Current.WindowResizeBorderThickness.Left;
 #endif
                 }
-                if (Utility.IsFlagSet((int)_chromeInfo.NonClientFrameEdges, (int)NonClientFrameEdges.Bottom))
+                if (Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Bottom))
                 {
-#if NET45
+#if NET4_5
                     templateFixupMargin.Bottom -= SystemParameters.WindowResizeBorderThickness.Bottom;
 #else
                     templateFixupMargin.Bottom -= SystemParameters2.Current.WindowResizeBorderThickness.Bottom;
 #endif
                 }
-                if (Utility.IsFlagSet((int)_chromeInfo.NonClientFrameEdges, (int)NonClientFrameEdges.Right))
+                if (Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Right))
                 {
-#if NET45
+#if NET4_5
                     templateFixupMargin.Right -= SystemParameters.WindowResizeBorderThickness.Right;
 #else
                     templateFixupMargin.Right -= SystemParameters2.Current.WindowResizeBorderThickness.Right;
@@ -420,7 +435,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
                 }
             }
 
-            if (Utility.IsPresentationFrameworkVersionLessThan4)
+            if (IsPresentationFrameworkVersionLessThan4)
             {
                 RECT rcWindow = NativeMethods.GetWindowRect(_hwnd);
                 RECT rcAdjustedClient = _GetAdjustedWindowRect(rcWindow);
@@ -428,43 +443,43 @@ namespace ControlzEx.Microsoft.Windows.Shell
                 Rect rcLogicalWindow = DpiHelper.DeviceRectToLogical(new Rect(rcWindow.Left, rcWindow.Top, rcWindow.Width, rcWindow.Height));
                 Rect rcLogicalClient = DpiHelper.DeviceRectToLogical(new Rect(rcAdjustedClient.Left, rcAdjustedClient.Top, rcAdjustedClient.Width, rcAdjustedClient.Height));
 
-                if (!Utility.IsFlagSet((int)_chromeInfo.NonClientFrameEdges, (int)NonClientFrameEdges.Left))
+                if (!Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Left))
                 {
-#if NET45
+#if NET4_5
                     templateFixupMargin.Right -= SystemParameters.WindowResizeBorderThickness.Left;
 #else
                     templateFixupMargin.Right -= SystemParameters2.Current.WindowResizeBorderThickness.Left;
 #endif
                 }
 
-                if (!Utility.IsFlagSet((int)_chromeInfo.NonClientFrameEdges, (int)NonClientFrameEdges.Right))
+                if (!Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Right))
                 {
-#if NET45
+#if NET4_5
                     templateFixupMargin.Right -= SystemParameters.WindowResizeBorderThickness.Right;
 #else
                     templateFixupMargin.Right -= SystemParameters2.Current.WindowResizeBorderThickness.Right;
 #endif
                 }
 
-                if (!Utility.IsFlagSet((int)_chromeInfo.NonClientFrameEdges, (int)NonClientFrameEdges.Top))
+                if (!Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Top))
                 {
-#if NET45
+#if NET4_5
                     templateFixupMargin.Bottom -= SystemParameters.WindowResizeBorderThickness.Top;
 #else
                     templateFixupMargin.Bottom -= SystemParameters2.Current.WindowResizeBorderThickness.Top;
 #endif
                 }
 
-                if (!Utility.IsFlagSet((int)_chromeInfo.NonClientFrameEdges, (int)NonClientFrameEdges.Bottom))
+                if (!Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Bottom))
                 {
-#if NET45
+#if NET4_5
                     templateFixupMargin.Bottom -= SystemParameters.WindowResizeBorderThickness.Bottom;
 #else
                     templateFixupMargin.Bottom -= SystemParameters2.Current.WindowResizeBorderThickness.Bottom;
 #endif
                 }
 
-#if NET45
+#if NET4_5
                 templateFixupMargin.Bottom -= SystemParameters.WindowCaptionHeight;
 #else
                 templateFixupMargin.Bottom -= SystemParameters2.Current.WindowCaptionHeight;
@@ -496,7 +511,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
             rootElement.Margin = templateFixupMargin;
 
-            if (Utility.IsPresentationFrameworkVersionLessThan4)
+            if (IsPresentationFrameworkVersionLessThan4)
             {
                 if (!_isFixedUp)
                 {
@@ -511,12 +526,12 @@ namespace ControlzEx.Microsoft.Windows.Shell
         /// <SecurityNote>
         ///   Critical : Store critical methods in critical callback table
         ///   Safe     : Demands full trust permissions
-        /// <SecurityNote>
+        /// </SecurityNote>
         [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
+        [PermissionSet(SecurityAction.Demand, Name="FullTrust")]
         private void _FixupRestoreBounds(object sender, EventArgs e)
         {
-            Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
+            Assert.IsTrue(IsPresentationFrameworkVersionLessThan4);
             if (_window.WindowState == WindowState.Maximized || _window.WindowState == WindowState.Minimized)
             {
                 // Old versions of WPF sometimes force their incorrect idea of the Window's location
@@ -541,12 +556,12 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Calls critical methods
-        /// <SecurityNote>
+        /// </SecurityNote>
         [SecurityCritical]
         private RECT _GetAdjustedWindowRect(RECT rcWindow)
         {
             // This should only be used to work around issues in the Framework that were fixed in 4.0
-            Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
+            Assert.IsTrue(IsPresentationFrameworkVersionLessThan4);
 
             var style = (WS)NativeMethods.GetWindowLongPtr(_hwnd, GWL.STYLE);
             var exstyle = (WS_EX)NativeMethods.GetWindowLongPtr(_hwnd, GWL.EXSTYLE);
@@ -561,7 +576,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
         // different orders, so this isn't absolutely reliable.
         /// <SecurityNote>
         ///   Critical : Calls critical method
-        /// <SecurityNote>
+        /// </SecurityNote>
         private bool _IsWindowDocked
         {
             [SecurityCritical]
@@ -569,7 +584,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
             {
                 // We're only detecting this state to work around .Net 3.5 issues.
                 // This logic won't work correctly when those issues are fixed.
-                Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
+                Assert.IsTrue(IsPresentationFrameworkVersionLessThan4);
 
                 if (_window.WindowState != WindowState.Normal)
                 {
@@ -589,7 +604,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
         {
             get
             {
-                return SystemParameters.MinimizeAnimation && _chromeInfo.IgnoreTaskbarOnMaximize == false;
+                return SystemParameters.MinimizeAnimation && _chromeInfo.IgnoreTaskbarOnMaximize == false;// && _chromeInfo.UseNoneWindowStyle == false;
             }
         }
 
@@ -597,7 +612,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Accesses critical _hwnd
-        /// <SecurityNote>
+        /// </SecurityNote>
         [SecurityCritical]
         private IntPtr _WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
@@ -606,7 +621,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
             // Check if window has a RootVisual to workaround issue #13 (Win32Exception on closing window).
             // RootVisual gets cleared when the window is closing. This happens in CloseWindowFromWmClose of the Window class.
-            if (this._hwndSource?.RootVisual == null)
+            if (_hwndSource?.RootVisual == null)
             {
                 return IntPtr.Zero;
             }
@@ -624,13 +639,13 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Calls critical methods
-        /// <SecurityNote>
+        /// </SecurityNote>
         [SecurityCritical]
         private IntPtr _HandleNCUAHDrawCaption(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
             if (false == _window.ShowInTaskbar && _GetHwndState() == WindowState.Minimized)
             {
-                bool modified = _hwnd._ModifyStyle(WS.VISIBLE, 0);
+                bool modified = _ModifyStyle(WS.VISIBLE, 0);
 
                 // Minimize the window with ShowInTaskbar == false cause Windows to redraw the caption.
                 // Letting the default WndProc handle the message without the WS_VISIBLE
@@ -640,7 +655,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
                 // Put back the style we removed.
                 if (modified)
                 {
-                    _hwnd._ModifyStyle(0, WS.VISIBLE);
+                    _ModifyStyle(0, WS.VISIBLE);
                 }
                 handled = true;
                 return lRet;
@@ -654,7 +669,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
         private IntPtr _HandleSetTextOrIcon(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
-            bool modified = _hwnd._ModifyStyle(WS.VISIBLE, 0);
+            bool modified = _ModifyStyle(WS.VISIBLE, 0);
 
             // Setting the caption text and icon cause Windows to redraw the caption.
             // Letting the default WndProc handle the message without the WS_VISIBLE
@@ -664,7 +679,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
             // Put back the style we removed.
             if (modified)
             {
-                _hwnd._ModifyStyle(0, WS.VISIBLE);
+                _ModifyStyle(0, WS.VISIBLE);
             }
             handled = true;
             return lRet;
@@ -674,23 +689,21 @@ namespace ControlzEx.Microsoft.Windows.Shell
         ///   Critical : Calls critical methods
         /// </SecurityNote>
         [SecurityCritical]
-        private IntPtr _HandleSysCommand(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        private IntPtr _HandleRestoreWindow(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
+            WINDOWPLACEMENT wpl = NativeMethods.GetWindowPlacement(_hwnd);
             var sc = (SC)(Environment.Is64BitProcess ? wParam.ToInt64() : wParam.ToInt32());
-            if (SC.RESTORE == sc
-                && _GetHwndState() == WindowState.Maximized
-                && (_MinimizeAnimation || _chromeInfo.UseAeroCaptionButtons))
+            if (SC.RESTORE == sc && wpl.showCmd == SW.SHOWMAXIMIZED && _MinimizeAnimation)
             {
-                var modified = _hwnd._ModifyStyle(WS.SYSMENU, 0);
+                var modified = _ModifyStyle(WS.SYSMENU, 0);
 
                 IntPtr lRet = NativeMethods.DefWindowProc(_hwnd, uMsg, wParam, lParam);
 
                 // Put back the style we removed.
                 if (modified)
                 {
-                    _hwnd._ModifyStyle(0, WS.SYSMENU);
+                    modified = _ModifyStyle(0, WS.SYSMENU);
                 }
-
                 handled = true;
                 return lRet;
             }
@@ -702,6 +715,8 @@ namespace ControlzEx.Microsoft.Windows.Shell
         }
 
         /// <SecurityNote>
+        ///   Critical : Calls critical methods
+        /// </SecurityNote>
         [SecurityCritical]
         private IntPtr _HandleNCActivate(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
@@ -712,6 +727,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
             // which bypasses any other handling of the message.
             IntPtr lRet = NativeMethods.DefWindowProc(_hwnd, WM.NCACTIVATE, wParam, new IntPtr(-1));
             handled = true;
+
             return lRet;
         }
 
@@ -722,7 +738,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
         ///   Critical : Calls critical methods
         /// </SecurityNote>
         [SecurityCritical]
-        private static RECT AdjustWorkingAreaForAutoHide(IntPtr monitorContainingApplication, RECT area)
+        private static RECT AdjustWorkingAreaForAutoHide(IntPtr monitorContainingApplication, RECT area )
         {
             // maybe we can use ReBarWindow32 isntead Shell_TrayWnd
             IntPtr hwnd = NativeMethods.FindWindow("Shell_TrayWnd", null);
@@ -767,10 +783,10 @@ namespace ControlzEx.Microsoft.Windows.Shell
         // Also, when windows are resized they tend to flicker black, sometimes staying that way until resized again.
         //
         // At least on RTM Win7 we can avoid the problem by making the client area not extactly match the non-client
-        // area, so we added the NonClientFrameEdges property.
+        // area, so we added the SacrificialEdge property.
         /// <SecurityNote>
         ///   Critical : Calls critical Marshal.PtrToStructure
-        /// <SecurityNote>
+        /// </SecurityNote>
         [SecurityCritical]
         private IntPtr _HandleNCCalcSize(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
@@ -778,48 +794,48 @@ namespace ControlzEx.Microsoft.Windows.Shell
             // Since the first field of NCCALCSIZE_PARAMS is a RECT and is the only field we care about
             // we can unconditionally treat it as a RECT.
 
-            if (_GetHwndState() == WindowState.Maximized)
+            if (NativeMethods.GetWindowPlacement(_hwnd).showCmd == SW.MAXIMIZE)
             {
-                if (_chromeInfo.IgnoreTaskbarOnMaximize == false)
+                if (_MinimizeAnimation)
                 {
-                    var mon = NativeMethods.MonitorFromWindow(_hwnd, (uint)MonitorOptions.MONITOR_DEFAULTTONEAREST);
-                    var mi = NativeMethods.GetMonitorInfo(mon);
+                    IntPtr mon = NativeMethods.MonitorFromWindow(_hwnd, (uint)MonitorOptions.MONITOR_DEFAULTTONEAREST);
+                    MONITORINFO mi = NativeMethods.GetMonitorInfo(mon);
 
-                    var def = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT));
+                    RECT rc = (RECT) Marshal.PtrToStructure(lParam, typeof(RECT));
+                    NativeMethods.DefWindowProc(_hwnd, WM.NCCALCSIZE, wParam, lParam);
+                    RECT def = (RECT) Marshal.PtrToStructure(lParam, typeof(RECT));
+                    def.Top = (int) (rc.Top + NativeMethods.GetWindowInfo(_hwnd).cyWindowBorders);
 
                     // monitor an work area will be equal if taskbar is hidden
                     if (mi.rcMonitor.Height == mi.rcWork.Height && mi.rcMonitor.Width == mi.rcWork.Width)
                     {
                         def = AdjustWorkingAreaForAutoHide(mon, def);
                     }
-
                     Marshal.StructureToPtr(def, lParam, true);
                 }
             }
 
-            this.FixupRootElementMargin();
-
-            if (_chromeInfo.NonClientFrameEdges != NonClientFrameEdges.None)
+            if (_chromeInfo.SacrificialEdge != SacrificialEdge.None)
             {
-#if NET45
+#if NET4_5
                 Thickness windowResizeBorderThicknessDevice = DpiHelper.LogicalThicknessToDevice(SystemParameters.WindowResizeBorderThickness);
 #else
                 Thickness windowResizeBorderThicknessDevice = DpiHelper.LogicalThicknessToDevice(SystemParameters2.Current.WindowResizeBorderThickness);
 #endif
                 var rcClientArea = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT));
-                if (Utility.IsFlagSet((int)_chromeInfo.NonClientFrameEdges, (int)NonClientFrameEdges.Top))
+                if (Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Top))
                 {
                     rcClientArea.Top += (int)windowResizeBorderThicknessDevice.Top;
                 }
-                if (Utility.IsFlagSet((int)_chromeInfo.NonClientFrameEdges, (int)NonClientFrameEdges.Left))
+                if (Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Left))
                 {
                     rcClientArea.Left += (int)windowResizeBorderThicknessDevice.Left;
                 }
-                if (Utility.IsFlagSet((int)_chromeInfo.NonClientFrameEdges, (int)NonClientFrameEdges.Bottom))
+                if (Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Bottom))
                 {
                     rcClientArea.Bottom -= (int)windowResizeBorderThicknessDevice.Bottom;
                 }
-                if (Utility.IsFlagSet((int)_chromeInfo.NonClientFrameEdges, (int)NonClientFrameEdges.Right))
+                if (Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Right))
                 {
                     rcClientArea.Right -= (int)windowResizeBorderThicknessDevice.Right;
                 }
@@ -829,19 +845,9 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
             handled = true;
 
-            // Per MSDN for NCCALCSIZE, always return 0 when wParam == FALSE
-            // 
-            // Returning 0 when wParam == TRUE is not appropriate - it will preserve
-            // the old client area and align it with the upper-left corner of the new 
-            // client area. So we simply ask for a redraw (WVR_REDRAW)
-
-            IntPtr retVal = IntPtr.Zero;
-            if (wParam.ToInt32() != 0) // wParam == TRUE
-            {
-                retVal = new IntPtr((int)(WVR.VALIDRECTS | WVR.REDRAW));
-            }
-
-            return retVal;
+            // Using the combination of WVR.VALIDRECTS and WVR.REDRAW gives the smoothest
+            // resize behavior we can achieve here.
+            return new IntPtr((int)(WVR.VALIDRECTS | WVR.REDRAW));
         }
 
         private HT _GetHTFromResizeGripDirection(ResizeGripDirection direction)
@@ -874,20 +880,16 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Calls critical methods
-        /// <SecurityNote>
+        /// </SecurityNote>
         [SecurityCritical]
         private IntPtr _HandleNCHitTest(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
             // Let the system know if we consider the mouse to be in our effective non-client area.
-            var mousePosScreen = new Point(Utility.GET_X_LPARAM(lParam), Utility.GET_Y_LPARAM(lParam));
+            var mousePosScreen = Utility.GetPoint(lParam); //new Point(Utility.GET_X_LPARAM(lParam), Utility.GET_Y_LPARAM(lParam));
             Rect windowPosition = _GetWindowRect();
 
             Point mousePosWindow = mousePosScreen;
             mousePosWindow.Offset(-windowPosition.X, -windowPosition.Y);
-
-            var clientRect = _GetClientRectRelativeToWindowRect(this._hwnd);
-            mousePosWindow.Offset(-clientRect.Left, -clientRect.Top);
-
             mousePosWindow = DpiHelper.DevicePixelsToLogical(mousePosWindow);
 
             // If the app is asking for content to be treated as client then that takes precedence over _everything_, even DWM caption buttons.
@@ -937,7 +939,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Calls critical method
-        /// <SecurityNote>
+        /// </SecurityNote>
         [SecurityCritical]
         private IntPtr _HandleNCRButtonUp(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
@@ -945,7 +947,8 @@ namespace ControlzEx.Microsoft.Windows.Shell
             // to bring up the system menu.
             if (HT.CAPTION == (HT)(Environment.Is64BitProcess ? wParam.ToInt64() : wParam.ToInt32()))
             {
-                SystemCommands.ShowSystemMenuPhysicalCoordinates(_window, new Point(Utility.GET_X_LPARAM(lParam), Utility.GET_Y_LPARAM(lParam)));
+                //SystemCommands.ShowSystemMenuPhysicalCoordinates(_window, new Point(Utility.GET_X_LPARAM(lParam), Utility.GET_Y_LPARAM(lParam)));
+                SystemCommands.ShowSystemMenuPhysicalCoordinates(_window, Utility.GetPoint(lParam));
             }
             handled = false;
             return IntPtr.Zero;
@@ -953,7 +956,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Calls critical method
-        /// <SecurityNote>
+        /// </SecurityNote>
         [SecurityCritical]
         private IntPtr _HandleSize(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
@@ -968,7 +971,6 @@ namespace ControlzEx.Microsoft.Windows.Shell
             {
                 state = WindowState.Maximized;
             }
-
             _UpdateSystemMenu(state);
 
             // Still let the default WndProc handle this.
@@ -985,11 +987,11 @@ namespace ControlzEx.Microsoft.Windows.Shell
             if (!_isGlassEnabled)
             {
                 Assert.IsNotDefault(lParam);
-                var wp = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
+                var wp = (WINDOWPOS) Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
 
                 // we don't do bitwise operations cuz we're checking for this flag being the only one there
                 // I have no clue why this works, I tried this because VS2013 has this flag removed on fullscreen window movws
-                if (_chromeInfo.IgnoreTaskbarOnMaximize && _GetHwndState() == WindowState.Maximized && wp.flags == (int)SWP.FRAMECHANGED)
+                if (_chromeInfo.IgnoreTaskbarOnMaximize && _GetHwndState() == WindowState.Maximized && wp.flags == (int) SWP.FRAMECHANGED)
                 {
                     wp.flags = 0;
                     Marshal.StructureToPtr(wp, lParam, true);
@@ -1027,11 +1029,11 @@ namespace ControlzEx.Microsoft.Windows.Shell
                 }
                 _previousWP = wp;
 
-                //                if (wp.Equals(_previousWP) && wp.flags.Equals(_previousWP.flags))
-                //                {
-                //                    handled = true;
-                //                    return IntPtr.Zero;
-                //                }
+//                if (wp.Equals(_previousWP) && wp.flags.Equals(_previousWP.flags))
+//                {
+//                    handled = true;
+//                    return IntPtr.Zero;
+//                }
             }
 
             // Still want to pass this to DefWndProc
@@ -1046,15 +1048,15 @@ namespace ControlzEx.Microsoft.Windows.Shell
         private IntPtr _HandleGetMinMaxInfo(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
             /*
-             * This is a workaround for wrong windows behavior.
+             * This is a workaround for wrong windows behaviour.
              * If a Window sets the WindoStyle to None and WindowState to maximized and we have a multi monitor system
              * we can move the Window only one time. After that it's not possible to move the Window back to the
              * previous monitor.
              * This fix is not really a full fix. Moving the Window back gives us the wrong size, because
              * MonitorFromWindow gives us the wrong (old) monitor! This is fixed in _HandleMoveForRealSize.
              */
-            var ignoreTaskBar = _chromeInfo.IgnoreTaskbarOnMaximize;
-            if (ignoreTaskBar && _GetHwndState() == WindowState.Maximized)
+            var ignoreTaskBar = _chromeInfo.IgnoreTaskbarOnMaximize;// || _chromeInfo.UseNoneWindowStyle;
+            if (ignoreTaskBar && NativeMethods.IsZoomed(_hwnd))
             {
                 MINMAXINFO mmi = (MINMAXINFO)Marshal.PtrToStructure(lParam, typeof(MINMAXINFO));
                 IntPtr monitor = NativeMethods.MonitorFromWindow(_hwnd, (uint)MonitorOptions.MONITOR_DEFAULTTONEAREST);
@@ -1063,7 +1065,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
                     MONITORINFO monitorInfo = NativeMethods.GetMonitorInfoW(monitor);
                     RECT rcWorkArea = monitorInfo.rcWork;
                     RECT rcMonitorArea = monitorInfo.rcMonitor;
-
+                    
                     mmi.ptMaxPosition.x = Math.Abs(rcWorkArea.Left - rcMonitorArea.Left);
                     mmi.ptMaxPosition.y = Math.Abs(rcWorkArea.Top - rcMonitorArea.Top);
 
@@ -1082,6 +1084,8 @@ namespace ControlzEx.Microsoft.Windows.Shell
         }
 
         /// <SecurityNote>
+        ///   Critical : Calls critical methods
+        /// </SecurityNote>
         [SecurityCritical]
         private IntPtr _HandleDwmCompositionChanged(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
@@ -1093,13 +1097,13 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Calls critical methods
-        /// <SecurityNote>
+        /// </SecurityNote>
         [SecurityCritical]
         private IntPtr _HandleSettingChange(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
             // There are several settings that can cause fixups for the template to become invalid when changed.
             // These shouldn't be required on the v4 framework.
-            Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
+            Assert.IsTrue(IsPresentationFrameworkVersionLessThan4);
 
             _FixupTemplateIssues();
 
@@ -1109,12 +1113,12 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Calls critical methods
-        /// <SecurityNote>
+        /// </SecurityNote>
         [SecurityCritical]
         private IntPtr _HandleEnterSizeMove(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
             // This is only intercepted to deal with bugs in Window in .Net 3.5 and below.
-            Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
+            Assert.IsTrue(IsPresentationFrameworkVersionLessThan4);
 
             _isUserResizing = true;
 
@@ -1144,9 +1148,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
         [SecurityCritical]
         private IntPtr _HandleEnterSizeMoveForAnimation(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
-            if (_MinimizeAnimation
-                && _isGlassEnabled == false
-                && _GetHwndState() == WindowState.Maximized)
+            if (_MinimizeAnimation)// && _GetHwndState() != WindowState.Minimized)
             {
                 /* we only need to remove DLGFRAME ( CAPTION = BORDER | DLGFRAME )
                  * to prevent nasty drawing
@@ -1155,7 +1157,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
                  * will call this method, resulting in a 2px black border on the side
                  * when maximized.
                  */
-                _hwnd._ModifyStyle(WS.DLGFRAME, 0);
+                _ModifyStyle(WS.CAPTION, 0);
             }
             handled = false;
             return IntPtr.Zero;
@@ -1168,18 +1170,17 @@ namespace ControlzEx.Microsoft.Windows.Shell
         private IntPtr _HandleMoveForRealSize(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
             /*
-             * This is a workaround for wrong windows behavior (with multi monitor system).
+             * This is a workaround for wrong windows behaviour (with multi monitor system).
              * If a Window sets the WindoStyle to None and WindowState to maximized
              * we can move the Window to different monitor with maybe different dimension.
              * But after moving to the previous monitor we got a wrong size (from the old monitor dimension).
              */
             WindowState state = _GetHwndState();
-            if (state == WindowState.Maximized)
-            {
+            if (state == WindowState.Maximized) {
                 IntPtr monitorFromWindow = NativeMethods.MonitorFromWindow(_hwnd, (uint)MonitorOptions.MONITOR_DEFAULTTONEAREST);
                 if (monitorFromWindow != IntPtr.Zero)
                 {
-                    var ignoreTaskBar = _chromeInfo.IgnoreTaskbarOnMaximize;
+                    var ignoreTaskBar = _chromeInfo.IgnoreTaskbarOnMaximize;// || _chromeInfo.UseNoneWindowStyle;
                     MONITORINFO monitorInfo = NativeMethods.GetMonitorInfoW(monitorFromWindow);
                     RECT rcMonitorArea = ignoreTaskBar ? monitorInfo.rcMonitor : monitorInfo.rcWork;
                     /*
@@ -1212,13 +1213,13 @@ namespace ControlzEx.Microsoft.Windows.Shell
         [SecurityCritical]
         private IntPtr _HandleExitSizeMoveForAnimation(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
-            if (_MinimizeAnimation
-                && _isGlassEnabled == false)
+            if (_MinimizeAnimation)
             {
                 // restore DLGFRAME
-                if (_hwnd._ModifyStyle(0, WS.DLGFRAME))
+                if (_ModifyStyle(0, WS.CAPTION))
                 {
-                    _UpdateFrameState(true);
+                    //_UpdateFrameState(true);
+                    NativeMethods.SetWindowPos(_hwnd, IntPtr.Zero, 0, 0, 0, 0, _SwpFlags);
                 }
             }
 
@@ -1229,7 +1230,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
         private IntPtr _HandleExitSizeMove(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
             // This is only intercepted to deal with bugs in Window in .Net 3.5 and below.
-            Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
+            Assert.IsTrue(IsPresentationFrameworkVersionLessThan4);
 
             _isUserResizing = false;
 
@@ -1249,7 +1250,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
         private IntPtr _HandleMove(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
             // This is only intercepted to deal with bugs in Window in .Net 3.5 and below.
-            Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
+            Assert.IsTrue(IsPresentationFrameworkVersionLessThan4);
 
             if (_isUserResizing)
             {
@@ -1262,12 +1263,35 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
         #endregion
 
+        /// <summary>Add and remove a native WindowStyle from the HWND.</summary>
+        /// <param name="removeStyle">The styles to be removed.  These can be bitwise combined.</param>
+        /// <param name="addStyle">The styles to be added.  These can be bitwise combined.</param>
+        /// <returns>Whether the styles of the HWND were modified as a result of this call.</returns>
+        /// <SecurityNote>
+        ///   Critical : Calls critical methods
+        /// </SecurityNote>
+        [SecurityCritical]
+        private bool _ModifyStyle(WS removeStyle, WS addStyle)
+        {
+            Assert.IsNotDefault(_hwnd);
+            var intPtr = NativeMethods.GetWindowLongPtr(_hwnd, GWL.STYLE);
+            var dwStyle = (WS)(Environment.Is64BitProcess ? intPtr.ToInt64() : intPtr.ToInt32());
+            var dwNewStyle = (dwStyle & ~removeStyle) | addStyle;
+            if (dwStyle == dwNewStyle)
+            {
+                return false;
+            }
+
+            NativeMethods.SetWindowLongPtr(_hwnd, GWL.STYLE, new IntPtr((int)dwNewStyle));
+            return true;
+        }
+
         /// <summary>
         /// Get the WindowState as the native HWND knows it to be.  This isn't necessarily the same as what Window thinks.
         /// </summary>
         /// <SecurityNote>
         ///   Critical : Calls critical methods
-        /// <SecurityNote>
+        /// </SecurityNote>
         [SecurityCritical]
         private WindowState _GetHwndState()
         {
@@ -1286,7 +1310,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
         /// <returns>The bounding rectangle for the window.</returns>
         /// <SecurityNote>
         ///   Critical : Calls critical methods
-        /// <SecurityNote>
+        /// </SecurityNote>
         [SecurityCritical]
         private Rect _GetWindowRect()
         {
@@ -1306,7 +1330,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
         /// </remarks>
         /// <SecurityNote>
         ///   Critical : Calls critical methods
-        /// <SecurityNote>
+        /// </SecurityNote>
         [SecurityCritical]
         private void _UpdateSystemMenu(WindowState? assumeState)
         {
@@ -1318,10 +1342,6 @@ namespace ControlzEx.Microsoft.Windows.Shell
             if (null != assumeState || _lastMenuState != state)
             {
                 _lastMenuState = state;
-
-                // Disabled because it sometimes makes the window disappear from the taskbar.
-                // https://github.com/MahApps/MahApps.Metro/commit/5a5d3cc6266b9476bc14e861803a34970bf5b34f
-                //bool modified = _hwnd._ModifyStyle(WS.VISIBLE, 0);
 
                 IntPtr hmenu = NativeMethods.GetSystemMenu(_hwnd, false);
                 if (IntPtr.Zero != hmenu)
@@ -1358,19 +1378,12 @@ namespace ControlzEx.Microsoft.Windows.Shell
                             break;
                     }
                 }
-
-                // Disabled because it sometimes makes the window disappear from the taskbar.
-                // https://github.com/MahApps/MahApps.Metro/commit/5a5d3cc6266b9476bc14e861803a34970bf5b34f
-                //if (modified)
-                //{
-                //    _hwnd._ModifyStyle(0, WS.VISIBLE);
-                //}
             }
         }
 
         /// <SecurityNote>
         ///   Critical : Calls critical methods
-        /// <SecurityNote>
+        /// </SecurityNote>
         [SecurityCritical]
         private void _UpdateFrameState(bool force)
         {
@@ -1402,16 +1415,15 @@ namespace ControlzEx.Microsoft.Windows.Shell
                     return;
                 }
 
-                if (_window.WindowStyle == WindowStyle.None)
+                if (_MinimizeAnimation)
                 {
-                    if (_chromeInfo.IgnoreTaskbarOnMaximize == false)
-                    {
-                        _hwnd._ModifyStyle(0, WS.CAPTION);
-                    }
-                    else
-                    {
-                        _hwnd._ModifyStyle(WS.CAPTION, 0);
-                    }
+                    // allow animation
+                    _ModifyStyle(0, WS.CAPTION);
+                }
+                else
+                {
+                    // no animation
+                    _ModifyStyle(WS.CAPTION, 0);
                 }
 
                 NativeMethods.SetWindowPos(_hwnd, IntPtr.Zero, 0, 0, 0, 0, _SwpFlags);
@@ -1420,7 +1432,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Calls critical methods
-        /// <SecurityNote>
+        /// </SecurityNote>
         [SecurityCritical]
         private void _ClearRoundingRegion()
         {
@@ -1584,7 +1596,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Calls critical methods
-        /// <SecurityNote>
+        /// </SecurityNote>
         [SecurityCritical]
         private static IntPtr _CreateRoundRectRgn(Rect region, double radius)
         {
@@ -1611,7 +1623,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Calls critical methods
-        /// <SecurityNote>
+        /// </SecurityNote>
         [SecurityCritical]
         [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "HRGNs")]
         private static void _CreateAndCombineRoundRectRgn(IntPtr hrgnSource, Rect region, double radius)
@@ -1655,7 +1667,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Calls critical methods
-        /// <SecurityNote>
+        /// </SecurityNote>
         [SecurityCritical]
         private void _ExtendGlassFrame()
         {
@@ -1698,34 +1710,40 @@ namespace ControlzEx.Microsoft.Windows.Shell
             {
                 // This makes the glass visible at a Win32 level so long as nothing else is covering it.
                 // The Window's Background needs to be changed independent of this.
-                _hwndSource.CompositionTarget.BackgroundColor = Colors.Transparent;
+
+                // Apply the transparent background to the HWND
+                // but only if the window has the flag AllowsTransparency turned on
+                if (_window.AllowsTransparency)
+                {
+                    _hwndSource.CompositionTarget.BackgroundColor = Colors.Transparent;
+                }
 
                 // Thickness is going to be DIPs, need to convert to system coordinates.
                 Thickness deviceGlassThickness = DpiHelper.LogicalThicknessToDevice(_chromeInfo.GlassFrameThickness);
 
-                if (_chromeInfo.NonClientFrameEdges != NonClientFrameEdges.None)
+                if (_chromeInfo.SacrificialEdge != SacrificialEdge.None)
                 {
-#if NET45
+#if NET4_5
                     Thickness windowResizeBorderThicknessDevice = DpiHelper.LogicalThicknessToDevice(SystemParameters.WindowResizeBorderThickness);
 #else
                     Thickness windowResizeBorderThicknessDevice = DpiHelper.LogicalThicknessToDevice(SystemParameters2.Current.WindowResizeBorderThickness);
 #endif
-                    if (Utility.IsFlagSet((int)_chromeInfo.NonClientFrameEdges, (int)NonClientFrameEdges.Top))
+                    if (Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Top))
                     {
                         deviceGlassThickness.Top -= windowResizeBorderThicknessDevice.Top;
                         deviceGlassThickness.Top = Math.Max(0, deviceGlassThickness.Top);
                     }
-                    if (Utility.IsFlagSet((int)_chromeInfo.NonClientFrameEdges, (int)NonClientFrameEdges.Left))
+                    if (Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Left))
                     {
                         deviceGlassThickness.Left -= windowResizeBorderThicknessDevice.Left;
                         deviceGlassThickness.Left = Math.Max(0, deviceGlassThickness.Left);
                     }
-                    if (Utility.IsFlagSet((int)_chromeInfo.NonClientFrameEdges, (int)NonClientFrameEdges.Bottom))
+                    if (Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Bottom))
                     {
                         deviceGlassThickness.Bottom -= windowResizeBorderThicknessDevice.Bottom;
                         deviceGlassThickness.Bottom = Math.Max(0, deviceGlassThickness.Bottom);
                     }
-                    if (Utility.IsFlagSet((int)_chromeInfo.NonClientFrameEdges, (int)NonClientFrameEdges.Right))
+                    if (Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Right))
                     {
                         deviceGlassThickness.Right -= windowResizeBorderThicknessDevice.Right;
                         deviceGlassThickness.Right = Math.Max(0, deviceGlassThickness.Right);
@@ -1805,7 +1823,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Calls critical methods
-        /// <SecurityNote>
+        /// </SecurityNote>
         [SecurityCritical]
         private void _RestoreStandardChromeState(bool isClosing)
         {
@@ -1825,7 +1843,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Unsubscribes event handler from critical _hwndSource
-        /// <SecurityNote>
+        /// </SecurityNote>
         [SecurityCritical]
         private void _UnhookCustomChrome()
         {
@@ -1842,7 +1860,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Unsubscribes critical event handler
-        /// <SecurityNote>
+        /// </SecurityNote>
         [SecurityCritical]
         private void _RestoreFrameworkIssueFixups()
         {
@@ -1853,7 +1871,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
             // This margin is only necessary if the client rect is going to be calculated incorrectly by WPF.
             // This bug was fixed in V4 of the framework.
-            if (Utility.IsPresentationFrameworkVersionLessThan4)
+            if (IsPresentationFrameworkVersionLessThan4)
             {
                 Assert.IsTrue(_isFixedUp);
                 _window.StateChanged -= _FixupRestoreBounds;
@@ -1863,7 +1881,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Calls critical methods
-        /// <SecurityNote>
+        /// </SecurityNote>
         [SecurityCritical]
         private void _RestoreGlassFrame()
         {
@@ -1889,7 +1907,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
 
         /// <SecurityNote>
         ///   Critical : Calls critical methods
-        /// <SecurityNote>
+        /// </SecurityNote>
         [SecurityCritical]
         private void _RestoreHrgn()
         {
@@ -1898,61 +1916,5 @@ namespace ControlzEx.Microsoft.Windows.Shell
         }
 
         #endregion
-
-        #region Workarounds
-
-        private void FixupRootElementMargin()
-        {
-            if (this._window.Template == null)
-            {
-                // Nothing to fixup yet.
-                return;
-            }
-
-            // Guard against the visual tree being empty.
-            if (VisualTreeHelper.GetChildrenCount(this._window) == 0)
-            {
-                // The template isn't null, but we don't have a visual tree.
-                // Hope that ApplyTemplate is in the queue and repost this, because there's not much we can do right now.
-                this._window.Dispatcher.BeginInvoke(DispatcherPriority.Loaded, (_Action)this.FixupRootElementMargin);
-                return;
-            }
-
-            var rootElement = (FrameworkElement)VisualTreeHelper.GetChild(this._window, 0);
-            var defaultFixupMargin = this.GetDefaultFixupMargin();
-            if (rootElement.Margin != defaultFixupMargin)
-            {
-                rootElement.Margin = defaultFixupMargin;
-            }
-        }
-
-        private Thickness GetDefaultFixupMargin()
-        {
-            // We only need to fixup something if the window is maximized
-            if (_GetHwndState() == WindowState.Maximized)
-            {
-                if (_window.ResizeMode == ResizeMode.NoResize
-                    || _window.ResizeMode == ResizeMode.CanMinimize
-                    || _window.SizeToContent != SizeToContent.Manual)
-                {
-                    return default(Thickness);
-                }
-
-                var intPtr = NativeMethods.GetWindowLongPtr(_hwnd, GWL.STYLE);
-                var dwStyle = (WS)(Environment.Is64BitProcess ? intPtr.ToInt64() : intPtr.ToInt32());
-
-                if (dwStyle.HasFlag(WS.CAPTION) == false)
-                {
-                    return default(Thickness);
-                }
-
-                var windowInfo = NativeMethods.GetWindowInfo(this._hwnd);
-                return new Thickness(windowInfo.cxWindowBorders, windowInfo.cyWindowBorders, windowInfo.cxWindowBorders, windowInfo.cyWindowBorders);
-            }
-
-            return default(Thickness);
-        }
-
-        #endregion Workarounds
     }
 }

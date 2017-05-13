@@ -83,9 +83,8 @@
                     <ComboBox Grid.Row="0"
                               Grid.Column="1"
                               x:Name="StyleComboBox"
-                              SelectedValue="{StaticResource SingleBorderWindowStyle}"
+                              SelectedValue="{StaticResource NoneWindowStyle}"
                               SelectedValuePath="Tag">
-                        <TextBlock Tag="{StaticResource SingleBorderWindowStyle}">SingleBorderWindowStyle</TextBlock>
                         <TextBlock Tag="{StaticResource NoneWindowStyle}">NoneWindowStyle</TextBlock>
                         <TextBlock Tag="{StaticResource NoneWindowStyleWithGlassFrame}">NoneWindowStyleWithGlassFrame</TextBlock>
                     </ComboBox>
