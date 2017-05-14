@@ -111,31 +111,7 @@ namespace ControlzEx.Behaviors
         {
             this.isWindwos10OrHigher = IsWindows10OrHigher();
 
-//            this.windowChrome = new WindowChrome
-//                                {
-//#if NET4_5
-//                                    ResizeBorderThickness = SystemParameters.WindowResizeBorderThickness, 
-//#else
-//                                    ResizeBorderThickness = SystemParameters2.Current.WindowResizeBorderThickness,
-//#endif
-//                                    CaptionHeight = 0,
-//                                    CornerRadius = new CornerRadius(0),
-//                                    GlassFrameThickness = new Thickness(0),
-//                                    UseAeroCaptionButtons = false
-//                                };
             this.InitializeWindowChrome();
-
-            // todo port
-            //var metroWindow = this.AssociatedObject as MetroWindow;
-            //if (metroWindow != null)
-            //{
-            //    this.windowChrome.IgnoreTaskbarOnMaximize = metroWindow.IgnoreTaskbarOnMaximize;
-            //    this.windowChrome.UseNoneWindowStyle = metroWindow.UseNoneWindowStyle;
-            //    System.ComponentModel.DependencyPropertyDescriptor.FromProperty(MetroWindow.IgnoreTaskbarOnMaximizeProperty, typeof(MetroWindow))
-            //          .AddValueChanged(this.AssociatedObject, this.IgnoreTaskbarOnMaximizePropertyChangedCallback);
-            //    System.ComponentModel.DependencyPropertyDescriptor.FromProperty(MetroWindow.UseNoneWindowStyleProperty, typeof(MetroWindow))
-            //          .AddValueChanged(this.AssociatedObject, this.UseNoneWindowStylePropertyChangedCallback);
-            //}
 
             this.AssociatedObject.SetValue(WindowChrome.WindowChromeProperty, this.windowChrome);
 
@@ -155,7 +131,7 @@ namespace ControlzEx.Behaviors
             this.AssociatedObject.WindowStyle = WindowStyle.None;
 
             this.savedBorderThickness = this.AssociatedObject.BorderThickness;
-            this.savedResizeBorderThickness = this.windowChrome.ResizeBorderThickness;
+            this.savedResizeBorderThickness = this.ResizeBorderThickness;
             this.borderThicknessChangeNotifier = new PropertyChangeNotifier(this.AssociatedObject, Control.BorderThicknessProperty);
             this.borderThicknessChangeNotifier.ValueChanged += this.BorderThicknessChangeNotifierOnValueChanged;
 
@@ -168,7 +144,8 @@ namespace ControlzEx.Behaviors
             // ResizeMode = NoResize
             if (this.AssociatedObject.ResizeMode == ResizeMode.NoResize)
             {
-                this.windowChrome.ResizeBorderThickness = new Thickness(0);
+                // todo: breaks bindings
+                this.ResizeBorderThickness = new Thickness(0);
             }
 
             var topmostHack = new Action(() =>
@@ -204,7 +181,7 @@ namespace ControlzEx.Behaviors
             BindingOperations.SetBinding(this.windowChrome, WindowChrome.GlassFrameThicknessProperty, new Binding { Path = new PropertyPath(GlassFrameThicknessProperty), Source = this });
             this.windowChrome.UseAeroCaptionButtons = false;
 
-            // port: Is forwarded by code
+            // port: Is forwarded by code in IgnoreTaskbarOnMaximizePropertyChangedCallback
             //BindingOperations.SetBinding(this.windowChrome, WindowChrome.IgnoreTaskbarOnMaximizeProperty, new Binding { Path = new PropertyPath(IgnoreTaskbarOnMaximizeProperty), Source = this });
         }
 
@@ -235,20 +212,6 @@ namespace ControlzEx.Behaviors
             {
                 this.savedTopMost = window.Topmost;
             }
-        }
-
-        private void UseNoneWindowStylePropertyChangedCallback(object sender, EventArgs e)
-        {
-            // todo port: is not used inside windowchrome
-            //var metroWindow = sender as MetroWindow;
-            //if (metroWindow != null && this.windowChrome != null)
-            //{
-            //    if (!Equals(this.windowChrome.UseNoneWindowStyle, metroWindow.UseNoneWindowStyle))
-            //    {
-            //        this.windowChrome.UseNoneWindowStyle = metroWindow.UseNoneWindowStyle;
-            //        this.ForceRedrawWindowFromPropertyChanged();
-            //    }
-            //}
         }
 
         private static void IgnoreTaskbarOnMaximizePropertyChangedCallback(DependencyObject sender, DependencyPropertyChangedEventArgs e)
@@ -324,14 +287,6 @@ namespace ControlzEx.Behaviors
                 }
 
                 // clean up events
-                // todo port
-                //if (this.AssociatedObject is MetroWindow)
-                //{
-                //    System.ComponentModel.DependencyPropertyDescriptor.FromProperty(MetroWindow.IgnoreTaskbarOnMaximizeProperty, typeof(MetroWindow))
-                //          .RemoveValueChanged(this.AssociatedObject, this.IgnoreTaskbarOnMaximizePropertyChangedCallback);
-                //    System.ComponentModel.DependencyPropertyDescriptor.FromProperty(MetroWindow.UseNoneWindowStyleProperty, typeof(MetroWindow))
-                //          .RemoveValueChanged(this.AssociatedObject, this.UseNoneWindowStylePropertyChangedCallback);
-                //}
                 this.AssociatedObject.Loaded -= this.AssociatedObject_Loaded;
                 this.AssociatedObject.Unloaded -= this.AssociatedObjectUnloaded;
                 this.AssociatedObject.Closed -= this.AssociatedObjectClosed;
@@ -367,12 +322,7 @@ namespace ControlzEx.Behaviors
                 case Constants.WM_NCPAINT:
                     handled = this.GlassFrameThickness == default(Thickness);
                     break;
-                // port: WM_NCACTIVATE is already handled in WindowChromeWorker
-                //case Constants.WM_NCACTIVATE:
-                //    /* As per http://msdn.microsoft.com/en-us/library/ms632633(VS.85).aspx , "-1" lParam "does not repaint the nonclient area to reflect the state change." */
-                //    returnval = UnsafeNativeMethods.DefWindowProc(hwnd, msg, wParam, new IntPtr(-1));
-                //    handled = true;
-                //    break;
+
                 case (int)Standard.WM.WINDOWPOSCHANGING:
                     {
                         var pos = (Standard.WINDOWPOS)System.Runtime.InteropServices.Marshal.PtrToStructure(lParam, typeof(Standard.WINDOWPOS));
@@ -427,25 +377,17 @@ namespace ControlzEx.Behaviors
             var raiseValueChanged = this.topMostChangeNotifier.RaiseValueChanged;
             this.topMostChangeNotifier.RaiseValueChanged = false;
 
-            // todo port
-            //var metroWindow = this.AssociatedObject as MetroWindow;
-            var enableDWMDropShadow = this.GlowBrush == null;
-            //if (metroWindow != null)
-            //{
-            //    enableDWMDropShadow = metroWindow.GlowBrush == null && (metroWindow.EnableDWMDropShadow || this.EnableDWMDropShadow);
-            //}
-
             if (this.AssociatedObject.WindowState == WindowState.Maximized)
             {
                 // remove window border, so we can move the window from top monitor position
+                // todo: breaks bindings
                 this.AssociatedObject.BorderThickness = new Thickness(0);
 
-                // todo port
-                //var ignoreTaskBar = metroWindow != null && metroWindow.IgnoreTaskbarOnMaximize;
-                var ignoreTaskBar = false;
+                var ignoreTaskBar = this.IgnoreTaskbarOnMaximize;
                 if (this.handle != IntPtr.Zero)
                 {
-                    this.windowChrome.ResizeBorderThickness = new Thickness(0);
+                    // todo: breaks bindings
+                    this.ResizeBorderThickness = new Thickness(0);
 
                     // WindowChrome handles the size false if the main monitor is lesser the monitor where the window is maximized
                     // so set the window pos/size twice
@@ -472,14 +414,17 @@ namespace ControlzEx.Behaviors
             }
             else
             {
+                var enableDWMDropShadow = this.GlowBrush == null || this.GlassFrameThickness != default(Thickness);
+
                 if (!enableDWMDropShadow)
                 {
                     this.AssociatedObject.BorderThickness = this.savedBorderThickness.GetValueOrDefault(new Thickness(0));
                 }
                 var resizeBorderThickness = this.savedResizeBorderThickness.GetValueOrDefault(new Thickness(0));
-                if (this.windowChrome.ResizeBorderThickness != resizeBorderThickness)
+                if (this.ResizeBorderThickness != resizeBorderThickness)
                 {
-                    this.windowChrome.ResizeBorderThickness = resizeBorderThickness;
+                    // todo: breaks bindings
+                    this.ResizeBorderThickness = resizeBorderThickness;
                 }
 
                 // #2694 make sure the window is not on top after restoring window
@@ -556,8 +501,6 @@ namespace ControlzEx.Behaviors
             this.handle = new WindowInteropHelper(this.AssociatedObject).Handle;
             if (IntPtr.Zero == this.handle)
             {
-                // todo port
-                //throw new MahAppsException("Uups, at this point we really need the Handle from the associated object!");
                 throw new Exception("Uups, at this point we really need the Handle from the associated object!");
             }
 
@@ -568,7 +511,7 @@ namespace ControlzEx.Behaviors
                 Invoke(this.AssociatedObject, () =>
                     {
                         this.AssociatedObject.InvalidateMeasure();
-                        Native.RECT rect;
+                        RECT rect;
                         if (UnsafeNativeMethods.GetWindowRect(this.handle, out rect))
                         {
                             uint flags = 0x0040;
@@ -605,10 +548,8 @@ namespace ControlzEx.Behaviors
             //}
         }
 
-        //[Obsolete(@"This property will be deleted in the next release. You should use BorderThickness=""0"" and a GlowBrush=""Black"" properties in your Window to get a drop shadow around it.")]
         public static readonly DependencyProperty GlowBrushProperty = DependencyProperty.Register("GlowBrush", typeof(Brush), typeof(WindowChromeBehavior), new PropertyMetadata());
 
-        //[Obsolete(@"This property will be deleted in the next release. You should use BorderThickness=""0"" and a GlowBrush=""Black"" properties in your Window to get a drop shadow around it.")]
         public Brush GlowBrush
         {
             get { return (Brush)this.GetValue(GlowBrushProperty); }
