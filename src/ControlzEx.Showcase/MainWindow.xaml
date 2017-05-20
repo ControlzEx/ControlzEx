@@ -32,7 +32,7 @@
     <Grid SnapsToDevicePixels="True"
           Margin="{Binding ElementName=Window, Path=Margin}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="{Binding ElementName=WindowChromeBehavior, Path=CaptionHeight}" />
+            <RowDefinition Height="30" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
@@ -100,12 +100,6 @@
                     <CheckBox Grid.Row="2"
                               Grid.Column="0"
                               Grid.ColumnSpan="2"
-                              IsChecked="{Binding ElementName=WindowChromeBehavior, Path=UseAeroCaptionButtons, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                              Content="UseAeroCaptionButtons (only disables behavior, not the visual buttons)" />
-
-                    <CheckBox Grid.Row="3"
-                              Grid.Column="0"
-                              Grid.ColumnSpan="2"
                               IsChecked="{Binding ElementName=WindowChromeBehavior, Path=IgnoreTaskbarOnMaximize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                               Content="IgnoreTaskbarOnMaximize (only works with WindowStyle = None)" />
                 </Grid>
@@ -124,10 +118,6 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
                         <RowDefinition />
                     </Grid.RowDefinitions>
 
@@ -139,29 +129,15 @@
                              Text="{Binding ElementName=Window, Path=WindowStyle}" />
 
                     <Label Grid.Row="2"
-                           Grid.Column="0">CaptionHeight</Label>
-                    <TextBox Grid.Row="2"
-                             Grid.Column="1"
-                             IsReadOnly="True"
-                             Text="{Binding ElementName=WindowChromeBehavior, Path=CaptionHeight, Mode=TwoWay}" />
-
-                    <Label Grid.Row="3"
-                           Grid.Column="0">CornerRadius</Label>
-                    <TextBox Grid.Row="3"
-                             Grid.Column="1"
-                             IsReadOnly="True"
-                             Text="{Binding ElementName=WindowChromeBehavior, Path=CornerRadius, Mode=OneWay}" />
-
-                    <Label Grid.Row="4"
                            Grid.Column="0">GlassFrameThickness</Label>
-                    <TextBox Grid.Row="4"
+                    <TextBox Grid.Row="2"
                              Grid.Column="1"
                              IsReadOnly="True"
                              Text="{Binding ElementName=WindowChromeBehavior, Path=GlassFrameThickness, Mode=TwoWay}" />
 
-                    <Label Grid.Row="5"
+                    <Label Grid.Row="3"
                            Grid.Column="0">ResizeBorderThickness</Label>
-                    <TextBox Grid.Row="5"
+                    <TextBox Grid.Row="3"
                              Grid.Column="1"
                              IsReadOnly="True"
                              Text="{Binding ElementName=WindowChromeBehavior, Path=ResizeBorderThickness, Mode=TwoWay}" />

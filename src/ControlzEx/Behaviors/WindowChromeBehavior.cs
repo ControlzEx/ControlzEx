@@ -17,11 +17,14 @@ namespace ControlzEx.Behaviors
     using ControlzEx.Native;
     using JetBrains.Annotations;
 
+    public class WindowChromeBehavior : BorderlessWindowBehavior
+    {
+    }
+
     /// <summary>
     /// With this class we can make custom window styles.
     /// </summary>
-    //public class BorderlessWindowBehavior : Behavior<Window>
-    public class WindowChromeBehavior : Behavior<Window>
+    public class BorderlessWindowBehavior : Behavior<Window>    
     {
         private IntPtr handle;
         private HwndSource hwndSource;
@@ -43,7 +46,7 @@ namespace ControlzEx.Behaviors
 
         // Using a DependencyProperty as the backing store for ResizeBorderThickness.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ResizeBorderThicknessProperty =
-            DependencyProperty.Register(nameof(ResizeBorderThickness), typeof(Thickness), typeof(WindowChromeBehavior), new PropertyMetadata(GetDefaultResizeBorderThickness()));
+            DependencyProperty.Register(nameof(ResizeBorderThickness), typeof(Thickness), typeof(BorderlessWindowBehavior), new PropertyMetadata(GetDefaultResizeBorderThickness()));
 
         public Thickness GlassFrameThickness
         {
@@ -53,7 +56,7 @@ namespace ControlzEx.Behaviors
 
         // Using a DependencyProperty as the backing store for GlassFrameThickness.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty GlassFrameThicknessProperty =
-            DependencyProperty.Register(nameof(GlassFrameThickness), typeof(Thickness), typeof(WindowChromeBehavior), new PropertyMetadata(default(Thickness)));
+            DependencyProperty.Register(nameof(GlassFrameThickness), typeof(Thickness), typeof(BorderlessWindowBehavior), new PropertyMetadata(default(Thickness), OnGlassFrameThicknessChanged));
 
         #endregion
 
@@ -69,7 +72,7 @@ namespace ControlzEx.Behaviors
 
         // Using a DependencyProperty as the backing store for IgnoreTaskbarOnMaximize.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IgnoreTaskbarOnMaximizeProperty =
-            DependencyProperty.Register(nameof(IgnoreTaskbarOnMaximize), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(false, IgnoreTaskbarOnMaximizePropertyChangedCallback));
+            DependencyProperty.Register(nameof(IgnoreTaskbarOnMaximize), typeof(bool), typeof(BorderlessWindowBehavior), new PropertyMetadata(false, IgnoreTaskbarOnMaximizePropertyChangedCallback));
 
         private static bool IsWindows10OrHigher()
         {
@@ -192,6 +195,10 @@ namespace ControlzEx.Behaviors
             {
                 this.savedTopMost = window.Topmost;
             }
+        }
+
+        private static void OnGlassFrameThicknessChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
         }
 
         private static void IgnoreTaskbarOnMaximizePropertyChangedCallback(DependencyObject sender, DependencyPropertyChangedEventArgs e)
