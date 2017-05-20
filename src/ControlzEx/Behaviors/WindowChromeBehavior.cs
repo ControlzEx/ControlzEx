@@ -45,26 +45,6 @@ namespace ControlzEx.Behaviors
         public static readonly DependencyProperty ResizeBorderThicknessProperty =
             DependencyProperty.Register(nameof(ResizeBorderThickness), typeof(Thickness), typeof(WindowChromeBehavior), new PropertyMetadata(GetDefaultResizeBorderThickness()));
 
-        public double CaptionHeight
-        {
-            get { return (double)this.GetValue(CaptionHeightProperty); }
-            set { this.SetValue(CaptionHeightProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for CaptionHeight.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty CaptionHeightProperty =
-            DependencyProperty.Register(nameof(CaptionHeight), typeof(double), typeof(WindowChromeBehavior), new PropertyMetadata(0D));
-
-        public CornerRadius CornerRadius
-        {
-            get { return (CornerRadius)this.GetValue(CornerRadiusProperty); }
-            set { this.SetValue(CornerRadiusProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for CornerRadius.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty CornerRadiusProperty =
-            DependencyProperty.Register(nameof(CornerRadius), typeof(CornerRadius), typeof(WindowChromeBehavior), new PropertyMetadata(new CornerRadius(0D)));
-
         public Thickness GlassFrameThickness
         {
             get { return (Thickness)this.GetValue(GlassFrameThicknessProperty); }
@@ -176,9 +156,9 @@ namespace ControlzEx.Behaviors
             this.windowChrome = new WindowChrome();
 
             BindingOperations.SetBinding(this.windowChrome, WindowChrome.ResizeBorderThicknessProperty, new Binding { Path = new PropertyPath(ResizeBorderThicknessProperty), Source = this });
-            BindingOperations.SetBinding(this.windowChrome, WindowChrome.CaptionHeightProperty, new Binding { Path = new PropertyPath(CaptionHeightProperty), Source = this });
-            BindingOperations.SetBinding(this.windowChrome, WindowChrome.CornerRadiusProperty, new Binding { Path = new PropertyPath(CornerRadiusProperty), Source = this });
             BindingOperations.SetBinding(this.windowChrome, WindowChrome.GlassFrameThicknessProperty, new Binding { Path = new PropertyPath(GlassFrameThicknessProperty), Source = this });
+            this.windowChrome.CaptionHeight = 0;
+            this.windowChrome.CornerRadius = default(CornerRadius);
             this.windowChrome.UseAeroCaptionButtons = false;
 
             // port: Is forwarded by code in IgnoreTaskbarOnMaximizePropertyChangedCallback
