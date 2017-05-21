@@ -94,9 +94,7 @@ namespace ControlzEx.Behaviors
         {
             this.isWindwos10OrHigher = IsWindows10OrHigher();
 
-            this.InitializeWindowChrome();
-
-            this.AssociatedObject.SetValue(WindowChrome.WindowChromeProperty, this.windowChrome);
+            this.InitializeWindowChrome();            
 
             // no transparany, because it hase more then one unwanted issues
             var windowHandle = new WindowInteropHelper(this.AssociatedObject).Handle;
@@ -166,6 +164,8 @@ namespace ControlzEx.Behaviors
 
             // port: Is forwarded by code in IgnoreTaskbarOnMaximizePropertyChangedCallback
             //BindingOperations.SetBinding(this.windowChrome, WindowChrome.IgnoreTaskbarOnMaximizeProperty, new Binding { Path = new PropertyPath(IgnoreTaskbarOnMaximizeProperty), Source = this });
+
+            this.AssociatedObject.SetValue(WindowChrome.WindowChromeProperty, this.windowChrome);
         }
 
         private static Thickness GetDefaultResizeBorderThickness()
@@ -199,6 +199,10 @@ namespace ControlzEx.Behaviors
 
         private static void OnGlassFrameThicknessChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
+            var behavior = (WindowChromeBehavior)d;
+
+            behavior.AssociatedObject.SetValue(WindowChrome.WindowChromeProperty, null);
+            behavior.InitializeWindowChrome();
         }
 
         private static void IgnoreTaskbarOnMaximizePropertyChangedCallback(DependencyObject sender, DependencyPropertyChangedEventArgs e)
