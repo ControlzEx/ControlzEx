@@ -29,9 +29,6 @@ namespace ControlzEx.Behaviors
         private IntPtr handle;
         private HwndSource hwndSource;
         private WindowChrome windowChrome;
-        private PropertyChangeNotifier borderThicknessChangeNotifier;
-        private Thickness? savedBorderThickness;
-        private Thickness? savedResizeBorderThickness;
         private PropertyChangeNotifier topMostChangeNotifier;
         private bool savedTopMost;
         private bool isWindwos10OrHigher;
@@ -111,23 +108,9 @@ namespace ControlzEx.Behaviors
             }
             this.AssociatedObject.WindowStyle = WindowStyle.None;
 
-            this.savedBorderThickness = this.AssociatedObject.BorderThickness;
-            this.savedResizeBorderThickness = this.ResizeBorderThickness;
-            this.borderThicknessChangeNotifier = new PropertyChangeNotifier(this.AssociatedObject, Control.BorderThicknessProperty);
-            this.borderThicknessChangeNotifier.ValueChanged += this.BorderThicknessChangeNotifierOnValueChanged;
-
             this.savedTopMost = this.AssociatedObject.Topmost;
             this.topMostChangeNotifier = new PropertyChangeNotifier(this.AssociatedObject, Window.TopmostProperty);
             this.topMostChangeNotifier.ValueChanged += this.TopMostChangeNotifierOnValueChanged;
-
-            // #1823 try to fix another nasty issue
-            // WindowState = Maximized
-            // ResizeMode = NoResize
-            if (this.AssociatedObject.ResizeMode == ResizeMode.NoResize)
-            {
-                // todo: breaks bindings
-                this.ResizeBorderThickness = new Thickness(0);
-            }
 
             var topmostHack = new Action(() =>
                                            {
@@ -175,16 +158,6 @@ namespace ControlzEx.Behaviors
 #else
             return ControlzEx.Microsoft.Windows.Shell.SystemParameters2.Current.WindowResizeBorderThickness;
 #endif
-        }
-
-        private void BorderThicknessChangeNotifierOnValueChanged(object sender, EventArgs e)
-        {
-            // It's bad if the window is null at this point, but we check this here to prevent the possible occurred exception
-            var window = this.AssociatedObject;
-            if (window != null)
-            {
-                this.savedBorderThickness = window.BorderThickness;
-            }
         }
 
         private void TopMostChangeNotifierOnValueChanged(object sender, EventArgs e)
@@ -328,7 +301,7 @@ namespace ControlzEx.Behaviors
                             return IntPtr.Zero;
                         }
 
-                        bool changedPos = false;
+                        var changedPos = false;
 
                         // Convert the original to original size based on DPI setting. Need for x% screen DPI.
                         var matrix = this.hwndSource.CompositionTarget.TransformToDevice;
@@ -364,22 +337,14 @@ namespace ControlzEx.Behaviors
 
         private void HandleMaximize()
         {
-            this.borderThicknessChangeNotifier.RaiseValueChanged = false;
             var raiseValueChanged = this.topMostChangeNotifier.RaiseValueChanged;
             this.topMostChangeNotifier.RaiseValueChanged = false;
 
             if (this.AssociatedObject.WindowState == WindowState.Maximized)
             {
-                // remove window border, so we can move the window from top monitor position
-                // todo: breaks bindings
-                this.AssociatedObject.BorderThickness = new Thickness(0);
-
                 var ignoreTaskBar = this.IgnoreTaskbarOnMaximize;
                 if (this.handle != IntPtr.Zero)
                 {
-                    // todo: breaks bindings
-                    this.ResizeBorderThickness = new Thickness(0);
-
                     // WindowChrome handles the size false if the main monitor is lesser the monitor where the window is maximized
                     // so set the window pos/size twice
                     IntPtr monitor = UnsafeNativeMethods.MonitorFromWindow(this.handle, Constants.MONITOR_DEFAULTTONEAREST);
@@ -405,19 +370,6 @@ namespace ControlzEx.Behaviors
             }
             else
             {
-                var enableDWMDropShadow = this.GlowBrush == null || this.GlassFrameThickness != default(Thickness);
-
-                if (!enableDWMDropShadow)
-                {
-                    this.AssociatedObject.BorderThickness = this.savedBorderThickness.GetValueOrDefault(new Thickness(0));
-                }
-                var resizeBorderThickness = this.savedResizeBorderThickness.GetValueOrDefault(new Thickness(0));
-                if (this.ResizeBorderThickness != resizeBorderThickness)
-                {
-                    // todo: breaks bindings
-                    this.ResizeBorderThickness = resizeBorderThickness;
-                }
-
                 // #2694 make sure the window is not on top after restoring window
                 // this issue was introduced after fixing the windows 10 bug with the taskbar and a maximized window that ignores the taskbar
                 if (GetHandleTaskbar(this.AssociatedObject) && this.isWindwos10OrHigher)
@@ -443,7 +395,6 @@ namespace ControlzEx.Behaviors
             this.AssociatedObject.Topmost = false;
             this.AssociatedObject.Topmost = this.AssociatedObject.WindowState == WindowState.Minimized || this.savedTopMost;
 
-            this.borderThicknessChangeNotifier.RaiseValueChanged = true;
             this.topMostChangeNotifier.RaiseValueChanged = raiseValueChanged;
         }
 
