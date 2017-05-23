@@ -32,12 +32,15 @@
     <Grid SnapsToDevicePixels="True"
           Margin="{Binding ElementName=Window, Path=Margin}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="30" />
+            <RowDefinition Height="30"
+                           MinHeight="30" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0">
+        <Grid Grid.Row="0"
+              ControlzEx:WindowChrome.IsHitTestVisibleInChrome="True"
+              MouseLeftButtonDown="TitleBarGrid_OnMouseLeftButtonDown">
             <Border Background="{Binding Source={x:Static SystemColors.WindowBrush}}"
                     Margin="0,0,150,0" />
             <TextBlock x:Name="TitlebarText"
