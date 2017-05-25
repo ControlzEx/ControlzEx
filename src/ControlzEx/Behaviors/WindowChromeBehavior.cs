@@ -17,14 +17,10 @@ namespace ControlzEx.Behaviors
     using ControlzEx.Native;
     using JetBrains.Annotations;
 
-    public class WindowChromeBehavior : BorderlessWindowBehavior
-    {
-    }
-
     /// <summary>
     /// With this class we can make custom window styles.
     /// </summary>
-    public class BorderlessWindowBehavior : Behavior<Window>    
+    public class WindowChromeBehavior : Behavior<Window>    
     {
         private IntPtr handle;
         private HwndSource hwndSource;
@@ -43,7 +39,7 @@ namespace ControlzEx.Behaviors
 
         // Using a DependencyProperty as the backing store for ResizeBorderThickness.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ResizeBorderThicknessProperty =
-            DependencyProperty.Register(nameof(ResizeBorderThickness), typeof(Thickness), typeof(BorderlessWindowBehavior), new PropertyMetadata(GetDefaultResizeBorderThickness()));
+            DependencyProperty.Register(nameof(ResizeBorderThickness), typeof(Thickness), typeof(WindowChromeBehavior), new PropertyMetadata(GetDefaultResizeBorderThickness()));
 
         public Thickness GlassFrameThickness
         {
@@ -53,7 +49,7 @@ namespace ControlzEx.Behaviors
 
         // Using a DependencyProperty as the backing store for GlassFrameThickness.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty GlassFrameThicknessProperty =
-            DependencyProperty.Register(nameof(GlassFrameThickness), typeof(Thickness), typeof(BorderlessWindowBehavior), new PropertyMetadata(default(Thickness), OnGlassFrameThicknessChanged));
+            DependencyProperty.Register(nameof(GlassFrameThickness), typeof(Thickness), typeof(WindowChromeBehavior), new PropertyMetadata(default(Thickness), OnGlassFrameThicknessChanged));
 
         #endregion
 
@@ -69,7 +65,7 @@ namespace ControlzEx.Behaviors
 
         // Using a DependencyProperty as the backing store for IgnoreTaskbarOnMaximize.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IgnoreTaskbarOnMaximizeProperty =
-            DependencyProperty.Register(nameof(IgnoreTaskbarOnMaximize), typeof(bool), typeof(BorderlessWindowBehavior), new PropertyMetadata(false, IgnoreTaskbarOnMaximizePropertyChangedCallback));
+            DependencyProperty.Register(nameof(IgnoreTaskbarOnMaximize), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(false, IgnoreTaskbarOnMaximizePropertyChangedCallback));
 
         private static bool IsWindows10OrHigher()
         {
@@ -151,7 +147,7 @@ namespace ControlzEx.Behaviors
             this.AssociatedObject.SetValue(WindowChrome.WindowChromeProperty, this.windowChrome);
         }
 
-        private static Thickness GetDefaultResizeBorderThickness()
+        public static Thickness GetDefaultResizeBorderThickness()
         {
 #if NET45
             return SystemParameters.WindowResizeBorderThickness;
@@ -473,24 +469,11 @@ namespace ControlzEx.Behaviors
             this.HandleMaximize();
         }
 
-        private void AssociatedObject_Loaded(object sender, RoutedEventArgs e)
+        protected virtual void AssociatedObject_Loaded(object sender, RoutedEventArgs e)
         {
-            // todo port
-            //var window = sender as MetroWindow;
-            //if (window == null)
-            //{
-            //    return;
-            //}
-
-            //if (window.ResizeMode != ResizeMode.NoResize)
-            //{
-            //    //window.SetIsHitTestVisibleInChromeProperty<Border>("PART_Border");
-            //    window.SetIsHitTestVisibleInChromeProperty<UIElement>("PART_Icon");
-            //    window.SetWindowChromeResizeGripDirection("WindowResizeGrip", ResizeGripDirection.BottomRight);
-            //}
         }
 
-        public static readonly DependencyProperty GlowBrushProperty = DependencyProperty.Register("GlowBrush", typeof(Brush), typeof(WindowChromeBehavior), new PropertyMetadata());
+        public static readonly DependencyProperty GlowBrushProperty = DependencyProperty.Register(nameof(GlowBrush), typeof(Brush), typeof(WindowChromeBehavior), new PropertyMetadata());
 
         public Brush GlowBrush
         {
