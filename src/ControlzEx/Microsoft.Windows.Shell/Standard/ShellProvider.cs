@@ -770,12 +770,13 @@
         void GetBool(IntPtr key);
     }
 
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [
         ComImport,
         InterfaceTypeAttribute(ComInterfaceType.InterfaceIsIUnknown),
         Guid(IID.ShellLink),
     ]
-    internal interface IShellLinkW
+    public interface IShellLinkW
     {
         void GetPath([Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszFile, int cchMaxPath, [In, Out] WIN32_FIND_DATAW pfd, SLGP fFlags);
         void GetIDList(out IntPtr ppidl);

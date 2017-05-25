@@ -1,5 +1,4 @@
-﻿
-namespace Microsoft.Windows.Shell
+﻿namespace Microsoft.Windows.Shell
 {
     using System;
     using System.Windows;
@@ -7,7 +6,8 @@ namespace Microsoft.Windows.Shell
     using System.Windows.Interop;
     using Standard;
 
-    internal static class SystemCommands
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    public static class SystemCommands
     {
         public static RoutedCommand CloseWindowCommand { get; private set; }
         public static RoutedCommand MaximizeWindowCommand { get; private set; }
