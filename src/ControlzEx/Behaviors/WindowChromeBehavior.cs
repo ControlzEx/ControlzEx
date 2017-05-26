@@ -3,7 +3,6 @@ using System.Linq;
 using System.Management;
 using System.Security;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Interactivity;
 using System.Windows.Interop;
 using Microsoft.Windows.Shell;
@@ -153,7 +152,7 @@ namespace ControlzEx.Behaviors
 #if NET45
             return SystemParameters.WindowResizeBorderThickness;
 #else
-            return ControlzEx.Microsoft.Windows.Shell.SystemParameters2.Current.WindowResizeBorderThickness;
+            return Microsoft.Windows.Shell.SystemParameters2.Current.WindowResizeBorderThickness;
 #endif
         }
 
