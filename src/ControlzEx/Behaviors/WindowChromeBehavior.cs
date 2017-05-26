@@ -1,4 +1,5 @@
-﻿using System;
+﻿#pragma warning disable 618
+using System;
 using System.Linq;
 using System.Management;
 using System.Security;

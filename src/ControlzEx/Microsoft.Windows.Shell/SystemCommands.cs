@@ -1,4 +1,5 @@
-﻿namespace Microsoft.Windows.Shell
+﻿#pragma warning disable 1591, 618
+namespace Microsoft.Windows.Shell
 {
     using System;
     using System.Windows;

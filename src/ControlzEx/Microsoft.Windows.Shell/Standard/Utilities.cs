@@ -1,3 +1,4 @@
+#pragma warning disable 1591, 618
 // This file contains general utilities to aid in development.
 // Classes here generally shouldn't be exposed publicly since
 // they're not particular to any library functionality.

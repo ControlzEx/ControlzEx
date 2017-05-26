@@ -1,4 +1,5 @@
-﻿namespace Standard
+﻿#pragma warning disable 1591, 618
+namespace Standard
 {
     using System;
     using System.Runtime.InteropServices;

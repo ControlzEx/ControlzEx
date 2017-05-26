@@ -1,3 +1,4 @@
+#pragma warning disable 1591, 618
 using System;
 using System.Runtime.InteropServices;
 using System.Windows;
