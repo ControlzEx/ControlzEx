@@ -31,23 +31,33 @@ namespace ControlzEx.Behaviors
 
         #region Mirror properties for WindowChrome
 
+        /// <summary>
+        /// Mirror property for <see cref="WindowChrome.ResizeBorderThickness"/>.
+        /// </summary>
         public Thickness ResizeBorderThickness
         {
             get { return (Thickness)this.GetValue(ResizeBorderThicknessProperty); }
             set { this.SetValue(ResizeBorderThicknessProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for ResizeBorderThickness.  This enables animation, styling, binding, etc...
+        /// <summary>
+        /// <see cref="DependencyProperty"/> for <see cref="ResizeBorderThickness"/>.
+        /// </summary>
         public static readonly DependencyProperty ResizeBorderThicknessProperty =
             DependencyProperty.Register(nameof(ResizeBorderThickness), typeof(Thickness), typeof(WindowChromeBehavior), new PropertyMetadata(GetDefaultResizeBorderThickness()));
 
+        /// <summary>
+        /// Mirror property for <see cref="WindowChrome.GlassFrameThickness"/>.
+        /// </summary>
         public Thickness GlassFrameThickness
         {
             get { return (Thickness)this.GetValue(GlassFrameThicknessProperty); }
             set { this.SetValue(GlassFrameThicknessProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for GlassFrameThickness.  This enables animation, styling, binding, etc...
+        /// <summary>
+        /// <see cref="DependencyProperty"/> for <see cref="GlassFrameThickness"/>.
+        /// </summary>
         public static readonly DependencyProperty GlassFrameThicknessProperty =
             DependencyProperty.Register(nameof(GlassFrameThickness), typeof(Thickness), typeof(WindowChromeBehavior), new PropertyMetadata(default(Thickness), OnGlassFrameThicknessChanged));
 
@@ -63,7 +73,9 @@ namespace ControlzEx.Behaviors
             set { this.SetValue(IgnoreTaskbarOnMaximizeProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for IgnoreTaskbarOnMaximize.  This enables animation, styling, binding, etc...
+        /// <summary>
+        /// <see cref="DependencyProperty"/> for <see cref="IgnoreTaskbarOnMaximize"/>.
+        /// </summary>
         public static readonly DependencyProperty IgnoreTaskbarOnMaximizeProperty =
             DependencyProperty.Register(nameof(IgnoreTaskbarOnMaximize), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(false, IgnoreTaskbarOnMaximizePropertyChangedCallback));
 
@@ -83,6 +95,7 @@ namespace ControlzEx.Behaviors
             return version >= new Version(10, 0);
         }
 
+        /// <inheritdoc />
         protected override void OnAttached()
         {
             this.isWindwos10OrHigher = IsWindows10OrHigher();
@@ -148,6 +161,9 @@ namespace ControlzEx.Behaviors
             this.AssociatedObject.SetValue(WindowChrome.WindowChromeProperty, this.windowChrome);
         }
 
+        /// <summary>
+        /// Gets the default resize border thicknes from the system parameters.
+        /// </summary>
         public static Thickness GetDefaultResizeBorderThickness()
         {
 #if NET45
@@ -258,6 +274,7 @@ namespace ControlzEx.Behaviors
             }
         }
 
+        /// <inheritdoc />
         protected override void OnDetaching()
         {
             this.Cleanup();
@@ -281,7 +298,7 @@ namespace ControlzEx.Behaviors
             switch (msg)
             {
                 case Constants.WM_NCPAINT:
-                    handled = this.GlassFrameThickness == default(Thickness);
+                    handled = this.GlassFrameThickness == default(Thickness) && this.GlowBrush == null;
                     break;
 
                 case (int)Standard.WM.WINDOWPOSCHANGING:
@@ -470,12 +487,21 @@ namespace ControlzEx.Behaviors
             this.HandleMaximize();
         }
 
+        /// <summary>
+        /// Is called when the associated object of this instance is loaded
+        /// </summary>
         protected virtual void AssociatedObject_Loaded(object sender, RoutedEventArgs e)
         {
         }
 
+        /// <summary>
+        /// <see cref="DependencyProperty"/> for <see cref="GlowBrush"/>.
+        /// </summary>
         public static readonly DependencyProperty GlowBrushProperty = DependencyProperty.Register(nameof(GlowBrush), typeof(Brush), typeof(WindowChromeBehavior), new PropertyMetadata());
 
+        /// <summary>
+        /// Mirror property for GlowBrush from MetroWindow.
+        /// </summary>
         public Brush GlowBrush
         {
             get { return (Brush)this.GetValue(GlowBrushProperty); }
