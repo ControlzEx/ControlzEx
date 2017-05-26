@@ -90,8 +90,9 @@ namespace ControlzEx.Behaviors
             this.InitializeWindowChrome();            
 
             // no transparany, because it hase more then one unwanted issues
-            var windowHandle = new WindowInteropHelper(this.AssociatedObject).Handle;
-            if (!this.AssociatedObject.IsLoaded && windowHandle == IntPtr.Zero)
+            if (this.AssociatedObject.AllowsTransparency
+                && this.AssociatedObject.IsLoaded == false 
+                && new WindowInteropHelper(this.AssociatedObject).Handle == IntPtr.Zero)
             {
                 try
                 {
