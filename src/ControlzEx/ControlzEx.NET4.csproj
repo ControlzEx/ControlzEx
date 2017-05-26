@@ -30,7 +30,7 @@
     <IntermediateOutputPath>obj\Release\NET4\</IntermediateOutputPath>
     <DefineConstants>TRACE;NET4</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>1</WarningLevel>
+    <WarningLevel>4</WarningLevel>
     <DocumentationFile>..\bin\Release\NET4\ControlzEx.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
