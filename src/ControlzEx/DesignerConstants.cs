@@ -1,6 +1,6 @@
 ﻿namespace ControlzEx
 {
-    public static class DesignerConstants
+    internal static class DesignerConstants
     {
         public const string LibraryName = "ControlzEx";
 
