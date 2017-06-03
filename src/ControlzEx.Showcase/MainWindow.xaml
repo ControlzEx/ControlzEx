@@ -12,7 +12,9 @@
                           Background="Transparent"
                           Style="{Binding ElementName=StyleComboBox, Path=SelectedValue}"
                           Height="480"
-                          Width="600">
+                          Width="600"
+                          AllowsTransparency="False"
+                          BorderBrush="Blue">
     <local:WindowChromeWindow.Resources>
         <ObjectDataProvider MethodName="GetValues"
                             ObjectType="{x:Type ResizeMode}"
@@ -29,123 +31,124 @@
                                          ResizeBorderThickness="{Binding ElementName=Window, Path=ResizeBorderThickness}" />
     </i:Interaction.Behaviors>
 
-    <Grid SnapsToDevicePixels="True"
-          Margin="{Binding ElementName=Window, Path=Margin}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="30"
-                           MinHeight="30" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-
-        <Grid Grid.Row="0"
-              ControlzEx:WindowChrome.IsHitTestVisibleInChrome="True"
-              MouseLeftButtonDown="TitleBarGrid_OnMouseLeftButtonDown">
-            <Border Background="{Binding Source={x:Static SystemColors.WindowBrush}}"
-                    Margin="0,0,150,0" />
-            <TextBlock x:Name="TitlebarText"
-                       Margin="4,0,0,0"
-                       Text="Use GridSplitter below to move content above titlebar" />
-        </Grid>
-
-        <GridSplitter Grid.Row="1"
-                      Height="8"
-                      HorizontalAlignment="Stretch"
-                      Background="Green"
-                      ControlzEx:WindowChrome.IsHitTestVisibleInChrome="True" />
-
-        <Grid Grid.Row="2"
-              Background="{Binding Source={x:Static SystemColors.WindowBrush}}">
+    <Grid SnapsToDevicePixels="True">
+        <Grid>
             <Grid.RowDefinitions>
+                <RowDefinition Height="30"
+                               MinHeight="30" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <GroupBox Header="Options"
-                      Grid.Row="0">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
+            <Grid Grid.Row="0"
+                  ControlzEx:WindowChrome.IsHitTestVisibleInChrome="True"
+                  MouseLeftButtonDown="TitleBarGrid_OnMouseLeftButtonDown">
+                <Border Background="{Binding Source={x:Static SystemColors.WindowBrush}}"
+                        Margin="0,0,150,0" />
+                <TextBlock x:Name="TitlebarText"
+                           Margin="4,0,0,0"
+                           Text="Use GridSplitter below to move content above titlebar" />
+            </Grid>
 
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
+            <GridSplitter Grid.Row="1"
+                          Height="8"
+                          HorizontalAlignment="Stretch"
+                          Background="Green"
+                          ControlzEx:WindowChrome.IsHitTestVisibleInChrome="True" />
 
-                    <Label Grid.Row="0"
-                           Grid.Column="0">Style</Label>
-                    <ComboBox Grid.Row="0"
-                              Grid.Column="1"
-                              x:Name="StyleComboBox"
-                              SelectedValue="{StaticResource NoneWindowStyle}"
-                              SelectedValuePath="Tag">
-                        <TextBlock Tag="{StaticResource NoneWindowStyle}">NoneWindowStyle</TextBlock>
-                        <TextBlock Tag="{StaticResource NoneWindowStyleWithGlassFrame}">NoneWindowStyleWithGlassFrame</TextBlock>
-                    </ComboBox>
+            <Grid Grid.Row="2"
+                  Background="{Binding Source={x:Static SystemColors.WindowBrush}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
 
-                    <Label Grid.Row="1"
-                           Grid.Column="0">ResizeMode</Label>
-                    <ComboBox Grid.Row="1"
-                              Grid.Column="1"
-                              x:Name="ResizeModeComboBox"
-                              ItemsSource="{Binding Source={StaticResource ResizeModeEnumValues}}"
-                              SelectedItem="{Binding ElementName=Window, Path=ResizeMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <GroupBox Header="Options"
+                          Grid.Row="0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
 
-                    <CheckBox Grid.Row="2"
-                              Grid.Column="0"
-                              Grid.ColumnSpan="2"
-                              IsChecked="{Binding ElementName=WindowChromeBehavior, Path=IgnoreTaskbarOnMaximize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                              Content="IgnoreTaskbarOnMaximize (only works with WindowStyle = None)" />
-                </Grid>
-            </GroupBox>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
 
-            <GroupBox Grid.Row="1"
-                      Header="Current values (readonly)">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
+                        <Label Grid.Row="0"
+                               Grid.Column="0">Style</Label>
+                        <ComboBox Grid.Row="0"
+                                  Grid.Column="1"
+                                  x:Name="StyleComboBox"
+                                  SelectedValue="{StaticResource NoneWindowStyle}"
+                                  SelectedValuePath="Tag">
+                            <TextBlock Tag="{StaticResource NoneWindowStyle}">NoneWindowStyle</TextBlock>
+                            <TextBlock Tag="{StaticResource NoneWindowStyleWithGlassFrame}">NoneWindowStyleWithGlassFrame</TextBlock>
+                        </ComboBox>
 
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
+                        <Label Grid.Row="1"
+                               Grid.Column="0">ResizeMode</Label>
+                        <ComboBox Grid.Row="1"
+                                  Grid.Column="1"
+                                  x:Name="ResizeModeComboBox"
+                                  ItemsSource="{Binding Source={StaticResource ResizeModeEnumValues}}"
+                                  SelectedItem="{Binding ElementName=Window, Path=ResizeMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-                    <Label Grid.Row="1"
-                           Grid.Column="0">WindowStyle</Label>
-                    <TextBox Grid.Row="1"
-                             Grid.Column="1"
-                             IsReadOnly="True"
-                             Text="{Binding ElementName=Window, Path=WindowStyle}" />
+                        <CheckBox Grid.Row="2"
+                                  Grid.Column="0"
+                                  Grid.ColumnSpan="2"
+                                  IsChecked="{Binding ElementName=WindowChromeBehavior, Path=IgnoreTaskbarOnMaximize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                  Content="IgnoreTaskbarOnMaximize (only works with WindowStyle = None)" />
+                    </Grid>
+                </GroupBox>
 
-                    <Label Grid.Row="2"
-                           Grid.Column="0">GlassFrameThickness</Label>
-                    <TextBox Grid.Row="2"
-                             Grid.Column="1"
-                             IsReadOnly="True"
-                             Text="{Binding ElementName=WindowChromeBehavior, Path=GlassFrameThickness, Mode=TwoWay}" />
+                <GroupBox Grid.Row="1"
+                          Header="Current values (readonly)">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
 
-                    <Label Grid.Row="3"
-                           Grid.Column="0">ResizeBorderThickness</Label>
-                    <TextBox Grid.Row="3"
-                             Grid.Column="1"
-                             IsReadOnly="True"
-                             Text="{Binding ElementName=WindowChromeBehavior, Path=ResizeBorderThickness, Mode=TwoWay}" />
-                </Grid>
-            </GroupBox>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+
+                        <Label Grid.Row="1"
+                               Grid.Column="0">WindowStyle</Label>
+                        <TextBox Grid.Row="1"
+                                 Grid.Column="1"
+                                 IsReadOnly="True"
+                                 Text="{Binding ElementName=Window, Path=WindowStyle}" />
+
+                        <Label Grid.Row="2"
+                               Grid.Column="0">GlassFrameThickness</Label>
+                        <TextBox Grid.Row="2"
+                                 Grid.Column="1"
+                                 IsReadOnly="True"
+                                 Text="{Binding ElementName=WindowChromeBehavior, Path=GlassFrameThickness, Mode=TwoWay}" />
+
+                        <Label Grid.Row="3"
+                               Grid.Column="0">ResizeBorderThickness</Label>
+                        <TextBox Grid.Row="3"
+                                 Grid.Column="1"
+                                 IsReadOnly="True"
+                                 Text="{Binding ElementName=WindowChromeBehavior, Path=ResizeBorderThickness, Mode=TwoWay}" />
+                    </Grid>
+                </GroupBox>
+            </Grid>
         </Grid>
     </Grid>
 </local:WindowChromeWindow>
