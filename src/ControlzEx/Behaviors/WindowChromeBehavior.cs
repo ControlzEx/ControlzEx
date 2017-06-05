@@ -1,85 +1,65 @@
-﻿namespace ControlzEx.Behaviors
-{
-    using System;
-    using System.Windows;
-    using System.Windows.Interactivity;
-    using System.Windows.Interop;
-    using ControlzEx.Helper;
-    using System.Windows.Data;
-    using Standard;
+﻿#pragma warning disable 618
+using System;
+using System.Linq;
+using System.Management;
+using System.Security;
+using System.Windows;
+using System.Windows.Interactivity;
+using System.Windows.Interop;
+using Microsoft.Windows.Shell;
 
-    //using WindowChrome = System.Windows.Shell.WindowChrome;
-    using WindowChrome = ControlzEx.Microsoft.Windows.Shell.WindowChrome;
-    using Microsoft.Windows.Shell;
+namespace ControlzEx.Behaviors
+{
+    using System.Windows.Data;
+    using System.Windows.Media;
     using System.Windows.Threading;
+    using ControlzEx;
+    using ControlzEx.Native;
+    using JetBrains.Annotations;
 
     /// <summary>
     /// With this class we can make custom window styles.
     /// </summary>
-    public class WindowChromeBehavior : Behavior<Window>
+    public class WindowChromeBehavior : Behavior<Window>    
     {
         private IntPtr handle;
         private HwndSource hwndSource;
         private WindowChrome windowChrome;
-
+        private PropertyChangeNotifier topMostChangeNotifier;
+        private bool savedTopMost;
         private bool isWindwos10OrHigher;
-
-        private PropertyChangeNotifier windowStyleChangeNotifier;
-        private PropertyChangeNotifier resizeModeChangeNotifier;
-
-        protected bool IsCleanedUp;
 
         #region Mirror properties for WindowChrome
 
+        /// <summary>
+        /// Mirror property for <see cref="WindowChrome.ResizeBorderThickness"/>.
+        /// </summary>
         public Thickness ResizeBorderThickness
         {
             get { return (Thickness)this.GetValue(ResizeBorderThicknessProperty); }
             set { this.SetValue(ResizeBorderThicknessProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for ResizeBorderThickness.  This enables animation, styling, binding, etc...
+        /// <summary>
+        /// <see cref="DependencyProperty"/> for <see cref="ResizeBorderThickness"/>.
+        /// </summary>
         public static readonly DependencyProperty ResizeBorderThicknessProperty =
             DependencyProperty.Register(nameof(ResizeBorderThickness), typeof(Thickness), typeof(WindowChromeBehavior), new PropertyMetadata(GetDefaultResizeBorderThickness()));
 
-        public double CaptionHeight
-        {
-            get { return (double)this.GetValue(CaptionHeightProperty); }
-            set { this.SetValue(CaptionHeightProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for CaptionHeight.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty CaptionHeightProperty =
-            DependencyProperty.Register(nameof(CaptionHeight), typeof(double), typeof(WindowChromeBehavior), new PropertyMetadata(SystemParameters.WindowCaptionHeight));
-
-        public CornerRadius CornerRadius
-        {
-            get { return (CornerRadius)this.GetValue(CornerRadiusProperty); }
-            set { this.SetValue(CornerRadiusProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for CornerRadius.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty CornerRadiusProperty =
-            DependencyProperty.Register(nameof(CornerRadius), typeof(CornerRadius), typeof(WindowChromeBehavior), new PropertyMetadata(new CornerRadius(0D)));
-
+        /// <summary>
+        /// Mirror property for <see cref="WindowChrome.GlassFrameThickness"/>.
+        /// </summary>
         public Thickness GlassFrameThickness
         {
             get { return (Thickness)this.GetValue(GlassFrameThicknessProperty); }
             set { this.SetValue(GlassFrameThicknessProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for GlassFrameThickness.  This enables animation, styling, binding, etc...
+        /// <summary>
+        /// <see cref="DependencyProperty"/> for <see cref="GlassFrameThickness"/>.
+        /// </summary>
         public static readonly DependencyProperty GlassFrameThicknessProperty =
-            DependencyProperty.Register(nameof(GlassFrameThickness), typeof(Thickness), typeof(WindowChromeBehavior), new PropertyMetadata(SystemParameters2.Current.WindowNonClientFrameThickness));
-
-        public bool UseAeroCaptionButtons
-        {
-            get { return (bool)this.GetValue(UseAeroCaptionButtonsProperty); }
-            set { this.SetValue(UseAeroCaptionButtonsProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for UseAeroCaptionButtons.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty UseAeroCaptionButtonsProperty =
-            DependencyProperty.Register(nameof(UseAeroCaptionButtons), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(true));
+            DependencyProperty.Register(nameof(GlassFrameThickness), typeof(Thickness), typeof(WindowChromeBehavior), new PropertyMetadata(default(Thickness), OnGlassFrameThicknessChanged));
 
         #endregion
 
@@ -93,25 +73,39 @@
             set { this.SetValue(IgnoreTaskbarOnMaximizeProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for IgnoreTaskbarOnMaximize.  This enables animation, styling, binding, etc...
+        /// <summary>
+        /// <see cref="DependencyProperty"/> for <see cref="IgnoreTaskbarOnMaximize"/>.
+        /// </summary>
         public static readonly DependencyProperty IgnoreTaskbarOnMaximizeProperty =
-            DependencyProperty.Register(nameof(IgnoreTaskbarOnMaximize), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(false, IgnoreTaskbarOnMaximizePropertyChangedCallback, CoerceIgnoreTaskbarOnMaximize));
+            DependencyProperty.Register(nameof(IgnoreTaskbarOnMaximize), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(false, IgnoreTaskbarOnMaximizePropertyChangedCallback));
 
+        private static bool IsWindows10OrHigher()
+        {
+            var version = Standard.NtDll.RtlGetVersion();
+            if (default(Version) == version)
+            {
+                // Snippet from Koopakiller https://dotnet-snippets.de/snippet/os-version-name-mit-wmi/4929
+                using (var mos = new ManagementObjectSearcher("SELECT Caption, Version FROM Win32_OperatingSystem"))
+                {
+                    var attribs = mos.Get().OfType<ManagementObject>();
+                    //caption = attribs.FirstOrDefault().GetPropertyValue("Caption").ToString() ?? "Unknown";
+                    version = new Version((attribs.FirstOrDefault()?.GetPropertyValue("Version") ?? "0.0.0.0").ToString());
+                }
+            }
+            return version >= new Version(10, 0);
+        }
+
+        /// <inheritdoc />
         protected override void OnAttached()
         {
-            base.OnAttached();
+            this.isWindwos10OrHigher = IsWindows10OrHigher();
 
-            // Versions can be taken from https://msdn.microsoft.com/library/windows/desktop/ms724832.aspx
-            this.isWindwos10OrHigher = Environment.OSVersion.Version >= new Version(10, 0);
+            this.InitializeWindowChrome();            
 
-            this.InitializeWindowChrome();
-
-            this.AssociatedObject.SetValue(WindowChrome.WindowChromeProperty, this.windowChrome);
-
-            // no transparany, because it hase more then one unwanted issues            
-            var windowHandle = new WindowInteropHelper(this.AssociatedObject).Handle;
-
-            if (this.AssociatedObject.IsLoaded == false && windowHandle == IntPtr.Zero)
+            // no transparany, because it hase more then one unwanted issues
+            if (this.AssociatedObject.AllowsTransparency
+                && this.AssociatedObject.IsLoaded == false 
+                && new WindowInteropHelper(this.AssociatedObject).Handle == IntPtr.Zero)
             {
                 try
                 {
@@ -122,29 +116,33 @@
                     //For some reason, we can't determine if the window has loaded or not, so we swallow the exception.
                 }
             }
+            this.AssociatedObject.WindowStyle = WindowStyle.None;
 
-            this.windowStyleChangeNotifier = new PropertyChangeNotifier(this.AssociatedObject, Window.WindowStyleProperty);
-            this.windowStyleChangeNotifier.ValueChanged += this.OnPropertyChangedThatRequiresForceRedrawWindow;
+            this.savedTopMost = this.AssociatedObject.Topmost;
+            this.topMostChangeNotifier = new PropertyChangeNotifier(this.AssociatedObject, Window.TopmostProperty);
+            this.topMostChangeNotifier.ValueChanged += this.TopMostChangeNotifierOnValueChanged;
 
-            this.resizeModeChangeNotifier = new PropertyChangeNotifier(this.AssociatedObject, Window.ResizeModeProperty);
-            this.resizeModeChangeNotifier.ValueChanged += this.OnPropertyChangedThatRequiresForceRedrawWindow;
+            var topmostHack = new Action(() =>
+                                           {
+                                               if (this.AssociatedObject.Topmost)
+                                               {
+                                                   var raiseValueChanged = this.topMostChangeNotifier.RaiseValueChanged;
+                                                   this.topMostChangeNotifier.RaiseValueChanged = false;
+                                                   this.AssociatedObject.Topmost = false;
+                                                   this.AssociatedObject.Topmost = true;
+                                                   this.topMostChangeNotifier.RaiseValueChanged = raiseValueChanged;
+                                               }
+                                           });
+            this.AssociatedObject.LostFocus += (sender, args) => { topmostHack(); };
+            this.AssociatedObject.Deactivated += (sender, args) => { topmostHack(); };
 
-            this.AssociatedObject.Loaded += this.OnAssociatedObjectLoaded;
-            this.AssociatedObject.Unloaded += this.AssociatedObject_Unloaded;
-            this.AssociatedObject.StateChanged += this.OnAssociatedObjectHandleWindowStateChanged;
+            this.AssociatedObject.Loaded += this.AssociatedObject_Loaded;
+            this.AssociatedObject.Unloaded += this.AssociatedObjectUnloaded;
+            this.AssociatedObject.Closed += this.AssociatedObjectClosed;
+            this.AssociatedObject.SourceInitialized += this.AssociatedObject_SourceInitialized;
+            this.AssociatedObject.StateChanged += this.OnAssociatedObjectHandleMaximize;
 
-            // If Window is already initialized
-            if (PresentationSource.FromVisual(this.AssociatedObject) != null)
-            {
-                this.HandleSourceInitialized();
-            }
-            else
-            {
-                this.AssociatedObject.SourceInitialized += this.OnAssociatedObjectSourceInitialized;
-            }
-
-            // handle the maximized state here too (to handle the border in a correct way)
-            this.FixMaximizedWindow();
+            base.OnAttached();
         }
 
         private void InitializeWindowChrome()
@@ -152,96 +150,143 @@
             this.windowChrome = new WindowChrome();
 
             BindingOperations.SetBinding(this.windowChrome, WindowChrome.ResizeBorderThicknessProperty, new Binding { Path = new PropertyPath(ResizeBorderThicknessProperty), Source = this });
-            BindingOperations.SetBinding(this.windowChrome, WindowChrome.CaptionHeightProperty, new Binding { Path = new PropertyPath(CaptionHeightProperty), Source = this });
-            BindingOperations.SetBinding(this.windowChrome, WindowChrome.CornerRadiusProperty, new Binding { Path = new PropertyPath(CornerRadiusProperty), Source = this });
             BindingOperations.SetBinding(this.windowChrome, WindowChrome.GlassFrameThicknessProperty, new Binding { Path = new PropertyPath(GlassFrameThicknessProperty), Source = this });
-            BindingOperations.SetBinding(this.windowChrome, WindowChrome.UseAeroCaptionButtonsProperty, new Binding { Path = new PropertyPath(UseAeroCaptionButtonsProperty), Source = this });
+            this.windowChrome.CaptionHeight = 0;
+            this.windowChrome.CornerRadius = default(CornerRadius);
+            this.windowChrome.UseAeroCaptionButtons = false;
 
-            BindingOperations.SetBinding(this.windowChrome, WindowChrome.IgnoreTaskbarOnMaximizeProperty, new Binding { Path = new PropertyPath(IgnoreTaskbarOnMaximizeProperty), Source = this });
+            // port: Is forwarded by code in IgnoreTaskbarOnMaximizePropertyChangedCallback
+            //BindingOperations.SetBinding(this.windowChrome, WindowChrome.IgnoreTaskbarOnMaximizeProperty, new Binding { Path = new PropertyPath(IgnoreTaskbarOnMaximizeProperty), Source = this });
+
+            this.AssociatedObject.SetValue(WindowChrome.WindowChromeProperty, this.windowChrome);
         }
 
-        private static Thickness GetDefaultResizeBorderThickness()
+        /// <summary>
+        /// Gets the default resize border thicknes from the system parameters.
+        /// </summary>
+        public static Thickness GetDefaultResizeBorderThickness()
         {
 #if NET45
             return SystemParameters.WindowResizeBorderThickness;
 #else
-            return ControlzEx.Microsoft.Windows.Shell.SystemParameters2.Current.WindowResizeBorderThickness;
+            return Microsoft.Windows.Shell.SystemParameters2.Current.WindowResizeBorderThickness;
 #endif
         }
 
-        private void OnPropertyChangedThatRequiresForceRedrawWindow(object sender, EventArgs e)
+        private void TopMostChangeNotifierOnValueChanged(object sender, EventArgs e)
         {
-            this.ForceRedrawWindow();
+            // It's bad if the window is null at this point, but we check this here to prevent the possible occurred exception
+            var window = this.AssociatedObject;
+            if (window != null)
+            {
+                this.savedTopMost = window.Topmost;
+            }
         }
 
-        private static object CoerceIgnoreTaskbarOnMaximize(DependencyObject d, object baseValue)
+        private static void OnGlassFrameThicknessChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var behavior = (WindowChromeBehavior)d;
 
-            // Only works with WindowStyle = None
-            if (behavior.AssociatedObject == null
-                || behavior.AssociatedObject.WindowStyle == WindowStyle.None)
-            {
-                return baseValue;
-            }
-
-            return false;
+            behavior.AssociatedObject.SetValue(WindowChrome.WindowChromeProperty, null);
+            behavior.InitializeWindowChrome();
         }
 
         private static void IgnoreTaskbarOnMaximizePropertyChangedCallback(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             var behavior = (WindowChromeBehavior)sender;
-
-            // Async because WindowChromeWorker has to be able to react to the change before we can fix anything
-            behavior.ForceRedrawWindowAsync();
+            if (behavior.windowChrome != null)
+            {
+                if (!Equals(behavior.windowChrome.IgnoreTaskbarOnMaximize, behavior.IgnoreTaskbarOnMaximize))
+                {
+                    // another special hack to avoid nasty resizing
+                    // repro
+                    // ResizeMode="NoResize"
+                    // WindowState="Maximized"
+                    // IgnoreTaskbarOnMaximize="True"
+                    // this only happens if we change this at runtime
+                    var removed = behavior._ModifyStyle(Standard.WS.MAXIMIZEBOX | Standard.WS.MINIMIZEBOX | Standard.WS.THICKFRAME, 0);
+                    behavior.windowChrome.IgnoreTaskbarOnMaximize = behavior.IgnoreTaskbarOnMaximize;
+                    if (removed)
+                    {
+                        behavior._ModifyStyle(0, Standard.WS.MAXIMIZEBOX | Standard.WS.MINIMIZEBOX | Standard.WS.THICKFRAME);
+                    }
+                    behavior.ForceRedrawWindowFromPropertyChanged();
+                }
+            }
         }
 
-        private void ForceRedrawWindowAsync()
+        /// <summary>Add and remove a native WindowStyle from the HWND.</summary>
+        /// <param name="removeStyle">The styles to be removed.  These can be bitwise combined.</param>
+        /// <param name="addStyle">The styles to be added.  These can be bitwise combined.</param>
+        /// <returns>Whether the styles of the HWND were modified as a result of this call.</returns>
+        /// <SecurityNote>
+        ///   Critical : Calls critical methods
+        /// </SecurityNote>
+        [SecurityCritical]
+        private bool _ModifyStyle(Standard.WS removeStyle, Standard.WS addStyle)
         {
-            this.AssociatedObject?.Dispatcher.BeginInvoke(DispatcherPriority.Background, (Action)this.ForceRedrawWindow);
+            if (this.handle == IntPtr.Zero)
+            {
+                return false;
+            }
+            var intPtr = Standard.NativeMethods.GetWindowLongPtr(this.handle, Standard.GWL.STYLE);
+            var dwStyle = (Standard.WS)(Environment.Is64BitProcess ? intPtr.ToInt64() : intPtr.ToInt32());
+            var dwNewStyle = (dwStyle & ~removeStyle) | addStyle;
+            if (dwStyle == dwNewStyle)
+            {
+                return false;
+            }
+
+            Standard.NativeMethods.SetWindowLongPtr(this.handle, Standard.GWL.STYLE, new IntPtr((int)dwNewStyle));
+            return true;
         }
 
-        private void ForceRedrawWindow()
+        private void ForceRedrawWindowFromPropertyChanged()
         {
-            this.windowChrome?._OnPropertyChangedThatRequiresRepaint();
-            this.FixMaximizedWindow();
-
+            this.HandleMaximize();
             if (this.handle != IntPtr.Zero)
             {
-                NativeMethods.RedrawWindow(this.handle, IntPtr.Zero, IntPtr.Zero, RedrawWindowFlags.Invalidate | RedrawWindowFlags.Frame);
+                UnsafeNativeMethods.RedrawWindow(this.handle, IntPtr.Zero, IntPtr.Zero, Constants.RedrawWindowFlags.Invalidate | Constants.RedrawWindowFlags.Frame);
             }
         }
 
-        protected virtual void Cleanup()
+        private bool isCleanedUp;
+
+        private void Cleanup()
         {
-            if (this.IsCleanedUp)
+            if (!this.isCleanedUp)
             {
-                return;
+                this.isCleanedUp = true;
+
+                if (GetHandleTaskbar(this.AssociatedObject) && this.isWindwos10OrHigher)
+                {
+                    this.DeactivateTaskbarFix();
+                }
+
+                // clean up events
+                this.AssociatedObject.Loaded -= this.AssociatedObject_Loaded;
+                this.AssociatedObject.Unloaded -= this.AssociatedObjectUnloaded;
+                this.AssociatedObject.Closed -= this.AssociatedObjectClosed;
+                this.AssociatedObject.SourceInitialized -= this.AssociatedObject_SourceInitialized;
+                this.AssociatedObject.StateChanged -= this.OnAssociatedObjectHandleMaximize;
+                this.hwndSource?.RemoveHook(this.WindowProc);
+                this.windowChrome = null;
             }
-
-            this.IsCleanedUp = true;
-
-            // clean up events
-            this.AssociatedObject.Loaded -= this.OnAssociatedObjectLoaded;
-            this.AssociatedObject.Unloaded -= this.AssociatedObject_Unloaded;
-            this.AssociatedObject.SourceInitialized -= this.OnAssociatedObjectSourceInitialized;
-            this.AssociatedObject.StateChanged -= this.OnAssociatedObjectHandleWindowStateChanged;
-
-            this.windowStyleChangeNotifier.ValueChanged -= this.OnPropertyChangedThatRequiresForceRedrawWindow;
-            this.resizeModeChangeNotifier.ValueChanged -= this.OnPropertyChangedThatRequiresForceRedrawWindow;
-
-            this.hwndSource?.RemoveHook(this.WindowProc);
-
-            this.windowChrome = null;
         }
 
+        /// <inheritdoc />
         protected override void OnDetaching()
         {
             this.Cleanup();
             base.OnDetaching();
         }
 
-        private void AssociatedObject_Unloaded(object sender, RoutedEventArgs e)
+        private void AssociatedObjectUnloaded(object sender, RoutedEventArgs e)
+        {
+            this.Cleanup();
+        }
+
+        private void AssociatedObjectClosed(object sender, EventArgs e)
         {
             this.Cleanup();
         }
@@ -250,113 +295,237 @@
         {
             var returnval = IntPtr.Zero;
 
-            var message = (WM)msg;
-            switch (message)
+            switch (msg)
             {
-                //case WM.NCPAINT:
-                //    handled = this.AssociatedObject.WindowStyle == WindowStyle.None;
-                //    break;
+                case Constants.WM_NCPAINT:
+                    handled = this.GlassFrameThickness == default(Thickness) && this.GlowBrush == null;
+                    break;
 
-                case WM.NCACTIVATE:
-                    /* As per http://msdn.microsoft.com/en-us/library/ms632633(VS.85).aspx , "-1" lParam "does not repaint the nonclient area to reflect the state change." */
-                    returnval = NativeMethods.DefWindowProc(hwnd, message, wParam, new IntPtr(-1));
-                    handled = true;
+                case (int)Standard.WM.WINDOWPOSCHANGING:
+                    {
+                        var pos = (Standard.WINDOWPOS)System.Runtime.InteropServices.Marshal.PtrToStructure(lParam, typeof(Standard.WINDOWPOS));
+                        if ((pos.flags & (int)Standard.SWP.NOMOVE) != 0)
+                        {
+                            return IntPtr.Zero;
+                        }
+
+                        var wnd = this.AssociatedObject;
+                        if (wnd == null || this.hwndSource?.CompositionTarget == null)
+                        {
+                            return IntPtr.Zero;
+                        }
+
+                        var changedPos = false;
+
+                        // Convert the original to original size based on DPI setting. Need for x% screen DPI.
+                        var matrix = this.hwndSource.CompositionTarget.TransformToDevice;
+
+                        var minWidth = wnd.MinWidth * matrix.M11;
+                        var minHeight = wnd.MinHeight * matrix.M22;
+                        if (pos.cx < minWidth) { pos.cx = (int)minWidth; changedPos = true; }
+                        if (pos.cy < minHeight) { pos.cy = (int)minHeight; changedPos = true; }
+
+                        var maxWidth = wnd.MaxWidth * matrix.M11;
+                        var maxHeight = wnd.MaxHeight * matrix.M22;
+                        if (pos.cx > maxWidth && maxWidth > 0) { pos.cx = (int)Math.Round(maxWidth); changedPos = true; }
+                        if (pos.cy > maxHeight && maxHeight > 0) { pos.cy = (int)Math.Round(maxHeight); changedPos = true; }
+
+                        if (!changedPos)
+                        {
+                            return IntPtr.Zero;
+                        }
+
+                        System.Runtime.InteropServices.Marshal.StructureToPtr(pos, lParam, true);
+                        handled = true;
+                    }
                     break;
             }
 
             return returnval;
         }
 
-        private void OnAssociatedObjectHandleWindowStateChanged(object sender, EventArgs e)
+        private void OnAssociatedObjectHandleMaximize(object sender, EventArgs e)
         {
-            this.ForceRedrawWindowAsync();
+            this.HandleMaximize();
         }
 
-        protected virtual void FixMaximizedWindow()
+        private void HandleMaximize()
         {
-            if (this.AssociatedObject == null
-                || this.AssociatedObject.WindowState != WindowState.Maximized
-                || this.handle == IntPtr.Zero)
+            var raiseValueChanged = this.topMostChangeNotifier.RaiseValueChanged;
+            this.topMostChangeNotifier.RaiseValueChanged = false;
+
+            if (this.AssociatedObject.WindowState == WindowState.Maximized)
             {
-                return;
-            }
-
-            // WindowChrome handles the size false if the main monitor is lesser the monitor where the window is maximized
-            // so set the window pos/size twice
-            var monitor = NativeMethods.MonitorFromWindow(this.handle, (uint)MonitorOptions.MONITOR_DEFAULTTONEAREST);
-            if (monitor == IntPtr.Zero)
-            {
-                return;
-            }
-
-            // Disable "SizeToContent", this is usually done in "DisableSizeToContent" of "HwndSource" if window is maximized.
-            // But setting "WindowState" in code does not cause that method to be called.
-            this.AssociatedObject.SizeToContent = SizeToContent.Manual;
-
-            var monitorInfo = NativeMethods.GetMonitorInfoW(monitor);
-            var rcMonitorArea = this.IgnoreTaskbarOnMaximize ? monitorInfo.rcMonitor : monitorInfo.rcWork;
-
-            var x = rcMonitorArea.Left;
-            var y = rcMonitorArea.Top;
-
-            // This fixes a bug with multiple monitors on Windows 7 and Windows 8. Without this workaround the WindowChrome turns black.
-            // This only has to be done on Windows 7 and Windows 8.
-            if (this.isWindwos10OrHigher == false)
-            {
-                // Removing, redrawing and adding DLGFRAME forces windows to draw correctly
-                const WS style = WS.DLGFRAME;
-                var modified = this.handle._ModifyStyle(style, 0);
-
-                NativeMethods.SetWindowPos(this.handle, IntPtr.Zero, x, y, 0, 0, SWP.NOSIZE | SWP.SHOWWINDOW);
-
-                if (modified)
+                var ignoreTaskBar = this.IgnoreTaskbarOnMaximize;
+                if (this.handle != IntPtr.Zero)
                 {
-                    this.handle._ModifyStyle(0, style);
+                    // WindowChrome handles the size false if the main monitor is lesser the monitor where the window is maximized
+                    // so set the window pos/size twice
+                    IntPtr monitor = UnsafeNativeMethods.MonitorFromWindow(this.handle, Constants.MONITOR_DEFAULTTONEAREST);
+                    if (monitor != IntPtr.Zero)
+                    {
+                        var monitorInfo = new MONITORINFO();
+                        UnsafeNativeMethods.GetMonitorInfo(monitor, monitorInfo);
+
+                        var desktopRect = ignoreTaskBar ? monitorInfo.rcMonitor :  monitorInfo.rcWork;
+                        var x = desktopRect.left;
+                        var y = desktopRect.top;
+                        var cx = Math.Abs(desktopRect.right - x);
+                        var cy = Math.Abs(desktopRect.bottom - y);
+
+                        if (ignoreTaskBar && this.isWindwos10OrHigher)
+                        {
+                            this.ActivateTaskbarFix();
+                        }
+
+                        UnsafeNativeMethods.SetWindowPos(this.handle, new IntPtr(-2), x, y, cx, cy, 0x0040);
+                    }
                 }
             }
             else
             {
-                NativeMethods.SetWindowPos(this.handle, IntPtr.Zero, x, y, 0, 0, SWP.NOSIZE | SWP.SHOWWINDOW);
+                // #2694 make sure the window is not on top after restoring window
+                // this issue was introduced after fixing the windows 10 bug with the taskbar and a maximized window that ignores the taskbar
+                if (GetHandleTaskbar(this.AssociatedObject) && this.isWindwos10OrHigher)
+                {
+                    this.DeactivateTaskbarFix();
+                }
+            }
+
+            // fix nasty TopMost bug
+            // - set TopMost="True"
+            // - start mahapps demo
+            // - TopMost works
+            // - maximize window and back to normal
+            // - TopMost is gone
+            //
+            // Problem with minimize animation when window is maximized #1528
+            // 1. Activate another application (such as Google Chrome).
+            // 2. Run the demo and maximize it.
+            // 3. Minimize the demo by clicking on the taskbar button.
+            // Note that the minimize animation in this case does actually run, but somehow the other
+            // application (Google Chrome in this example) is instantly switched to being the top window,
+            // and so blocking the animation view.
+            this.AssociatedObject.Topmost = false;
+            this.AssociatedObject.Topmost = this.AssociatedObject.WindowState == WindowState.Minimized || this.savedTopMost;
+
+            this.topMostChangeNotifier.RaiseValueChanged = raiseValueChanged;
+        }
+
+        private void ActivateTaskbarFix()
+        {
+            var trayWndHandle = Standard.NativeMethods.FindWindow("Shell_TrayWnd", null);
+            if (trayWndHandle != IntPtr.Zero)
+            {
+                SetHandleTaskbar(this.AssociatedObject, true);
+                UnsafeNativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_BOTTOM, 0, 0, 0, 0, Constants.TOPMOST_FLAGS);
+                UnsafeNativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_TOP, 0, 0, 0, 0, Constants.TOPMOST_FLAGS);
+                UnsafeNativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_NOTOPMOST, 0, 0, 0, 0, Constants.TOPMOST_FLAGS);
             }
         }
 
-        protected virtual void HandleSourceInitialized()
+        private void DeactivateTaskbarFix()
+        {
+            var trayWndHandle = Standard.NativeMethods.FindWindow("Shell_TrayWnd", null);
+            if (trayWndHandle != IntPtr.Zero)
+            {
+                SetHandleTaskbar(this.AssociatedObject, false);
+                UnsafeNativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_BOTTOM, 0, 0, 0, 0, Constants.TOPMOST_FLAGS);
+                UnsafeNativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_TOP, 0, 0, 0, 0, Constants.TOPMOST_FLAGS);
+                UnsafeNativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_TOPMOST, 0, 0, 0, 0, Constants.TOPMOST_FLAGS);
+            }
+        }
+
+        private static readonly DependencyProperty HandleTaskbarProperty
+            = DependencyProperty.RegisterAttached(
+                "HandleTaskbar",
+                typeof(bool),
+                typeof(WindowChromeBehavior), new FrameworkPropertyMetadata(false));
+
+        private static bool GetHandleTaskbar(UIElement element)
+        {
+            return (bool)element.GetValue(HandleTaskbarProperty);
+        }
+
+        private static void SetHandleTaskbar(UIElement element, bool value)
+        {
+            element.SetValue(HandleTaskbarProperty, value);
+        }
+
+        private void AssociatedObject_SourceInitialized(object sender, EventArgs e)
         {
             this.handle = new WindowInteropHelper(this.AssociatedObject).Handle;
-
             if (IntPtr.Zero == this.handle)
             {
-                // If the window got closed very early
-                this.Detach();
-                return;
+                throw new Exception("Uups, at this point we really need the Handle from the associated object!");
+            }
+
+            if (this.AssociatedObject.SizeToContent != SizeToContent.Manual && this.AssociatedObject.WindowState == WindowState.Normal)
+            {
+                // Another try to fix SizeToContent
+                // without this we get nasty glitches at the borders
+                Invoke(this.AssociatedObject, () =>
+                    {
+                        this.AssociatedObject.InvalidateMeasure();
+                        RECT rect;
+                        if (UnsafeNativeMethods.GetWindowRect(this.handle, out rect))
+                        {
+                            uint flags = 0x0040;
+                            if (!this.AssociatedObject.ShowActivated)
+                            {
+                                flags |= (uint)Standard.SWP.NOACTIVATE;
+                            }
+                            UnsafeNativeMethods.SetWindowPos(this.handle, new IntPtr(-2), rect.left, rect.top, rect.Width, rect.Height, flags);
+                        }
+                    });
             }
 
             this.hwndSource = HwndSource.FromHwnd(this.handle);
-
             this.hwndSource?.AddHook(this.WindowProc);
 
-            if (this.AssociatedObject.ResizeMode != ResizeMode.NoResize)
+            // handle the maximized state here too (to handle the border in a correct way)
+            this.HandleMaximize();
+        }
+
+        /// <summary>
+        /// Is called when the associated object of this instance is loaded
+        /// </summary>
+        protected virtual void AssociatedObject_Loaded(object sender, RoutedEventArgs e)
+        {
+        }
+
+        /// <summary>
+        /// <see cref="DependencyProperty"/> for <see cref="GlowBrush"/>.
+        /// </summary>
+        public static readonly DependencyProperty GlowBrushProperty = DependencyProperty.Register(nameof(GlowBrush), typeof(Brush), typeof(WindowChromeBehavior), new PropertyMetadata());
+
+        /// <summary>
+        /// Mirror property for GlowBrush from MetroWindow.
+        /// </summary>
+        public Brush GlowBrush
+        {
+            get { return (Brush)this.GetValue(GlowBrushProperty); }
+            set { this.SetValue(GlowBrushProperty, value); }
+        }
+
+        private static void Invoke([NotNull] DispatcherObject dispatcherObject, [NotNull] Action invokeAction)
+        {
+            if (dispatcherObject == null)
             {
-                // handle size to content (thanks @lynnx).
-                // This is necessary when ResizeMode != NoResize. Without this workaround,
-                // black bars appear at the right and bottom edge of the window.
-                var sizeToContent = this.AssociatedObject.SizeToContent;
-                var snapsToDevicePixels = this.AssociatedObject.SnapsToDevicePixels;
-                this.AssociatedObject.SnapsToDevicePixels = true;
-                this.AssociatedObject.SizeToContent = sizeToContent == SizeToContent.WidthAndHeight ? SizeToContent.Height : SizeToContent.Manual;
-                this.AssociatedObject.SizeToContent = sizeToContent;
-                this.AssociatedObject.SnapsToDevicePixels = snapsToDevicePixels;
+                throw new ArgumentNullException(nameof(dispatcherObject));
             }
-        }
-
-        private void OnAssociatedObjectSourceInitialized(object sender, EventArgs e)
-        {
-            this.HandleSourceInitialized();
-        }
-
-        protected virtual void OnAssociatedObjectLoaded(object sender, RoutedEventArgs e)
-        {
-            // nothing here
+            if (invokeAction == null)
+            {
+                throw new ArgumentNullException(nameof(invokeAction));
+            }
+            if (dispatcherObject.Dispatcher.CheckAccess())
+            {
+                invokeAction();
+            }
+            else
+            {
+                dispatcherObject.Dispatcher.Invoke(invokeAction);
+            }
         }
     }
 }

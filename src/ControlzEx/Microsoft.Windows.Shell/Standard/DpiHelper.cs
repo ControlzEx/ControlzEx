@@ -1,7 +1,8 @@
-﻿namespace Standard
+﻿#pragma warning disable 1591, 618
+namespace Standard
 {
-    using System;
     using System.Diagnostics.CodeAnalysis;
+    using System.Reflection;
     using System.Windows;
     using System.Windows.Media;
 
@@ -9,6 +10,11 @@
     {
         private static Matrix _transformToDevice;
         private static Matrix _transformToDip;
+
+        private const double StandartDpiX = 96.0;
+        private const double StandartDpiY = 96.0;
+        private static readonly int DpiX;
+        private static readonly int DpiY;
 
         [SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
         static DpiHelper()
@@ -25,6 +31,12 @@
                 _transformToDevice = Matrix.Identity;
                 _transformToDevice.Scale((double)pixelsPerInchX / 96d, (double)pixelsPerInchY / 96d);
             }
+
+            var dpiXProperty = typeof(SystemParameters).GetProperty("DpiX", BindingFlags.NonPublic | BindingFlags.Static);
+            var dpiYProperty = typeof(SystemParameters).GetProperty("Dpi", BindingFlags.NonPublic | BindingFlags.Static);
+
+            DpiX = (int)dpiXProperty.GetValue(null, null);
+            DpiY = (int)dpiYProperty.GetValue(null, null);
         }
 
         /// <summary>
@@ -90,6 +102,38 @@
             Point bottomRight = LogicalPixelsToDevice(new Point(logicalThickness.Right, logicalThickness.Bottom));
 
             return new Thickness(topLeft.X, topLeft.Y, bottomRight.X, bottomRight.Y);
+        }
+
+        public static double TransformToDeviceY(Visual visual, double y)
+        {
+            var source = PresentationSource.FromVisual(visual);
+            if (source?.CompositionTarget != null)
+            {
+                return y * source.CompositionTarget.TransformToDevice.M22;
+            }
+
+            return TransformToDeviceY(y);
+        }
+
+        public static double TransformToDeviceX(Visual visual, double x)
+        {
+            var source = PresentationSource.FromVisual(visual);
+            if (source?.CompositionTarget != null)
+            {
+                return x * source.CompositionTarget.TransformToDevice.M11;
+            }
+
+            return TransformToDeviceX(x);
+        }
+
+        public static double TransformToDeviceY(double y)
+        {
+            return y * DpiY / StandartDpiY;
+        }
+
+        public static double TransformToDeviceX(double x)
+        {
+            return x * DpiX / StandartDpiX;
         }
     }
 }

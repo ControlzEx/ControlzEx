@@ -7,4 +7,5 @@ using System.Windows.Markup;
 [assembly: XmlnsPrefix("urn:controlzex", "controlzex")]
 [assembly: XmlnsDefinition("urn:controlzex", "ControlzEx")]
 [assembly: XmlnsDefinition("urn:controlzex", "ControlzEx.Behaviors")]
-[assembly: XmlnsDefinition("urn:controlzex", "ControlzEx.Microsoft.Windows.Shell")]
+//[assembly: XmlnsDefinition("urn:controlzex", "ControlzEx.Microsoft.Windows.Shell")]
+[assembly: XmlnsDefinition("urn:controlzex", "Microsoft.Windows.Shell")]

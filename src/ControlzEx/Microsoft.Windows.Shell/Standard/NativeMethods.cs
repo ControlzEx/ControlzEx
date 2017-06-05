@@ -1,4 +1,5 @@
-﻿namespace Standard
+﻿#pragma warning disable 1591, 618
+namespace Standard
 {
     using System;
     using System.ComponentModel;
@@ -8,14 +9,11 @@
     using System.Runtime.InteropServices;
     using System.Runtime.InteropServices.ComTypes;
     using System.Security;
-    using System.Security.Permissions;
     using System.Text;
     using Microsoft.Win32.SafeHandles;
 
     // Some COM interfaces and Win32 structures are already declared in the framework.
     // Interesting ones to remember in System.Runtime.InteropServices.ComTypes are:
-    using FILETIME = System.Runtime.InteropServices.ComTypes.FILETIME;
-    using IPersistFile = System.Runtime.InteropServices.ComTypes.IPersistFile;
     using IStream = System.Runtime.InteropServices.ComTypes.IStream;
 
     #region Native Values
@@ -34,8 +32,9 @@
     /// <summary>
     /// HIGHCONTRAST flags
     /// </summary>
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [Flags]
-    internal enum HCF
+    public enum HCF
     {
         HIGHCONTRASTON = 0x00000001,
         AVAILABLE = 0x00000002,
@@ -74,7 +73,8 @@
     /// <summary>
     /// BITMAPINFOHEADER Compression type.  BI_*.
     /// </summary>
-    internal enum BI
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    public enum BI
     {
         RGB = 0,
     }
@@ -82,7 +82,8 @@
     /// <summary>
     /// CombingRgn flags.  RGN_*
     /// </summary>
-    internal enum RGN
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    public enum RGN
     {
         /// <summary>
         /// Creates the intersection of the two combined regions.
@@ -106,7 +107,8 @@
         COPY = 5,
     }
 
-    internal enum CombineRgnResult
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    public enum CombineRgnResult
     {
         ERROR = 0,
         NULLREGION = 1,
@@ -217,7 +219,8 @@
     /// <summary>
     /// DATAOBJ_GET_ITEM_FLAGS.  DOGIF_*.
     /// </summary>
-    internal enum DOGIF
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    public enum DOGIF
     {
         DEFAULT = 0x0000,
         TRAVERSE_LINK = 0x0001,    // if the item is a link get the target
@@ -226,14 +229,16 @@
         ONLY_IF_ONE = 0x0008,    // only return the item if there is one item in the array
     }
 
-    internal enum DWM_SIT
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    public enum DWM_SIT
     {
         None,
         DISPLAYFRAME = 1,
     }
 
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [Flags]
-    internal enum ErrorModes
+    public enum ErrorModes
     {
         /// <summary>Use the system default, which is to display all error dialog boxes.</summary>
         Default = 0x0,
@@ -264,7 +269,8 @@
     /// <summary>
     /// Non-client hit test values, HT*
     /// </summary>
-    internal enum HT
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    public enum HT
     {
         ERROR = -2,
         TRANSPARENT = -1,
@@ -295,7 +301,8 @@
     /// <summary>
     /// GetClassLongPtr values, GCLP_*
     /// </summary>
-    internal enum GCLP
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    public enum GCLP
     {
         HBRBACKGROUND = -10,
     }
@@ -303,7 +310,8 @@
     /// <summary>
     /// GetWindowLongPtr values, GWL_*
     /// </summary>
-    internal enum GWL
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    public enum GWL
     {
         WNDPROC = (-4),
         HINSTANCE = (-6),
@@ -317,7 +325,8 @@
     /// <summary>
     /// SystemMetrics.  SM_*
     /// </summary>
-    internal enum SM
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    public enum SM
     {
         CXSCREEN = 0,
         CYSCREEN = 1,
@@ -408,7 +417,8 @@
     /// <summary>
     /// SystemParameterInfo values, SPI_*
     /// </summary>
-    internal enum SPI
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    public enum SPI
     {
         GETBEEP = 0x0001,
         SETBEEP = 0x0002,
@@ -647,8 +657,9 @@
     /// <summary>
     /// SystemParameterInfo flag values, SPIF_*
     /// </summary>
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [Flags]
-    internal enum SPIF
+    public enum SPIF
     {
         None = 0,
         UPDATEINIFILE = 0x01,
@@ -692,7 +703,8 @@
         VALID = 0x3FFFFFFF,
     }
 
-    internal enum StockObject : int
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    public enum StockObject : int
     {
         WHITE_BRUSH = 0,
         LTGRAY_BRUSH = 1,
@@ -711,8 +723,9 @@
     /// <summary>
     /// CS_*
     /// </summary>
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [Flags]
-    internal enum CS : uint
+    public enum CS : uint
     {
         VREDRAW = 0x0001,
         HREDRAW = 0x0002,
@@ -732,8 +745,9 @@
     /// <summary>
     /// WindowStyle values, WS_*
     /// </summary>
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [Flags]
-    internal enum WS : uint
+    public enum WS : uint
     {
         OVERLAPPED = 0x00000000,
         POPUP = 0x80000000,
@@ -770,7 +784,8 @@
     /// <summary>
     /// Window message values, WM_*
     /// </summary>
-    internal enum WM
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    public enum WM
     {
         NULL = 0x0000,
         CREATE = 0x0001,
@@ -941,7 +956,8 @@
     /// Window style extended values, WS_EX_*
     /// </summary>
     [Flags]
-    internal enum WS_EX : uint
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    public enum WS_EX : uint
     {
         None = 0,
         DLGMODALFRAME = 0x00000001,
@@ -975,7 +991,8 @@
     /// <summary>
     /// GetDeviceCaps nIndex values.
     /// </summary>
-    internal enum DeviceCap
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    public enum DeviceCap
     {
         /// <summary>Number of bits per pixel
         /// </summary>
@@ -994,7 +1011,8 @@
         LOGPIXELSY = 90,
     }
 
-    internal enum FO : int
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    public enum FO : int
     {
         MOVE = 0x0001,
         COPY = 0x0002,
@@ -1005,7 +1023,8 @@
     /// <summary>
     /// "FILEOP_FLAGS", FOF_*.
     /// </summary>
-    internal enum FOF : ushort
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    public enum FOF : ushort
     {
         MULTIDESTFILES = 0x0001,
         CONFIRMMOUSE = 0x0002,
@@ -1028,8 +1047,9 @@
     /// <summary>
     /// EnableMenuItem uEnable values, MF_*
     /// </summary>
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [Flags]
-    internal enum MF : uint
+    public enum MF : uint
     {
         /// <summary>
         /// Possible return value for EnableMenuItem
@@ -1042,7 +1062,8 @@
     }
 
     /// <summary>Specifies the type of visual style attribute to set on a window.</summary>
-    internal enum WINDOWTHEMEATTRIBUTETYPE : uint
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    public enum WINDOWTHEMEATTRIBUTETYPE : uint
     {
         /// <summary>Non-client area window attributes will be set.</summary>
         WTA_NONCLIENT = 1,
@@ -1051,7 +1072,8 @@
     /// <summary>
     /// DWMFLIP3DWINDOWPOLICY.  DWMFLIP3D_*
     /// </summary>
-    internal enum DWMFLIP3D 
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    public enum DWMFLIP3D 
     {
         DEFAULT,
         EXCLUDEBELOW,
@@ -1097,8 +1119,9 @@
     /// <summary>
     /// WindowThemeNonClientAttributes
     /// </summary>
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [Flags]
-    internal enum WTNCA : uint
+    public enum WTNCA : uint
     {
         /// <summary>Prevents the window caption from being drawn.</summary>
         NODRAWCAPTION = 0x00000001,
@@ -1115,8 +1138,9 @@
     /// <summary>
     /// SetWindowPos options
     /// </summary>
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [Flags]
-    internal enum SWP
+    public enum SWP
     {
         ASYNCWINDOWPOS = 0x4000,
         DEFERERASE = 0x2000,
@@ -1138,7 +1162,8 @@
     /// <summary>
     /// ShowWindow options
     /// </summary>
-    internal enum SW
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    public enum SW
     {
         HIDE = 0,
         SHOWNORMAL = 1,
@@ -1156,10 +1181,12 @@
         FORCEMINIMIZE = 11,
     }
 
-    internal enum SC
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    public enum SC
     {
         SIZE = 0xF000,
         MOVE = 0xF010,
+        MOUSEMOVE = 0xF012,
         MINIMIZE = 0xF020,
         MAXIMIZE = 0xF030,
         NEXTWINDOW = 0xF040,
@@ -1189,7 +1216,8 @@
     /// <summary>
     /// GDI+ Status codes
     /// </summary>
-    internal enum Status
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    public enum Status
     {
         Ok = 0,
         GenericError = 1,
@@ -1225,7 +1253,8 @@
     /// <summary>
     /// MSGFLT_*.  New in Vista.  Realiased in Windows 7.
     /// </summary>
-    internal enum MSGFLT
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    public enum MSGFLT
     {
         // Win7 versions of this enum:
         RESET = 0,
@@ -1237,7 +1266,8 @@
         // REMOVE = 2,
     }
 
-    internal enum MSGFLTINFO
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    public enum MSGFLTINFO
     {
         NONE = 0,
         ALREADYALLOWED_FORWND = 1,
@@ -1253,7 +1283,8 @@
     /// <summary>
     /// Shell_NotifyIcon messages.  NIM_*
     /// </summary>
-    internal enum NIM : uint
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    public enum NIM : uint
     {
         ADD = 0,
         MODIFY = 1,
@@ -1276,8 +1307,9 @@
         APPIDINFOLINK = 0x00000007, // indicates the data type is a pointer to a SHARDAPPIDINFOLINK structure 
     }
 
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [Flags]
-    enum SLGP
+    public enum SLGP
     {
         SHORTPATH = 0x1,
         UNCPRIORITY = 0x2,
@@ -1287,8 +1319,9 @@
     /// <summary>
     /// Shell_NotifyIcon flags.  NIF_*
     /// </summary>
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [Flags]
-    internal enum NIF : uint
+    public enum NIF : uint
     {
         MESSAGE = 0x0001,
         ICON = 0x0002,
@@ -1334,13 +1367,15 @@
     /// <summary>
     /// AC_*
     /// </summary>
-    internal enum AC : byte
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    public enum AC : byte
     {
         SRC_OVER = 0,
         SRC_ALPHA = 1,
     }
 
-    internal enum ULW
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    public enum ULW
     {
         ALPHA = 2,
         COLORKEY = 1,
@@ -1364,7 +1399,8 @@
         ALLOWDROPDESCRIPTIONTEXT = 1,
     }
 
-    internal enum MonitorOptions : uint
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    public enum MonitorOptions : uint
     {
         MONITOR_DEFAULTTONULL = 0x00000000,
         MONITOR_DEFAULTTOPRIMARY = 0x00000001,
@@ -1394,61 +1430,12 @@
         ABM_SETSTATE = 10
     }
 
-    [Flags()]
-    internal enum RedrawWindowFlags : uint
-    {
-        /// <summary>
-        /// Invalidates the rectangle or region that you specify in lprcUpdate or hrgnUpdate.
-        /// You can set only one of these parameters to a non-NULL value. If both are NULL, RDW_INVALIDATE invalidates the entire window.
-        /// </summary>
-        Invalidate = 0x1,
-
-        /// <summary>Causes the OS to post a WM_PAINT message to the window regardless of whether a portion of the window is invalid.</summary>
-        InternalPaint = 0x2,
-
-        /// <summary>
-        /// Causes the window to receive a WM_ERASEBKGND message when the window is repainted.
-        /// Specify this value in combination with the RDW_INVALIDATE value; otherwise, RDW_ERASE has no effect.
-        /// </summary>
-        Erase = 0x4,
-
-        /// <summary>
-        /// Validates the rectangle or region that you specify in lprcUpdate or hrgnUpdate.
-        /// You can set only one of these parameters to a non-NULL value. If both are NULL, RDW_VALIDATE validates the entire window.
-        /// This value does not affect internal WM_PAINT messages.
-        /// </summary>
-        Validate = 0x8,
-
-        NoInternalPaint = 0x10,
-
-        /// <summary>Suppresses any pending WM_ERASEBKGND messages.</summary>
-        NoErase = 0x20,
-
-        /// <summary>Excludes child windows, if any, from the repainting operation.</summary>
-        NoChildren = 0x40,
-
-        /// <summary>Includes child windows, if any, in the repainting operation.</summary>
-        AllChildren = 0x80,
-
-        /// <summary>Causes the affected windows, which you specify by setting the RDW_ALLCHILDREN and RDW_NOCHILDREN values, to receive WM_ERASEBKGND and WM_PAINT messages before the RedrawWindow returns, if necessary.</summary>
-        UpdateNow = 0x100,
-
-        /// <summary>
-        /// Causes the affected windows, which you specify by setting the RDW_ALLCHILDREN and RDW_NOCHILDREN values, to receive WM_ERASEBKGND messages before RedrawWindow returns, if necessary.
-        /// The affected windows receive WM_PAINT messages at the ordinary time.
-        /// </summary>
-        EraseNow = 0x200,
-
-        Frame = 0x400,
-
-        NoFrame = 0x800
-    }
-
     #endregion
 
     #region SafeHandles
 
-    internal sealed class SafeFindHandle : SafeHandleZeroOrMinusOneIsInvalid
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    public sealed class SafeFindHandle : SafeHandleZeroOrMinusOneIsInvalid
     {
         [SecurityCritical]
         private SafeFindHandle() : base(true) { }
@@ -1459,7 +1446,8 @@
         }
     }
 
-    internal sealed class SafeDC : SafeHandleZeroOrMinusOneIsInvalid
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    public sealed class SafeDC : SafeHandleZeroOrMinusOneIsInvalid
     {
         private static class NativeMethods
         {
@@ -1625,7 +1613,8 @@
         }
     }
 
-    internal sealed class SafeHBITMAP : SafeHandleZeroOrMinusOneIsInvalid
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    public sealed class SafeHBITMAP : SafeHandleZeroOrMinusOneIsInvalid
     {
         private SafeHBITMAP() : base(true) { }
 
@@ -1742,8 +1731,9 @@
 
     #region Native Types
 
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
-    internal struct BLENDFUNCTION
+    public struct BLENDFUNCTION
     {
         // Must be AC_SRC_OVER
         public AC BlendOp;
@@ -1755,8 +1745,9 @@
         public AC AlphaFormat;
     }
 
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
-    internal struct HIGHCONTRAST
+    public struct HIGHCONTRAST
     {
         public int cbSize;
         public HCF dwFlags;
@@ -1765,8 +1756,9 @@
         public IntPtr lpszDefaultScheme;
     }
 
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
-    internal struct RGBQUAD
+    public struct RGBQUAD
     {
         public byte rgbBlue;
         public byte rgbGreen;
@@ -1774,8 +1766,9 @@
         public byte rgbReserved;
     }
 
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential, Pack=2)]
-    internal struct BITMAPINFOHEADER 
+    public struct BITMAPINFOHEADER 
     { 
         public int biSize;
         public int biWidth;
@@ -1790,8 +1783,9 @@
         public int biClrImportant;
     }
 
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
-    internal struct BITMAPINFO
+    public struct BITMAPINFO
     { 
         public BITMAPINFOHEADER bmiHeader; 
         public RGBQUAD bmiColors;
@@ -1822,8 +1816,9 @@
         public WS_EX dwExStyle;
     }
 
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode, Pack = 1)]
-    internal struct SHFILEOPSTRUCT
+    public struct SHFILEOPSTRUCT
     {
         public IntPtr hwnd;
         [MarshalAs(UnmanagedType.U4)]
@@ -1872,9 +1867,10 @@
         public RECT rgrect_CloseButton;
     }
 
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses")]
     [StructLayout(LayoutKind.Sequential)]
-    internal class NOTIFYICONDATA
+    public class NOTIFYICONDATA
     {
         public int cbSize;
         public IntPtr hWnd;
@@ -1991,9 +1987,10 @@
         #endregion
     }
 
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses")]
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    internal class SHARDAPPIDINFO
+    public class SHARDAPPIDINFO
     {
         [MarshalAs(UnmanagedType.Interface)]
         object psi;    // The namespace location of the the item that should be added to the recent docs folder.
@@ -2001,9 +1998,10 @@
         string pszAppID;  // The id of the application that should be associated with this recent doc.
     }
 
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses")]
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    internal class SHARDAPPIDINFOIDLIST
+    public class SHARDAPPIDINFOIDLIST
     {
         /// <summary>The idlist for the shell item that should be added to the recent docs folder.</summary>
         IntPtr pidl;
@@ -2023,9 +2021,9 @@
         string pszAppID;  // The id of the application that should be associated with this recent doc.
     }
 
-
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-    internal struct LOGFONT
+    public struct LOGFONT
     {
         public int lfHeight;
         public int lfWidth;
@@ -2054,8 +2052,9 @@
         public POINT ptMaxTrackSize;
     }
 
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
-    internal struct NONCLIENTMETRICS
+    public struct NONCLIENTMETRICS
     {
         public int cbSize;
         public int iBorderWidth;
@@ -2098,8 +2097,9 @@
     }
 
     /// <summary>Defines options that are used to set window visual style attributes.</summary>
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Explicit)]
-    internal struct WTA_OPTIONS
+    public struct WTA_OPTIONS
     {
         // public static readonly uint Size = (uint)Marshal.SizeOf(typeof(WTA_OPTIONS));
         public const uint Size = 8;
@@ -2122,8 +2122,9 @@
         public WTNCA dwMask;
     }
 
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
-    internal struct MARGINS
+    public struct MARGINS
     {
         /// <summary>Width of left border that retains its size.</summary>
         public int cxLeftWidth;
@@ -2135,6 +2136,7 @@
         public int cyBottomHeight;
     };
 
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     public class MONITORINFO
     {
@@ -2144,6 +2146,7 @@
         public int dwFlags;
     }
 
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     public struct POINT
     {
@@ -2151,14 +2154,16 @@
         public int y;
     }
 
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses")]
     [StructLayout(LayoutKind.Sequential)]
-    internal class RefPOINT
+    public class RefPOINT
     {
         public int x;
         public int y;
     }
 
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     public struct RECT
     {
@@ -2330,6 +2335,7 @@
         }
     }
 
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     public struct SIZE
     {
@@ -2337,15 +2343,17 @@
         public int cy;
     }
 
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
-    internal struct StartupOutput
+    public struct StartupOutput
     {
         public IntPtr hook;
         public IntPtr unhook;
     }
 
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
-    internal class StartupInput
+    public class StartupInput
     {
         public int GdiplusVersion = 1;
         public IntPtr DebugEventCallback;
@@ -2353,10 +2361,11 @@
         public bool SuppressExternalCodecs;
     }
 
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses")]
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
     [BestFitMapping(false)]
-    internal class WIN32_FIND_DATAW
+    public class WIN32_FIND_DATAW
     {
         public FileAttributes dwFileAttributes;
         public System.Runtime.InteropServices.ComTypes.FILETIME ftCreationTime;
@@ -2372,8 +2381,9 @@
         public string cAlternateFileName;
     }
 
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
-    internal class WINDOWPLACEMENT
+    public class WINDOWPLACEMENT
     {
         public int length = Marshal.SizeOf(typeof(WINDOWPLACEMENT));
         public int flags;
@@ -2383,8 +2393,9 @@
         public RECT rcNormalPosition;
     }
 
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
-    internal struct WINDOWPOS
+    public struct WINDOWPOS
     {
         public IntPtr hwnd;
         public IntPtr hwndInsertAfter;
@@ -2395,8 +2406,9 @@
         public int flags;
     }
 
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Unicode)]
-    internal struct WNDCLASSEX
+    public struct WNDCLASSEX
     {
         public int cbSize;
         public CS style;
@@ -2414,8 +2426,9 @@
         public IntPtr hIconSm;
     }
 
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
-    internal struct WINDOWINFO
+    public struct WINDOWINFO
     {
         public int cbSize;
         public RECT rcWindow;
@@ -2429,8 +2442,9 @@
         public ushort wCreatorVersion;
     }
 
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
-    internal struct MOUSEINPUT
+    public struct MOUSEINPUT
     {
         public int dx;
         public int dy;
@@ -2440,22 +2454,25 @@
         public IntPtr dwExtraInfo;
     }
 
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
-    internal struct INPUT
+    public struct INPUT
     {
         public uint type;
         public MOUSEINPUT mi;
     };
 
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
-    internal struct UNSIGNED_RATIO
+    public struct UNSIGNED_RATIO
     {
         public uint uiNumerator;
         public uint uiDenominator;
     }
 
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    internal struct DWM_TIMING_INFO
+    public struct DWM_TIMING_INFO
     {
         public int cbSize;
         public UNSIGNED_RATIO rateRefresh;
@@ -2518,8 +2535,9 @@
         public string szInsert;
     }
 
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
-    internal struct APPBARDATA
+    public struct APPBARDATA
     {
         /// <summary>
         /// initialize this field using: Marshal.SizeOf(typeof(APPBARDATA));
@@ -2590,48 +2608,16 @@
     #endregion
 
     /// <summary>Delegate declaration that matches native WndProc signatures.</summary>
-    internal delegate IntPtr WndProc(IntPtr hwnd, WM uMsg, IntPtr wParam, IntPtr lParam);
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    public delegate IntPtr WndProc(IntPtr hwnd, WM uMsg, IntPtr wParam, IntPtr lParam);
 
     /// <summary>Delegate declaration that matches managed WndProc signatures.</summary>
     internal delegate IntPtr MessageHandler(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled);
 
     // Some native methods are shimmed through public versions that handle converting failures into thrown exceptions.
-    internal static class NativeMethods
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    public static class NativeMethods
     {
-        /// <summary>Add and remove a native WindowStyle from the HWND.</summary>
-        /// <param name="_hwnd">A HWND for a window.</param>
-        /// <param name="removeStyle">The styles to be removed.  These can be bitwise combined.</param>
-        /// <param name="addStyle">The styles to be added.  These can be bitwise combined.</param>
-        /// <returns>Whether the styles of the HWND were modified as a result of this call.</returns>
-        /// <SecurityNote>
-        ///   Critical : Calls critical methods
-        /// </SecurityNote>
-        [SecurityCritical]
-        public static bool _ModifyStyle(this IntPtr _hwnd, WS removeStyle, WS addStyle)
-        {
-            Assert.IsNotDefault(_hwnd);
-            var intPtr = NativeMethods.GetWindowLongPtr(_hwnd, GWL.STYLE);
-            var dwStyle = (WS)(Environment.Is64BitProcess ? intPtr.ToInt64() : intPtr.ToInt32());
-            var dwNewStyle = (dwStyle & ~removeStyle) | addStyle;
-            if (dwStyle == dwNewStyle)
-            {
-                return false;
-            }
-
-            NativeMethods.SetWindowLongPtr(_hwnd, GWL.STYLE, new IntPtr((int)dwNewStyle));
-            return true;
-        }
-
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        [DllImport("user32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool RedrawWindow(IntPtr hWnd, [In] ref RECT lprcUpdate, IntPtr hrgnUpdate, RedrawWindowFlags flags);
-
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        [DllImport("user32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool RedrawWindow(IntPtr hWnd, IntPtr lprcUpdate, IntPtr hrgnUpdate, RedrawWindowFlags flags);
-        
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("user32.dll", EntryPoint = "AdjustWindowRectEx", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -2724,6 +2710,10 @@
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("user32.dll", CharSet = CharSet.None, SetLastError = true, EntryPoint = "ClientToScreen")]
         public static extern bool ClientToScreen(IntPtr hWnd, ref POINT point);
+
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [DllImport("user32.dll", CharSet = CharSet.None, SetLastError = true, EntryPoint = "ScreenToClient")]
+        public static extern bool ScreenToClient(IntPtr hWnd, ref POINT point);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("gdi32.dll")]
@@ -3079,11 +3069,13 @@
             return rc;
         }
 
+        [SecurityCritical]
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        [DllImport("user32.dll", EntryPoint = "GetCursorPos", SetLastError = true)]
+        [DllImport("user32.dll", EntryPoint = "GetCursorPos", ExactSpelling = true, CharSet = CharSet.Auto, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool _GetCursorPos(out POINT lpPoint);
 
+        [SecurityCritical]
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static POINT GetCursorPos()
         {
@@ -3092,8 +3084,59 @@
             {
                 HRESULT.ThrowLastError();
             }
-
             return pt;
+        }
+
+        [SecurityCritical]
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        public static bool TryGetCursorPos(out POINT pt)
+        {
+            var returnValue = _GetCursorPos(out pt);
+            // Sometimes Win32 will fail this call, such as if you are
+            // not running in the interactive desktop. For example,
+            // a secure screen saver may be running.
+            if (!returnValue)
+            {
+                System.Diagnostics.Debug.WriteLine("GetCursorPos failed!");
+                pt.x = 0;
+                pt.y = 0;
+            }
+            return returnValue;
+        }
+
+        [SecurityCritical]
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [DllImport("user32.dll", EntryPoint = "GetPhysicalCursorPos", ExactSpelling = true, CharSet = CharSet.Auto, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool _GetPhysicalCursorPos(out POINT lpPoint);
+
+        [SecurityCritical]
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        public static POINT GetPhysicalCursorPos()
+        {
+            POINT pt;
+            if (!_GetPhysicalCursorPos(out pt))
+            {
+                HRESULT.ThrowLastError();
+            }
+            return pt;
+        }
+
+        [SecurityCritical]
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        public static bool TryGetPhysicalCursorPos(out POINT pt)
+        {
+            var returnValue = _GetPhysicalCursorPos(out pt);
+            // Sometimes Win32 will fail this call, such as if you are
+            // not running in the interactive desktop. For example,
+            // a secure screen saver may be running.
+            if (!returnValue)
+            {
+                System.Diagnostics.Debug.WriteLine("GetPhysicalCursorPos failed!");
+                pt.x = 0;
+                pt.y = 0;
+            }
+            return returnValue;
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]

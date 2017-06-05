@@ -1,3 +1,4 @@
+#pragma warning disable 1591, 618
 namespace Standard
 {
     using System;
@@ -10,8 +11,9 @@ namespace Standard
     /// <summary>
     /// Wrapper for common Win32 status codes.
     /// </summary>
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Explicit)]
-    internal struct Win32Error
+    public struct Win32Error
     {
         [FieldOffset(0)]
         private readonly int _value;
@@ -161,7 +163,8 @@ namespace Standard
         }
     }
 
-    internal enum Facility
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    public enum Facility
     {
         /// <summary>FACILITY_NULL</summary>
         Null = 0,
@@ -186,8 +189,9 @@ namespace Standard
     }
 
     /// <summary>Wrapper for HRESULT status codes.</summary>
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Explicit)]
-    internal struct HRESULT
+    public struct HRESULT
     {
         [FieldOffset(0)]
         private readonly uint _value;

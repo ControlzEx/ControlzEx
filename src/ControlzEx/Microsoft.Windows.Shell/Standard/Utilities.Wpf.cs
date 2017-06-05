@@ -1,3 +1,4 @@
+#pragma warning disable 1591, 618
 // This file contains general utilities to aid in development.
 // Classes here generally shouldn't be exposed publicly since
 // they're not particular to any library functionality.
@@ -10,28 +11,12 @@ namespace Standard
     using System.ComponentModel;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
-    using System.Linq;
-    using System.Reflection;
     using System.Windows;
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
 
     internal static partial class Utility
     {
-        private static readonly Version _presentationFrameworkVersion = Assembly.GetAssembly(typeof(Window)).GetName().Version;
-
-        /// <summary>
-        /// Is this using WPF4?
-        /// </summary>
-        /// <remarks>
-        /// There are a few specific bugs in Window in 3.5SP1 and below that require workarounds
-        /// when handling WM_NCCALCSIZE on the HWND.
-        /// </remarks>
-        public static bool IsPresentationFrameworkVersionLessThan4
-        {
-            get { return _presentationFrameworkVersion < new Version(4, 0); }
-        }
-
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static byte[] GetBytesFromBitmapSource(BitmapSource bmp)
         {

@@ -5,7 +5,7 @@
                 xmlns:asmv2="urn:schemas-microsoft-com:asm.v2"
                 xmlns:asmv3="urn:schemas-microsoft-com:asm.v3"
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <assemblyIdentity version="2.1.3.0"
+    <assemblyIdentity version="3.0.1.0"
                       name="ControlzEx.Showcase"/>
     <trustInfo xmlns="urn:schemas-microsoft-com:asm.v2">
         <security>
