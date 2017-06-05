@@ -1,16 +1,20 @@
 using System.Security.Permissions;
 using Microsoft.Win32.SafeHandles;
 
-namespace ControlzEx.Native {
+namespace ControlzEx.Native
+{
+    using System;
+
     [SecurityPermission(SecurityAction.LinkDemand, UnmanagedCode = true)]
-    internal sealed class SafeLibraryHandle : SafeHandleZeroOrMinusOneIsInvalid
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    public sealed class SafeLibraryHandle : SafeHandleZeroOrMinusOneIsInvalid
     {
         private SafeLibraryHandle() : base(true) 
         {}
 
         protected override bool ReleaseHandle() 
         {
-            return UnsafeNativeMethods.FreeLibrary(handle);
+            return UnsafeNativeMethods.FreeLibrary(this.handle);
         }
     }
 }

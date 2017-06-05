@@ -2,7 +2,8 @@
 
 namespace ControlzEx.Native
 {
-    internal static class Constants
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    public static class Constants
     {
         public enum ShowWindowCommands
         {
@@ -121,6 +122,7 @@ namespace ControlzEx.Native
         public const int WM_NCLBUTTONDOWN = 0x00A1;
         public const int WM_NCCALCSIZE = 0x83;
         public const int WM_NCPAINT = 0x85;
+        public const int WM_ACTIVATE = 0x0006;
         public const int WM_NCACTIVATE = 0x86;
         public const int WM_GETMINMAXINFO = 0x24;
         public const int WM_CREATE = 0x0001;
@@ -136,7 +138,8 @@ namespace ControlzEx.Native
         public const int HTBOTTOM = 0x0F;
         public const int HTBOTTOMLEFT = 0x10;
         public const int HTBOTTOMRIGHT = 0x11;
-        public const uint TPM_RETURNCMD = 0x0100;
+        public const uint TPM_LEFTALIGN = 0x0000;
+        public const uint TPM_RETURNCMD = 0x0100;        
         public const uint TPM_LEFTBUTTON = 0x0;
 
         public const uint SYSCOMMAND = 0x0112;
@@ -179,10 +182,16 @@ namespace ControlzEx.Native
         public const uint MAPVK_VK_TO_CHAR = 0x02;
         public const uint MAPVK_VSC_TO_VK_EX = 0x03;
         public const uint MAPVK_VK_TO_VSC_EX = 0x04;
+        /* used by UnsafeNativeMethods.MapVirtualKey (end) */
 
         public static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
         public static readonly IntPtr HWND_NOTOPMOST = new IntPtr(-2);
         public static readonly IntPtr HWND_TOP = new IntPtr(0);
         public static readonly IntPtr HWND_BOTTOM = new IntPtr(1);
+
+        /// <summary>
+        /// Causes the dialog box to display all available colors in the set of basic colors. 
+        /// </summary>
+        public const int CC_ANYCOLOR = 0x00000100;
     }
 }
