@@ -5,7 +5,7 @@
                           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                           xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
                           xmlns:local="clr-namespace:ControlzEx.Showcase"
-                          xmlns:ControlzEx="urn:controlzex"
+                          xmlns:controlzEx="urn:controlzex"
                           x:Name="Window"
                           mc:Ignorable="d"
                           Title="ControlzEx.Showcase"
@@ -13,8 +13,9 @@
                           Style="{Binding ElementName=StyleComboBox, Path=SelectedValue}"
                           Height="480"
                           Width="600"
+                          BorderBrush="Blue"
                           AllowsTransparency="False"
-                          BorderBrush="Blue">
+                          WindowStyle="None">
     <local:WindowChromeWindow.Resources>
         <ObjectDataProvider MethodName="GetValues"
                             ObjectType="{x:Type ResizeMode}"
@@ -26,7 +27,7 @@
     </local:WindowChromeWindow.Resources>
 
     <i:Interaction.Behaviors>
-        <ControlzEx:WindowChromeBehavior x:Name="WindowChromeBehavior"
+        <controlzEx:WindowChromeBehavior x:Name="WindowChromeBehavior"
                                          GlassFrameThickness="{Binding ElementName=Window, Path=GlassFrameThickness}"
                                          ResizeBorderThickness="{Binding ElementName=Window, Path=ResizeBorderThickness}" />
     </i:Interaction.Behaviors>
@@ -41,7 +42,7 @@
             </Grid.RowDefinitions>
 
             <Grid Grid.Row="0"
-                  ControlzEx:WindowChrome.IsHitTestVisibleInChrome="True"
+                  controlzEx:WindowChrome.IsHitTestVisibleInChrome="True"
                   MouseLeftButtonDown="TitleBarGrid_OnMouseLeftButtonDown">
                 <Border Background="{Binding Source={x:Static SystemColors.WindowBrush}}"
                         Margin="0,0,150,0" />
@@ -54,7 +55,7 @@
                           Height="8"
                           HorizontalAlignment="Stretch"
                           Background="Green"
-                          ControlzEx:WindowChrome.IsHitTestVisibleInChrome="True" />
+                          controlzEx:WindowChrome.IsHitTestVisibleInChrome="True" />
 
             <Grid Grid.Row="2"
                   Background="{Binding Source={x:Static SystemColors.WindowBrush}}">
@@ -106,7 +107,7 @@
                                   Grid.Column="0"
                                   Grid.ColumnSpan="2"
                                   IsChecked="{Binding ElementName=WindowChromeBehavior, Path=IgnoreTaskbarOnMaximize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                  Content="IgnoreTaskbarOnMaximize (only works with WindowStyle = None)" />
+                                  Content="IgnoreTaskbarOnMaximize" />
                     </Grid>
                 </GroupBox>
 

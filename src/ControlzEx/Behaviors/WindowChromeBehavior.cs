@@ -364,7 +364,7 @@ namespace ControlzEx.Behaviors
                     IntPtr monitor = UnsafeNativeMethods.MonitorFromWindow(this.handle, Constants.MONITOR_DEFAULTTONEAREST);
                     if (monitor != IntPtr.Zero)
                     {
-                        var monitorInfo = new Native.MONITORINFO();
+                        var monitorInfo = new MONITORINFO();
                         UnsafeNativeMethods.GetMonitorInfo(monitor, monitorInfo);
 
                         var desktopRect = ignoreTaskBar ? monitorInfo.rcMonitor :  monitorInfo.rcWork;
