@@ -187,6 +187,11 @@ namespace ControlzEx.Behaviors
         {
             var behavior = (WindowChromeBehavior)d;
 
+            if (behavior.AssociatedObject == null)
+            {
+                return;
+            }
+
             behavior.AssociatedObject.SetValue(WindowChrome.WindowChromeProperty, null);
             behavior.InitializeWindowChrome();
         }
