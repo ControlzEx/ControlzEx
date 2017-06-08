@@ -10,6 +10,7 @@ namespace Standard
     using System.Runtime.InteropServices.ComTypes;
     using System.Security;
     using System.Text;
+    using ControlzEx.Native;
     using Microsoft.Win32.SafeHandles;
 
     // Some COM interfaces and Win32 structures are already declared in the framework.
@@ -1157,6 +1158,8 @@ namespace Standard
         NOSIZE = 0x0001,
         NOZORDER = 0x0004,
         SHOWWINDOW = 0x0040,
+
+        TOPMOST = NOACTIVATE | NOOWNERZORDER | NOSIZE | NOMOVE | NOREDRAW | NOSENDCHANGING
     }
 
     /// <summary>
@@ -1397,14 +1400,6 @@ namespace Standard
     internal enum DSH
     {
         ALLOWDROPDESCRIPTIONTEXT = 1,
-    }
-
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
-    public enum MonitorOptions : uint
-    {
-        MONITOR_DEFAULTTONULL = 0x00000000,
-        MONITOR_DEFAULTTOPRIMARY = 0x00000001,
-        MONITOR_DEFAULTTONEAREST = 0x00000002
     }
 
     internal enum ABEdge
@@ -2137,21 +2132,55 @@ namespace Standard
     };
 
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
-    [StructLayout(LayoutKind.Sequential)]
-    public class MONITORINFO
-    {
-        public int cbSize = Marshal.SizeOf(typeof(MONITORINFO));
-        public RECT rcMonitor;
-        public RECT rcWork;
-        public int dwFlags;
-    }
-
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Serializable]
     [StructLayout(LayoutKind.Sequential)]
     public struct POINT
     {
-        public int x;
-        public int y;
+        private int _x;
+        private int _y;
+
+        public POINT(int x, int y)
+        {
+            _x = x;
+            _y = y;
+        }
+
+        public int X
+        {
+            get { return _x; }
+            set { _x = value; }
+        }
+
+        public int Y
+        {
+            get { return _y; }
+            set { _y = value; }
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is POINT)
+            {
+                var point = (POINT)obj;
+
+                return point._x == _x && point._y == _y;
+            }
+            return base.Equals(obj);
+        }
+        public override int GetHashCode()
+        {
+            return _x.GetHashCode() ^ _y.GetHashCode();
+        }
+
+        public static bool operator ==(POINT a, POINT b)
+        {
+            return a._x == b._x && a._y == b._y;
+        }
+
+        public static bool operator !=(POINT a, POINT b)
+        {
+            return !(a == b);
+        }
     }
 
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
@@ -2164,13 +2193,31 @@ namespace Standard
     }
 
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 0)]
     public struct RECT
     {
         private int _left;
         private int _top;
         private int _right;
         private int _bottom;
+
+        public static readonly RECT Empty = new RECT();
+
+        public RECT(int left, int top, int right, int bottom)
+        {
+            this._left = left;
+            this._top = top;
+            this._right = right;
+            this._bottom = bottom;
+        }
+
+        public RECT(RECT rcSrc)
+        {
+            _left = rcSrc.Left;
+            _top = rcSrc.Top;
+            _right = rcSrc.Right;
+            _bottom = rcSrc.Bottom;
+        }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public void Offset(int dx, int dy)
@@ -2224,7 +2271,7 @@ namespace Standard
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public POINT Position
         {
-            get { return new POINT { x = _left, y = _top }; }
+            get { return new POINT { X = _left, Y = _top }; }
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
@@ -2261,9 +2308,35 @@ namespace Standard
             }
         }
 
+        public bool IsEmpty
+        {
+            get
+            {
+                // BUGBUG : On Bidi OS (hebrew arabic) left > right
+                return Left >= Right || Top >= Bottom;
+            }
+        }
+
+        public override string ToString()
+        {
+            if (this == Empty)
+                return "RECT {Empty}";
+            return "RECT { left : " + Left + " / top : " + Top + " / right : " + Right + " / bottom : " + Bottom + " }";
+        }
+
         public override int GetHashCode()
         {
             return (_left << 16 | Utility.LOWORD(_right)) ^ (_top << 16 | Utility.LOWORD(_bottom));
+        }
+
+        public static bool operator ==(RECT rect1, RECT rect2)
+        {
+            return (rect1.Left == rect2.Left && rect1.Top == rect2.Top && rect1.Right == rect2.Right && rect1.Bottom == rect2.Bottom);
+        }
+
+        public static bool operator !=(RECT rect1, RECT rect2)
+        {
+            return !(rect1 == rect2);
         }
     }
 
@@ -2382,15 +2455,16 @@ namespace Standard
     }
 
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Serializable]
     [StructLayout(LayoutKind.Sequential)]
     public class WINDOWPLACEMENT
     {
         public int length = Marshal.SizeOf(typeof(WINDOWPLACEMENT));
         public int flags;
         public SW showCmd;
-        public POINT ptMinPosition;
-        public POINT ptMaxPosition;
-        public RECT rcNormalPosition;
+        public POINT minPosition;
+        public POINT maxPosition;
+        public RECT normalPosition;
     }
 
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
@@ -3098,8 +3172,8 @@ namespace Standard
             if (!returnValue)
             {
                 System.Diagnostics.Debug.WriteLine("GetCursorPos failed!");
-                pt.x = 0;
-                pt.y = 0;
+                pt.X = 0;
+                pt.Y = 0;
             }
             return returnValue;
         }
@@ -3133,8 +3207,8 @@ namespace Standard
             if (!returnValue)
             {
                 System.Diagnostics.Debug.WriteLine("GetPhysicalCursorPos failed!");
-                pt.x = 0;
-                pt.y = 0;
+                pt.X = 0;
+                pt.Y = 0;
             }
             return returnValue;
         }

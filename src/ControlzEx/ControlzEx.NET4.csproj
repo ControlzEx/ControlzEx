@@ -89,11 +89,8 @@
     <Compile Include="Microsoft.Windows.Shell\WindowChromeWorker.cs" />
     <Compile Include="Native\Constants.cs" />
     <Compile Include="Native\MONITORINFO.cs" />
-    <Compile Include="Native\POINT.cs" />
-    <Compile Include="Native\RECT.cs" />
     <Compile Include="Native\SafeLibraryHandle.cs" />
     <Compile Include="Native\UnsafeNativeMethods.cs" />
-    <Compile Include="Native\WINDOWPLACEMENT.cs" />
     <Compile Include="PackIconBase.cs" />
     <Compile Include="PopupEx.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

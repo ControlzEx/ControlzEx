@@ -546,8 +546,8 @@ namespace Microsoft.Windows.Shell
                     RECT adjustedDeviceRc = _GetAdjustedWindowRect(new RECT { Bottom = 100, Right = 100 });
                     Point adjustedTopLeft = DpiHelper.DevicePixelsToLogical(
                         new Point(
-                            wp.rcNormalPosition.Left - adjustedDeviceRc.Left,
-                            wp.rcNormalPosition.Top - adjustedDeviceRc.Top));
+                            wp.normalPosition.Left - adjustedDeviceRc.Left,
+                            wp.normalPosition.Top - adjustedDeviceRc.Top));
 
                     _window.Top = adjustedTopLeft.Y;
                     _window.Left = adjustedTopLeft.X;
@@ -1067,13 +1067,13 @@ namespace Microsoft.Windows.Shell
                     RECT rcWorkArea = monitorInfo.rcWork;
                     RECT rcMonitorArea = monitorInfo.rcMonitor;
                     
-                    mmi.ptMaxPosition.x = Math.Abs(rcWorkArea.Left - rcMonitorArea.Left);
-                    mmi.ptMaxPosition.y = Math.Abs(rcWorkArea.Top - rcMonitorArea.Top);
+                    mmi.ptMaxPosition.X = Math.Abs(rcWorkArea.Left - rcMonitorArea.Left);
+                    mmi.ptMaxPosition.Y = Math.Abs(rcWorkArea.Top - rcMonitorArea.Top);
 
-                    mmi.ptMaxSize.x = Math.Abs(monitorInfo.rcMonitor.Width);
-                    mmi.ptMaxSize.y = Math.Abs(monitorInfo.rcMonitor.Height);
-                    mmi.ptMaxTrackSize.x = mmi.ptMaxSize.x;
-                    mmi.ptMaxTrackSize.y = mmi.ptMaxSize.y;
+                    mmi.ptMaxSize.X = Math.Abs(monitorInfo.rcMonitor.Width);
+                    mmi.ptMaxSize.Y = Math.Abs(monitorInfo.rcMonitor.Height);
+                    mmi.ptMaxTrackSize.X = mmi.ptMaxSize.X;
+                    mmi.ptMaxTrackSize.Y = mmi.ptMaxSize.Y;
                 }
                 Marshal.StructureToPtr(mmi, lParam, true);
             }
@@ -1449,15 +1449,15 @@ namespace Microsoft.Windows.Shell
             RECT windowRect = NativeMethods.GetWindowRect(hWnd);
             RECT clientRect = NativeMethods.GetClientRect(hWnd);
 
-            POINT test = new POINT() { x = 0, y = 0 };
+            POINT test = new POINT() { X = 0, Y = 0 };
             NativeMethods.ClientToScreen(hWnd, ref test);
             if (_window.FlowDirection == FlowDirection.RightToLeft)
             {
-                clientRect.Offset(windowRect.Right - test.x, test.y - windowRect.Top);
+                clientRect.Offset(windowRect.Right - test.X, test.Y - windowRect.Top);
             }
             else
             {
-                clientRect.Offset(test.x - windowRect.Left, test.y - windowRect.Top);
+                clientRect.Offset(test.X - windowRect.Left, test.Y - windowRect.Top);
             }
             return clientRect;
         }

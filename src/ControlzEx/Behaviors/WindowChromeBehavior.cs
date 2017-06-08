@@ -16,6 +16,7 @@ namespace ControlzEx.Behaviors
     using ControlzEx;
     using ControlzEx.Native;
     using JetBrains.Annotations;
+    using Standard;
 
     /// <summary>
     /// With this class we can make custom window styles.
@@ -302,13 +303,13 @@ namespace ControlzEx.Behaviors
 
             switch (msg)
             {
-                case Constants.WM_NCPAINT:
+                case (int)WM.NCPAINT:
                     handled = this.GlassFrameThickness == default(Thickness) && this.GlowBrush == null;
                     break;
 
-                case (int)Standard.WM.WINDOWPOSCHANGING:
+                case (int)WM.WINDOWPOSCHANGING:
                     {
-                        var pos = (Standard.WINDOWPOS)System.Runtime.InteropServices.Marshal.PtrToStructure(lParam, typeof(Standard.WINDOWPOS));
+                        var pos = (WINDOWPOS)System.Runtime.InteropServices.Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
                         if ((pos.flags & (int)Standard.SWP.NOMOVE) != 0)
                         {
                             return IntPtr.Zero;
@@ -366,24 +367,24 @@ namespace ControlzEx.Behaviors
                 {
                     // WindowChrome handles the size false if the main monitor is lesser the monitor where the window is maximized
                     // so set the window pos/size twice
-                    IntPtr monitor = UnsafeNativeMethods.MonitorFromWindow(this.handle, Constants.MONITOR_DEFAULTTONEAREST);
+                    IntPtr monitor = UnsafeNativeMethods.MonitorFromWindow(this.handle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
                     if (monitor != IntPtr.Zero)
                     {
                         var monitorInfo = new MONITORINFO();
                         UnsafeNativeMethods.GetMonitorInfo(monitor, monitorInfo);
 
                         var desktopRect = ignoreTaskBar ? monitorInfo.rcMonitor :  monitorInfo.rcWork;
-                        var x = desktopRect.left;
-                        var y = desktopRect.top;
-                        var cx = Math.Abs(desktopRect.right - x);
-                        var cy = Math.Abs(desktopRect.bottom - y);
+                        var x = desktopRect.Left;
+                        var y = desktopRect.Top;
+                        var cx = Math.Abs(desktopRect.Right - x);
+                        var cy = Math.Abs(desktopRect.Bottom - y);
 
                         if (ignoreTaskBar && this.isWindwos10OrHigher)
                         {
                             this.ActivateTaskbarFix();
                         }
 
-                        UnsafeNativeMethods.SetWindowPos(this.handle, new IntPtr(-2), x, y, cx, cy, 0x0040);
+                        UnsafeNativeMethods.SetWindowPos(this.handle, new IntPtr(-2), x, y, cx, cy, SWP.SHOWWINDOW);
                     }
                 }
             }
@@ -423,9 +424,9 @@ namespace ControlzEx.Behaviors
             if (trayWndHandle != IntPtr.Zero)
             {
                 SetHandleTaskbar(this.AssociatedObject, true);
-                UnsafeNativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_BOTTOM, 0, 0, 0, 0, Constants.TOPMOST_FLAGS);
-                UnsafeNativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_TOP, 0, 0, 0, 0, Constants.TOPMOST_FLAGS);
-                UnsafeNativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_NOTOPMOST, 0, 0, 0, 0, Constants.TOPMOST_FLAGS);
+                UnsafeNativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_BOTTOM, 0, 0, 0, 0, SWP.TOPMOST);
+                UnsafeNativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_TOP, 0, 0, 0, 0, SWP.TOPMOST);
+                UnsafeNativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_NOTOPMOST, 0, 0, 0, 0, SWP.TOPMOST);
             }
         }
 
@@ -435,9 +436,9 @@ namespace ControlzEx.Behaviors
             if (trayWndHandle != IntPtr.Zero)
             {
                 SetHandleTaskbar(this.AssociatedObject, false);
-                UnsafeNativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_BOTTOM, 0, 0, 0, 0, Constants.TOPMOST_FLAGS);
-                UnsafeNativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_TOP, 0, 0, 0, 0, Constants.TOPMOST_FLAGS);
-                UnsafeNativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_TOPMOST, 0, 0, 0, 0, Constants.TOPMOST_FLAGS);
+                UnsafeNativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_BOTTOM, 0, 0, 0, 0, SWP.TOPMOST);
+                UnsafeNativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_TOP, 0, 0, 0, 0, SWP.TOPMOST);
+                UnsafeNativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_TOPMOST, 0, 0, 0, 0, SWP.TOPMOST);
             }
         }
 
@@ -475,12 +476,12 @@ namespace ControlzEx.Behaviors
                         RECT rect;
                         if (UnsafeNativeMethods.GetWindowRect(this.handle, out rect))
                         {
-                            uint flags = 0x0040;
+                            var flags = SWP.SHOWWINDOW;
                             if (!this.AssociatedObject.ShowActivated)
                             {
-                                flags |= (uint)Standard.SWP.NOACTIVATE;
+                                flags |= SWP.NOACTIVATE;
                             }
-                            UnsafeNativeMethods.SetWindowPos(this.handle, new IntPtr(-2), rect.left, rect.top, rect.Width, rect.Height, flags);
+                            UnsafeNativeMethods.SetWindowPos(this.handle, new IntPtr(-2), rect.Left, rect.Top, rect.Width, rect.Height, flags);
                         }
                     });
             }
