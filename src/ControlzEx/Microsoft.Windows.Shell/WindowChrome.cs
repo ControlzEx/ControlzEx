@@ -371,7 +371,7 @@ namespace Microsoft.Windows.Shell
                     bp.DependencyProperty,
                     new Binding
                     {
-#if NET4_5
+#if NET45 || NET462
                         Path = new PropertyPath("(SystemParameters." + bp.SystemParameterPropertyName + ")"),
 #else
                         Source = SystemParameters2.Current,

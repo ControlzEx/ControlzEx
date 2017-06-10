@@ -167,7 +167,7 @@ namespace ControlzEx.Behaviors
         /// </summary>
         public static Thickness GetDefaultResizeBorderThickness()
         {
-#if NET45
+#if NET45 || NET462
             return SystemParameters.WindowResizeBorderThickness;
 #else
             return Microsoft.Windows.Shell.SystemParameters2.Current.WindowResizeBorderThickness;

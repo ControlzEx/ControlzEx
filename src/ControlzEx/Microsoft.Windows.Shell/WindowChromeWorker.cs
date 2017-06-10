@@ -404,7 +404,7 @@ namespace Microsoft.Windows.Shell
             {
                 if (Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Top))
                 {
-#if NET4_5
+#if NET45 || NET462
                     templateFixupMargin.Top -= SystemParameters.WindowResizeBorderThickness.Top;
 #else
                     templateFixupMargin.Top -= SystemParameters2.Current.WindowResizeBorderThickness.Top;
@@ -412,7 +412,7 @@ namespace Microsoft.Windows.Shell
                 }
                 if (Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Left))
                 {
-#if NET4_5
+#if NET45 || NET462
                     templateFixupMargin.Left -= SystemParameters.WindowResizeBorderThickness.Left;
 #else
                     templateFixupMargin.Left -= SystemParameters2.Current.WindowResizeBorderThickness.Left;
@@ -420,7 +420,7 @@ namespace Microsoft.Windows.Shell
                 }
                 if (Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Bottom))
                 {
-#if NET4_5
+#if NET45 || NET462
                     templateFixupMargin.Bottom -= SystemParameters.WindowResizeBorderThickness.Bottom;
 #else
                     templateFixupMargin.Bottom -= SystemParameters2.Current.WindowResizeBorderThickness.Bottom;
@@ -428,7 +428,7 @@ namespace Microsoft.Windows.Shell
                 }
                 if (Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Right))
                 {
-#if NET4_5
+#if NET45 || NET462
                     templateFixupMargin.Right -= SystemParameters.WindowResizeBorderThickness.Right;
 #else
                     templateFixupMargin.Right -= SystemParameters2.Current.WindowResizeBorderThickness.Right;
@@ -446,7 +446,7 @@ namespace Microsoft.Windows.Shell
 
                 if (!Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Left))
                 {
-#if NET4_5
+#if NET45 || NET462
                     templateFixupMargin.Right -= SystemParameters.WindowResizeBorderThickness.Left;
 #else
                     templateFixupMargin.Right -= SystemParameters2.Current.WindowResizeBorderThickness.Left;
@@ -455,7 +455,7 @@ namespace Microsoft.Windows.Shell
 
                 if (!Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Right))
                 {
-#if NET4_5
+#if NET45 || NET462
                     templateFixupMargin.Right -= SystemParameters.WindowResizeBorderThickness.Right;
 #else
                     templateFixupMargin.Right -= SystemParameters2.Current.WindowResizeBorderThickness.Right;
@@ -464,7 +464,7 @@ namespace Microsoft.Windows.Shell
 
                 if (!Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Top))
                 {
-#if NET4_5
+#if NET45 || NET462
                     templateFixupMargin.Bottom -= SystemParameters.WindowResizeBorderThickness.Top;
 #else
                     templateFixupMargin.Bottom -= SystemParameters2.Current.WindowResizeBorderThickness.Top;
@@ -473,14 +473,14 @@ namespace Microsoft.Windows.Shell
 
                 if (!Utility.IsFlagSet((int)_chromeInfo.SacrificialEdge, (int)SacrificialEdge.Bottom))
                 {
-#if NET4_5
+#if NET45 || NET462
                     templateFixupMargin.Bottom -= SystemParameters.WindowResizeBorderThickness.Bottom;
 #else
                     templateFixupMargin.Bottom -= SystemParameters2.Current.WindowResizeBorderThickness.Bottom;
 #endif
                 }
 
-#if NET4_5
+#if NET45 || NET462
                 templateFixupMargin.Bottom -= SystemParameters.WindowCaptionHeight;
 #else
                 templateFixupMargin.Bottom -= SystemParameters2.Current.WindowCaptionHeight;
@@ -818,8 +818,8 @@ namespace Microsoft.Windows.Shell
 
             if (_chromeInfo.SacrificialEdge != SacrificialEdge.None)
             {
-#if NET4_5
                 Thickness windowResizeBorderThicknessDevice = DpiHelper.LogicalThicknessToDevice(SystemParameters.WindowResizeBorderThickness);
+#if NET45 || NET462
 #else
                 Thickness windowResizeBorderThicknessDevice = DpiHelper.LogicalThicknessToDevice(SystemParameters2.Current.WindowResizeBorderThickness);
 #endif
@@ -1724,8 +1724,8 @@ namespace Microsoft.Windows.Shell
 
                 if (_chromeInfo.SacrificialEdge != SacrificialEdge.None)
                 {
-#if NET4_5
                     Thickness windowResizeBorderThicknessDevice = DpiHelper.LogicalThicknessToDevice(SystemParameters.WindowResizeBorderThickness);
+#if NET45 || NET462
 #else
                     Thickness windowResizeBorderThicknessDevice = DpiHelper.LogicalThicknessToDevice(SystemParameters2.Current.WindowResizeBorderThickness);
 #endif
