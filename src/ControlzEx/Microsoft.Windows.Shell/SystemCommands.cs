@@ -5,6 +5,8 @@ namespace Microsoft.Windows.Shell
     using System.Windows;
     using System.Windows.Input;
     using System.Windows.Interop;
+    using ControlzEx;
+    using ControlzEx.Native;
     using Standard;
 
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
@@ -27,7 +29,7 @@ namespace Microsoft.Windows.Shell
 
         private static void _PostSystemCommand(Window window, SC command)
         {
-            IntPtr hwnd = new WindowInteropHelper(window).Handle;
+            var hwnd = new WindowInteropHelper(window).Handle;
             if (hwnd == IntPtr.Zero || !NativeMethods.IsWindow(hwnd))
             {
                 return;
@@ -60,30 +62,44 @@ namespace Microsoft.Windows.Shell
             _PostSystemCommand(window, SC.RESTORE);
         }
 
+        /// <summary>
+        /// Shows the system menu at the current mouse position.
+        /// </summary>
+        /// <param name="window">The window for which the system menu should be shown.</param>
+        /// <param name="e">The mouse event args.</param>
+        public static void ShowSystemMenu(Window window, MouseButtonEventArgs e)
+        {
+            var mousePosition = e.GetPosition(window);
+            var physicalScreenLocation = window.PointToScreen(mousePosition);
+
+            ShowSystemMenu(window, physicalScreenLocation);
+        }
+
         /// <summary>Display the system menu at a specified location.</summary>
         /// <param name="window">The MetroWindow</param>
         /// <param name="screenLocation">The location to display the system menu, in logical screen coordinates.</param>
         public static void ShowSystemMenu(Window window, Point screenLocation)
         {
             Verify.IsNotNull(window, "window");
-            ShowSystemMenuPhysicalCoordinates(window, DpiHelper.LogicalPixelsToDevice(screenLocation));
+
+            var dpi = DpiHelper.GetDpi(window);
+            ShowSystemMenuPhysicalCoordinates(window, DpiHelper.LogicalPixelsToDevice(screenLocation, dpi.DpiScaleX, dpi.DpiScaleY));
         }
 
         internal static void ShowSystemMenuPhysicalCoordinates(Window window, Point physicalScreenLocation)
         {
-            const uint TPM_RETURNCMD = 0x0100;
-            const uint TPM_LEFTBUTTON = 0x0;
-
             Verify.IsNotNull(window, "window");
-            IntPtr hwnd = new WindowInteropHelper(window).Handle;
+
+            var hwnd = new WindowInteropHelper(window).Handle;
+
             if (hwnd == IntPtr.Zero || !NativeMethods.IsWindow(hwnd))
             {
                 return;
             }
 
-            IntPtr hmenu = NativeMethods.GetSystemMenu(hwnd, false);
+            var hmenu = NativeMethods.GetSystemMenu(hwnd, false);
 
-            uint cmd = NativeMethods.TrackPopupMenuEx(hmenu, TPM_LEFTBUTTON | TPM_RETURNCMD, (int)physicalScreenLocation.X, (int)physicalScreenLocation.Y, hwnd, IntPtr.Zero);
+            var cmd = NativeMethods.TrackPopupMenuEx(hmenu, Constants.TPM_LEFTALIGN | Constants.TPM_RETURNCMD, (int)physicalScreenLocation.X, (int)physicalScreenLocation.Y, hwnd, IntPtr.Zero);
             if (0 != cmd)
             {
                 NativeMethods.PostMessage(hwnd, WM.SYSCOMMAND, new IntPtr(cmd), IntPtr.Zero);

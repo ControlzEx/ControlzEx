@@ -142,8 +142,10 @@ namespace ControlzEx
             var hOffsetFromToolTip = GetAutoMoveHorizontalOffset(toolTip);
             var vOffsetFromToolTip = GetAutoMoveVerticalOffset(toolTip);
 
-            var hDPIOffset = DpiHelper.TransformToDeviceX(toolTip.PlacementTarget, hOffsetFromToolTip);
-            var vDPIOffset = DpiHelper.TransformToDeviceY(toolTip.PlacementTarget, vOffsetFromToolTip);
+            var dpi = DpiHelper.GetDpi(toolTip);
+
+            var hDPIOffset = DpiHelper.TransformToDeviceX(toolTip.PlacementTarget, hOffsetFromToolTip, dpi.DpiScaleX);
+            var vDPIOffset = DpiHelper.TransformToDeviceY(toolTip.PlacementTarget, vOffsetFromToolTip, dpi.DpiScaleY);
 
             var position = Mouse.GetPosition(toolTip.PlacementTarget);
             var newHorizontalOffset = position.X + hDPIOffset;
@@ -170,14 +172,14 @@ namespace ControlzEx
             var locationX = (int)topLeftFromScreen.X % monitorWorkWidth;
             var locationY = (int)topLeftFromScreen.Y % monitorWorkHeight;
 
-            var renderDPIWidth = DpiHelper.TransformToDeviceX(toolTip.RenderSize.Width);
+            var renderDPIWidth = DpiHelper.TransformToDeviceX(toolTip.RenderSize.Width, dpi.DpiScaleX);
             var rightX = locationX + newHorizontalOffset + renderDPIWidth;
             if (rightX > monitorWorkWidth)
             {
                 newHorizontalOffset = position.X - toolTip.RenderSize.Width - 0.5 * hDPIOffset;
             }
 
-            var renderDPIHeight = DpiHelper.TransformToDeviceY(toolTip.RenderSize.Height);
+            var renderDPIHeight = DpiHelper.TransformToDeviceY(toolTip.RenderSize.Height, dpi.DpiScaleY);
             var bottomY = locationY + newVerticalOffset + renderDPIHeight;
             if (bottomY > monitorWorkHeight)
             {
