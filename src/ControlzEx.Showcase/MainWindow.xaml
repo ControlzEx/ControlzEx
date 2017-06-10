@@ -43,7 +43,8 @@
 
             <Grid Grid.Row="0"
                   controlzEx:WindowChrome.IsHitTestVisibleInChrome="True"
-                  MouseLeftButtonDown="TitleBarGrid_OnMouseLeftButtonDown">
+                  MouseLeftButtonDown="TitleBarGrid_OnMouseLeftButtonDown"
+                  MouseRightButtonDown="TitleBarGrid_OnMouseRightButtonDown">
                 <Border Background="{Binding Source={x:Static SystemColors.WindowBrush}}"
                         Margin="0,0,150,0" />
                 <TextBlock x:Name="TitlebarText"
