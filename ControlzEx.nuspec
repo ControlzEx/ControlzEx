@@ -24,5 +24,9 @@
     <file src="src\bin\$Configuration$\NET45\ControlzEx.dll" target="lib\net45" />
     <file src="src\bin\$Configuration$\NET45\ControlzEx.pdb" target="lib\net45" />
     <file src="src\bin\$Configuration$\NET45\System.Windows.Interactivity.dll" target="lib\net45" />
+
+    <file src="src\bin\$Configuration$\NET462\ControlzEx.dll" target="lib\net462" />
+    <file src="src\bin\$Configuration$\NET462\ControlzEx.pdb" target="lib\net462" />
+    <file src="src\bin\$Configuration$\NET462\System.Windows.Interactivity.dll" target="lib\net462" />
   </files>
 </package>
