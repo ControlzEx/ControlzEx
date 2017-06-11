@@ -95,9 +95,6 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\ControlzEx\ControlzEx.NET462.csproj">
       <Project>{3bddbf18-df41-4db3-be63-f313bbdff2e3}</Project>
       <Name>ControlzEx.NET462</Name>
