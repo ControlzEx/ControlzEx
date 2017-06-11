@@ -98,9 +98,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ControlzEx\ControlzEx.NET45.csproj">
-      <Project>{782510c1-bd4b-4137-97de-a8b26154ffbf}</Project>
-      <Name>ControlzEx.NET45</Name>
+    <ProjectReference Include="..\ControlzEx\ControlzEx.NET462.csproj">
+      <Project>{3bddbf18-df41-4db3-be63-f313bbdff2e3}</Project>
+      <Name>ControlzEx.NET462</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
