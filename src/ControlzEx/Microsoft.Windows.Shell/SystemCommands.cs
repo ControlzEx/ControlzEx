@@ -98,7 +98,7 @@ namespace Microsoft.Windows.Shell
 
             var hmenu = NativeMethods.GetSystemMenu(hwnd, false);
 
-            var cmd = NativeMethods.TrackPopupMenuEx(hmenu, Constants.TPM_LEFTALIGN | Constants.TPM_RETURNCMD, (int)physicalScreenLocation.X, (int)physicalScreenLocation.Y, hwnd, IntPtr.Zero);
+            var cmd = NativeMethods.TrackPopupMenuEx(hmenu, Constants.TPM_LEFTBUTTON | Constants.TPM_RETURNCMD, (int)physicalScreenLocation.X, (int)physicalScreenLocation.Y, hwnd, IntPtr.Zero);
             if (0 != cmd)
             {
                 NativeMethods.PostMessage(hwnd, WM.SYSCOMMAND, new IntPtr(cmd), IntPtr.Zero);

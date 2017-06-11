@@ -120,7 +120,6 @@ namespace ControlzEx.Native
 
         public const int GCLP_HBRBACKGROUND = -0x0A;
 
-        public const uint TPM_LEFTALIGN = 0x0000;
         public const uint TPM_RETURNCMD = 0x0100;        
         public const uint TPM_LEFTBUTTON = 0x0;
 
