@@ -5,7 +5,6 @@ namespace Microsoft.Windows.Shell
     using System.Windows;
     using System.Windows.Input;
     using System.Windows.Interop;
-    using ControlzEx;
     using ControlzEx.Native;
     using Standard;
 
