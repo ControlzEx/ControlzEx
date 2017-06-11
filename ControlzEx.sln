@@ -20,6 +20,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlzEx.Showcase.NET45",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlzEx.NET462", "src\ControlzEx\ControlzEx.NET462.csproj", "{3BDDBF18-DF41-4DB3-BE63-F313BBDFF2E3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlzEx.Showcase.NET462", "src\ControlzEx.Showcase\ControlzEx.Showcase.NET462.csproj", "{40FA14A4-6A86-49C8-B534-88B1912CA4A0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,6 +44,10 @@ Global
 		{3BDDBF18-DF41-4DB3-BE63-F313BBDFF2E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3BDDBF18-DF41-4DB3-BE63-F313BBDFF2E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3BDDBF18-DF41-4DB3-BE63-F313BBDFF2E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40FA14A4-6A86-49C8-B534-88B1912CA4A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40FA14A4-6A86-49C8-B534-88B1912CA4A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40FA14A4-6A86-49C8-B534-88B1912CA4A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40FA14A4-6A86-49C8-B534-88B1912CA4A0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
