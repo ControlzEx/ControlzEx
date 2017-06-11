@@ -81,8 +81,8 @@ namespace Microsoft.Windows.Shell
         {
             Verify.IsNotNull(window, "window");
 
-            var dpi = DpiHelper.GetDpi(window);
-            ShowSystemMenuPhysicalCoordinates(window, DpiHelper.LogicalPixelsToDevice(screenLocation, dpi.DpiScaleX, dpi.DpiScaleY));
+            // Using fixed dpi scaling here because the menu gets placed way off otherwise
+            ShowSystemMenuPhysicalCoordinates(window, DpiHelper.LogicalPixelsToDevice(screenLocation, 1, 1));
         }
 
         internal static void ShowSystemMenuPhysicalCoordinates(Window window, Point physicalScreenLocation)
