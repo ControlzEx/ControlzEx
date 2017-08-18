@@ -811,9 +811,22 @@ namespace Microsoft.Windows.Shell
                     RECT rc = (RECT) Marshal.PtrToStructure(lParam, typeof(RECT));
                     NativeMethods.DefWindowProc(_hwnd, WM.NCCALCSIZE, wParam, lParam);
                     RECT def = (RECT) Marshal.PtrToStructure(lParam, typeof(RECT));
-                    def.Top = (int) (rc.Top + NativeMethods.GetWindowInfo(_hwnd).cyWindowBorders);
 
-                    // monitor an work area will be equal if taskbar is hidden
+                    // fixes https://github.com/ControlzEx/ControlzEx/issues/31
+                    if (def.Width < mi.rcWork.Width
+                        && double.IsNaN(this._window.MaxWidth) == false)
+                    {
+                        def.Top = rc.Top;
+                        def.Left = rc.Left;
+                        def.Bottom = rc.Bottom;
+                        def.Right = rc.Right;
+                    }
+                    else
+                    {
+                        def.Top = (int)(rc.Top + NativeMethods.GetWindowInfo(_hwnd).cyWindowBorders);
+                    }
+
+                    // monitor and work area will be equal if taskbar is hidden
                     if (mi.rcMonitor.Height == mi.rcWork.Height && mi.rcMonitor.Width == mi.rcWork.Width)
                     {
                         def = AdjustWorkingAreaForAutoHide(mon, def);
