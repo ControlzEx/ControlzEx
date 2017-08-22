@@ -384,7 +384,7 @@ namespace ControlzEx.Behaviors
                             this.ActivateTaskbarFix();
                         }
 
-                        UnsafeNativeMethods.SetWindowPos(this.handle, new IntPtr(-2), x, y, cx, cy, SWP.SHOWWINDOW);
+                        NativeMethods.SetWindowPos(this.handle, new IntPtr(-2), x, y, cx, cy, SWP.SHOWWINDOW);
                     }
                 }
             }
@@ -424,9 +424,9 @@ namespace ControlzEx.Behaviors
             if (trayWndHandle != IntPtr.Zero)
             {
                 SetHandleTaskbar(this.AssociatedObject, true);
-                UnsafeNativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_BOTTOM, 0, 0, 0, 0, SWP.TOPMOST);
-                UnsafeNativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_TOP, 0, 0, 0, 0, SWP.TOPMOST);
-                UnsafeNativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_NOTOPMOST, 0, 0, 0, 0, SWP.TOPMOST);
+                NativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_BOTTOM, 0, 0, 0, 0, SWP.TOPMOST);
+                NativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_TOP, 0, 0, 0, 0, SWP.TOPMOST);
+                NativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_NOTOPMOST, 0, 0, 0, 0, SWP.TOPMOST);
             }
         }
 
@@ -436,9 +436,9 @@ namespace ControlzEx.Behaviors
             if (trayWndHandle != IntPtr.Zero)
             {
                 SetHandleTaskbar(this.AssociatedObject, false);
-                UnsafeNativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_BOTTOM, 0, 0, 0, 0, SWP.TOPMOST);
-                UnsafeNativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_TOP, 0, 0, 0, 0, SWP.TOPMOST);
-                UnsafeNativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_TOPMOST, 0, 0, 0, 0, SWP.TOPMOST);
+                NativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_BOTTOM, 0, 0, 0, 0, SWP.TOPMOST);
+                NativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_TOP, 0, 0, 0, 0, SWP.TOPMOST);
+                NativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_TOPMOST, 0, 0, 0, 0, SWP.TOPMOST);
             }
         }
 
@@ -481,7 +481,7 @@ namespace ControlzEx.Behaviors
                             {
                                 flags |= SWP.NOACTIVATE;
                             }
-                            UnsafeNativeMethods.SetWindowPos(this.handle, new IntPtr(-2), rect.Left, rect.Top, rect.Width, rect.Height, flags);
+                            NativeMethods.SetWindowPos(this.handle, new IntPtr(-2), rect.Left, rect.Top, rect.Width, rect.Height, flags);
                         }
                     });
             }
