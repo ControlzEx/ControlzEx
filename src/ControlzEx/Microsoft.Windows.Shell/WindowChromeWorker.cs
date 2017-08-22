@@ -23,20 +23,6 @@ namespace Microsoft.Windows.Shell
 
     internal class WindowChromeWorker : DependencyObject
     {
-        private static readonly Version _presentationFrameworkVersion = Assembly.GetAssembly(typeof(Window)).GetName().Version;
-
-        /// <summary>
-        /// Is this using WPF4?
-        /// </summary>
-        /// <remarks>
-        /// There are a few specific bugs in Window in 3.5SP1 and below that require workarounds
-        /// when handling WM_NCCALCSIZE on the HWND.
-        /// </remarks>
-        private static bool IsPresentationFrameworkVersionLessThan4
-        {
-            get { return _presentationFrameworkVersion < new Version(4, 0); }
-        }
-
         // Delegate signature used for Dispatcher.BeginInvoke.
         private delegate void _Action();
 
@@ -112,7 +98,7 @@ namespace Microsoft.Windows.Shell
                 new HANDLE_MESSAGE(WM.EXITSIZEMOVE,          _HandleExitSizeMoveForAnimation),
             };
 
-            if (IsPresentationFrameworkVersionLessThan4)
+            if (Utility.IsPresentationFrameworkVersionLessThan4)
             {
                 _messageTable.AddRange(new[]
                 {
@@ -437,12 +423,12 @@ namespace Microsoft.Windows.Shell
                 }
             }
 
-            if (IsPresentationFrameworkVersionLessThan4)
+            if (Utility.IsPresentationFrameworkVersionLessThan4)
             {
+                DpiScale dpi = _window.GetDpi();
                 RECT rcWindow = NativeMethods.GetWindowRect(_hwnd);
                 RECT rcAdjustedClient = _GetAdjustedWindowRect(rcWindow);
 
-                var dpi = DpiHelper.GetDpi(_window);
                 Rect rcLogicalWindow = DpiHelper.DeviceRectToLogical(new Rect(rcWindow.Left, rcWindow.Top, rcWindow.Width, rcWindow.Height), dpi.DpiScaleX, dpi.DpiScaleY);
                 Rect rcLogicalClient = DpiHelper.DeviceRectToLogical(new Rect(rcAdjustedClient.Left, rcAdjustedClient.Top, rcAdjustedClient.Width, rcAdjustedClient.Height), dpi.DpiScaleX, dpi.DpiScaleY);
 
@@ -514,7 +500,7 @@ namespace Microsoft.Windows.Shell
 
             rootElement.Margin = templateFixupMargin;
 
-            if (IsPresentationFrameworkVersionLessThan4)
+            if (Utility.IsPresentationFrameworkVersionLessThan4)
             {
                 if (!_isFixedUp)
                 {
@@ -534,7 +520,7 @@ namespace Microsoft.Windows.Shell
         [PermissionSet(SecurityAction.Demand, Name="FullTrust")]
         private void _FixupRestoreBounds(object sender, EventArgs e)
         {
-            Assert.IsTrue(IsPresentationFrameworkVersionLessThan4);
+            Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
             if (_window.WindowState == WindowState.Maximized || _window.WindowState == WindowState.Minimized)
             {
                 // Old versions of WPF sometimes force their incorrect idea of the Window's location
@@ -542,7 +528,7 @@ namespace Microsoft.Windows.Shell
                 // try to undo what WPF did after it has done its thing.
                 if (_hasUserMovedWindow)
                 {
-                    var dpi = DpiHelper.GetDpi(_window);
+                    DpiScale dpi = _window.GetDpi();
                     _hasUserMovedWindow = false;
                     WINDOWPLACEMENT wp = NativeMethods.GetWindowPlacement(_hwnd);
 
@@ -566,7 +552,7 @@ namespace Microsoft.Windows.Shell
         private RECT _GetAdjustedWindowRect(RECT rcWindow)
         {
             // This should only be used to work around issues in the Framework that were fixed in 4.0
-            Assert.IsTrue(IsPresentationFrameworkVersionLessThan4);
+            Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
 
             var style = (WS)NativeMethods.GetWindowLongPtr(_hwnd, GWL.STYLE);
             var exstyle = (WS_EX)NativeMethods.GetWindowLongPtr(_hwnd, GWL.EXSTYLE);
@@ -589,14 +575,14 @@ namespace Microsoft.Windows.Shell
             {
                 // We're only detecting this state to work around .Net 3.5 issues.
                 // This logic won't work correctly when those issues are fixed.
-                Assert.IsTrue(IsPresentationFrameworkVersionLessThan4);
+                Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
 
                 if (_window.WindowState != WindowState.Normal)
                 {
                     return false;
                 }
 
-                var dpi = DpiHelper.GetDpi(_window);
+                DpiScale dpi = _window.GetDpi();
 
                 RECT adjustedOffset = _GetAdjustedWindowRect(new RECT { Bottom = 100, Right = 100 });
                 Point windowTopLeft = new Point(_window.Left, _window.Top);
@@ -837,7 +823,7 @@ namespace Microsoft.Windows.Shell
 
             if (_chromeInfo.SacrificialEdge != SacrificialEdge.None)
             {
-                var dpi = DpiHelper.GetDpi(_window);
+                DpiScale dpi = _window.GetDpi();
 #if NET45 || NET462
                 Thickness windowResizeBorderThicknessDevice = DpiHelper.LogicalThicknessToDevice(SystemParameters.WindowResizeBorderThickness, dpi.DpiScaleX, dpi.DpiScaleY);
 #else
@@ -905,7 +891,7 @@ namespace Microsoft.Windows.Shell
         [SecurityCritical]
         private IntPtr _HandleNCHitTest(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
-            var dpi = DpiHelper.GetDpi(_window);
+            DpiScale dpi = _window.GetDpi();
 
             // Let the system know if we consider the mouse to be in our effective non-client area.
             var mousePosScreen = Utility.GetPoint(lParam); //new Point(Utility.GET_X_LPARAM(lParam), Utility.GET_Y_LPARAM(lParam));
@@ -1126,7 +1112,7 @@ namespace Microsoft.Windows.Shell
         {
             // There are several settings that can cause fixups for the template to become invalid when changed.
             // These shouldn't be required on the v4 framework.
-            Assert.IsTrue(IsPresentationFrameworkVersionLessThan4);
+            Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
 
             _FixupTemplateIssues();
 
@@ -1141,7 +1127,7 @@ namespace Microsoft.Windows.Shell
         private IntPtr _HandleEnterSizeMove(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
             // This is only intercepted to deal with bugs in Window in .Net 3.5 and below.
-            Assert.IsTrue(IsPresentationFrameworkVersionLessThan4);
+            Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
 
             _isUserResizing = true;
 
@@ -1253,7 +1239,7 @@ namespace Microsoft.Windows.Shell
         private IntPtr _HandleExitSizeMove(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
             // This is only intercepted to deal with bugs in Window in .Net 3.5 and below.
-            Assert.IsTrue(IsPresentationFrameworkVersionLessThan4);
+            Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
 
             _isUserResizing = false;
 
@@ -1273,7 +1259,7 @@ namespace Microsoft.Windows.Shell
         private IntPtr _HandleMove(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
             // This is only intercepted to deal with bugs in Window in .Net 3.5 and below.
-            Assert.IsTrue(IsPresentationFrameworkVersionLessThan4);
+            Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
 
             if (_isUserResizing)
             {
@@ -1562,7 +1548,7 @@ namespace Microsoft.Windows.Shell
                 IntPtr hrgn = IntPtr.Zero;
                 try
                 {
-                    var dpi = DpiHelper.GetDpi(_window);
+                    DpiScale dpi = _window.GetDpi();
 
                     double shortestDimension = Math.Min(windowSize.Width, windowSize.Height);
 
@@ -1733,7 +1719,7 @@ namespace Microsoft.Windows.Shell
             }
             else
             {
-                var dpi = DpiHelper.GetDpi(_window);
+                DpiScale dpi = _window.GetDpi();
 
                 // This makes the glass visible at a Win32 level so long as nothing else is covering it.
                 // The Window's Background needs to be changed independent of this.
@@ -1898,7 +1884,7 @@ namespace Microsoft.Windows.Shell
 
             // This margin is only necessary if the client rect is going to be calculated incorrectly by WPF.
             // This bug was fixed in V4 of the framework.
-            if (IsPresentationFrameworkVersionLessThan4)
+            if (Utility.IsPresentationFrameworkVersionLessThan4)
             {
                 Assert.IsTrue(_isFixedUp);
                 _window.StateChanged -= _FixupRestoreBounds;
