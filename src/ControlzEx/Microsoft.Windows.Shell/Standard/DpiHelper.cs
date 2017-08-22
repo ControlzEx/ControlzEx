@@ -120,6 +120,11 @@ namespace Standard
 #endif
         }
 
+        internal static DpiScale GetDpi(this Window window)
+        {
+            return GetDpi((Visual)window);
+        }
+
         #endregion Per monitor dpi support
     }
 
