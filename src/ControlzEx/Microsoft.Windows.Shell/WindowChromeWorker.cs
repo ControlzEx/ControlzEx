@@ -852,9 +852,21 @@ namespace Microsoft.Windows.Shell
 
             handled = true;
 
-            // Using the combination of WVR.VALIDRECTS and WVR.REDRAW gives the smoothest
-            // resize behavior we can achieve here.
-            return new IntPtr((int)(WVR.VALIDRECTS | WVR.REDRAW));
+            // Per MSDN for NCCALCSIZE, always return 0 when wParam == FALSE
+            // 
+            // Returning 0 when wParam == TRUE is not appropriate - it will preserve
+            // the old client area and align it with the upper-left corner of the new 
+            // client area. So we simply ask for a redraw (WVR_REDRAW)
+
+            IntPtr retVal = IntPtr.Zero;
+            if (wParam.ToInt32() != 0) // wParam == TRUE
+            {
+                // Using the combination of WVR.VALIDRECTS and WVR.REDRAW gives the smoothest
+                // resize behavior we can achieve here.
+                retVal = new IntPtr((int)(WVR.VALIDRECTS | WVR.REDRAW));
+            }
+
+            return retVal; 
         }
 
         private HT _GetHTFromResizeGripDirection(ResizeGripDirection direction)
