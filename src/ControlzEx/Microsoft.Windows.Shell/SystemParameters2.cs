@@ -608,14 +608,12 @@ namespace Microsoft.Windows.Shell
             [SecurityCritical, SecurityTreatAsSafe]
             get
             {
-                if (_setDpiX)
+                if (!_setDpiX)
                 {
                     lock (_cacheValid)
                     {
-                        if (_setDpiX)
+                        if (!_setDpiX)
                         {
-                            _setDpiX = false;
-
                             // Win32Exception will get the Win32 error code so we don't have to
 #pragma warning disable 6523
                             using (var dc = SafeDC.GetDesktop())
@@ -631,6 +629,7 @@ namespace Microsoft.Windows.Shell
 #pragma warning restore 6523
 
                                 _dpiX = NativeMethods.GetDeviceCaps(dc, DeviceCap.LOGPIXELSX);
+                                _setDpiX = true;
                                 _cacheValid[(int) CacheSlot.DpiX] = true;
                             }
                         }
