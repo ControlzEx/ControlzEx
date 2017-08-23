@@ -567,7 +567,7 @@ namespace Microsoft.Windows.Shell
         private static int _dpi;
         private static bool _dpiInitialized;
         private static readonly object _dpiLock = new object();
-        private static bool _setDpiX;
+        private static bool _setDpiX = true;
         private static BitArray _cacheValid = new BitArray((int)CacheSlot.NumSlots);
         private static int _dpiX;
 
@@ -608,17 +608,18 @@ namespace Microsoft.Windows.Shell
             [SecurityCritical, SecurityTreatAsSafe]
             get
             {
-                if (!_setDpiX)
+                if (_setDpiX)
                 {
                     lock (_cacheValid)
                     {
-                        if (!_setDpiX)
+                        if (_setDpiX)
                         {
+                            _setDpiX = false;
+
                             // Win32Exception will get the Win32 error code so we don't have to
 #pragma warning disable 6523
                             using (var dc = SafeDC.GetDesktop())
                             {
-
                                 // Detecting error case from unmanaged call, required by PREsharp to throw a Win32Exception
 #pragma warning disable 6503
                                 if (dc.DangerousGetHandle() == IntPtr.Zero)
@@ -629,7 +630,6 @@ namespace Microsoft.Windows.Shell
 #pragma warning restore 6523
 
                                 _dpiX = NativeMethods.GetDeviceCaps(dc, DeviceCap.LOGPIXELSX);
-                                _setDpiX = true;
                                 _cacheValid[(int) CacheSlot.DpiX] = true;
                             }
                         }
