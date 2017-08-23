@@ -582,21 +582,15 @@ namespace Microsoft.Windows.Shell
                     {
                         if (!_dpiInitialized)
                         {
-                            var dc = SafeDC.GetDC(IntPtr.Zero);
-
-                            if (dc.DangerousGetHandle() == IntPtr.Zero)
+                            using (var dc = SafeDC.GetDesktop())
                             {
-                                throw new Win32Exception();
-                            }
+                                if (dc.DangerousGetHandle() == IntPtr.Zero)
+                                {
+                                    throw new Win32Exception();
+                                }
 
-                            try
-                            {
                                 _dpi = NativeMethods.GetDeviceCaps(dc, DeviceCap.LOGPIXELSY);
                                 _dpiInitialized = true;
-                            }
-                            finally
-                            {
-                                dc.DangerousRelease();
                             }
                         }
                     }
@@ -624,25 +618,20 @@ namespace Microsoft.Windows.Shell
 
                             // Win32Exception will get the Win32 error code so we don't have to
 #pragma warning disable 6523
-                            var dc = SafeDC.GetDC(IntPtr.Zero);
-
-                            // Detecting error case from unmanaged call, required by PREsharp to throw a Win32Exception
-#pragma warning disable 6503
-                            if (dc.DangerousGetHandle() == IntPtr.Zero)
+                            using (var dc = SafeDC.GetDesktop())
                             {
-                                throw new Win32Exception();
-                            }
+
+                                // Detecting error case from unmanaged call, required by PREsharp to throw a Win32Exception
+#pragma warning disable 6503
+                                if (dc.DangerousGetHandle() == IntPtr.Zero)
+                                {
+                                    throw new Win32Exception();
+                                }
 #pragma warning restore 6503
 #pragma warning restore 6523
 
-                            try
-                            {
                                 _dpiX = NativeMethods.GetDeviceCaps(dc, DeviceCap.LOGPIXELSX);
-                                _cacheValid[(int)CacheSlot.DpiX] = true;
-                            }
-                            finally
-                            {
-                                dc.DangerousRelease();
+                                _cacheValid[(int) CacheSlot.DpiX] = true;
                             }
                         }
                     }
