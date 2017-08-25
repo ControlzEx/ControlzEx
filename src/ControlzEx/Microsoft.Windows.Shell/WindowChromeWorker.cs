@@ -787,7 +787,7 @@ namespace ControlzEx.Windows.Shell
             // Since the first field of NCCALCSIZE_PARAMS is a RECT and is the only field we care about
             // we can unconditionally treat it as a RECT.
 
-            if (NativeMethods.GetWindowPlacement(_hwnd).showCmd == SW.MAXIMIZE)
+            if (NativeMethods.GetWindowPlacement(_hwnd).showCmd == SW.MAXIMIZE && _MinimizeAnimation)
             {
                 var monitor = NativeMethods.MonitorFromWindow(_hwnd, MonitorOptions.MONITOR_DEFAULTTONEAREST);
                 var monitorInfo = NativeMethods.GetMonitorInfo(monitor);
@@ -799,14 +799,11 @@ namespace ControlzEx.Windows.Shell
                 rc.Right = monitorRect.Right;
                 rc.Bottom = monitorRect.Bottom;
 
-                if (_chromeInfo.IgnoreTaskbarOnMaximize == false)
+                // monitor and work area will be equal if taskbar is hidden
+                if (monitorInfo.rcMonitor.Height == monitorInfo.rcWork.Height
+                    && monitorInfo.rcMonitor.Width == monitorInfo.rcWork.Width)
                 {
-                    // monitor and work area will be equal if taskbar is hidden
-                    if (monitorInfo.rcMonitor.Height == monitorInfo.rcWork.Height
-                        && monitorInfo.rcMonitor.Width == monitorInfo.rcWork.Width)
-                    {
-                        rc = AdjustWorkingAreaForAutoHide(monitor, rc);
-                    }
+                    rc = AdjustWorkingAreaForAutoHide(monitor, rc);
                 }
 
                 Marshal.StructureToPtr(rc, lParam, true);
