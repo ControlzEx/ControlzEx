@@ -226,10 +226,12 @@ namespace ControlzEx.Behaviors
             {
                 this.isCleanedUp = true;
 
-                if (GetHandleTaskbar(this.AssociatedObject) && this.isWindwos10OrHigher)
+                var handleTaskbar = GetHandleTaskbar(this.AssociatedObject);
+
+                if (handleTaskbar != IntPtr.Zero
+                    && this.isWindwos10OrHigher)
                 {
-                    var monitor = UnsafeNativeMethods.MonitorFromWindow(this.handle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
-                    this.DeactivateTaskbarFix(monitor);
+                    this.DeactivateTaskbarFix(handleTaskbar);
                 }
 
                 // clean up events
@@ -354,7 +356,8 @@ namespace ControlzEx.Behaviors
             {
                 // #2694 make sure the window is not on top after restoring window
                 // this issue was introduced after fixing the windows 10 bug with the taskbar and a maximized window that ignores the taskbar
-                if (GetHandleTaskbar(this.AssociatedObject) && this.isWindwos10OrHigher)
+                if (GetHandleTaskbar(this.AssociatedObject) != IntPtr.Zero
+                    && this.isWindwos10OrHigher)
                 {
                     var monitor = UnsafeNativeMethods.MonitorFromWindow(this.handle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
 
@@ -388,20 +391,18 @@ namespace ControlzEx.Behaviors
 
             if (trayWndHandle != IntPtr.Zero)
             {
-                SetHandleTaskbar(this.AssociatedObject, true);
+                SetHandleTaskbar(this.AssociatedObject, trayWndHandle);
                 NativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_BOTTOM, 0, 0, 0, 0, SWP.TOPMOST);
                 NativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_TOP, 0, 0, 0, 0, SWP.TOPMOST);
                 NativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_NOTOPMOST, 0, 0, 0, 0, SWP.TOPMOST);
             }
         }
 
-        private void DeactivateTaskbarFix(IntPtr monitor)
+        private void DeactivateTaskbarFix(IntPtr trayWndHandle)
         {
-            var trayWndHandle = NativeMethods.GetTaskBarHandleForMonitor(monitor);
-
             if (trayWndHandle != IntPtr.Zero)
             {
-                SetHandleTaskbar(this.AssociatedObject, false);
+                SetHandleTaskbar(this.AssociatedObject, IntPtr.Zero);
                 NativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_BOTTOM, 0, 0, 0, 0, SWP.TOPMOST);
                 NativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_TOP, 0, 0, 0, 0, SWP.TOPMOST);
                 NativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_TOPMOST, 0, 0, 0, 0, SWP.TOPMOST);
@@ -411,15 +412,15 @@ namespace ControlzEx.Behaviors
         private static readonly DependencyProperty HandleTaskbarProperty
             = DependencyProperty.RegisterAttached(
                 "HandleTaskbar",
-                typeof(bool),
-                typeof(WindowChromeBehavior), new FrameworkPropertyMetadata(false));
+                typeof(IntPtr),
+                typeof(WindowChromeBehavior), new FrameworkPropertyMetadata(IntPtr.Zero));
 
-        private static bool GetHandleTaskbar(UIElement element)
+        private static IntPtr GetHandleTaskbar(UIElement element)
         {
-            return (bool)element.GetValue(HandleTaskbarProperty);
+            return (IntPtr)element.GetValue(HandleTaskbarProperty);
         }
 
-        private static void SetHandleTaskbar(UIElement element, bool value)
+        private static void SetHandleTaskbar(UIElement element, IntPtr value)
         {
             element.SetValue(HandleTaskbarProperty, value);
         }
