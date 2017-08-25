@@ -2477,7 +2477,13 @@ namespace Standard
         public int y;
         public int cx;
         public int cy;
-        public int flags;
+        public SWP flags;
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"x: {this.x}; y: {this.y}; cx: {this.cx}; cy: {this.cy}; flags: {this.flags}";
+        }
     }
 
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
@@ -3331,6 +3337,26 @@ namespace Standard
             return mi;
         }
 
+        public static IntPtr GetTaskBarHandleForMonitor(IntPtr monitor)
+        {
+            // maybe we can use ReBarWindow32 isntead Shell_TrayWnd
+            var hwnd = NativeMethods.FindWindow("Shell_TrayWnd", null);
+            var monitorWithTaskbarOnIt = NativeMethods.MonitorFromWindow(hwnd, MonitorOptions.MONITOR_DEFAULTTONEAREST);
+
+            if (!Equals(monitor, monitorWithTaskbarOnIt))
+            {
+                hwnd = NativeMethods.FindWindow("Shell_SecondaryTrayWnd", null);
+                monitorWithTaskbarOnIt = NativeMethods.MonitorFromWindow(hwnd, MonitorOptions.MONITOR_DEFAULTTONEAREST);
+
+                if (!Equals(monitor, monitorWithTaskbarOnIt))
+                {
+                    return IntPtr.Zero;
+                }
+            }
+
+            return hwnd;
+        }
+
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("gdi32.dll", EntryPoint = "GetStockObject", SetLastError = true)]
         private static extern IntPtr _GetStockObject(StockObject fnObject);
@@ -3531,7 +3557,7 @@ namespace Standard
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("user32.dll")]
-        public static extern IntPtr MonitorFromWindow(IntPtr hwnd, uint dwFlags);
+        public static extern IntPtr MonitorFromWindow(IntPtr hwnd, MonitorOptions dwFlags);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("user32.dll")]
