@@ -6,7 +6,7 @@ using System.Security;
 using System.Windows;
 using System.Windows.Interactivity;
 using System.Windows.Interop;
-using Microsoft.Windows.Shell;
+using ControlzEx.Windows.Shell;
 
 namespace ControlzEx.Behaviors
 {
@@ -82,7 +82,7 @@ namespace ControlzEx.Behaviors
 
         private static bool IsWindows10OrHigher()
         {
-            var version = Standard.NtDll.RtlGetVersion();
+            var version = NtDll.RtlGetVersion();
             if (default(Version) == version)
             {
                 // Snippet from Koopakiller https://dotnet-snippets.de/snippet/os-version-name-mit-wmi/4929
@@ -156,9 +156,6 @@ namespace ControlzEx.Behaviors
             this.windowChrome.CornerRadius = default(CornerRadius);
             this.windowChrome.UseAeroCaptionButtons = false;
 
-            // port: Is forwarded by code in IgnoreTaskbarOnMaximizePropertyChangedCallback
-            //BindingOperations.SetBinding(this.windowChrome, WindowChrome.IgnoreTaskbarOnMaximizeProperty, new Binding { Path = new PropertyPath(IgnoreTaskbarOnMaximizeProperty), Source = this });
-
             this.AssociatedObject.SetValue(WindowChrome.WindowChromeProperty, this.windowChrome);
         }
 
@@ -170,7 +167,7 @@ namespace ControlzEx.Behaviors
 #if NET45 || NET462
             return SystemParameters.WindowResizeBorderThickness;
 #else
-            return Microsoft.Windows.Shell.SystemParameters2.Current.WindowResizeBorderThickness;
+            return SystemParameters2.Current.WindowResizeBorderThickness;
 #endif
         }
 
@@ -210,49 +207,14 @@ namespace ControlzEx.Behaviors
                     // WindowState="Maximized"
                     // IgnoreTaskbarOnMaximize="True"
                     // this only happens if we change this at runtime
-                    var removed = behavior._ModifyStyle(Standard.WS.MAXIMIZEBOX | Standard.WS.MINIMIZEBOX | Standard.WS.THICKFRAME, 0);
                     behavior.windowChrome.IgnoreTaskbarOnMaximize = behavior.IgnoreTaskbarOnMaximize;
-                    if (removed)
+
+                    if (behavior.AssociatedObject.WindowState == WindowState.Maximized)
                     {
-                        behavior._ModifyStyle(0, Standard.WS.MAXIMIZEBOX | Standard.WS.MINIMIZEBOX | Standard.WS.THICKFRAME);
+                        behavior.AssociatedObject.WindowState = WindowState.Normal;
+                        behavior.AssociatedObject.WindowState = WindowState.Maximized;
                     }
-                    behavior.ForceRedrawWindowFromPropertyChanged();
                 }
-            }
-        }
-
-        /// <summary>Add and remove a native WindowStyle from the HWND.</summary>
-        /// <param name="removeStyle">The styles to be removed.  These can be bitwise combined.</param>
-        /// <param name="addStyle">The styles to be added.  These can be bitwise combined.</param>
-        /// <returns>Whether the styles of the HWND were modified as a result of this call.</returns>
-        /// <SecurityNote>
-        ///   Critical : Calls critical methods
-        /// </SecurityNote>
-        [SecurityCritical]
-        private bool _ModifyStyle(Standard.WS removeStyle, Standard.WS addStyle)
-        {
-            if (this.handle == IntPtr.Zero)
-            {
-                return false;
-            }
-            var intPtr = Standard.NativeMethods.GetWindowLongPtr(this.handle, Standard.GWL.STYLE);
-            var dwStyle = (Standard.WS)(Environment.Is64BitProcess ? intPtr.ToInt64() : intPtr.ToInt32());
-            var dwNewStyle = (dwStyle & ~removeStyle) | addStyle;
-            if (dwStyle == dwNewStyle)
-            {
-                return false;
-            }
-
-            Standard.NativeMethods.SetWindowLongPtr(this.handle, Standard.GWL.STYLE, new IntPtr((int)dwNewStyle));
-            return true;
-        }
-
-        private void ForceRedrawWindowFromPropertyChanged()
-        {
-            this.HandleMaximize();
-            if (this.handle != IntPtr.Zero)
-            {
-                UnsafeNativeMethods.RedrawWindow(this.handle, IntPtr.Zero, IntPtr.Zero, Constants.RedrawWindowFlags.Invalidate | Constants.RedrawWindowFlags.Frame);
             }
         }
 
@@ -264,9 +226,12 @@ namespace ControlzEx.Behaviors
             {
                 this.isCleanedUp = true;
 
-                if (GetHandleTaskbar(this.AssociatedObject) && this.isWindwos10OrHigher)
+                var handleTaskbar = GetHandleTaskbar(this.AssociatedObject);
+
+                if (handleTaskbar != IntPtr.Zero
+                    && this.isWindwos10OrHigher)
                 {
-                    this.DeactivateTaskbarFix();
+                    this.DeactivateTaskbarFix(handleTaskbar);
                 }
 
                 // clean up events
@@ -310,7 +275,7 @@ namespace ControlzEx.Behaviors
                 case (int)WM.WINDOWPOSCHANGING:
                     {
                         var pos = (WINDOWPOS)System.Runtime.InteropServices.Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
-                        if ((pos.flags & (int)Standard.SWP.NOMOVE) != 0)
+                        if ((pos.flags & SWP.NOMOVE) != 0)
                         {
                             return IntPtr.Zero;
                         }
@@ -367,24 +332,23 @@ namespace ControlzEx.Behaviors
                 {
                     // WindowChrome handles the size false if the main monitor is lesser the monitor where the window is maximized
                     // so set the window pos/size twice
-                    IntPtr monitor = UnsafeNativeMethods.MonitorFromWindow(this.handle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
+                    var monitor = UnsafeNativeMethods.MonitorFromWindow(this.handle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
                     if (monitor != IntPtr.Zero)
                     {
-                        var monitorInfo = new MONITORINFO();
-                        UnsafeNativeMethods.GetMonitorInfo(monitor, monitorInfo);
+                        var monitorInfo = NativeMethods.GetMonitorInfo(monitor);
+                        var monitorRect = ignoreTaskBar ? monitorInfo.rcMonitor : monitorInfo.rcWork;
 
-                        var desktopRect = ignoreTaskBar ? monitorInfo.rcMonitor :  monitorInfo.rcWork;
-                        var x = desktopRect.Left;
-                        var y = desktopRect.Top;
-                        var cx = Math.Abs(desktopRect.Right - x);
-                        var cy = Math.Abs(desktopRect.Bottom - y);
+                        var x = monitorRect.Left;
+                        var y = monitorRect.Top;
+                        var cx = monitorRect.Width;
+                        var cy = monitorRect.Height;
 
                         if (ignoreTaskBar && this.isWindwos10OrHigher)
                         {
-                            this.ActivateTaskbarFix();
+                            this.ActivateTaskbarFix(monitor);
                         }
 
-                        NativeMethods.SetWindowPos(this.handle, new IntPtr(-2), x, y, cx, cy, SWP.SHOWWINDOW);
+                        NativeMethods.SetWindowPos(this.handle, Constants.HWND_NOTOPMOST, x, y, cx, cy, SWP.SHOWWINDOW);
                     }
                 }
             }
@@ -392,9 +356,11 @@ namespace ControlzEx.Behaviors
             {
                 // #2694 make sure the window is not on top after restoring window
                 // this issue was introduced after fixing the windows 10 bug with the taskbar and a maximized window that ignores the taskbar
-                if (GetHandleTaskbar(this.AssociatedObject) && this.isWindwos10OrHigher)
+                var handleTaskbar = GetHandleTaskbar(this.AssociatedObject);
+                if (handleTaskbar != IntPtr.Zero
+                    && this.isWindwos10OrHigher)
                 {
-                    this.DeactivateTaskbarFix();
+                    this.DeactivateTaskbarFix(handleTaskbar);
                 }
             }
 
@@ -418,24 +384,24 @@ namespace ControlzEx.Behaviors
             this.topMostChangeNotifier.RaiseValueChanged = raiseValueChanged;
         }
 
-        private void ActivateTaskbarFix()
+        private void ActivateTaskbarFix(IntPtr monitor)
         {
-            var trayWndHandle = Standard.NativeMethods.FindWindow("Shell_TrayWnd", null);
+            var trayWndHandle = NativeMethods.GetTaskBarHandleForMonitor(monitor);
+
             if (trayWndHandle != IntPtr.Zero)
             {
-                SetHandleTaskbar(this.AssociatedObject, true);
+                SetHandleTaskbar(this.AssociatedObject, trayWndHandle);
                 NativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_BOTTOM, 0, 0, 0, 0, SWP.TOPMOST);
                 NativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_TOP, 0, 0, 0, 0, SWP.TOPMOST);
                 NativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_NOTOPMOST, 0, 0, 0, 0, SWP.TOPMOST);
             }
         }
 
-        private void DeactivateTaskbarFix()
+        private void DeactivateTaskbarFix(IntPtr trayWndHandle)
         {
-            var trayWndHandle = Standard.NativeMethods.FindWindow("Shell_TrayWnd", null);
             if (trayWndHandle != IntPtr.Zero)
             {
-                SetHandleTaskbar(this.AssociatedObject, false);
+                SetHandleTaskbar(this.AssociatedObject, IntPtr.Zero);
                 NativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_BOTTOM, 0, 0, 0, 0, SWP.TOPMOST);
                 NativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_TOP, 0, 0, 0, 0, SWP.TOPMOST);
                 NativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_TOPMOST, 0, 0, 0, 0, SWP.TOPMOST);
@@ -445,15 +411,15 @@ namespace ControlzEx.Behaviors
         private static readonly DependencyProperty HandleTaskbarProperty
             = DependencyProperty.RegisterAttached(
                 "HandleTaskbar",
-                typeof(bool),
-                typeof(WindowChromeBehavior), new FrameworkPropertyMetadata(false));
+                typeof(IntPtr),
+                typeof(WindowChromeBehavior), new FrameworkPropertyMetadata(IntPtr.Zero));
 
-        private static bool GetHandleTaskbar(UIElement element)
+        private static IntPtr GetHandleTaskbar(UIElement element)
         {
-            return (bool)element.GetValue(HandleTaskbarProperty);
+            return (IntPtr)element.GetValue(HandleTaskbarProperty);
         }
 
-        private static void SetHandleTaskbar(UIElement element, bool value)
+        private static void SetHandleTaskbar(UIElement element, IntPtr value)
         {
             element.SetValue(HandleTaskbarProperty, value);
         }
@@ -481,7 +447,7 @@ namespace ControlzEx.Behaviors
                             {
                                 flags |= SWP.NOACTIVATE;
                             }
-                            NativeMethods.SetWindowPos(this.handle, new IntPtr(-2), rect.Left, rect.Top, rect.Width, rect.Height, flags);
+                            NativeMethods.SetWindowPos(this.handle, Constants.HWND_NOTOPMOST, rect.Left, rect.Top, rect.Width, rect.Height, flags);
                         }
                     });
             }

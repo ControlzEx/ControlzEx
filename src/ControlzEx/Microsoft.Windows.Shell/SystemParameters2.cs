@@ -3,7 +3,7 @@
     Copyright Microsoft Corporation. All Rights Reserved.
 \**************************************************************************/
 
-namespace Microsoft.Windows.Shell
+namespace ControlzEx.Windows.Shell
 {
     using System;
     using System.Collections;
@@ -14,7 +14,6 @@ namespace Microsoft.Windows.Shell
     using System.Security;
     using System.Windows;
     using System.Windows.Media;
-    using ControlzEx.Native;
     using Standard;
 
     [SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable")]

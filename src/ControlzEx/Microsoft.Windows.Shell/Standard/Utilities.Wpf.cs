@@ -4,7 +4,7 @@
 // they're not particular to any library functionality.
 // Because the classes here are internal, it's likely this file
 // might be included in multiple assemblies.
-namespace Standard
+namespace ControlzEx.Standard
 {
     using System;
     using System.Collections.Generic;
@@ -320,7 +320,7 @@ namespace Standard
                     }
                     finally
                     {
-                        Utility.SafeDisposeImage(ref bitmap);
+                        SafeDisposeImage(ref bitmap);
                     }
                 }
             }

@@ -1,5 +1,5 @@
 ﻿#pragma warning disable 1591, 618
-namespace Standard
+namespace ControlzEx.Standard
 {
     using System;
     using System.ComponentModel;
@@ -881,6 +881,8 @@ namespace Standard
         XBUTTONDBLCLK = 0x020D,
         MOUSEHWHEEL = 0x020E,
         PARENTNOTIFY = 0x0210,
+
+        SIZING = 0x0214,
 
         CAPTURECHANGED = 0x0215,
         POWERBROADCAST = 0x0218,
@@ -2477,7 +2479,13 @@ namespace Standard
         public int y;
         public int cx;
         public int cy;
-        public int flags;
+        public SWP flags;
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"x: {this.x}; y: {this.y}; cx: {this.cx}; cy: {this.cy}; flags: {this.flags}";
+        }
     }
 
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
@@ -3331,6 +3339,26 @@ namespace Standard
             return mi;
         }
 
+        public static IntPtr GetTaskBarHandleForMonitor(IntPtr monitor)
+        {
+            // maybe we can use ReBarWindow32 isntead Shell_TrayWnd
+            var hwnd = NativeMethods.FindWindow("Shell_TrayWnd", null);
+            var monitorWithTaskbarOnIt = NativeMethods.MonitorFromWindow(hwnd, MonitorOptions.MONITOR_DEFAULTTONEAREST);
+
+            if (!Equals(monitor, monitorWithTaskbarOnIt))
+            {
+                hwnd = NativeMethods.FindWindow("Shell_SecondaryTrayWnd", null);
+                monitorWithTaskbarOnIt = NativeMethods.MonitorFromWindow(hwnd, MonitorOptions.MONITOR_DEFAULTTONEAREST);
+
+                if (!Equals(monitor, monitorWithTaskbarOnIt))
+                {
+                    return IntPtr.Zero;
+                }
+            }
+
+            return hwnd;
+        }
+
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("gdi32.dll", EntryPoint = "GetStockObject", SetLastError = true)]
         private static extern IntPtr _GetStockObject(StockObject fnObject);
@@ -3369,6 +3397,26 @@ namespace Standard
                 HRESULT.ThrowLastError();
             }
             return info;
+        }
+
+        public static WS GetWindowStyle(IntPtr hWnd)
+        {
+            return (WS)GetWindowLongPtr(hWnd, GWL.STYLE);
+        }
+
+        public static WS_EX GetWindowStyleEx(IntPtr hWnd)
+        {
+            return (WS_EX)GetWindowLongPtr(hWnd, GWL.EXSTYLE);
+        }
+
+        public static WS SetWindowStyle(IntPtr hWnd, WS dwNewLong)
+        {
+            return (WS)SetWindowLongPtr(hWnd, GWL.STYLE, (IntPtr)dwNewLong);
+        }
+
+        public static WS_EX SetWindowStyleEx(IntPtr hWnd, WS_EX dwNewLong)
+        {
+            return (WS_EX)SetWindowLongPtr(hWnd, GWL.EXSTYLE, (IntPtr)dwNewLong);
         }
 
         // This is aliased as a macro in 32bit Windows.
@@ -3531,7 +3579,7 @@ namespace Standard
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("user32.dll")]
-        public static extern IntPtr MonitorFromWindow(IntPtr hwnd, uint dwFlags);
+        public static extern IntPtr MonitorFromWindow(IntPtr hwnd, MonitorOptions dwFlags);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("user32.dll")]

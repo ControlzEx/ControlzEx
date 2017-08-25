@@ -1,5 +1,5 @@
 ﻿#pragma warning disable 1591, 618
-namespace Standard
+namespace ControlzEx.Standard
 {
     using System;
     using System.Runtime.InteropServices;

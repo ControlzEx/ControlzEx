@@ -3,12 +3,11 @@
     Copyright Microsoft Corporation. All Rights Reserved.
 \**************************************************************************/
 
-namespace Microsoft.Windows.Shell
+namespace ControlzEx.Windows.Shell
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
-    using System.Reflection;
     using System.Runtime.InteropServices;
     using System.Security;
     using System.Security.Permissions;
@@ -16,9 +15,7 @@ namespace Microsoft.Windows.Shell
     using System.Windows.Interop;
     using System.Windows.Media;
     using System.Windows.Threading;
-    using ControlzEx;
-    using Standard;
-
+    using ControlzEx.Standard;
     using HANDLE_MESSAGE = System.Collections.Generic.KeyValuePair<Standard.WM, Standard.MessageHandler>;
 
     internal class WindowChromeWorker : DependencyObject
@@ -731,11 +728,14 @@ namespace Microsoft.Windows.Shell
         ///   Critical : Calls critical methods
         /// </SecurityNote>
         [SecurityCritical]
-        private static RECT AdjustWorkingAreaForAutoHide(IntPtr monitorContainingApplication, RECT area )
+        private static RECT AdjustWorkingAreaForAutoHide(IntPtr monitorContainingApplication, RECT area)
         {
-            // maybe we can use ReBarWindow32 isntead Shell_TrayWnd
-            IntPtr hwnd = NativeMethods.FindWindow("Shell_TrayWnd", null);
-            IntPtr monitorWithTaskbarOnIt = NativeMethods.MonitorFromWindow(hwnd, (uint)MonitorOptions.MONITOR_DEFAULTTONEAREST);
+            var hwnd = NativeMethods.GetTaskBarHandleForMonitor(monitorContainingApplication);
+
+            if (hwnd == IntPtr.Zero)
+            {
+                return area;
+            }
 
             var abd = new APPBARDATA();
             abd.cbSize = Marshal.SizeOf(abd);
@@ -743,7 +743,7 @@ namespace Microsoft.Windows.Shell
             NativeMethods.SHAppBarMessage((int)ABMsg.ABM_GETTASKBARPOS, ref abd);
             bool autoHide = Convert.ToBoolean(NativeMethods.SHAppBarMessage((int)ABMsg.ABM_GETSTATE, ref abd));
 
-            if (!autoHide || !Equals(monitorContainingApplication, monitorWithTaskbarOnIt))
+            if (!autoHide)
             {
                 return area;
             }
@@ -787,26 +787,26 @@ namespace Microsoft.Windows.Shell
             // Since the first field of NCCALCSIZE_PARAMS is a RECT and is the only field we care about
             // we can unconditionally treat it as a RECT.
 
-            if (NativeMethods.GetWindowPlacement(_hwnd).showCmd == SW.MAXIMIZE)
+            if (NativeMethods.GetWindowPlacement(_hwnd).showCmd == SW.MAXIMIZE && _MinimizeAnimation)
             {
-                if (_MinimizeAnimation)
+                var monitor = NativeMethods.MonitorFromWindow(_hwnd, MonitorOptions.MONITOR_DEFAULTTONEAREST);
+                var monitorInfo = NativeMethods.GetMonitorInfo(monitor);
+                var monitorRect = this._chromeInfo.IgnoreTaskbarOnMaximize ? monitorInfo.rcMonitor : monitorInfo.rcWork;
+
+                var rc = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT));                
+                rc.Left = monitorRect.Left;
+                rc.Top = monitorRect.Top;
+                rc.Right = monitorRect.Right;
+                rc.Bottom = monitorRect.Bottom;
+
+                // monitor and work area will be equal if taskbar is hidden
+                if (monitorInfo.rcMonitor.Height == monitorInfo.rcWork.Height
+                    && monitorInfo.rcMonitor.Width == monitorInfo.rcWork.Width)
                 {
-                    IntPtr mon = NativeMethods.MonitorFromWindow(_hwnd, (uint)MonitorOptions.MONITOR_DEFAULTTONEAREST);
-                    MONITORINFO mi = NativeMethods.GetMonitorInfo(mon);
-
-                    RECT rc = (RECT) Marshal.PtrToStructure(lParam, typeof(RECT));
-                    NativeMethods.DefWindowProc(_hwnd, WM.NCCALCSIZE, wParam, lParam);
-                    RECT def = (RECT) Marshal.PtrToStructure(lParam, typeof(RECT));
-
-                    def.Top = (int)(rc.Top + NativeMethods.GetWindowInfo(_hwnd).cyWindowBorders);
-
-                    // monitor and work area will be equal if taskbar is hidden
-                    if (mi.rcMonitor.Height == mi.rcWork.Height && mi.rcMonitor.Width == mi.rcWork.Width)
-                    {
-                        def = AdjustWorkingAreaForAutoHide(mon, def);
-                    }
-                    Marshal.StructureToPtr(def, lParam, true);
+                    rc = AdjustWorkingAreaForAutoHide(monitor, rc);
                 }
+
+                Marshal.StructureToPtr(rc, lParam, true);
             }
 
             if (_chromeInfo.SacrificialEdge != SacrificialEdge.None)
@@ -1000,7 +1000,7 @@ namespace Microsoft.Windows.Shell
 
                 // we don't do bitwise operations cuz we're checking for this flag being the only one there
                 // I have no clue why this works, I tried this because VS2013 has this flag removed on fullscreen window movws
-                if (_chromeInfo.IgnoreTaskbarOnMaximize && _GetHwndState() == WindowState.Maximized && wp.flags == (int) SWP.FRAMECHANGED)
+                if (_chromeInfo.IgnoreTaskbarOnMaximize && _GetHwndState() == WindowState.Maximized && wp.flags == SWP.FRAMECHANGED)
                 {
                     wp.flags = 0;
                     Marshal.StructureToPtr(wp, lParam, true);
@@ -1068,7 +1068,7 @@ namespace Microsoft.Windows.Shell
             if (ignoreTaskBar && NativeMethods.IsZoomed(_hwnd))
             {
                 MINMAXINFO mmi = (MINMAXINFO)Marshal.PtrToStructure(lParam, typeof(MINMAXINFO));
-                IntPtr monitor = NativeMethods.MonitorFromWindow(_hwnd, (uint)MonitorOptions.MONITOR_DEFAULTTONEAREST);
+                IntPtr monitor = NativeMethods.MonitorFromWindow(_hwnd, MonitorOptions.MONITOR_DEFAULTTONEAREST);
                 if (monitor != IntPtr.Zero)
                 {
                     MONITORINFO monitorInfo = NativeMethods.GetMonitorInfoW(monitor);
@@ -1186,7 +1186,7 @@ namespace Microsoft.Windows.Shell
              */
             WindowState state = _GetHwndState();
             if (state == WindowState.Maximized) {
-                IntPtr monitorFromWindow = NativeMethods.MonitorFromWindow(_hwnd, (uint)MonitorOptions.MONITOR_DEFAULTTONEAREST);
+                IntPtr monitorFromWindow = NativeMethods.MonitorFromWindow(_hwnd, MonitorOptions.MONITOR_DEFAULTTONEAREST);
                 if (monitorFromWindow != IntPtr.Zero)
                 {
                     var ignoreTaskBar = _chromeInfo.IgnoreTaskbarOnMaximize;// || _chromeInfo.UseNoneWindowStyle;
@@ -1504,7 +1504,7 @@ namespace Microsoft.Windows.Shell
                         top = (int)r.Top;
                     }
 
-                    IntPtr hMon = NativeMethods.MonitorFromWindow(_hwnd, (uint)MonitorOptions.MONITOR_DEFAULTTONEAREST);
+                    IntPtr hMon = NativeMethods.MonitorFromWindow(_hwnd, MonitorOptions.MONITOR_DEFAULTTONEAREST);
 
                     MONITORINFO mi = NativeMethods.GetMonitorInfo(hMon);
                     rcMax = _chromeInfo.IgnoreTaskbarOnMaximize ? mi.rcMonitor : mi.rcWork;
@@ -1530,7 +1530,7 @@ namespace Microsoft.Windows.Shell
                 Size windowSize;
 
                 // Use the size if it's specified.
-                if (null != wp && !Utility.IsFlagSet(wp.Value.flags, (int)SWP.NOSIZE))
+                if (null != wp && !Utility.IsFlagSet((int)wp.Value.flags, (int)SWP.NOSIZE))
                 {
                     windowSize = new Size((double)wp.Value.cx, (double)wp.Value.cy);
                 }

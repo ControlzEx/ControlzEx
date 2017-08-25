@@ -2,7 +2,7 @@
     Copyright Microsoft Corporation. All Rights Reserved.
 \**************************************************************************/
 #pragma warning disable 1591, 618
-namespace Microsoft.Windows.Shell
+namespace ControlzEx.Windows.Shell
 {
     using System;
     using System.Collections.Generic;

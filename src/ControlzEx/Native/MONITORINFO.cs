@@ -1,10 +1,10 @@
 using System.Runtime.InteropServices;
 
-namespace Standard
+namespace ControlzEx.Standard
 {
     using System;
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
     public class MONITORINFO
     {
@@ -14,7 +14,7 @@ namespace Standard
         public int dwFlags = 0;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum MonitorOptions : uint
     {
         MONITOR_DEFAULTTONULL = 0x00000000,
