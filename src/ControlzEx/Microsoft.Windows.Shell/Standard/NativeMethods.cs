@@ -1,5 +1,5 @@
 ﻿#pragma warning disable 1591, 618
-namespace Standard
+namespace ControlzEx.Standard
 {
     using System;
     using System.ComponentModel;
@@ -881,6 +881,8 @@ namespace Standard
         XBUTTONDBLCLK = 0x020D,
         MOUSEHWHEEL = 0x020E,
         PARENTNOTIFY = 0x0210,
+
+        SIZING = 0x0214,
 
         CAPTURECHANGED = 0x0215,
         POWERBROADCAST = 0x0218,
@@ -3395,6 +3397,26 @@ namespace Standard
                 HRESULT.ThrowLastError();
             }
             return info;
+        }
+
+        public static WS GetWindowStyle(IntPtr hWnd)
+        {
+            return (WS)GetWindowLongPtr(hWnd, GWL.STYLE);
+        }
+
+        public static WS_EX GetWindowStyleEx(IntPtr hWnd)
+        {
+            return (WS_EX)GetWindowLongPtr(hWnd, GWL.EXSTYLE);
+        }
+
+        public static WS SetWindowStyle(IntPtr hWnd, WS dwNewLong)
+        {
+            return (WS)SetWindowLongPtr(hWnd, GWL.STYLE, (IntPtr)dwNewLong);
+        }
+
+        public static WS_EX SetWindowStyleEx(IntPtr hWnd, WS_EX dwNewLong)
+        {
+            return (WS_EX)SetWindowLongPtr(hWnd, GWL.EXSTYLE, (IntPtr)dwNewLong);
         }
 
         // This is aliased as a macro in 32bit Windows.

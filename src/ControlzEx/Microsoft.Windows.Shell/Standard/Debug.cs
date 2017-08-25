@@ -8,7 +8,7 @@
 // they're not particular to any library functionality.
 // Because the classes here are internal, it's likely this file
 // might be included in multiple assemblies.
-namespace Standard
+namespace ControlzEx.Standard
 {
     using System;
     using System.Diagnostics;
@@ -16,7 +16,7 @@ namespace Standard
     using JetBrains.Annotations;
 
     /// <summary>A static class for verifying assumptions.</summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public static class Assert
     {
         // Blend and VS don't like Debugger.Break being called on their design surfaces.  Badness will happen.
@@ -93,8 +93,8 @@ namespace Standard
         [Conditional("DEBUG")]
         public static void LazyAreEqual<T>(Func<T> expectedResult, Func<T> actualResult)
         {
-            Assert.IsNotNull(expectedResult);
-            Assert.IsNotNull(actualResult);
+            IsNotNull(expectedResult);
+            IsNotNull(actualResult);
 
             T actual = actualResult();
             T expected = expectedResult();
@@ -221,7 +221,7 @@ namespace Standard
         {
             if (!value.Equals(default(T)))
             {
-                Assert.Fail();
+                Fail();
             }
         }
 
@@ -230,7 +230,7 @@ namespace Standard
         {
             if (value.Equals(default(T)))
             {
-                Assert.Fail();
+                Fail();
             }
         }
 

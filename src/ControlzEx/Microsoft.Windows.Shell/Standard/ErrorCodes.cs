@@ -1,5 +1,5 @@
 #pragma warning disable 1591, 618
-namespace Standard
+namespace ControlzEx.Standard
 {
     using System;
     using System.ComponentModel;
@@ -11,7 +11,7 @@ namespace Standard
     /// <summary>
     /// Wrapper for common Win32 status codes.
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Explicit)]
     public struct Win32Error
     {

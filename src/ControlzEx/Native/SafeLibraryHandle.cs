@@ -6,7 +6,7 @@ namespace ControlzEx.Native
     using System;
 
     [SecurityPermission(SecurityAction.LinkDemand, UnmanagedCode = true)]
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public sealed class SafeLibraryHandle : SafeHandleZeroOrMinusOneIsInvalid
     {
         private SafeLibraryHandle() : base(true) 

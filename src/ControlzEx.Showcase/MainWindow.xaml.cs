@@ -7,13 +7,18 @@
     using ControlzEx.Native;
     using Standard;
 #pragma warning disable 618
-    using SystemCommands = Microsoft.Windows.Shell.SystemCommands;
+    using SystemCommands = ControlzEx.Windows.Shell.SystemCommands;
 #pragma warning restore 618
 
     public partial class MainWindow
     {
         public MainWindow()
         {
+            //this.ShowActivated = false;
+            //this.MaxWidth = 1000;
+            //this.MaxHeight = 700;
+            //this.SizeToContent = SizeToContent.WidthAndHeight;
+
             this.InitializeComponent();
         }
 

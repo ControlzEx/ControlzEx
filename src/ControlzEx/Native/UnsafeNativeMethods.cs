@@ -11,7 +11,7 @@ namespace ControlzEx.Native
 
     /// <devdoc>http://msdn.microsoft.com/en-us/library/ms182161.aspx</devdoc>
     [SuppressUnmanagedCodeSecurity]
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public static class UnsafeNativeMethods
     {
         /// <devdoc>http://msdn.microsoft.com/en-us/library/windows/desktop/ms633572%28v=vs.85%29.aspx</devdoc>
@@ -79,7 +79,7 @@ namespace ControlzEx.Native
         /// </returns>
         [DllImport("user32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool SetWindowPlacement(IntPtr hWnd, [In] ref WINDOWPLACEMENT lpwndpl);
+        public static extern bool SetWindowPlacement(IntPtr hWnd, [In] ref WINDOWPLACEMENT lpwndpl);
 
         /// <summary>
         /// Retrieves the show state and the restored, minimized, and maximized positions of the specified window.
@@ -101,7 +101,7 @@ namespace ControlzEx.Native
         /// </returns>
         [DllImport("user32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool GetWindowPlacement(IntPtr hWnd, ref WINDOWPLACEMENT lpwndpl);
+        public static extern bool GetWindowPlacement(IntPtr hWnd, ref WINDOWPLACEMENT lpwndpl);
 
         [DllImportAttribute("user32.dll")]
         public static extern bool ReleaseCapture();
@@ -116,7 +116,7 @@ namespace ControlzEx.Native
 
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+        public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("user32.dll", SetLastError = true)]
@@ -130,6 +130,6 @@ namespace ControlzEx.Native
         internal static extern int MapVirtualKey(uint uCode, uint uMapType);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        internal static extern int GetKeyNameText(int lParam, [MarshalAs(UnmanagedType.LPWStr), Out] StringBuilder str, int size);
+        public static extern int GetKeyNameText(int lParam, [MarshalAs(UnmanagedType.LPWStr), Out] StringBuilder str, int size);
     }
 }

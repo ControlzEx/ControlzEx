@@ -3,12 +3,11 @@
     Copyright Microsoft Corporation. All Rights Reserved.
 \**************************************************************************/
 
-namespace Microsoft.Windows.Shell
+namespace ControlzEx.Windows.Shell
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
-    using System.Reflection;
     using System.Runtime.InteropServices;
     using System.Security;
     using System.Security.Permissions;
@@ -16,9 +15,7 @@ namespace Microsoft.Windows.Shell
     using System.Windows.Interop;
     using System.Windows.Media;
     using System.Windows.Threading;
-    using ControlzEx;
-    using Standard;
-
+    using ControlzEx.Standard;
     using HANDLE_MESSAGE = System.Collections.Generic.KeyValuePair<Standard.WM, Standard.MessageHandler>;
 
     internal class WindowChromeWorker : DependencyObject

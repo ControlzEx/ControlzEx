@@ -1,4 +1,4 @@
-﻿namespace Standard
+﻿namespace ControlzEx.Standard
 {
     using System.Diagnostics.CodeAnalysis;
 

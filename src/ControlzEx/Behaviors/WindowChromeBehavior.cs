@@ -6,7 +6,7 @@ using System.Security;
 using System.Windows;
 using System.Windows.Interactivity;
 using System.Windows.Interop;
-using Microsoft.Windows.Shell;
+using ControlzEx.Windows.Shell;
 
 namespace ControlzEx.Behaviors
 {
@@ -82,7 +82,7 @@ namespace ControlzEx.Behaviors
 
         private static bool IsWindows10OrHigher()
         {
-            var version = Standard.NtDll.RtlGetVersion();
+            var version = NtDll.RtlGetVersion();
             if (default(Version) == version)
             {
                 // Snippet from Koopakiller https://dotnet-snippets.de/snippet/os-version-name-mit-wmi/4929
@@ -167,7 +167,7 @@ namespace ControlzEx.Behaviors
 #if NET45 || NET462
             return SystemParameters.WindowResizeBorderThickness;
 #else
-            return Microsoft.Windows.Shell.SystemParameters2.Current.WindowResizeBorderThickness;
+            return SystemParameters2.Current.WindowResizeBorderThickness;
 #endif
         }
 
@@ -275,7 +275,7 @@ namespace ControlzEx.Behaviors
                 case (int)WM.WINDOWPOSCHANGING:
                     {
                         var pos = (WINDOWPOS)System.Runtime.InteropServices.Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
-                        if ((pos.flags & Standard.SWP.NOMOVE) != 0)
+                        if ((pos.flags & SWP.NOMOVE) != 0)
                         {
                             return IntPtr.Zero;
                         }
@@ -348,7 +348,7 @@ namespace ControlzEx.Behaviors
                             this.ActivateTaskbarFix(monitor);
                         }
 
-                        NativeMethods.SetWindowPos(this.handle, new IntPtr(-2), x, y, cx, cy, SWP.SHOWWINDOW);
+                        NativeMethods.SetWindowPos(this.handle, Constants.HWND_NOTOPMOST, x, y, cx, cy, SWP.SHOWWINDOW);
                     }
                 }
             }
@@ -447,7 +447,7 @@ namespace ControlzEx.Behaviors
                             {
                                 flags |= SWP.NOACTIVATE;
                             }
-                            NativeMethods.SetWindowPos(this.handle, new IntPtr(-2), rect.Left, rect.Top, rect.Width, rect.Height, flags);
+                            NativeMethods.SetWindowPos(this.handle, Constants.HWND_NOTOPMOST, rect.Left, rect.Top, rect.Width, rect.Height, flags);
                         }
                     });
             }

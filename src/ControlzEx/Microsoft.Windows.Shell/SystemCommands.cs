@@ -1,5 +1,5 @@
 ﻿#pragma warning disable 1591, 618
-namespace Microsoft.Windows.Shell
+namespace ControlzEx.Windows.Shell
 {
     using System;
     using System.Windows;
@@ -8,7 +8,7 @@ namespace Microsoft.Windows.Shell
     using ControlzEx.Native;
     using Standard;
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public static class SystemCommands
     {
         public static RoutedCommand CloseWindowCommand { get; private set; }
