@@ -356,12 +356,11 @@ namespace ControlzEx.Behaviors
             {
                 // #2694 make sure the window is not on top after restoring window
                 // this issue was introduced after fixing the windows 10 bug with the taskbar and a maximized window that ignores the taskbar
-                if (GetHandleTaskbar(this.AssociatedObject) != IntPtr.Zero
+                var handleTaskbar = GetHandleTaskbar(this.AssociatedObject);
+                if (handleTaskbar != IntPtr.Zero
                     && this.isWindwos10OrHigher)
                 {
-                    var monitor = UnsafeNativeMethods.MonitorFromWindow(this.handle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
-
-                    this.DeactivateTaskbarFix(monitor);
+                    this.DeactivateTaskbarFix(handleTaskbar);
                 }
             }
 
