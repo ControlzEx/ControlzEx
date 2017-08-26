@@ -95,7 +95,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ControlzEx\ControlzEx.NET4.csproj">
-      <Project>{782510c1-bd4b-4137-97de-a8b26154ffbf}</Project>
+      <Project>{cba7a977-88f5-4e19-b802-6e63ac3fa548}</Project>
       <Name>ControlzEx.NET4</Name>
     </ProjectReference>
   </ItemGroup>
