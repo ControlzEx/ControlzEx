@@ -18,7 +18,7 @@ namespace ControlzEx
     /// 
     /// Complete implementation can be found here: http://agsmith.wordpress.com/2008/04/07/propertydescriptor-addvaluechanged-alternative/
     /// </summary>
-    internal sealed class PropertyChangeNotifier : DependencyObject, IDisposable
+    public sealed class PropertyChangeNotifier : DependencyObject, IDisposable
     {
         private WeakReference _propertySource;
 
