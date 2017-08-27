@@ -504,6 +504,9 @@ namespace ControlzEx.Behaviors
             this.topMostChangeNotifier.RaiseValueChanged = raiseValueChanged;
         }
 
+        /// <summary>
+        /// This fix is needed because style triggers don't work if someone sets the value locally/directly on the window.
+        /// </summary>
         private void HandleBorderAndResizeBorderThicknessDuringMaximize()
         {
             this.borderThicknessChangeNotifier.RaiseValueChanged = false;
