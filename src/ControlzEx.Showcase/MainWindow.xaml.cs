@@ -5,7 +5,7 @@
     using System.Windows;
     using System.Windows.Input;
     using ControlzEx.Native;
-    using Standard;
+    using ControlzEx.Standard;
 #pragma warning disable 618
     using SystemCommands = ControlzEx.Windows.Shell.SystemCommands;
 #pragma warning restore 618

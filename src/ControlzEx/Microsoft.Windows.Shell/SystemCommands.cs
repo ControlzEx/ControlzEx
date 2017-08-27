@@ -6,7 +6,7 @@ namespace ControlzEx.Windows.Shell
     using System.Windows.Input;
     using System.Windows.Interop;
     using ControlzEx.Native;
-    using Standard;
+    using ControlzEx.Standard;
 
     [Obsolete(DesignerConstants.Win32ElementWarning)]
     public static class SystemCommands

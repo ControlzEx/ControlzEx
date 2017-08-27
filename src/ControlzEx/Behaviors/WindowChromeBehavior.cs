@@ -1,22 +1,21 @@
 ﻿#pragma warning disable 618
-using System;
-using System.Linq;
-using System.Management;
-using System.Security;
-using System.Windows;
-using System.Windows.Interactivity;
-using System.Windows.Interop;
-using ControlzEx.Windows.Shell;
-
 namespace ControlzEx.Behaviors
 {
+    using System;
+    using System.Linq;
+    using System.Management;
+    using System.Windows;
+    using System.Windows.Controls;
     using System.Windows.Data;
+    using System.Windows.Interactivity;
+    using System.Windows.Interop;
     using System.Windows.Media;
     using System.Windows.Threading;
     using ControlzEx;
     using ControlzEx.Native;
-    using JetBrains.Annotations;
-    using Standard;
+    using ControlzEx.Standard;
+    using ControlzEx.Windows.Shell;
+    using JetBrains.Annotations;    
 
     /// <summary>
     /// With this class we can make custom window styles.

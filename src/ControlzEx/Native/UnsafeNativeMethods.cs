@@ -7,7 +7,7 @@ using System.Text;
 
 namespace ControlzEx.Native
 {
-    using Standard;
+    using ControlzEx.Standard;
 
     /// <devdoc>http://msdn.microsoft.com/en-us/library/ms182161.aspx</devdoc>
     [SuppressUnmanagedCodeSecurity]

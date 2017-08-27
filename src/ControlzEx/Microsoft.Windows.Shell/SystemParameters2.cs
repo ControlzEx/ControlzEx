@@ -14,7 +14,7 @@ namespace ControlzEx.Windows.Shell
     using System.Security;
     using System.Windows;
     using System.Windows.Media;
-    using Standard;
+    using ControlzEx.Standard;
 
     [SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable")]
     internal class SystemParameters2 : INotifyPropertyChanged

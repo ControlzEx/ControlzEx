@@ -7,7 +7,7 @@ using System.Windows.Input;
 
 namespace ControlzEx
 {
-    using Standard;
+    using ControlzEx.Standard;
 
     public static class ToolTipAssist
     {

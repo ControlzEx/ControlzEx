@@ -11,7 +11,7 @@ namespace ControlzEx.Windows.Shell
     using System.Windows;
     using System.Windows.Data;
     using ControlzEx;
-    using Standard;
+    using ControlzEx.Standard;
 
     public enum ResizeGripDirection
     {
