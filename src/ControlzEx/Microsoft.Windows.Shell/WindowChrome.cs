@@ -264,18 +264,6 @@ namespace ControlzEx.Windows.Shell
             set { SetValue(IgnoreTaskbarOnMaximizeProperty, value); }
         }
 
-        public static readonly DependencyProperty UseNoneWindowStyleProperty = DependencyProperty.Register(
-            "UseNoneWindowStyle",
-            typeof(bool),
-            typeof(WindowChrome),
-            new FrameworkPropertyMetadata(false, (d, e) => ((WindowChrome)d)._OnPropertyChangedThatRequiresRepaint()));
-
-        public bool UseNoneWindowStyle
-        {
-            get { return (bool)GetValue(UseNoneWindowStyleProperty); }
-            set { SetValue(UseNoneWindowStyleProperty, value); }
-        }
-
         public static readonly DependencyProperty CornerRadiusProperty = DependencyProperty.Register(
             "CornerRadius",
             typeof(CornerRadius),
