@@ -62,7 +62,7 @@
         private void TitleBarGrid_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
 #pragma warning disable 618
-            SystemCommands.ShowSystemMenu(this, e);
+            ControlzEx.Windows.Shell.SystemCommands.ShowSystemMenu(this, e);
 #pragma warning restore 618
         }
     }
