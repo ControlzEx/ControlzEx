@@ -3411,12 +3411,12 @@ namespace ControlzEx.Standard
 
         public static WS SetWindowStyle(IntPtr hWnd, WS dwNewLong)
         {
-            return (WS)SetWindowLongPtr(hWnd, GWL.STYLE, (IntPtr)dwNewLong);
+            return (WS)SetWindowLongPtr(hWnd, GWL.STYLE, (IntPtr)(int)dwNewLong);
         }
 
         public static WS_EX SetWindowStyleEx(IntPtr hWnd, WS_EX dwNewLong)
         {
-            return (WS_EX)SetWindowLongPtr(hWnd, GWL.EXSTYLE, (IntPtr)dwNewLong);
+            return (WS_EX)SetWindowLongPtr(hWnd, GWL.EXSTYLE, (IntPtr)(int)dwNewLong);
         }
 
         // This is aliased as a macro in 32bit Windows.
@@ -3430,7 +3430,7 @@ namespace ControlzEx.Standard
             }
             else
             {
-                ret = new IntPtr(GetWindowLongPtr32(hwnd, nIndex));
+                ret = GetWindowLongPtr32(hwnd, nIndex);
             }
             if (IntPtr.Zero == ret)
             {
@@ -3496,7 +3496,7 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Interoperability", "CA1400:PInvokeEntryPointsShouldExist")]
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("user32.dll", EntryPoint = "GetWindowLong", SetLastError = true)]
-        private static extern int GetWindowLongPtr32(IntPtr hWnd, GWL nIndex);
+        private static extern IntPtr GetWindowLongPtr32(IntPtr hWnd, GWL nIndex);
 
         [SuppressMessage("Microsoft.Interoperability", "CA1400:PInvokeEntryPointsShouldExist")]
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
