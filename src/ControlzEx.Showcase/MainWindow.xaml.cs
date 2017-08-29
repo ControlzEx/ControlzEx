@@ -6,9 +6,6 @@
     using System.Windows.Input;
     using ControlzEx.Native;
     using ControlzEx.Standard;
-#pragma warning disable 618
-    using SystemCommands = ControlzEx.Windows.Shell.SystemCommands;
-#pragma warning restore 618
 
     public partial class MainWindow
     {
@@ -48,9 +45,17 @@
                      && this.ResizeMode != ResizeMode.NoResize)
             {
                 e.Handled = true;
-                this.WindowState = this.WindowState == WindowState.Maximized
-                                         ? WindowState.Normal
-                                         : WindowState.Maximized;
+
+#pragma warning disable 618
+                if (this.WindowState == WindowState.Normal)
+                {
+                    ControlzEx.Windows.Shell.SystemCommands.MaximizeWindow(this);
+                }
+                else
+                {
+                    ControlzEx.Windows.Shell.SystemCommands.RestoreWindow(this);
+                }
+#pragma warning restore 618
             }
         }
 
