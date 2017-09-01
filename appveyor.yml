@@ -9,7 +9,7 @@
   environment:
     semver: 3.0.1
 
-  version: $($env:semver)-dev{build}
+  version: '%semver%-dev{build}'
   configuration: Release
 
   init:
