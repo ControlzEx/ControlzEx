@@ -1,9 +1,10 @@
+#pragma warning disable 1591, 618
 // This file contains general utilities to aid in development.
 // Classes here generally shouldn't be exposed publicly since
 // they're not particular to any library functionality.
 // Because the classes here are internal, it's likely this file
 // might be included in multiple assemblies.
-namespace Standard
+namespace ControlzEx.Standard
 {
     using System;
     using System.Collections.Generic;
@@ -124,6 +125,16 @@ namespace Standard
                     (sb, b) => sb.Append(b.ToString("x2", CultureInfo.InvariantCulture))).ToString();
                 return signature;
             }
+        }
+
+        // See: http://stackoverflow.com/questions/7913325/win-api-in-c-get-hi-and-low-word-from-intptr/7913393#7913393
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        public static System.Windows.Point GetPoint(IntPtr ptr)
+        {
+            var xy = unchecked(Environment.Is64BitProcess ? (uint)ptr.ToInt64() : (uint)ptr.ToInt32());
+            var x = unchecked((short)xy);
+            var y = unchecked((short)(xy >> 16));
+            return new System.Windows.Point(x, y);
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]

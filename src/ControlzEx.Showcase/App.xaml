@@ -9,30 +9,56 @@
                    x:Key="{x:Type local:WindowChromeWindow}">
                 <Setter Property="ResizeBorderThickness"
                         Value="8" />
+                <Setter Property="BorderThickness"
+                        Value="1" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type local:WindowChromeWindow}">
+                            <Border Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}">
+                                <Grid>
+                                    <AdornerDecorator>
+                                        <ContentPresenter/>
+                                    </AdornerDecorator>
+
+                                    <ResizeGrip x:Name="WindowResizeGrip"
+                                                HorizontalAlignment="Right"
+                                                VerticalAlignment="Bottom"
+                                                Visibility="Collapsed"
+                                                IsTabStop="false"/>
+                                </Grid>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="Window.ResizeMode"
+                                                   Value="CanResizeWithGrip"/>
+                                        <Condition Property="Window.WindowState"
+                                                   Value="Normal"/>
+                                    </MultiTrigger.Conditions>
+                                    <Setter TargetName="WindowResizeGrip"
+                                            Property="Visibility"
+                                            Value="Visible"/>
+                                </MultiTrigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
                 <Style.Triggers>
                     <Trigger Property="WindowState"
                              Value="Maximized">
                         <Setter Property="Margin"
                                 Value="0" />
-                        <Setter Property="ResizeBorderThickness"
+                    </Trigger>
+                    <!-- #1823 try to fix another nasty issue
+                         WindowState = Maximized
+                         ResizeMode = NoResize-->
+                    <Trigger Property="ResizeMode"
+                             Value="NoResize">
+                        <Setter Property="Margin"
                                 Value="0" />
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-
-            <Style TargetType="{x:Type local:WindowChromeWindow}"
-                   x:Key="SingleBorderWindowStyle"
-                   BasedOn="{StaticResource {x:Type local:WindowChromeWindow}}">
-                <Setter Property="WindowStyle"
-                        Value="SingleBorderWindow" />
-                <Setter Property="GlassFrameThickness"
-                        Value="0,27,0,0" />
-                <Style.Triggers>
-                    <Trigger Property="WindowState"
-                             Value="Maximized">
-                        <Setter Property="GlassFrameThickness"
-                                Value="0,31,0,0" />
-                    </Trigger>
+                    </Trigger>                    
                 </Style.Triggers>
             </Style>
 

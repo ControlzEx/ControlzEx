@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Data;
 
-namespace ControlzEx.Helper
+namespace ControlzEx
 {
     /// <summary>
     /// AddValueChanged of dependency property descriptor results in memory leak as you already know.
@@ -18,7 +18,7 @@ namespace ControlzEx.Helper
     /// 
     /// Complete implementation can be found here: http://agsmith.wordpress.com/2008/04/07/propertydescriptor-addvaluechanged-alternative/
     /// </summary>
-    internal sealed class PropertyChangeNotifier : DependencyObject, IDisposable
+    public sealed class PropertyChangeNotifier : DependencyObject, IDisposable
     {
         private WeakReference _propertySource;
 
@@ -59,7 +59,9 @@ namespace ControlzEx.Helper
                     // note, it is possible that accessing the target property
                     // will result in an exception so i’ve wrapped this check
                     // in a try catch
-                    return this._propertySource.IsAlive ? this._propertySource.Target as DependencyObject : null;
+                    return this._propertySource.IsAlive
+                        ? this._propertySource.Target as DependencyObject
+                        : null;
                 }
                 catch
                 {
@@ -72,7 +74,8 @@ namespace ControlzEx.Helper
         /// Identifies the <see cref="Value"/> dependency property
         /// </summary>
         public static readonly DependencyProperty ValueProperty
-            = DependencyProperty.Register(nameof(Value), typeof(object), typeof(PropertyChangeNotifier), new FrameworkPropertyMetadata(null, OnPropertyChanged));
+            = DependencyProperty.Register("Value", typeof(object), typeof(PropertyChangeNotifier),
+                                          new FrameworkPropertyMetadata(null, new PropertyChangedCallback(OnPropertyChanged)));
 
         /// <summary>
         /// Returns/sets the value of the property
@@ -90,10 +93,15 @@ namespace ControlzEx.Helper
         private static void OnPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var notifier = (PropertyChangeNotifier)d;
-            notifier.ValueChanged?.Invoke(notifier.PropertySource, EventArgs.Empty);
+            if (notifier.RaiseValueChanged)
+            {
+                notifier.ValueChanged?.Invoke(notifier.PropertySource, EventArgs.Empty);
+            }
         }
 
         public event EventHandler ValueChanged;
+
+        public bool RaiseValueChanged { get; set; } = true;
 
         public void Dispose()
         {

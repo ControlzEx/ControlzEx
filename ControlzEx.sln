@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlzEx.NET4", "src\ControlzEx\ControlzEx.NET4.csproj", "{CBA7A977-88F5-4E19-B802-6E63AC3FA548}"
 EndProject
@@ -17,6 +17,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlzEx.Showcase.NET45", "src\ControlzEx.Showcase\ControlzEx.Showcase.NET45.csproj", "{C1697AD3-8A69-4DDB-83A5-E8C845A0583C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlzEx.NET462", "src\ControlzEx\ControlzEx.NET462.csproj", "{3BDDBF18-DF41-4DB3-BE63-F313BBDFF2E3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlzEx.Showcase.NET462", "src\ControlzEx.Showcase\ControlzEx.Showcase.NET462.csproj", "{40FA14A4-6A86-49C8-B534-88B1912CA4A0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlzEx.Showcase.NET40", "src\ControlzEx.Showcase\ControlzEx.Showcase.NET40.csproj", "{A045687A-FA63-48A7-845F-F003EB512BE5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,6 +42,18 @@ Global
 		{C1697AD3-8A69-4DDB-83A5-E8C845A0583C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1697AD3-8A69-4DDB-83A5-E8C845A0583C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1697AD3-8A69-4DDB-83A5-E8C845A0583C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BDDBF18-DF41-4DB3-BE63-F313BBDFF2E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BDDBF18-DF41-4DB3-BE63-F313BBDFF2E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BDDBF18-DF41-4DB3-BE63-F313BBDFF2E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BDDBF18-DF41-4DB3-BE63-F313BBDFF2E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40FA14A4-6A86-49C8-B534-88B1912CA4A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40FA14A4-6A86-49C8-B534-88B1912CA4A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40FA14A4-6A86-49C8-B534-88B1912CA4A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40FA14A4-6A86-49C8-B534-88B1912CA4A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A045687A-FA63-48A7-845F-F003EB512BE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A045687A-FA63-48A7-845F-F003EB512BE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A045687A-FA63-48A7-845F-F003EB512BE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A045687A-FA63-48A7-845F-F003EB512BE5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

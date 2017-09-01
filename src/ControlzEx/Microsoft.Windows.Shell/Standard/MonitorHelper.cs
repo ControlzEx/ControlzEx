@@ -1,12 +1,12 @@
-﻿using System;
-using Standard;
-
-namespace ControlzEx.Helper
+﻿#pragma warning disable 1591, 618
+namespace ControlzEx.Standard
 {
-    public static class MonitorHelper
+    using System;
+
+    internal static class MonitorHelper
     {
         /// <summary>
-        /// Gets the monitor information from the current cursor position.
+        ///     Gets the monitor information from the current cursor position.
         /// </summary>
         /// <returns></returns>
         public static MONITORINFO GetMonitorInfoFromPoint()
@@ -15,7 +15,7 @@ namespace ControlzEx.Helper
             var monitor = NativeMethods.MonitorFromPoint(cursorPos, MonitorOptions.MONITOR_DEFAULTTONEAREST);
             if (monitor != IntPtr.Zero)
             {
-                MONITORINFO monitorInfo = NativeMethods.GetMonitorInfo(monitor);
+                var monitorInfo = NativeMethods.GetMonitorInfo(monitor);
                 return monitorInfo;
             }
             return new MONITORINFO();

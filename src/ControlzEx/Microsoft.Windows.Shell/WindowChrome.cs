@@ -1,16 +1,17 @@
 ﻿/**************************************************************************\
     Copyright Microsoft Corporation. All Rights Reserved.
 \**************************************************************************/
-
-#pragma warning disable 1570,1591
-namespace ControlzEx.Microsoft.Windows.Shell
+#pragma warning disable 1591, 618
+namespace ControlzEx.Windows.Shell
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.Diagnostics.CodeAnalysis;
     using System.Windows;
     using System.Windows.Data;
-    using Standard;
+    using ControlzEx;
+    using ControlzEx.Standard;
 
     public enum ResizeGripDirection
     {
@@ -27,13 +28,19 @@ namespace ControlzEx.Microsoft.Windows.Shell
     }
 
     [Flags]
-    public enum NonClientFrameEdges
+    public enum SacrificialEdge
     {
         None = 0,
         Left = 1,
         Top = 2,
         Right = 4,
         Bottom = 8,
+
+        Office = Left | Right | Bottom,
+
+        // Don't use "All" - Handling WM_NCCALCSIZE with a client rect shrunk in all directions implicitly creates a 
+        // normal sized caption area that doesn't actually properly participate with the rest of the implementation...
+        // All = Left | Top | Right | Bottom,
     }
 
     public class WindowChrome : Freezable
@@ -74,7 +81,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
             // Update the ChromeWorker with this new object.
 
             // If there isn't currently a worker associated with the Window then assign a new one.
-            // There can be a many:1 relationship of to Window to WindowChrome objects, but a 1:1 for a Window and a WindowChromeWorker.
+            // There can be a many:1 relationship of Window to WindowChrome objects, but a 1:1 for a Window and a WindowChromeWorker.
             WindowChromeWorker chromeWorker = WindowChromeWorker.GetWindowChromeWorker(window);
             if (chromeWorker == null)
             {
@@ -85,6 +92,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
             chromeWorker.SetWindowChrome(newChrome);
         }
 
+        [Category(DesignerConstants.LibraryName)]
         [SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
         [SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
         public static WindowChrome GetWindowChrome(Window window)
@@ -107,6 +115,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
             typeof(WindowChrome),
             new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.Inherits));
 
+        [Category(DesignerConstants.LibraryName)]
         [SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
         [SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
         public static bool GetIsHitTestVisibleInChrome(IInputElement inputElement)
@@ -139,6 +148,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
             typeof(WindowChrome),
             new FrameworkPropertyMetadata(ResizeGripDirection.None, FrameworkPropertyMetadataOptions.Inherits));
 
+        [Category(DesignerConstants.LibraryName)]
         [SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
         [SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
         public static ResizeGripDirection GetResizeGripDirection(IInputElement inputElement)
@@ -237,12 +247,17 @@ namespace ControlzEx.Microsoft.Windows.Shell
             set { SetValue(UseAeroCaptionButtonsProperty, value); }
         }
 
+        /// <summary>Dependency property for IgnoreTaskbarOnMaximize</summary>
         public static readonly DependencyProperty IgnoreTaskbarOnMaximizeProperty = DependencyProperty.Register(
             "IgnoreTaskbarOnMaximize",
             typeof(bool),
             typeof(WindowChrome),
             new FrameworkPropertyMetadata(false, (d, e) => ((WindowChrome)d)._OnPropertyChangedThatRequiresRepaint()));
 
+        /// <summary>
+        /// If this property is true and the attached window's WindowStyle=None then when the window is maximized it will cover the entire
+        /// monitor, including the taskbar.
+        /// </summary>
         public bool IgnoreTaskbarOnMaximize
         {
             get { return (bool)GetValue(IgnoreTaskbarOnMaximizeProperty); }
@@ -264,53 +279,53 @@ namespace ControlzEx.Microsoft.Windows.Shell
             set { SetValue(CornerRadiusProperty, value); }
         }
 
-        public static readonly DependencyProperty NonClientFrameEdgesProperty = DependencyProperty.Register(
-            "NonClientFrameEdges",
-            typeof(NonClientFrameEdges),
+        public static readonly DependencyProperty SacrificialEdgeProperty = DependencyProperty.Register(
+            "SacrificialEdge",
+            typeof(SacrificialEdge),
             typeof(WindowChrome),
             new PropertyMetadata(
-                NonClientFrameEdges.None,
+                SacrificialEdge.None,
                 (d, e) => ((WindowChrome)d)._OnPropertyChangedThatRequiresRepaint()),
-            _NonClientFrameEdgesAreValid);
+                _IsValidSacrificialEdge);
 
-        private static readonly NonClientFrameEdges NonClientFrameEdges_All = NonClientFrameEdges.Left | NonClientFrameEdges.Top | NonClientFrameEdges.Right | NonClientFrameEdges.Bottom;
+        private static readonly SacrificialEdge SacrificialEdge_All = SacrificialEdge.Bottom | SacrificialEdge.Top | SacrificialEdge.Left | SacrificialEdge.Right;
 
-        private static bool _NonClientFrameEdgesAreValid(object value)
+        private static bool _IsValidSacrificialEdge(object value)
         {
-            NonClientFrameEdges ncEdges = NonClientFrameEdges.None;
+            SacrificialEdge se = SacrificialEdge.None;
             try
             {
-                ncEdges = (NonClientFrameEdges)value;
+                se = (SacrificialEdge)value;
             }
             catch (InvalidCastException)
             {
                 return false;
             }
 
-            if (ncEdges == NonClientFrameEdges.None)
+            if (se == SacrificialEdge.None)
             {
                 return true;
             }
 
             // Does this only contain valid bits?
-            if ((ncEdges | NonClientFrameEdges_All) != NonClientFrameEdges_All)
+            if ((se | SacrificialEdge_All) != SacrificialEdge_All)
             {
                 return false;
             }
 
             // It can't sacrifice all 4 edges.  Weird things happen.
-            if (ncEdges == NonClientFrameEdges_All)
+            if (se == SacrificialEdge_All)
             {
                 return false;
             }
 
-            return true;
+            return true; 
         }
 
-        public NonClientFrameEdges NonClientFrameEdges
+        public SacrificialEdge SacrificialEdge
         {
-            get { return (NonClientFrameEdges)GetValue(NonClientFrameEdgesProperty); }
-            set { SetValue(NonClientFrameEdgesProperty, value); }
+            get { return (SacrificialEdge)GetValue(SacrificialEdgeProperty); }
+            set { SetValue(SacrificialEdgeProperty, value); }
         }
 
         #endregion
@@ -344,7 +359,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
                     bp.DependencyProperty,
                     new Binding
                     {
-#if NET45
+#if NET45 || NET462
                         Path = new PropertyPath("(SystemParameters." + bp.SystemParameterPropertyName + ")"),
 #else
                         Source = SystemParameters2.Current,
@@ -356,7 +371,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
             }
         }
 
-        internal void _OnPropertyChangedThatRequiresRepaint()
+        private void _OnPropertyChangedThatRequiresRepaint()
         {
             var handler = PropertyChangedThatRequiresRepaint;
             if (handler != null)

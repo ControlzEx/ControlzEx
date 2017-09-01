@@ -5,7 +5,7 @@
 // in case a separate ReadonlyStream needs to be implemented.
 //#define FEATURE_MUTABLE_COM_STREAMS
 
-namespace Standard
+namespace ControlzEx.Standard
 {
     using System;
     using System.Diagnostics.CodeAnalysis;

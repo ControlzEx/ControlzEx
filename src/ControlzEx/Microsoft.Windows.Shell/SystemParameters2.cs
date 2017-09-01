@@ -1,22 +1,23 @@
-﻿/**************************************************************************\
+﻿#pragma warning disable 1591, 618
+/**************************************************************************\
     Copyright Microsoft Corporation. All Rights Reserved.
 \**************************************************************************/
 
-#pragma warning disable 1591
-
-namespace ControlzEx.Microsoft.Windows.Shell
+namespace ControlzEx.Windows.Shell
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Diagnostics.CodeAnalysis;
     using System.Runtime.InteropServices;
+    using System.Security;
     using System.Windows;
     using System.Windows.Media;
-    using Standard;
+    using ControlzEx.Standard;
 
     [SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable")]
-    public class SystemParameters2 : INotifyPropertyChanged
+    internal class SystemParameters2 : INotifyPropertyChanged
     {
         private delegate void _SystemMetricUpdate(IntPtr wParam, IntPtr lParam);
 
@@ -86,7 +87,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
         private void _InitializeCaptionHeight()
         {
             Point ptCaption = new Point(0, NativeMethods.GetSystemMetrics(SM.CYCAPTION));
-            WindowCaptionHeight = DpiHelper.DevicePixelsToLogical(ptCaption).Y;
+            WindowCaptionHeight = DpiHelper.DevicePixelsToLogical(ptCaption, SystemParameters2.DpiX / 96.0, SystemParameters2.Dpi / 96.0).Y;
         }
 
         private void _UpdateCaptionHeight(IntPtr wParam, IntPtr lParam)
@@ -99,7 +100,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
             Size frameSize = new Size(
                 NativeMethods.GetSystemMetrics(SM.CXSIZEFRAME),
                 NativeMethods.GetSystemMetrics(SM.CYSIZEFRAME));
-            Size frameSizeInDips = DpiHelper.DeviceSizeToLogical(frameSize);
+            Size frameSizeInDips = DpiHelper.DeviceSizeToLogical(frameSize, SystemParameters2.DpiX / 96.0, SystemParameters2.Dpi / 96.0);
             WindowResizeBorderThickness = new Thickness(frameSizeInDips.Width, frameSizeInDips.Height, frameSizeInDips.Width, frameSizeInDips.Height);
         }
 
@@ -113,9 +114,9 @@ namespace ControlzEx.Microsoft.Windows.Shell
             Size frameSize = new Size(
                 NativeMethods.GetSystemMetrics(SM.CXSIZEFRAME),
                 NativeMethods.GetSystemMetrics(SM.CYSIZEFRAME));
-            Size frameSizeInDips = DpiHelper.DeviceSizeToLogical(frameSize);
+            Size frameSizeInDips = DpiHelper.DeviceSizeToLogical(frameSize, SystemParameters2.DpiX / 96.0, SystemParameters2.Dpi / 96.0);
             int captionHeight = NativeMethods.GetSystemMetrics(SM.CYCAPTION);
-            double captionHeightInDips = DpiHelper.DevicePixelsToLogical(new Point(0, captionHeight)).Y;
+            double captionHeightInDips = DpiHelper.DevicePixelsToLogical(new Point(0, captionHeight), SystemParameters2.DpiX / 96.0, SystemParameters2.Dpi / 96.0).Y;
             WindowNonClientFrameThickness = new Thickness(frameSizeInDips.Width, frameSizeInDips.Height + captionHeightInDips, frameSizeInDips.Width, frameSizeInDips.Height);
         }
 
@@ -195,7 +196,7 @@ namespace ControlzEx.Microsoft.Windows.Shell
                 rcAllCaptionButtons.Width,
                 rcAllCaptionButtons.Height);
 
-            Rect logicalCaptionLocation = DpiHelper.DeviceRectToLogical(deviceCaptionLocation);
+            Rect logicalCaptionLocation = DpiHelper.DeviceRectToLogical(deviceCaptionLocation, SystemParameters2.DpiX / 96.0, SystemParameters2.Dpi / 96.0);
 
             WindowCaptionButtonsLocation = logicalCaptionLocation;
         }
@@ -552,6 +553,93 @@ namespace ControlzEx.Microsoft.Windows.Shell
                 }
             }
         }
+
+        #region Per monitor dpi support
+
+        private enum CacheSlot : int
+        {
+            DpiX,
+
+            NumSlots
+        }
+
+        private static int _dpi;
+        private static bool _dpiInitialized;
+        private static readonly object _dpiLock = new object();
+        private static bool _setDpiX = true;
+        private static BitArray _cacheValid = new BitArray((int)CacheSlot.NumSlots);
+        private static int _dpiX;
+
+        internal static int Dpi
+        {
+            [SecurityCritical, SecurityTreatAsSafe]
+            get
+            {
+                if (!_dpiInitialized)
+                {
+                    lock (_dpiLock)
+                    {
+                        if (!_dpiInitialized)
+                        {
+                            using (var dc = SafeDC.GetDesktop())
+                            {
+                                if (dc.DangerousGetHandle() == IntPtr.Zero)
+                                {
+                                    throw new Win32Exception();
+                                }
+
+                                _dpi = NativeMethods.GetDeviceCaps(dc, DeviceCap.LOGPIXELSY);
+                                _dpiInitialized = true;
+                            }
+                        }
+                    }
+                }
+                return _dpi;
+            }
+        }
+
+        ///<SecurityNote>
+        ///  Critical as this accesses Native methods.
+        ///  TreatAsSafe - it would be ok to expose this information - DPI in partial trust
+        ///</SecurityNote>
+        internal static int DpiX
+        {
+            [SecurityCritical, SecurityTreatAsSafe]
+            get
+            {
+                if (_setDpiX)
+                {
+                    lock (_cacheValid)
+                    {
+                        if (_setDpiX)
+                        {
+                            _setDpiX = false;
+
+                            // Win32Exception will get the Win32 error code so we don't have to
+#pragma warning disable 6523
+                            using (var dc = SafeDC.GetDesktop())
+                            {
+                                // Detecting error case from unmanaged call, required by PREsharp to throw a Win32Exception
+#pragma warning disable 6503
+                                if (dc.DangerousGetHandle() == IntPtr.Zero)
+                                {
+                                    throw new Win32Exception();
+                                }
+#pragma warning restore 6503
+#pragma warning restore 6523
+
+                                _dpiX = NativeMethods.GetDeviceCaps(dc, DeviceCap.LOGPIXELSX);
+                                _cacheValid[(int) CacheSlot.DpiX] = true;
+                            }
+                        }
+                    }
+                }
+
+                return _dpiX;
+            }
+        }
+
+        #endregion Per monitor dpi support
 
         #region INotifyPropertyChanged Members
 

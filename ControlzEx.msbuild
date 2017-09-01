@@ -13,15 +13,38 @@
     <MSBuild Projects="$(Root)/ControlzEx.sln" Properties="Configuration=$(Configuration);" />
   </Target>
 
+    <UsingTask
+        TaskName="GetFileVersion"
+        TaskFactory="CodeTaskFactory"
+        AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+
+        <ParameterGroup>
+            <AssemblyPath ParameterType="System.String" Required="true" />
+            <FileVersion ParameterType="System.String" Output="true" />
+        </ParameterGroup>
+        <Task>
+            <Using Namespace="System.Diagnostics" />
+            <Code Type="Fragment" Language="cs">
+                <![CDATA[
+        Log.LogMessage("Getting version details of assembly at: " + this.AssemblyPath, MessageImportance.High);
+
+        this.FileVersion = FileVersionInfo.GetVersionInfo(this.AssemblyPath).FileVersion;
+        
+        Log.LogMessage("Got FileVersion " + this.FileVersion + " for \"" + this.AssemblyPath + "\"", MessageImportance.High);
+        ]]>
+            </Code>
+        </Task>
+    </UsingTask>
+    
   <Target Name="ReadVersion" DependsOnTargets="Build">
     <!-- Read assembly version from the DLL -->
-    <GetAssemblyIdentity AssemblyFiles="$(Src)/bin/$(Configuration)/NET45//ControlzEx.dll">
-        <Output TaskParameter="Assemblies" ItemName="ControlzExAssembly"/>
-    </GetAssemblyIdentity>
+      <GetFileVersion AssemblyPath="$(Src)/bin/$(Configuration)/NET45//ControlzEx.dll">
+        <Output TaskParameter="FileVersion" PropertyName="FileVersion"/>
+    </GetFileVersion>
     <PropertyGroup>
         <!-- Construct NuGet package version according to SemVer -->
         <PrereleaseSuffix Condition="$(Prerelease) != ''">-$(Prerelease)</PrereleaseSuffix>
-        <Version>$([System.String]::new(%(ControlzExAssembly.Version)).TrimEnd('0').TrimEnd('.'))$(PrereleaseSuffix)</Version>
+        <Version Condition="$(Version) == ''">$([System.String]::new($(FileVersion)).TrimEnd('0').TrimEnd('.'))$(PrereleaseSuffix)</Version>
     </PropertyGroup>
   </Target>
 

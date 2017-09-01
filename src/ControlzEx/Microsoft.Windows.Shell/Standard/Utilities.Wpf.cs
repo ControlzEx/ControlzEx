@@ -1,16 +1,16 @@
+#pragma warning disable 1591, 618
 // This file contains general utilities to aid in development.
 // Classes here generally shouldn't be exposed publicly since
 // they're not particular to any library functionality.
 // Because the classes here are internal, it's likely this file
 // might be included in multiple assemblies.
-namespace Standard
+namespace ControlzEx.Standard
 {
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
-    using System.Linq;
     using System.Reflection;
     using System.Windows;
     using System.Windows.Media;
@@ -320,7 +320,7 @@ namespace Standard
                     }
                     finally
                     {
-                        Utility.SafeDisposeImage(ref bitmap);
+                        SafeDisposeImage(ref bitmap);
                     }
                 }
             }
