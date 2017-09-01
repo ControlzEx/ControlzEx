@@ -7,7 +7,7 @@
       - develop
 
   environment:
-    semver: 3.0.1
+    semver: 4.0.0
 
   version: '%semver%-dev{build}'
   configuration: Release
