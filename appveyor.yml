@@ -30,8 +30,8 @@
   assembly_info:
     patch: true
     file: src\GlobalAssemblyInfo.*
-    assembly_version: "$($env:semver).{build}"
-    assembly_file_version: "$($env:semver).{build}"
+    assembly_version: "%semver%.{build}"
+    assembly_file_version: "%semver%.{build}"
     assembly_informational_version: "{version}+Branch.$(APPVEYOR_REPO_BRANCH).Sha.$(APPVEYOR_REPO_COMMIT)"
   
   artifacts:
