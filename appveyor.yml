@@ -27,8 +27,9 @@
   assembly_info:
     patch: true
     file: src\GlobalAssemblyInfo.*
+    assembly_version: "{version}"
     assembly_file_version: "{version}"
-    assembly_informational_version: "{version}"
+    assembly_informational_version: "{version}+Branch.%%APPVEYOR_REPO_BRANCH%%.Sha.%%APPVEYOR_REPO_COMMIT%%"
   
   artifacts:
     - path: src/bin
@@ -41,7 +42,7 @@
     only:
       - master
 
-  version: 2.2.0.{build}
+  version: 3.0.1.{build}
   configuration: Release
   
   # Install scripts. (runs after repo cloning)
@@ -61,7 +62,7 @@
     file: src\GlobalAssemblyInfo.*
     assembly_version: "{version}"
     assembly_file_version: "{version}"
-    assembly_informational_version: "{version}"
+    assembly_informational_version: "{version}+Branch.%%APPVEYOR_REPO_BRANCH%%.Sha.%%APPVEYOR_REPO_COMMIT%%"
   
   artifacts:
     - path: src/bin
