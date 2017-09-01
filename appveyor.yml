@@ -6,8 +6,10 @@
     only:
       - develop
 
-  version: 3.0.1-dev{build}
-  assemblyversion: 3.0.1.{build}
+  environment:
+    semver: 3.0.1
+
+  version: $($env:semver)-dev{build}
   configuration: Release
 
   init:
@@ -28,8 +30,8 @@
   assembly_info:
     patch: true
     file: src\GlobalAssemblyInfo.*
-    assembly_version: "{assemblyversion}"
-    assembly_file_version: "{assemblyversion}"
+    assembly_version: "$($env:semver).{build}"
+    assembly_file_version: "$($env:semver).{build}"
     assembly_informational_version: "{version}+Branch.$(APPVEYOR_REPO_BRANCH).Sha.$(APPVEYOR_REPO_COMMIT)"
   
   artifacts:
