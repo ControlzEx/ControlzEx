@@ -61,6 +61,7 @@
     </Compile>
     <Compile Include="BadgedEx.cs" />
     <Compile Include="Behaviors\WindowChromeBehavior.cs" />
+    <Compile Include="Behaviors\WindowChromeBehavior.MessageHandling.cs" />
     <Compile Include="DesignerConstants.cs" />
     <Compile Include="KeyboardNavigationEx.cs" />
     <Compile Include="Microsoft.Windows.Shell\Standard\ComGuids.cs" />
@@ -81,7 +82,6 @@
     <Compile Include="Microsoft.Windows.Shell\SystemCommands.cs" />
     <Compile Include="Microsoft.Windows.Shell\SystemParameters2.cs" />
     <Compile Include="Microsoft.Windows.Shell\WindowChrome.cs" />
-    <Compile Include="Microsoft.Windows.Shell\WindowChromeWorker.cs" />
     <Compile Include="Native\Constants.cs" />
     <Compile Include="Native\MONITORINFO.cs" />
     <Compile Include="Native\SafeLibraryHandle.cs" />

@@ -1,9 +1,5 @@
-﻿#pragma warning disable 1591, 618
-/**************************************************************************\
-    Copyright Microsoft Corporation. All Rights Reserved.
-\**************************************************************************/
-
-namespace ControlzEx.Windows.Shell
+﻿#pragma warning disable 618
+namespace ControlzEx.Behaviors
 {
     using System;
     using System.Collections.Generic;
@@ -12,40 +8,19 @@ namespace ControlzEx.Windows.Shell
     using System.Security;
     using System.Security.Permissions;
     using System.Windows;
-    using System.Windows.Interop;
+    using System.Windows.Data;
     using System.Windows.Media;
     using ControlzEx.Standard;
-    using HANDLE_MESSAGE = System.Collections.Generic.KeyValuePair<Standard.WM, Standard.MessageHandler>;
+    using ControlzEx.Windows.Shell;
+    using HANDLE_MESSAGE = System.Collections.Generic.KeyValuePair<ControlzEx.Standard.WM, ControlzEx.Standard.MessageHandler>;
 
-    internal class WindowChromeWorker : DependencyObject
+    public partial class WindowChromeBehavior
     {
         #region Fields
 
         private const SWP _SwpFlags = SWP.FRAMECHANGED | SWP.NOSIZE | SWP.NOMOVE | SWP.NOZORDER | SWP.NOOWNERZORDER | SWP.NOACTIVATE;
 
         private readonly List<HANDLE_MESSAGE> _messageTable;
-
-        /// <summary>The Window that's chrome is being modified.</summary>
-        private Window AssociatedObject;
-
-        /// <summary>Underlying HWND for the _window.</summary>
-        /// <SecurityNote>
-        ///   Critical : Critical member
-        /// </SecurityNote>
-        [SecurityCritical]
-        private IntPtr windowHandle;
-
-        /// <summary>Underlying HWND for the _window.</summary>
-        /// <SecurityNote>
-        ///   Critical : Critical member provides access to HWND's window messages which are critical
-        /// </SecurityNote>
-        [SecurityCritical]
-        private HwndSource hwndSource;
-
-        private bool _isHooked;
-
-        /// <summary>Object that describes the current modifications being made to the chrome.</summary>
-        private WindowChrome _chromeInfo;
 
         // Keep track of this so we can detect when we need to apply changes.  Tracking these separately
         // as I've seen using just one cause things to get enough out of [....] that occasionally the caption will redraw.
@@ -62,28 +37,54 @@ namespace ControlzEx.Windows.Shell
         ///   Safe     : Demands full trust permissions
         /// </SecurityNote>
         [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name="FullTrust")]
-        public WindowChromeWorker()
+        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
+        public WindowChromeBehavior()
         {
+            // Effective default values for some of these properties are set to be bindings
+            // that set them to system defaults.
+            // A more correct way to do this would be to Coerce the value iff the source of the DP was the default value.
+            // Unfortunately with the current property system we can't detect whether the value being applied at the time
+            // of the coersion is the default.
+            foreach (var bp in _BoundProperties)
+            {
+                // This list must be declared after the DP's are assigned.
+                Assert.IsNotNull(bp.DependencyProperty);
+                BindingOperations.SetBinding(
+                                             this,
+                                             bp.DependencyProperty,
+                                             new Binding
+                                             {
+#if NET45 || NET462
+                                                 Path = new PropertyPath("(SystemParameters." + bp.SystemParameterPropertyName + ")"),
+#else
+                        Source = SystemParameters2.Current,
+                        Path = new PropertyPath(bp.SystemParameterPropertyName),
+#endif
+                                                 Mode = BindingMode.OneWay,
+                                                 UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+                                             });
+            }
+
             _messageTable = new List<HANDLE_MESSAGE>
-            {
-                new HANDLE_MESSAGE(WM.NCUAHDRAWCAPTION,      _HandleNCUAHDrawCaption),
-                new HANDLE_MESSAGE(WM.SETTEXT,               _HandleSetTextOrIcon),
-                new HANDLE_MESSAGE(WM.SETICON,               _HandleSetTextOrIcon),
-                new HANDLE_MESSAGE(WM.SYSCOMMAND,            _HandleRestoreWindow),
-                new HANDLE_MESSAGE(WM.NCACTIVATE,            _HandleNCActivate),
-                new HANDLE_MESSAGE(WM.NCCALCSIZE,            _HandleNCCalcSize),
-                new HANDLE_MESSAGE(WM.NCHITTEST,             _HandleNCHitTest),
-                new HANDLE_MESSAGE(WM.NCRBUTTONUP,           _HandleNCRButtonUp),
-                new HANDLE_MESSAGE(WM.SIZE,                  _HandleSize),
-                new HANDLE_MESSAGE(WM.WINDOWPOSCHANGING,     _HandleWindowPosChanging),   
-                new HANDLE_MESSAGE(WM.WINDOWPOSCHANGED,      _HandleWindowPosChanged),
-                new HANDLE_MESSAGE(WM.GETMINMAXINFO,         _HandleGetMinMaxInfo),
-                new HANDLE_MESSAGE(WM.DWMCOMPOSITIONCHANGED, _HandleDwmCompositionChanged),
-                new HANDLE_MESSAGE(WM.ENTERSIZEMOVE,         _HandleEnterSizeMoveForAnimation),
-                new HANDLE_MESSAGE(WM.MOVE,                  _HandleMoveForRealSize),
-                new HANDLE_MESSAGE(WM.EXITSIZEMOVE,          _HandleExitSizeMoveForAnimation),
-            };
+                            {
+                                new HANDLE_MESSAGE(WM.NCUAHDRAWCAPTION,      _HandleNCUAHDrawCaption),
+                                new HANDLE_MESSAGE(WM.SETTEXT,               _HandleSetTextOrIcon),
+                                new HANDLE_MESSAGE(WM.SETICON,               _HandleSetTextOrIcon),
+                                new HANDLE_MESSAGE(WM.SYSCOMMAND,            _HandleRestoreWindow),
+                                new HANDLE_MESSAGE(WM.NCACTIVATE,            _HandleNCActivate),
+                                new HANDLE_MESSAGE(WM.NCCALCSIZE,            _HandleNCCalcSize),
+                                new HANDLE_MESSAGE(WM.NCHITTEST,             _HandleNCHitTest),
+                                new HANDLE_MESSAGE(WM.NCPAINT,               _HandleNCPAINT),
+                                new HANDLE_MESSAGE(WM.NCRBUTTONUP,           _HandleNCRButtonUp),
+                                new HANDLE_MESSAGE(WM.SIZE,                  _HandleSize),
+                                new HANDLE_MESSAGE(WM.WINDOWPOSCHANGING,     _HandleWindowPosChanging),
+                                new HANDLE_MESSAGE(WM.WINDOWPOSCHANGED,      _HandleWindowPosChanged),
+                                new HANDLE_MESSAGE(WM.GETMINMAXINFO,         _HandleGetMinMaxInfo),
+                                new HANDLE_MESSAGE(WM.DWMCOMPOSITIONCHANGED, _HandleDwmCompositionChanged),
+                                new HANDLE_MESSAGE(WM.ENTERSIZEMOVE,         _HandleEnterSizeMoveForAnimation),
+                                new HANDLE_MESSAGE(WM.MOVE,                  _HandleMoveForRealSize),
+                                new HANDLE_MESSAGE(WM.EXITSIZEMOVE,          _HandleExitSizeMoveForAnimation),
+                            };
         }
 
         /// <SecurityNote>
@@ -91,171 +92,10 @@ namespace ControlzEx.Windows.Shell
         ///   Safe     : Demands full trust permissions
         /// </SecurityNote>
         [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name="FullTrust")]
-        public void SetWindowChrome(WindowChrome newChrome)
-        {
-            VerifyAccess();
-            Assert.IsNotNull(this.AssociatedObject);
-
-            if (newChrome == _chromeInfo)
-            {
-                // Nothing's changed.
-                return;
-            }
-
-            if (_chromeInfo != null)
-            {
-                _chromeInfo.PropertyChangedThatRequiresRepaint -= _OnChromePropertyChangedThatRequiresRepaint;
-            }
-
-            _chromeInfo = newChrome;
-            if (_chromeInfo != null)
-            {
-                _chromeInfo.PropertyChangedThatRequiresRepaint += _OnChromePropertyChangedThatRequiresRepaint;
-            }
-
-            _ApplyNewCustomChrome();
-        }
-
-        /// <SecurityNote>
-        ///   Critical : Calls critical methods
-        ///   Safe     : Demands full trust permissions
-        /// </SecurityNote>
-        [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name="FullTrust")]
-        private void _OnChromePropertyChangedThatRequiresRepaint(object sender, EventArgs e)
+        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
+        private void _OnChromePropertyChangedThatRequiresRepaint()
         {
             _UpdateFrameState(true);
-        }
-
-        public static readonly DependencyProperty WindowChromeWorkerProperty = DependencyProperty.RegisterAttached(
-            "WindowChromeWorker",
-            typeof(WindowChromeWorker),
-            typeof(WindowChromeWorker),
-            new PropertyMetadata(null, _OnChromeWorkerChanged));
-
-        /// <SecurityNote>
-        ///   Critical : Calls critical methods
-        ///   Safe     : Demands full trust permissions
-        /// </SecurityNote>
-        [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name="FullTrust")]
-        private static void _OnChromeWorkerChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var w = (Window)d;
-            var cw = (WindowChromeWorker)e.NewValue;
-
-            // The WindowChromeWorker object should only be set on the window once, and never to null.
-            Assert.IsNotNull(w);
-            Assert.IsNotNull(cw);
-            Assert.IsNull(cw.AssociatedObject);
-
-            cw._SetWindow(w);
-        }
-
-        /// <SecurityNote>
-        ///   Critical : Calls critical methods
-        /// </SecurityNote>
-        [SecurityCritical]
-        private void _SetWindow(Window window)
-        {
-            Assert.IsNull(this.AssociatedObject);
-            Assert.IsNotNull(window);
-
-            UnsubscribeWindowEvents();
-
-            this.AssociatedObject = window;
-
-            // There are potentially a couple funny states here.
-            // The window may have been shown and closed, in which case it's no longer usable.
-            // We shouldn't add any hooks in that case, just exit early.
-            // If the window hasn't yet been shown, then we need to make sure to remove hooks after it's closed.
-            this.windowHandle = new WindowInteropHelper(this.AssociatedObject).Handle;
-
-            this.AssociatedObject.Closed += this.UnsetAssociatedObject;
-
-            // Use whether we can get an HWND to determine if the Window has been loaded.
-            if (IntPtr.Zero != this.windowHandle)
-            {
-                // We've seen that the HwndSource can't always be retrieved from the HWND, so cache it early.
-                // Specifically it seems to sometimes disappear when the OS theme is changing.
-                this.hwndSource = HwndSource.FromHwnd(this.windowHandle);
-                Assert.IsNotNull(this.hwndSource);
-                this.AssociatedObject.ApplyTemplate();
-
-                if (_chromeInfo != null)
-                {
-                    _ApplyNewCustomChrome();
-                }
-            }
-            else
-            {
-                this.AssociatedObject.SourceInitialized += this.AssociatedObjectSourceInitialized;
-            }
-        }
-
-        /// <SecurityNote>
-        ///   Critical : Store critical methods in critical callback table
-        ///   Safe     : Demands full trust permissions
-        /// </SecurityNote>
-        [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name="FullTrust")]
-        private void AssociatedObjectSourceInitialized(object sender, EventArgs e)
-        {
-            this.windowHandle = new WindowInteropHelper(this.AssociatedObject).Handle;
-            Assert.IsNotDefault(this.windowHandle);
-            this.hwndSource = HwndSource.FromHwnd(this.windowHandle);
-            Assert.IsNotNull(this.hwndSource);
-
-            if (_chromeInfo != null)
-            {
-                _ApplyNewCustomChrome();
-            }
-        }
-
-        /// <SecurityNote>
-        ///   Critical : References critical methods
-        /// </SecurityNote>
-        [SecurityCritical]
-        private void UnsubscribeWindowEvents()
-        {
-            if (this.AssociatedObject != null)
-            {
-                this.AssociatedObject.SourceInitialized -= this.AssociatedObjectSourceInitialized;
-                this.AssociatedObject.Closed -= this.UnsetAssociatedObject; 
-            }
-        }
-
-        /// <SecurityNote>
-        ///   Critical : Store critical methods in critical callback table
-        ///   Safe     : Demands full trust permissions
-        /// </SecurityNote>
-        [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name="FullTrust")]
-        private void UnsetAssociatedObject(object sender, EventArgs e)
-        {
-            UnsubscribeWindowEvents();
-
-            if (_chromeInfo != null)
-            {
-                _chromeInfo.PropertyChangedThatRequiresRepaint -= _OnChromePropertyChangedThatRequiresRepaint;
-            }
-
-            _RestoreStandardChromeState(true);
-        }
-
-        [SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
-        public static WindowChromeWorker GetWindowChromeWorker(Window window)
-        {
-            Verify.IsNotNull(window, "window");
-            return (WindowChromeWorker)window.GetValue(WindowChromeWorkerProperty);
-        }
-
-        [SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
-        public static void SetWindowChromeWorker(Window window, WindowChromeWorker chrome)
-        {
-            Verify.IsNotNull(window, "window");
-            window.SetValue(WindowChromeWorkerProperty, chrome);
         }
 
         /// <SecurityNote>
@@ -264,22 +104,11 @@ namespace ControlzEx.Windows.Shell
         [SecurityCritical]
         private void _ApplyNewCustomChrome()
         {
-            if (this.windowHandle == IntPtr.Zero || this.hwndSource.IsDisposed)
+            if (this.windowHandle == IntPtr.Zero 
+                || this.hwndSource.IsDisposed)
             {
                 // Not yet hooked.
                 return;
-            }
-
-            if (_chromeInfo == null)
-            {
-                _RestoreStandardChromeState(false);
-                return;
-            }
-
-            if (!_isHooked)
-            {
-                this.hwndSource.AddHook(_WndProc);
-                _isHooked = true;
             }
 
             if (_MinimizeAnimation)
@@ -295,7 +124,7 @@ namespace ControlzEx.Windows.Shell
             if (this.hwndSource.IsDisposed)
             {
                 // If the window got closed very early
-                this.UnsetAssociatedObject(this.AssociatedObject, EventArgs.Empty);
+                this.Cleanup(true);
                 return;
             }
 
@@ -307,7 +136,7 @@ namespace ControlzEx.Windows.Shell
         {
             get
             {
-                return SystemParameters.MinimizeAnimation && _chromeInfo.IgnoreTaskbarOnMaximize == false;
+                return SystemParameters.MinimizeAnimation && this.IgnoreTaskbarOnMaximize == false;
             }
         }
 
@@ -317,7 +146,7 @@ namespace ControlzEx.Windows.Shell
         ///   Critical : Accesses critical _hwnd
         /// </SecurityNote>
         [SecurityCritical]
-        private IntPtr _WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        private IntPtr WindowProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             // Only expecting messages for our cached HWND.
             Assert.AreEqual(hwnd, this.windowHandle);
@@ -504,9 +333,9 @@ namespace ControlzEx.Windows.Shell
             {
                 var monitor = NativeMethods.MonitorFromWindow(this.windowHandle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
                 var monitorInfo = NativeMethods.GetMonitorInfo(monitor);
-                var monitorRect = this._chromeInfo.IgnoreTaskbarOnMaximize ? monitorInfo.rcMonitor : monitorInfo.rcWork;
+                var monitorRect = this.IgnoreTaskbarOnMaximize ? monitorInfo.rcMonitor : monitorInfo.rcWork;
 
-                var rc = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT));                
+                var rc = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT));
                 rc.Left = monitorRect.Left;
                 rc.Top = monitorRect.Top;
                 rc.Right = monitorRect.Right;
@@ -538,7 +367,7 @@ namespace ControlzEx.Windows.Shell
                 retVal = new IntPtr((int)(WVR.VALIDRECTS | WVR.REDRAW));
             }
 
-            return retVal; 
+            return retVal;
         }
 
         private HT _GetHTFromResizeGripDirection(ResizeGripDirection direction)
@@ -567,6 +396,16 @@ namespace ControlzEx.Windows.Shell
                 default:
                     return HT.NOWHERE;
             }
+        }
+
+        /// <SecurityNote>
+        ///   Critical : Calls critical methods
+        /// </SecurityNote>
+        [SecurityCritical]
+        private IntPtr _HandleNCPAINT(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        {
+            handled = this.GlassFrameThickness == default(Thickness) && this.GlowBrush == null;
+            return IntPtr.Zero;
         }
 
         /// <SecurityNote>
@@ -606,8 +445,8 @@ namespace ControlzEx.Windows.Shell
             }
 
             HT ht = _HitTestNca(
-                DpiHelper.DeviceRectToLogical(windowPosition, dpi.DpiScaleX, dpi.DpiScaleY),
-                DpiHelper.DevicePixelsToLogical(mousePosScreen, dpi.DpiScaleX, dpi.DpiScaleY));
+                                DpiHelper.DeviceRectToLogical(windowPosition, dpi.DpiScaleX, dpi.DpiScaleY),
+                                DpiHelper.DevicePixelsToLogical(mousePosScreen, dpi.DpiScaleX, dpi.DpiScaleY));
 
             handled = true;
             return new IntPtr((int)ht);
@@ -624,7 +463,7 @@ namespace ControlzEx.Windows.Shell
             if (HT.CAPTION == (HT)(Environment.Is64BitProcess ? wParam.ToInt64() : wParam.ToInt32()))
             {
                 //SystemCommands.ShowSystemMenuPhysicalCoordinates(_window, new Point(Utility.GET_X_LPARAM(lParam), Utility.GET_Y_LPARAM(lParam)));
-                SystemCommands.ShowSystemMenuPhysicalCoordinates(this.AssociatedObject, Utility.GetPoint(lParam));
+                Windows.Shell.SystemCommands.ShowSystemMenuPhysicalCoordinates(this.AssociatedObject, Utility.GetPoint(lParam));
             }
             handled = false;
             return IntPtr.Zero;
@@ -663,16 +502,56 @@ namespace ControlzEx.Windows.Shell
             if (!_isGlassEnabled)
             {
                 Assert.IsNotDefault(lParam);
-                var wp = (WINDOWPOS) Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
+                var wp = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
 
                 // we don't do bitwise operations cuz we're checking for this flag being the only one there
                 // I have no clue why this works, I tried this because VS2013 has this flag removed on fullscreen window movws
-                if (_chromeInfo.IgnoreTaskbarOnMaximize && _GetHwndState() == WindowState.Maximized && wp.flags == SWP.FRAMECHANGED)
+                if (this.IgnoreTaskbarOnMaximize && _GetHwndState() == WindowState.Maximized && wp.flags == SWP.FRAMECHANGED)
                 {
                     wp.flags = 0;
                     Marshal.StructureToPtr(wp, lParam, true);
+
+                    handled = true;
+                    return IntPtr.Zero;
                 }
             }
+
+            var pos = (WINDOWPOS)System.Runtime.InteropServices.Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
+            if ((pos.flags & SWP.NOMOVE) != 0)
+            {
+                handled = false;
+                return IntPtr.Zero;
+            }
+
+            var wnd = this.AssociatedObject;
+            if (wnd == null || this.hwndSource?.CompositionTarget == null)
+            {
+                handled = false;
+                return IntPtr.Zero;
+            }
+
+            var changedPos = false;
+
+            // Convert the original to original size based on DPI setting. Need for x% screen DPI.
+            var matrix = this.hwndSource.CompositionTarget.TransformToDevice;
+
+            var minWidth = wnd.MinWidth * matrix.M11;
+            var minHeight = wnd.MinHeight * matrix.M22;
+            if (pos.cx < minWidth) { pos.cx = (int)minWidth; changedPos = true; }
+            if (pos.cy < minHeight) { pos.cy = (int)minHeight; changedPos = true; }
+
+            var maxWidth = wnd.MaxWidth * matrix.M11;
+            var maxHeight = wnd.MaxHeight * matrix.M22;
+            if (pos.cx > maxWidth && maxWidth > 0) { pos.cx = (int)Math.Round(maxWidth); changedPos = true; }
+            if (pos.cy > maxHeight && maxHeight > 0) { pos.cy = (int)Math.Round(maxHeight); changedPos = true; }
+
+            if (!changedPos)
+            {
+                handled = false;
+                return IntPtr.Zero;
+            }
+
+            Marshal.StructureToPtr(pos, lParam, true);
 
             handled = false;
             return IntPtr.Zero;
@@ -705,11 +584,11 @@ namespace ControlzEx.Windows.Shell
                 }
                 _previousWP = wp;
 
-//                if (wp.Equals(_previousWP) && wp.flags.Equals(_previousWP.flags))
-//                {
-//                    handled = true;
-//                    return IntPtr.Zero;
-//                }
+                //                if (wp.Equals(_previousWP) && wp.flags.Equals(_previousWP.flags))
+                //                {
+                //                    handled = true;
+                //                    return IntPtr.Zero;
+                //                }
             }
 
             // Still want to pass this to DefWndProc
@@ -731,7 +610,7 @@ namespace ControlzEx.Windows.Shell
              * This fix is not really a full fix. Moving the Window back gives us the wrong size, because
              * MonitorFromWindow gives us the wrong (old) monitor! This is fixed in _HandleMoveForRealSize.
              */
-            var ignoreTaskBar = _chromeInfo.IgnoreTaskbarOnMaximize;
+            var ignoreTaskBar = this.IgnoreTaskbarOnMaximize;
             if (ignoreTaskBar && NativeMethods.IsZoomed(this.windowHandle))
             {
                 MINMAXINFO mmi = (MINMAXINFO)Marshal.PtrToStructure(lParam, typeof(MINMAXINFO));
@@ -741,7 +620,7 @@ namespace ControlzEx.Windows.Shell
                     MONITORINFO monitorInfo = NativeMethods.GetMonitorInfoW(monitor);
                     RECT rcWorkArea = monitorInfo.rcWork;
                     RECT rcMonitorArea = monitorInfo.rcMonitor;
-                    
+
                     mmi.ptMaxPosition.X = Math.Abs(rcWorkArea.Left - rcMonitorArea.Left);
                     mmi.ptMaxPosition.Y = Math.Abs(rcWorkArea.Top - rcMonitorArea.Top);
 
@@ -805,11 +684,12 @@ namespace ControlzEx.Windows.Shell
              * But after moving to the previous monitor we got a wrong size (from the old monitor dimension).
              */
             WindowState state = _GetHwndState();
-            if (state == WindowState.Maximized) {
+            if (state == WindowState.Maximized)
+            {
                 IntPtr monitorFromWindow = NativeMethods.MonitorFromWindow(this.windowHandle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
                 if (monitorFromWindow != IntPtr.Zero)
                 {
-                    var ignoreTaskBar = _chromeInfo.IgnoreTaskbarOnMaximize;
+                    var ignoreTaskBar = this.IgnoreTaskbarOnMaximize;
                     MONITORINFO monitorInfo = NativeMethods.GetMonitorInfoW(monitorFromWindow);
                     RECT rcMonitorArea = ignoreTaskBar ? monitorInfo.rcMonitor : monitorInfo.rcWork;
                     /*
@@ -992,7 +872,7 @@ namespace ControlzEx.Windows.Shell
 
             if (force || frameState != _isGlassEnabled)
             {
-                _isGlassEnabled = frameState && _chromeInfo.GlassFrameThickness != default(Thickness);
+                _isGlassEnabled = frameState && this.GlassFrameThickness != default(Thickness);
 
                 if (!_isGlassEnabled)
                 {
@@ -1093,7 +973,7 @@ namespace ControlzEx.Windows.Shell
                     IntPtr hMon = NativeMethods.MonitorFromWindow(this.windowHandle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
 
                     MONITORINFO mi = NativeMethods.GetMonitorInfo(hMon);
-                    rcMax = _chromeInfo.IgnoreTaskbarOnMaximize ? mi.rcMonitor : mi.rcWork;
+                    rcMax = this.IgnoreTaskbarOnMaximize ? mi.rcMonitor : mi.rcWork;
                     // The location of maximized window takes into account the border that Windows was
                     // going to remove, so we also need to consider it.
                     rcMax.Offset(-left, -top);
@@ -1154,10 +1034,10 @@ namespace ControlzEx.Windows.Shell
         private static IntPtr _CreateRectRgn(Rect region)
         {
             return NativeMethods.CreateRectRgn(
-                (int)Math.Floor(region.Left),
-                (int)Math.Floor(region.Top),
-                (int)Math.Ceiling(region.Right),
-                (int)Math.Ceiling(region.Bottom));
+                                               (int)Math.Floor(region.Left),
+                                               (int)Math.Floor(region.Top),
+                                               (int)Math.Ceiling(region.Right),
+                                               (int)Math.Ceiling(region.Bottom));
         }
 
         /// <SecurityNote>
@@ -1216,16 +1096,16 @@ namespace ControlzEx.Windows.Shell
                 }
 
                 // Thickness is going to be DIPs, need to convert to system coordinates.
-                Thickness deviceGlassThickness = DpiHelper.LogicalThicknessToDevice(_chromeInfo.GlassFrameThickness, dpi.DpiScaleX, dpi.DpiScaleY);
+                Thickness deviceGlassThickness = DpiHelper.LogicalThicknessToDevice(this.GlassFrameThickness, dpi.DpiScaleX, dpi.DpiScaleY);
 
                 var dwmMargin = new MARGINS
-                {
-                    // err on the side of pushing in glass an extra pixel.
-                    cxLeftWidth = (int)Math.Ceiling(deviceGlassThickness.Left),
-                    cxRightWidth = (int)Math.Ceiling(deviceGlassThickness.Right),
-                    cyTopHeight = (int)Math.Ceiling(deviceGlassThickness.Top),
-                    cyBottomHeight = (int)Math.Ceiling(deviceGlassThickness.Bottom),
-                };
+                                {
+                                    // err on the side of pushing in glass an extra pixel.
+                                    cxLeftWidth = (int)Math.Ceiling(deviceGlassThickness.Left),
+                                    cxRightWidth = (int)Math.Ceiling(deviceGlassThickness.Right),
+                                    cyTopHeight = (int)Math.Ceiling(deviceGlassThickness.Top),
+                                    cyBottomHeight = (int)Math.Ceiling(deviceGlassThickness.Bottom),
+                                };
 
                 NativeMethods.DwmExtendFrameIntoClientArea(this.windowHandle, ref dwmMargin);
             }
@@ -1236,11 +1116,11 @@ namespace ControlzEx.Windows.Shell
         /// </summary>
         [SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional", MessageId = "Member")]
         private static readonly HT[,] _HitTestBorders = new[,]
-        {
-            { HT.TOPLEFT,    HT.TOP,     HT.TOPRIGHT    },
-            { HT.LEFT,       HT.CLIENT,  HT.RIGHT       },
-            { HT.BOTTOMLEFT, HT.BOTTOM,  HT.BOTTOMRIGHT },
-        };
+                                                        {
+                                                            { HT.TOPLEFT,    HT.TOP,     HT.TOPRIGHT    },
+                                                            { HT.LEFT,       HT.CLIENT,  HT.RIGHT       },
+                                                            { HT.BOTTOMLEFT, HT.BOTTOM,  HT.BOTTOMRIGHT },
+                                                        };
 
         private HT _HitTestNca(Rect windowPosition, Point mousePosition)
         {
@@ -1250,22 +1130,22 @@ namespace ControlzEx.Windows.Shell
             bool onResizeBorder = false;
 
             // Determine if the point is at the top or bottom of the window.
-            if (mousePosition.Y >= windowPosition.Top && mousePosition.Y < windowPosition.Top + _chromeInfo.ResizeBorderThickness.Top + _chromeInfo.CaptionHeight)
+            if (mousePosition.Y >= windowPosition.Top && mousePosition.Y < windowPosition.Top + this.ResizeBorderThickness.Top + this.CaptionHeight)
             {
-                onResizeBorder = (mousePosition.Y < (windowPosition.Top + _chromeInfo.ResizeBorderThickness.Top));
+                onResizeBorder = (mousePosition.Y < (windowPosition.Top + this.ResizeBorderThickness.Top));
                 uRow = 0; // top (caption or resize border)
             }
-            else if (mousePosition.Y < windowPosition.Bottom && mousePosition.Y >= windowPosition.Bottom - (int)_chromeInfo.ResizeBorderThickness.Bottom)
+            else if (mousePosition.Y < windowPosition.Bottom && mousePosition.Y >= windowPosition.Bottom - (int)this.ResizeBorderThickness.Bottom)
             {
                 uRow = 2; // bottom
             }
 
             // Determine if the point is at the left or right of the window.
-            if (mousePosition.X >= windowPosition.Left && mousePosition.X < windowPosition.Left + (int)_chromeInfo.ResizeBorderThickness.Left)
+            if (mousePosition.X >= windowPosition.Left && mousePosition.X < windowPosition.Left + (int)this.ResizeBorderThickness.Left)
             {
                 uCol = 0; // left side
             }
-            else if (mousePosition.X < windowPosition.Right && mousePosition.X >= windowPosition.Right - _chromeInfo.ResizeBorderThickness.Right)
+            else if (mousePosition.X < windowPosition.Right && mousePosition.X >= windowPosition.Right - this.ResizeBorderThickness.Right)
             {
                 uCol = 2; // right side
             }
@@ -1297,8 +1177,6 @@ namespace ControlzEx.Windows.Shell
         {
             VerifyAccess();
 
-            _UnhookCustomChrome();
-
             if (!isClosing && !this.hwndSource.IsDisposed)
             {
                 _RestoreGlassFrame();
@@ -1309,29 +1187,11 @@ namespace ControlzEx.Windows.Shell
         }
 
         /// <SecurityNote>
-        ///   Critical : Unsubscribes event handler from critical _hwndSource
-        /// </SecurityNote>
-        [SecurityCritical]
-        private void _UnhookCustomChrome()
-        {
-            //Assert.IsNotDefault(_hwnd);
-            Assert.IsNotNull(this.AssociatedObject);
-
-            if (_isHooked)
-            {
-                Assert.IsNotDefault(this.windowHandle);
-                this.hwndSource.RemoveHook(_WndProc);
-                _isHooked = false;
-            }
-        }
-
-        /// <SecurityNote>
         ///   Critical : Calls critical methods
         /// </SecurityNote>
         [SecurityCritical]
         private void _RestoreGlassFrame()
         {
-            Assert.IsNull(_chromeInfo);
             Assert.IsNotNull(this.AssociatedObject);
 
             // Expect that this might be called on OSes other than Vista
@@ -1341,7 +1201,11 @@ namespace ControlzEx.Windows.Shell
                 return;
             }
 
-            this.hwndSource.CompositionTarget.BackgroundColor = SystemColors.WindowColor;
+            var hwndSourceCompositionTarget = this.hwndSource.CompositionTarget;
+            if (hwndSourceCompositionTarget != null)
+            {
+                hwndSourceCompositionTarget.BackgroundColor = SystemColors.WindowColor;
+            }
 
             if (NativeMethods.DwmIsCompositionEnabled())
             {

@@ -2,11 +2,13 @@
 namespace ControlzEx.Behaviors
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Management;
+    using System.Security;
+    using System.Security.Permissions;
     using System.Windows;
     using System.Windows.Controls;
-    using System.Windows.Data;
     using System.Windows.Interactivity;
     using System.Windows.Interop;
     using System.Windows.Media;
@@ -14,17 +16,27 @@ namespace ControlzEx.Behaviors
     using ControlzEx;
     using ControlzEx.Native;
     using ControlzEx.Standard;
-    using ControlzEx.Windows.Shell;
     using JetBrains.Annotations;    
 
     /// <summary>
     /// With this class we can make custom window styles.
     /// </summary>
-    public class WindowChromeBehavior : Behavior<Window>    
+    public partial class WindowChromeBehavior : Behavior<Window>    
     {
+        /// <summary>Underlying HWND for the _window.</summary>
+        /// <SecurityNote>
+        ///   Critical : Critical member
+        /// </SecurityNote>
+        [SecurityCritical]
         private IntPtr windowHandle;
+
+        /// <summary>Underlying HWND for the _window.</summary>
+        /// <SecurityNote>
+        ///   Critical : Critical member provides access to HWND's window messages which are critical
+        /// </SecurityNote>
+        [SecurityCritical]
         private HwndSource hwndSource;
-        private WindowChrome windowChrome;
+
         private PropertyChangeNotifier topMostChangeNotifier;
         private PropertyChangeNotifier borderThicknessChangeNotifier;
         private PropertyChangeNotifier resizeBorderThicknessChangeNotifier;
@@ -33,10 +45,20 @@ namespace ControlzEx.Behaviors
         private bool savedTopMost;
         private bool isWindwos10OrHigher;
 
-        #region Mirror properties for WindowChrome
+        private bool isCleanedUp;
+        private IntPtr taskbarHandle;
+
+        // Named property available for fully extending the glass frame.
+        public static Thickness GlassFrameCompleteThickness { get { return new Thickness(-1); } }
+
+        private struct _SystemParameterBoundProperty
+        {
+            public string SystemParameterPropertyName { get; set; }
+            public DependencyProperty DependencyProperty { get; set; }
+        }
 
         /// <summary>
-        /// Mirror property for <see cref="WindowChrome.ResizeBorderThickness"/>.
+        /// Mirror property for <see cref="ResizeBorderThickness"/>.
         /// </summary>
         public Thickness ResizeBorderThickness
         {
@@ -48,10 +70,10 @@ namespace ControlzEx.Behaviors
         /// <see cref="DependencyProperty"/> for <see cref="ResizeBorderThickness"/>.
         /// </summary>
         public static readonly DependencyProperty ResizeBorderThicknessProperty =
-            DependencyProperty.Register(nameof(ResizeBorderThickness), typeof(Thickness), typeof(WindowChromeBehavior), new PropertyMetadata(GetDefaultResizeBorderThickness()));
+            DependencyProperty.Register(nameof(ResizeBorderThickness), typeof(Thickness), typeof(WindowChromeBehavior), new PropertyMetadata(GetDefaultResizeBorderThickness()), (value) => ((Thickness)value).IsNonNegative());
 
         /// <summary>
-        /// Mirror property for <see cref="WindowChrome.GlassFrameThickness"/>.
+        /// Mirror property for <see cref="GlassFrameThickness"/>.
         /// </summary>
         public Thickness GlassFrameThickness
         {
@@ -63,9 +85,28 @@ namespace ControlzEx.Behaviors
         /// <see cref="DependencyProperty"/> for <see cref="GlassFrameThickness"/>.
         /// </summary>
         public static readonly DependencyProperty GlassFrameThicknessProperty =
-            DependencyProperty.Register(nameof(GlassFrameThickness), typeof(Thickness), typeof(WindowChromeBehavior), new PropertyMetadata(default(Thickness), OnGlassFrameThicknessChanged));
+            DependencyProperty.Register(nameof(GlassFrameThickness), typeof(Thickness), typeof(WindowChromeBehavior), new PropertyMetadata(default(Thickness), OnGlassFrameThicknessChanged, (d, o) => _CoerceGlassFrameThickness((Thickness)o)));
 
-        #endregion
+        private static object _CoerceGlassFrameThickness(Thickness thickness)
+        {
+            // If it's explicitly set, but set to a thickness with at least one negative side then 
+            // coerce the value to the stock GlassFrameCompleteThickness.
+            if (!thickness.IsNonNegative())
+            {
+                return GlassFrameCompleteThickness;
+            }
+
+            return thickness;
+        }
+
+        public static readonly DependencyProperty CaptionHeightProperty = DependencyProperty.Register(nameof(CaptionHeight), typeof(double), typeof(WindowChromeBehavior), new PropertyMetadata(0d, (d, e) => ((WindowChromeBehavior)d)._OnChromePropertyChangedThatRequiresRepaint()), value => (double)value >= 0d);
+
+        /// <summary>The extent of the top of the window to treat as the caption.</summary>
+        public double CaptionHeight
+        {
+            get { return (double)GetValue(CaptionHeightProperty); }
+            set { SetValue(CaptionHeightProperty, value); }
+        }
 
         /// <summary>
         /// <see cref="DependencyProperty"/> for <see cref="GlowBrush"/>.
@@ -133,8 +174,6 @@ namespace ControlzEx.Behaviors
         {
             this.isWindwos10OrHigher = IsWindows10OrHigher();
 
-            this.InitializeWindowChrome();            
-
             // no transparany, because it hase more then one unwanted issues
             if (this.AssociatedObject.AllowsTransparency
                 && this.AssociatedObject.IsLoaded == false 
@@ -187,17 +226,6 @@ namespace ControlzEx.Behaviors
             }
         }
 
-        private void InitializeWindowChrome()
-        {
-            this.windowChrome = new WindowChrome();
-
-            BindingOperations.SetBinding(this.windowChrome, WindowChrome.ResizeBorderThicknessProperty, new Binding { Path = new PropertyPath(ResizeBorderThicknessProperty), Source = this });
-            BindingOperations.SetBinding(this.windowChrome, WindowChrome.GlassFrameThicknessProperty, new Binding { Path = new PropertyPath(GlassFrameThicknessProperty), Source = this });
-            this.windowChrome.CaptionHeight = 0;
-
-            this.AssociatedObject.SetValue(WindowChrome.WindowChromeProperty, this.windowChrome);
-        }
-
         /// <summary>
         /// Gets the default resize border thicknes from the system parameters.
         /// </summary>
@@ -239,36 +267,24 @@ namespace ControlzEx.Behaviors
         {
             var behavior = (WindowChromeBehavior)d;
 
-            if (behavior.AssociatedObject == null)
-            {
-                return;
-            }
-
-            behavior.AssociatedObject.SetValue(WindowChrome.WindowChromeProperty, null);
-            behavior.InitializeWindowChrome();
+            behavior._OnChromePropertyChangedThatRequiresRepaint();
         }
 
         private static void OnIgnoreTaskbarOnMaximizePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var behavior = (WindowChromeBehavior)d;
-            if (behavior.windowChrome != null)
-            {
-                if (!Equals(behavior.windowChrome.IgnoreTaskbarOnMaximize, behavior.IgnoreTaskbarOnMaximize))
-                {
-                    // another special hack to avoid nasty resizing
-                    // repro
-                    // ResizeMode="NoResize"
-                    // WindowState="Maximized"
-                    // IgnoreTaskbarOnMaximize="True"
-                    // this only happens if we change this at runtime
-                    behavior.windowChrome.IgnoreTaskbarOnMaximize = behavior.IgnoreTaskbarOnMaximize;
+            behavior._OnChromePropertyChangedThatRequiresRepaint();
 
-                    if (behavior.AssociatedObject.WindowState == WindowState.Maximized)
-                    {
-                        behavior.AssociatedObject.WindowState = WindowState.Normal;
-                        behavior.AssociatedObject.WindowState = WindowState.Maximized;
-                    }
-                }
+            // another special hack to avoid nasty resizing
+            // repro
+            // ResizeMode="NoResize"
+            // WindowState="Maximized"
+            // IgnoreTaskbarOnMaximize="True"
+            // this only happens if we change this at runtime
+            if (behavior.AssociatedObject.WindowState == WindowState.Maximized)
+            {
+                behavior.AssociatedObject.WindowState = WindowState.Normal;
+                behavior.AssociatedObject.WindowState = WindowState.Maximized;
             }
         }
 
@@ -279,10 +295,9 @@ namespace ControlzEx.Behaviors
             behavior.HandleMaximize();
         }
 
-        private bool isCleanedUp;
-        private IntPtr taskbarHandle;
-
-        private void Cleanup()
+        [SecuritySafeCritical]
+        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
+        private void Cleanup(bool isClosing)
         {
             if (!this.isCleanedUp)
             {
@@ -304,14 +319,15 @@ namespace ControlzEx.Behaviors
                 this.AssociatedObject.Deactivated -= this.AssociatedObject_Deactivated;
 
                 this.hwndSource?.RemoveHook(this.WindowProc);
-                this.windowChrome = null;
+
+                _RestoreStandardChromeState(isClosing);
             }
         }
 
         /// <inheritdoc />
         protected override void OnDetaching()
         {
-            this.Cleanup();
+            this.Cleanup(false);
 
             base.OnDetaching();
         }
@@ -348,6 +364,8 @@ namespace ControlzEx.Behaviors
             this.hwndSource = HwndSource.FromHwnd(this.windowHandle);
             this.hwndSource?.AddHook(this.WindowProc);
 
+            _ApplyNewCustomChrome();
+
             // handle the maximized state here too (to handle the border in a correct way)
             this.HandleMaximize();
         }
@@ -361,12 +379,12 @@ namespace ControlzEx.Behaviors
 
         private void AssociatedObject_Unloaded(object sender, RoutedEventArgs e)
         {
-            this.Cleanup();
+            this.Cleanup(false);
         }
 
         private void AssociatedObject_Closed(object sender, EventArgs e)
         {
-            this.Cleanup();
+            this.Cleanup(true);
         }
 
         private void AssociatedObject_StateChanged(object sender, EventArgs e)
@@ -382,59 +400,6 @@ namespace ControlzEx.Behaviors
         private void AssociatedObject_LostFocus(object sender, RoutedEventArgs e)
         {
             this.TopMostHack();
-        }
-
-        private IntPtr WindowProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
-        {
-            var returnval = IntPtr.Zero;
-
-            switch (msg)
-            {
-                case (int)WM.NCPAINT:
-                    handled = this.GlassFrameThickness == default(Thickness) && this.GlowBrush == null;
-                    break;
-
-                case (int)WM.WINDOWPOSCHANGING:
-                {
-                    var pos = (WINDOWPOS)System.Runtime.InteropServices.Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
-                    if ((pos.flags & SWP.NOMOVE) != 0)
-                    {
-                        return IntPtr.Zero;
-                    }
-
-                    var wnd = this.AssociatedObject;
-                    if (wnd == null || this.hwndSource?.CompositionTarget == null)
-                    {
-                        return IntPtr.Zero;
-                    }
-
-                    var changedPos = false;
-
-                    // Convert the original to original size based on DPI setting. Need for x% screen DPI.
-                    var matrix = this.hwndSource.CompositionTarget.TransformToDevice;
-
-                    var minWidth = wnd.MinWidth * matrix.M11;
-                    var minHeight = wnd.MinHeight * matrix.M22;
-                    if (pos.cx < minWidth) { pos.cx = (int)minWidth; changedPos = true; }
-                    if (pos.cy < minHeight) { pos.cy = (int)minHeight; changedPos = true; }
-
-                    var maxWidth = wnd.MaxWidth * matrix.M11;
-                    var maxHeight = wnd.MaxHeight * matrix.M22;
-                    if (pos.cx > maxWidth && maxWidth > 0) { pos.cx = (int)Math.Round(maxWidth); changedPos = true; }
-                    if (pos.cy > maxHeight && maxHeight > 0) { pos.cy = (int)Math.Round(maxHeight); changedPos = true; }
-
-                    if (!changedPos)
-                    {
-                        return IntPtr.Zero;
-                    }
-
-                    System.Runtime.InteropServices.Marshal.StructureToPtr(pos, lParam, true);
-                    handled = true;
-                }
-                    break;
-            }
-
-            return returnval;
         }
 
         private void HandleMaximize()
@@ -551,7 +516,7 @@ namespace ControlzEx.Behaviors
                     this.AssociatedObject.BorderThickness = new Thickness(0);
                 }
 
-                this.windowChrome.ResizeBorderThickness = new Thickness(0);
+                this.ResizeBorderThickness = new Thickness(0);
             }
             else
             {
@@ -559,9 +524,9 @@ namespace ControlzEx.Behaviors
 
                 var resizeBorderThickness = this.savedResizeBorderThickness.GetValueOrDefault(new Thickness(0));
 
-                if (this.windowChrome.ResizeBorderThickness != resizeBorderThickness)
+                if (this.ResizeBorderThickness != resizeBorderThickness)
                 {
-                    this.windowChrome.ResizeBorderThickness = resizeBorderThickness;
+                    this.ResizeBorderThickness = resizeBorderThickness;
                 }
             }
 
@@ -599,10 +564,12 @@ namespace ControlzEx.Behaviors
             {
                 throw new ArgumentNullException(nameof(dispatcherObject));
             }
+
             if (invokeAction == null)
             {
                 throw new ArgumentNullException(nameof(invokeAction));
             }
+
             if (dispatcherObject.Dispatcher.CheckAccess())
             {
                 invokeAction();
@@ -612,5 +579,12 @@ namespace ControlzEx.Behaviors
                 dispatcherObject.Dispatcher.Invoke(invokeAction);
             }
         }
+
+        private static readonly List<_SystemParameterBoundProperty> _BoundProperties = new List<_SystemParameterBoundProperty>
+                                                                                       {
+                                                                                           new _SystemParameterBoundProperty { DependencyProperty = CaptionHeightProperty, SystemParameterPropertyName = "WindowCaptionHeight" },
+                                                                                           new _SystemParameterBoundProperty { DependencyProperty = ResizeBorderThicknessProperty, SystemParameterPropertyName = "WindowResizeBorderThickness" },
+                                                                                           new _SystemParameterBoundProperty { DependencyProperty = GlassFrameThicknessProperty, SystemParameterPropertyName = "WindowNonClientFrameThickness" },
+                                                                                       };
     }
 }
