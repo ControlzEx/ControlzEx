@@ -22,7 +22,7 @@ namespace ControlzEx.Behaviors
     /// </summary>
     public class WindowChromeBehavior : Behavior<Window>    
     {
-        private IntPtr handle;
+        private IntPtr windowHandle;
         private HwndSource hwndSource;
         private WindowChrome windowChrome;
         private PropertyChangeNotifier topMostChangeNotifier;
@@ -318,9 +318,9 @@ namespace ControlzEx.Behaviors
 
         private void AssociatedObject_SourceInitialized(object sender, EventArgs e)
         {
-            this.handle = new WindowInteropHelper(this.AssociatedObject).Handle;
+            this.windowHandle = new WindowInteropHelper(this.AssociatedObject).Handle;
 
-            if (IntPtr.Zero == this.handle)
+            if (IntPtr.Zero == this.windowHandle)
             {
                 throw new Exception("Uups, at this point we really need the Handle from the associated object!");
             }
@@ -333,19 +333,19 @@ namespace ControlzEx.Behaviors
                                               {
                                                   this.AssociatedObject.InvalidateMeasure();
                                                   RECT rect;
-                                                  if (UnsafeNativeMethods.GetWindowRect(this.handle, out rect))
+                                                  if (UnsafeNativeMethods.GetWindowRect(this.windowHandle, out rect))
                                                   {
                                                       var flags = SWP.SHOWWINDOW;
                                                       if (!this.AssociatedObject.ShowActivated)
                                                       {
                                                           flags |= SWP.NOACTIVATE;
                                                       }
-                                                      NativeMethods.SetWindowPos(this.handle, Constants.HWND_NOTOPMOST, rect.Left, rect.Top, rect.Width, rect.Height, flags);
+                                                      NativeMethods.SetWindowPos(this.windowHandle, Constants.HWND_NOTOPMOST, rect.Left, rect.Top, rect.Width, rect.Height, flags);
                                                   }
                                               });
             }
 
-            this.hwndSource = HwndSource.FromHwnd(this.handle);
+            this.hwndSource = HwndSource.FromHwnd(this.windowHandle);
             this.hwndSource?.AddHook(this.WindowProc);
 
             // handle the maximized state here too (to handle the border in a correct way)
@@ -446,11 +446,11 @@ namespace ControlzEx.Behaviors
 
             if (this.AssociatedObject.WindowState == WindowState.Maximized)
             {
-                if (this.handle != IntPtr.Zero)
+                if (this.windowHandle != IntPtr.Zero)
                 {
                     // WindowChrome handles the size false if the main monitor is lesser the monitor where the window is maximized
                     // so set the window pos/size twice
-                    var monitor = UnsafeNativeMethods.MonitorFromWindow(this.handle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
+                    var monitor = UnsafeNativeMethods.MonitorFromWindow(this.windowHandle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
                     if (monitor != IntPtr.Zero)
                     {
                         var monitorInfo = NativeMethods.GetMonitorInfo(monitor);
@@ -467,7 +467,7 @@ namespace ControlzEx.Behaviors
                             this.ActivateTaskbarFix(monitor);
                         }
 
-                        NativeMethods.SetWindowPos(this.handle, Constants.HWND_NOTOPMOST, x, y, cx, cy, SWP.SHOWWINDOW);
+                        NativeMethods.SetWindowPos(this.windowHandle, Constants.HWND_NOTOPMOST, x, y, cx, cy, SWP.SHOWWINDOW);
                     }
                 }
             }
@@ -514,9 +514,9 @@ namespace ControlzEx.Behaviors
             {
                 var monitor = IntPtr.Zero;
 
-                if (this.handle != IntPtr.Zero)
+                if (this.windowHandle != IntPtr.Zero)
                 {
-                    monitor = UnsafeNativeMethods.MonitorFromWindow(this.handle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
+                    monitor = UnsafeNativeMethods.MonitorFromWindow(this.windowHandle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
                 }
 
                 if (monitor != IntPtr.Zero)

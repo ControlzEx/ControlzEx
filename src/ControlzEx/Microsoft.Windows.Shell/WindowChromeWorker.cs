@@ -26,23 +26,23 @@ namespace ControlzEx.Windows.Shell
         private readonly List<HANDLE_MESSAGE> _messageTable;
 
         /// <summary>The Window that's chrome is being modified.</summary>
-        private Window _window;
+        private Window AssociatedObject;
 
         /// <summary>Underlying HWND for the _window.</summary>
         /// <SecurityNote>
         ///   Critical : Critical member
         /// </SecurityNote>
         [SecurityCritical]
-        private IntPtr _hwnd;
+        private IntPtr windowHandle;
 
         /// <summary>Underlying HWND for the _window.</summary>
         /// <SecurityNote>
         ///   Critical : Critical member provides access to HWND's window messages which are critical
         /// </SecurityNote>
         [SecurityCritical]
-        private HwndSource _hwndSource = null;
+        private HwndSource hwndSource;
 
-        private bool _isHooked = false;
+        private bool _isHooked;
 
         /// <summary>Object that describes the current modifications being made to the chrome.</summary>
         private WindowChrome _chromeInfo;
@@ -95,7 +95,7 @@ namespace ControlzEx.Windows.Shell
         public void SetWindowChrome(WindowChrome newChrome)
         {
             VerifyAccess();
-            Assert.IsNotNull(_window);
+            Assert.IsNotNull(this.AssociatedObject);
 
             if (newChrome == _chromeInfo)
             {
@@ -148,7 +148,7 @@ namespace ControlzEx.Windows.Shell
             // The WindowChromeWorker object should only be set on the window once, and never to null.
             Assert.IsNotNull(w);
             Assert.IsNotNull(cw);
-            Assert.IsNull(cw._window);
+            Assert.IsNull(cw.AssociatedObject);
 
             cw._SetWindow(w);
         }
@@ -159,29 +159,29 @@ namespace ControlzEx.Windows.Shell
         [SecurityCritical]
         private void _SetWindow(Window window)
         {
-            Assert.IsNull(_window);
+            Assert.IsNull(this.AssociatedObject);
             Assert.IsNotNull(window);
 
             UnsubscribeWindowEvents();
 
-            _window = window;
+            this.AssociatedObject = window;
 
             // There are potentially a couple funny states here.
             // The window may have been shown and closed, in which case it's no longer usable.
             // We shouldn't add any hooks in that case, just exit early.
             // If the window hasn't yet been shown, then we need to make sure to remove hooks after it's closed.
-            _hwnd = new WindowInteropHelper(_window).Handle;
+            this.windowHandle = new WindowInteropHelper(this.AssociatedObject).Handle;
 
-            _window.Closed += _UnsetWindow;
+            this.AssociatedObject.Closed += this.UnsetAssociatedObject;
 
             // Use whether we can get an HWND to determine if the Window has been loaded.
-            if (IntPtr.Zero != _hwnd)
+            if (IntPtr.Zero != this.windowHandle)
             {
                 // We've seen that the HwndSource can't always be retrieved from the HWND, so cache it early.
                 // Specifically it seems to sometimes disappear when the OS theme is changing.
-                _hwndSource = HwndSource.FromHwnd(_hwnd);
-                Assert.IsNotNull(_hwndSource);
-                _window.ApplyTemplate();
+                this.hwndSource = HwndSource.FromHwnd(this.windowHandle);
+                Assert.IsNotNull(this.hwndSource);
+                this.AssociatedObject.ApplyTemplate();
 
                 if (_chromeInfo != null)
                 {
@@ -190,7 +190,7 @@ namespace ControlzEx.Windows.Shell
             }
             else
             {
-                _window.SourceInitialized += _WindowSourceInitialized;
+                this.AssociatedObject.SourceInitialized += this.AssociatedObjectSourceInitialized;
             }
         }
 
@@ -200,12 +200,12 @@ namespace ControlzEx.Windows.Shell
         /// </SecurityNote>
         [SecuritySafeCritical]
         [PermissionSet(SecurityAction.Demand, Name="FullTrust")]
-        private void _WindowSourceInitialized(object sender, EventArgs e)
+        private void AssociatedObjectSourceInitialized(object sender, EventArgs e)
         {
-            _hwnd = new WindowInteropHelper(_window).Handle;
-            Assert.IsNotDefault(_hwnd);
-            _hwndSource = HwndSource.FromHwnd(_hwnd);
-            Assert.IsNotNull(_hwndSource);
+            this.windowHandle = new WindowInteropHelper(this.AssociatedObject).Handle;
+            Assert.IsNotDefault(this.windowHandle);
+            this.hwndSource = HwndSource.FromHwnd(this.windowHandle);
+            Assert.IsNotNull(this.hwndSource);
 
             if (_chromeInfo != null)
             {
@@ -219,10 +219,10 @@ namespace ControlzEx.Windows.Shell
         [SecurityCritical]
         private void UnsubscribeWindowEvents()
         {
-            if (_window != null)
+            if (this.AssociatedObject != null)
             {
-                _window.SourceInitialized -= _WindowSourceInitialized;
-                _window.Closed -= _UnsetWindow; 
+                this.AssociatedObject.SourceInitialized -= this.AssociatedObjectSourceInitialized;
+                this.AssociatedObject.Closed -= this.UnsetAssociatedObject; 
             }
         }
 
@@ -232,7 +232,7 @@ namespace ControlzEx.Windows.Shell
         /// </SecurityNote>
         [SecuritySafeCritical]
         [PermissionSet(SecurityAction.Demand, Name="FullTrust")]
-        private void _UnsetWindow(object sender, EventArgs e)
+        private void UnsetAssociatedObject(object sender, EventArgs e)
         {
             UnsubscribeWindowEvents();
 
@@ -264,7 +264,7 @@ namespace ControlzEx.Windows.Shell
         [SecurityCritical]
         private void _ApplyNewCustomChrome()
         {
-            if (_hwnd == IntPtr.Zero || _hwndSource.IsDisposed)
+            if (this.windowHandle == IntPtr.Zero || this.hwndSource.IsDisposed)
             {
                 // Not yet hooked.
                 return;
@@ -278,7 +278,7 @@ namespace ControlzEx.Windows.Shell
 
             if (!_isHooked)
             {
-                _hwndSource.AddHook(_WndProc);
+                this.hwndSource.AddHook(_WndProc);
                 _isHooked = true;
             }
 
@@ -289,17 +289,17 @@ namespace ControlzEx.Windows.Shell
             }
 
             // Force this the first time.
-            _UpdateSystemMenu(_window.WindowState);
+            _UpdateSystemMenu(this.AssociatedObject.WindowState);
             _UpdateFrameState(true);
 
-            if (_hwndSource.IsDisposed)
+            if (this.hwndSource.IsDisposed)
             {
                 // If the window got closed very early
-                _UnsetWindow(this._window, EventArgs.Empty);
+                this.UnsetAssociatedObject(this.AssociatedObject, EventArgs.Empty);
                 return;
             }
 
-            NativeMethods.SetWindowPos(_hwnd, IntPtr.Zero, 0, 0, 0, 0, _SwpFlags);
+            NativeMethods.SetWindowPos(this.windowHandle, IntPtr.Zero, 0, 0, 0, 0, _SwpFlags);
         }
 
         /// A borderless window lost his animation, with this we bring it back.
@@ -320,11 +320,11 @@ namespace ControlzEx.Windows.Shell
         private IntPtr _WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             // Only expecting messages for our cached HWND.
-            Assert.AreEqual(hwnd, _hwnd);
+            Assert.AreEqual(hwnd, this.windowHandle);
 
             // Check if window has a RootVisual to workaround issue #13 (Win32Exception on closing window).
             // RootVisual gets cleared when the window is closing. This happens in CloseWindowFromWmClose of the Window class.
-            if (_hwndSource?.RootVisual == null)
+            if (this.hwndSource?.RootVisual == null)
             {
                 return IntPtr.Zero;
             }
@@ -346,14 +346,14 @@ namespace ControlzEx.Windows.Shell
         [SecurityCritical]
         private IntPtr _HandleNCUAHDrawCaption(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
-            if (false == _window.ShowInTaskbar && _GetHwndState() == WindowState.Minimized)
+            if (false == this.AssociatedObject.ShowInTaskbar && _GetHwndState() == WindowState.Minimized)
             {
                 bool modified = _ModifyStyle(WS.VISIBLE, 0);
 
                 // Minimize the window with ShowInTaskbar == false cause Windows to redraw the caption.
                 // Letting the default WndProc handle the message without the WS_VISIBLE
                 // style applied bypasses the redraw.
-                IntPtr lRet = NativeMethods.DefWindowProc(_hwnd, uMsg, wParam, lParam);
+                IntPtr lRet = NativeMethods.DefWindowProc(this.windowHandle, uMsg, wParam, lParam);
 
                 // Put back the style we removed.
                 if (modified)
@@ -377,7 +377,7 @@ namespace ControlzEx.Windows.Shell
             // Setting the caption text and icon cause Windows to redraw the caption.
             // Letting the default WndProc handle the message without the WS_VISIBLE
             // style applied bypasses the redraw.
-            IntPtr lRet = NativeMethods.DefWindowProc(_hwnd, uMsg, wParam, lParam);
+            IntPtr lRet = NativeMethods.DefWindowProc(this.windowHandle, uMsg, wParam, lParam);
 
             // Put back the style we removed.
             if (modified)
@@ -394,13 +394,13 @@ namespace ControlzEx.Windows.Shell
         [SecurityCritical]
         private IntPtr _HandleRestoreWindow(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
-            WINDOWPLACEMENT wpl = NativeMethods.GetWindowPlacement(_hwnd);
+            WINDOWPLACEMENT wpl = NativeMethods.GetWindowPlacement(this.windowHandle);
             var sc = (SC)(Environment.Is64BitProcess ? wParam.ToInt64() : wParam.ToInt32());
             if (SC.RESTORE == sc && wpl.showCmd == SW.SHOWMAXIMIZED && _MinimizeAnimation)
             {
                 var modified = _ModifyStyle(WS.SYSMENU, 0);
 
-                IntPtr lRet = NativeMethods.DefWindowProc(_hwnd, uMsg, wParam, lParam);
+                IntPtr lRet = NativeMethods.DefWindowProc(this.windowHandle, uMsg, wParam, lParam);
 
                 // Put back the style we removed.
                 if (modified)
@@ -428,7 +428,7 @@ namespace ControlzEx.Windows.Shell
 
             // Directly call DefWindowProc with a custom parameter
             // which bypasses any other handling of the message.
-            IntPtr lRet = NativeMethods.DefWindowProc(_hwnd, WM.NCACTIVATE, wParam, new IntPtr(-1));
+            IntPtr lRet = NativeMethods.DefWindowProc(this.windowHandle, WM.NCACTIVATE, wParam, new IntPtr(-1));
             handled = true;
 
             return lRet;
@@ -500,9 +500,9 @@ namespace ControlzEx.Windows.Shell
             // Since the first field of NCCALCSIZE_PARAMS is a RECT and is the only field we care about
             // we can unconditionally treat it as a RECT.
 
-            if (NativeMethods.GetWindowPlacement(_hwnd).showCmd == SW.MAXIMIZE && _MinimizeAnimation)
+            if (NativeMethods.GetWindowPlacement(this.windowHandle).showCmd == SW.MAXIMIZE && _MinimizeAnimation)
             {
-                var monitor = NativeMethods.MonitorFromWindow(_hwnd, MonitorOptions.MONITOR_DEFAULTTONEAREST);
+                var monitor = NativeMethods.MonitorFromWindow(this.windowHandle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
                 var monitorInfo = NativeMethods.GetMonitorInfo(monitor);
                 var monitorRect = this._chromeInfo.IgnoreTaskbarOnMaximize ? monitorInfo.rcMonitor : monitorInfo.rcWork;
 
@@ -543,7 +543,7 @@ namespace ControlzEx.Windows.Shell
 
         private HT _GetHTFromResizeGripDirection(ResizeGripDirection direction)
         {
-            bool compliment = _window.FlowDirection == FlowDirection.RightToLeft;
+            bool compliment = this.AssociatedObject.FlowDirection == FlowDirection.RightToLeft;
             switch (direction)
             {
                 case ResizeGripDirection.Bottom:
@@ -575,7 +575,7 @@ namespace ControlzEx.Windows.Shell
         [SecurityCritical]
         private IntPtr _HandleNCHitTest(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
-            DpiScale dpi = _window.GetDpi();
+            DpiScale dpi = this.AssociatedObject.GetDpi();
 
             // Let the system know if we consider the mouse to be in our effective non-client area.
             var mousePosScreen = Utility.GetPoint(lParam); //new Point(Utility.GET_X_LPARAM(lParam), Utility.GET_Y_LPARAM(lParam));
@@ -588,7 +588,7 @@ namespace ControlzEx.Windows.Shell
             // If the app is asking for content to be treated as client then that takes precedence over _everything_, even DWM caption buttons.
             // This allows apps to set the glass frame to be non-empty, still cover it with WPF content to hide all the glass,
             // yet still get DWM to draw a drop shadow.
-            IInputElement inputElement = _window.InputHitTest(mousePosWindow);
+            IInputElement inputElement = this.AssociatedObject.InputHitTest(mousePosWindow);
             if (inputElement != null)
             {
                 if (WindowChrome.GetIsHitTestVisibleInChrome(inputElement))
@@ -624,7 +624,7 @@ namespace ControlzEx.Windows.Shell
             if (HT.CAPTION == (HT)(Environment.Is64BitProcess ? wParam.ToInt64() : wParam.ToInt32()))
             {
                 //SystemCommands.ShowSystemMenuPhysicalCoordinates(_window, new Point(Utility.GET_X_LPARAM(lParam), Utility.GET_Y_LPARAM(lParam)));
-                SystemCommands.ShowSystemMenuPhysicalCoordinates(_window, Utility.GetPoint(lParam));
+                SystemCommands.ShowSystemMenuPhysicalCoordinates(this.AssociatedObject, Utility.GetPoint(lParam));
             }
             handled = false;
             return IntPtr.Zero;
@@ -732,10 +732,10 @@ namespace ControlzEx.Windows.Shell
              * MonitorFromWindow gives us the wrong (old) monitor! This is fixed in _HandleMoveForRealSize.
              */
             var ignoreTaskBar = _chromeInfo.IgnoreTaskbarOnMaximize;
-            if (ignoreTaskBar && NativeMethods.IsZoomed(_hwnd))
+            if (ignoreTaskBar && NativeMethods.IsZoomed(this.windowHandle))
             {
                 MINMAXINFO mmi = (MINMAXINFO)Marshal.PtrToStructure(lParam, typeof(MINMAXINFO));
-                IntPtr monitor = NativeMethods.MonitorFromWindow(_hwnd, MonitorOptions.MONITOR_DEFAULTTONEAREST);
+                IntPtr monitor = NativeMethods.MonitorFromWindow(this.windowHandle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
                 if (monitor != IntPtr.Zero)
                 {
                     MONITORINFO monitorInfo = NativeMethods.GetMonitorInfoW(monitor);
@@ -806,7 +806,7 @@ namespace ControlzEx.Windows.Shell
              */
             WindowState state = _GetHwndState();
             if (state == WindowState.Maximized) {
-                IntPtr monitorFromWindow = NativeMethods.MonitorFromWindow(_hwnd, MonitorOptions.MONITOR_DEFAULTTONEAREST);
+                IntPtr monitorFromWindow = NativeMethods.MonitorFromWindow(this.windowHandle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
                 if (monitorFromWindow != IntPtr.Zero)
                 {
                     var ignoreTaskBar = _chromeInfo.IgnoreTaskbarOnMaximize;
@@ -828,7 +828,7 @@ namespace ControlzEx.Windows.Shell
                      * area are saved and copied back into the client area after the window is sized or repositioned.
                      * 
                      */
-                    NativeMethods.SetWindowPos(_hwnd, IntPtr.Zero, rcMonitorArea.Left, rcMonitorArea.Top, rcMonitorArea.Width, rcMonitorArea.Height, SWP.ASYNCWINDOWPOS | SWP.FRAMECHANGED | SWP.NOCOPYBITS);
+                    NativeMethods.SetWindowPos(this.windowHandle, IntPtr.Zero, rcMonitorArea.Left, rcMonitorArea.Top, rcMonitorArea.Width, rcMonitorArea.Height, SWP.ASYNCWINDOWPOS | SWP.FRAMECHANGED | SWP.NOCOPYBITS);
                 }
             }
 
@@ -848,7 +848,7 @@ namespace ControlzEx.Windows.Shell
                 if (_ModifyStyle(0, WS.CAPTION))
                 {
                     //_UpdateFrameState(true);
-                    NativeMethods.SetWindowPos(_hwnd, IntPtr.Zero, 0, 0, 0, 0, _SwpFlags);
+                    NativeMethods.SetWindowPos(this.windowHandle, IntPtr.Zero, 0, 0, 0, 0, _SwpFlags);
                 }
             }
 
@@ -868,8 +868,8 @@ namespace ControlzEx.Windows.Shell
         [SecurityCritical]
         private bool _ModifyStyle(WS removeStyle, WS addStyle)
         {
-            Assert.IsNotDefault(_hwnd);
-            var intPtr = NativeMethods.GetWindowLongPtr(_hwnd, GWL.STYLE);
+            Assert.IsNotDefault(this.windowHandle);
+            var intPtr = NativeMethods.GetWindowLongPtr(this.windowHandle, GWL.STYLE);
             var dwStyle = (WS)(Environment.Is64BitProcess ? intPtr.ToInt64() : intPtr.ToInt32());
             var dwNewStyle = (dwStyle & ~removeStyle) | addStyle;
             if (dwStyle == dwNewStyle)
@@ -877,7 +877,7 @@ namespace ControlzEx.Windows.Shell
                 return false;
             }
 
-            NativeMethods.SetWindowLongPtr(_hwnd, GWL.STYLE, new IntPtr((int)dwNewStyle));
+            NativeMethods.SetWindowLongPtr(this.windowHandle, GWL.STYLE, new IntPtr((int)dwNewStyle));
             return true;
         }
 
@@ -890,7 +890,7 @@ namespace ControlzEx.Windows.Shell
         [SecurityCritical]
         private WindowState _GetHwndState()
         {
-            var wpl = NativeMethods.GetWindowPlacement(_hwnd);
+            var wpl = NativeMethods.GetWindowPlacement(this.windowHandle);
             switch (wpl.showCmd)
             {
                 case SW.SHOWMINIMIZED: return WindowState.Minimized;
@@ -910,7 +910,7 @@ namespace ControlzEx.Windows.Shell
         private Rect _GetWindowRect()
         {
             // Get the window rectangle.
-            RECT windowPosition = NativeMethods.GetWindowRect(_hwnd);
+            RECT windowPosition = NativeMethods.GetWindowRect(this.windowHandle);
             return new Rect(windowPosition.Left, windowPosition.Top, windowPosition.Width, windowPosition.Height);
         }
 
@@ -938,10 +938,10 @@ namespace ControlzEx.Windows.Shell
             {
                 _lastMenuState = state;
 
-                IntPtr hmenu = NativeMethods.GetSystemMenu(_hwnd, false);
+                IntPtr hmenu = NativeMethods.GetSystemMenu(this.windowHandle, false);
                 if (IntPtr.Zero != hmenu)
                 {
-                    var intPtr = NativeMethods.GetWindowLongPtr(_hwnd, GWL.STYLE);
+                    var intPtr = NativeMethods.GetWindowLongPtr(this.windowHandle, GWL.STYLE);
                     var dwStyle = (WS)(Environment.Is64BitProcess ? intPtr.ToInt64() : intPtr.ToInt32());
 
                     bool canMinimize = Utility.IsFlagSet((int)dwStyle, (int)WS.MINIMIZEBOX);
@@ -982,7 +982,7 @@ namespace ControlzEx.Windows.Shell
         [SecurityCritical]
         private void _UpdateFrameState(bool force)
         {
-            if (IntPtr.Zero == _hwnd || _hwndSource.IsDisposed)
+            if (IntPtr.Zero == this.windowHandle || this.hwndSource.IsDisposed)
             {
                 return;
             }
@@ -1004,7 +1004,7 @@ namespace ControlzEx.Windows.Shell
                     _ExtendGlassFrame();
                 }
 
-                if (_hwndSource.IsDisposed)
+                if (this.hwndSource.IsDisposed)
                 {
                     // If the window got closed very early
                     return;
@@ -1021,7 +1021,7 @@ namespace ControlzEx.Windows.Shell
                     _ModifyStyle(WS.CAPTION, 0);
                 }
 
-                NativeMethods.SetWindowPos(_hwnd, IntPtr.Zero, 0, 0, 0, 0, _SwpFlags);
+                NativeMethods.SetWindowPos(this.windowHandle, IntPtr.Zero, 0, 0, 0, 0, _SwpFlags);
             }
         }
 
@@ -1031,7 +1031,7 @@ namespace ControlzEx.Windows.Shell
         [SecurityCritical]
         private void _ClearRegion()
         {
-            NativeMethods.SetWindowRgn(_hwnd, IntPtr.Zero, NativeMethods.IsWindowVisible(_hwnd));
+            NativeMethods.SetWindowRgn(this.windowHandle, IntPtr.Zero, NativeMethods.IsWindowVisible(this.windowHandle));
         }
 
         /// <SecurityNote>
@@ -1045,7 +1045,7 @@ namespace ControlzEx.Windows.Shell
 
             POINT test = new POINT() { X = 0, Y = 0 };
             NativeMethods.ClientToScreen(hWnd, ref test);
-            if (_window.FlowDirection == FlowDirection.RightToLeft)
+            if (this.AssociatedObject.FlowDirection == FlowDirection.RightToLeft)
             {
                 clientRect.Offset(windowRect.Right - test.X, test.Y - windowRect.Top);
             }
@@ -1064,14 +1064,14 @@ namespace ControlzEx.Windows.Shell
         {
             // We're early - WPF hasn't necessarily updated the state of the window.
             // Need to query it ourselves.
-            WINDOWPLACEMENT wpl = NativeMethods.GetWindowPlacement(_hwnd);
+            WINDOWPLACEMENT wpl = NativeMethods.GetWindowPlacement(this.windowHandle);
 
             if (wpl.showCmd == SW.SHOWMAXIMIZED)
             {
                 RECT rcMax;
                 if (_MinimizeAnimation)
                 {
-                    rcMax = _GetClientRectRelativeToWindowRect(_hwnd);
+                    rcMax = _GetClientRectRelativeToWindowRect(this.windowHandle);
                 }
                 else
                 {
@@ -1090,7 +1090,7 @@ namespace ControlzEx.Windows.Shell
                         top = (int)r.Top;
                     }
 
-                    IntPtr hMon = NativeMethods.MonitorFromWindow(_hwnd, MonitorOptions.MONITOR_DEFAULTTONEAREST);
+                    IntPtr hMon = NativeMethods.MonitorFromWindow(this.windowHandle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
 
                     MONITORINFO mi = NativeMethods.GetMonitorInfo(hMon);
                     rcMax = _chromeInfo.IgnoreTaskbarOnMaximize ? mi.rcMonitor : mi.rcWork;
@@ -1103,7 +1103,7 @@ namespace ControlzEx.Windows.Shell
                 try
                 {
                     hrgn = NativeMethods.CreateRectRgnIndirect(rcMax);
-                    NativeMethods.SetWindowRgn(_hwnd, hrgn, NativeMethods.IsWindowVisible(_hwnd));
+                    NativeMethods.SetWindowRgn(this.windowHandle, hrgn, NativeMethods.IsWindowVisible(this.windowHandle));
                     hrgn = IntPtr.Zero;
                 }
                 finally
@@ -1120,7 +1120,7 @@ namespace ControlzEx.Windows.Shell
                 {
                     windowSize = new Size((double)wp.Value.cx, (double)wp.Value.cy);
                 }
-                else if (null != wp && (_lastRoundingState == _window.WindowState))
+                else if (null != wp && (_lastRoundingState == this.AssociatedObject.WindowState))
                 {
                     return;
                 }
@@ -1129,14 +1129,14 @@ namespace ControlzEx.Windows.Shell
                     windowSize = _GetWindowRect().Size;
                 }
 
-                _lastRoundingState = _window.WindowState;
+                _lastRoundingState = this.AssociatedObject.WindowState;
 
                 IntPtr hrgn = IntPtr.Zero;
                 try
                 {
                     hrgn = _CreateRectRgn(new Rect(windowSize));
 
-                    NativeMethods.SetWindowRgn(_hwnd, hrgn, NativeMethods.IsWindowVisible(_hwnd));
+                    NativeMethods.SetWindowRgn(this.windowHandle, hrgn, NativeMethods.IsWindowVisible(this.windowHandle));
                     hrgn = IntPtr.Zero;
                 }
                 finally
@@ -1166,7 +1166,7 @@ namespace ControlzEx.Windows.Shell
         [SecurityCritical]
         private void _ExtendGlassFrame()
         {
-            Assert.IsNotNull(_window);
+            Assert.IsNotNull(this.AssociatedObject);
 
             // Expect that this might be called on OSes other than Vista.
             if (!Utility.IsOSVistaOrNewer)
@@ -1175,13 +1175,13 @@ namespace ControlzEx.Windows.Shell
                 return;
             }
 
-            if (IntPtr.Zero == _hwnd)
+            if (IntPtr.Zero == this.windowHandle)
             {
                 // Can't do anything with this call until the Window has been shown.
                 return;
             }
 
-            if (_hwndSource.IsDisposed)
+            if (this.hwndSource.IsDisposed)
             {
                 // If the window got closed very early
                 return;
@@ -1192,27 +1192,27 @@ namespace ControlzEx.Windows.Shell
             {
                 // Apply the transparent background to the HWND for disabled DwmIsComposition too
                 // but only if the window has the flag AllowsTransparency turned on
-                if (_window.AllowsTransparency)
+                if (this.AssociatedObject.AllowsTransparency)
                 {
-                    _hwndSource.CompositionTarget.BackgroundColor = Colors.Transparent;
+                    this.hwndSource.CompositionTarget.BackgroundColor = Colors.Transparent;
                 }
                 else
                 {
-                    _hwndSource.CompositionTarget.BackgroundColor = SystemColors.WindowColor;
+                    this.hwndSource.CompositionTarget.BackgroundColor = SystemColors.WindowColor;
                 }
             }
             else
             {
-                DpiScale dpi = _window.GetDpi();
+                DpiScale dpi = this.AssociatedObject.GetDpi();
 
                 // This makes the glass visible at a Win32 level so long as nothing else is covering it.
                 // The Window's Background needs to be changed independent of this.
 
                 // Apply the transparent background to the HWND
                 // but only if the window has the flag AllowsTransparency turned on
-                if (_window.AllowsTransparency)
+                if (this.AssociatedObject.AllowsTransparency)
                 {
-                    _hwndSource.CompositionTarget.BackgroundColor = Colors.Transparent;
+                    this.hwndSource.CompositionTarget.BackgroundColor = Colors.Transparent;
                 }
 
                 // Thickness is going to be DIPs, need to convert to system coordinates.
@@ -1227,7 +1227,7 @@ namespace ControlzEx.Windows.Shell
                     cyBottomHeight = (int)Math.Ceiling(deviceGlassThickness.Bottom),
                 };
 
-                NativeMethods.DwmExtendFrameIntoClientArea(_hwnd, ref dwmMargin);
+                NativeMethods.DwmExtendFrameIntoClientArea(this.windowHandle, ref dwmMargin);
             }
         }
 
@@ -1299,12 +1299,12 @@ namespace ControlzEx.Windows.Shell
 
             _UnhookCustomChrome();
 
-            if (!isClosing && !_hwndSource.IsDisposed)
+            if (!isClosing && !this.hwndSource.IsDisposed)
             {
                 _RestoreGlassFrame();
                 _RestoreHrgn();
 
-                _window.InvalidateMeasure();
+                this.AssociatedObject.InvalidateMeasure();
             }
         }
 
@@ -1315,12 +1315,12 @@ namespace ControlzEx.Windows.Shell
         private void _UnhookCustomChrome()
         {
             //Assert.IsNotDefault(_hwnd);
-            Assert.IsNotNull(_window);
+            Assert.IsNotNull(this.AssociatedObject);
 
             if (_isHooked)
             {
-                Assert.IsNotDefault(_hwnd);
-                _hwndSource.RemoveHook(_WndProc);
+                Assert.IsNotDefault(this.windowHandle);
+                this.hwndSource.RemoveHook(_WndProc);
                 _isHooked = false;
             }
         }
@@ -1332,22 +1332,22 @@ namespace ControlzEx.Windows.Shell
         private void _RestoreGlassFrame()
         {
             Assert.IsNull(_chromeInfo);
-            Assert.IsNotNull(_window);
+            Assert.IsNotNull(this.AssociatedObject);
 
             // Expect that this might be called on OSes other than Vista
             // and if the window hasn't yet been shown, then we don't need to undo anything.
-            if (!Utility.IsOSVistaOrNewer || _hwnd == IntPtr.Zero)
+            if (!Utility.IsOSVistaOrNewer || this.windowHandle == IntPtr.Zero)
             {
                 return;
             }
 
-            _hwndSource.CompositionTarget.BackgroundColor = SystemColors.WindowColor;
+            this.hwndSource.CompositionTarget.BackgroundColor = SystemColors.WindowColor;
 
             if (NativeMethods.DwmIsCompositionEnabled())
             {
                 // If glass is enabled, push it back to the normal bounds.
                 var dwmMargin = new MARGINS();
-                NativeMethods.DwmExtendFrameIntoClientArea(_hwnd, ref dwmMargin);
+                NativeMethods.DwmExtendFrameIntoClientArea(this.windowHandle, ref dwmMargin);
             }
         }
 
@@ -1358,7 +1358,7 @@ namespace ControlzEx.Windows.Shell
         private void _RestoreHrgn()
         {
             this._ClearRegion();
-            NativeMethods.SetWindowPos(_hwnd, IntPtr.Zero, 0, 0, 0, 0, _SwpFlags);
+            NativeMethods.SetWindowPos(this.windowHandle, IntPtr.Zero, 0, 0, 0, 0, _SwpFlags);
         }
 
         #endregion
