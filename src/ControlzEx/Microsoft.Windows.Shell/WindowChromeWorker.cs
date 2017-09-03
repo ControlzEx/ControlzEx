@@ -1034,7 +1034,7 @@ namespace ControlzEx.Windows.Shell
                 if (!wp.Equals(_previousWP))
                 {
                     _previousWP = wp;
-                    _SetRoundingRegion(wp);
+                    this._SetRegion(wp);
                 }
                 _previousWP = wp;
 
@@ -1410,11 +1410,11 @@ namespace ControlzEx.Windows.Shell
 
                 if (!_isGlassEnabled)
                 {
-                    _SetRoundingRegion(null);
+                    this._SetRegion(null);
                 }
                 else
                 {
-                    _ClearRoundingRegion();
+                    this._ClearRegion();
                     _ExtendGlassFrame();
                 }
 
@@ -1443,7 +1443,7 @@ namespace ControlzEx.Windows.Shell
         ///   Critical : Calls critical methods
         /// </SecurityNote>
         [SecurityCritical]
-        private void _ClearRoundingRegion()
+        private void _ClearRegion()
         {
             NativeMethods.SetWindowRgn(_hwnd, IntPtr.Zero, NativeMethods.IsWindowVisible(_hwnd));
         }
@@ -1474,7 +1474,7 @@ namespace ControlzEx.Windows.Shell
         ///   Critical : Calls critical methods
         /// </SecurityNote>
         [SecurityCritical]
-        private void _SetRoundingRegion(WINDOWPOS? wp)
+        private void _SetRegion(WINDOWPOS? wp)
         {
             // We're early - WPF hasn't necessarily updated the state of the window.
             // Need to query it ourselves.
@@ -1822,7 +1822,7 @@ namespace ControlzEx.Windows.Shell
         [SecurityCritical]
         private void _RestoreHrgn()
         {
-            _ClearRoundingRegion();
+            this._ClearRegion();
             NativeMethods.SetWindowPos(_hwnd, IntPtr.Zero, 0, 0, 0, 0, _SwpFlags);
         }
 
