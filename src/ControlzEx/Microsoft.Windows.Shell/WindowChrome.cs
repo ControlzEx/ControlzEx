@@ -264,21 +264,6 @@ namespace ControlzEx.Windows.Shell
             set { SetValue(IgnoreTaskbarOnMaximizeProperty, value); }
         }
 
-        public static readonly DependencyProperty CornerRadiusProperty = DependencyProperty.Register(
-            "CornerRadius",
-            typeof(CornerRadius),
-            typeof(WindowChrome),
-            new PropertyMetadata(
-                default(CornerRadius),
-                (d, e) => ((WindowChrome)d)._OnPropertyChangedThatRequiresRepaint()),
-            (value) => ((CornerRadius)value).IsValid());
-
-        public CornerRadius CornerRadius
-        {
-            get { return (CornerRadius)GetValue(CornerRadiusProperty); }
-            set { SetValue(CornerRadiusProperty, value); }
-        }
-
         public static readonly DependencyProperty SacrificialEdgeProperty = DependencyProperty.Register(
             "SacrificialEdge",
             typeof(SacrificialEdge),
@@ -337,7 +322,6 @@ namespace ControlzEx.Windows.Shell
 
         private static readonly List<_SystemParameterBoundProperty> _BoundProperties = new List<_SystemParameterBoundProperty>
         {
-            new _SystemParameterBoundProperty { DependencyProperty = CornerRadiusProperty, SystemParameterPropertyName = "WindowCornerRadius" },
             new _SystemParameterBoundProperty { DependencyProperty = CaptionHeightProperty, SystemParameterPropertyName = "WindowCaptionHeight" },
             new _SystemParameterBoundProperty { DependencyProperty = ResizeBorderThicknessProperty, SystemParameterPropertyName = "WindowResizeBorderThickness" },
             new _SystemParameterBoundProperty { DependencyProperty = GlassFrameThicknessProperty, SystemParameterPropertyName = "WindowNonClientFrameThickness" },

@@ -1548,51 +1548,7 @@ namespace ControlzEx.Windows.Shell
                 IntPtr hrgn = IntPtr.Zero;
                 try
                 {
-                    DpiScale dpi = _window.GetDpi();
-
-                    double shortestDimension = Math.Min(windowSize.Width, windowSize.Height);
-
-                    double topLeftRadius = DpiHelper.LogicalPixelsToDevice(new Point(_chromeInfo.CornerRadius.TopLeft, 0), dpi.DpiScaleX, dpi.DpiScaleY).X;
-                    topLeftRadius = Math.Min(topLeftRadius, shortestDimension / 2);
-
-                    if (_IsUniform(_chromeInfo.CornerRadius))
-                    {
-                        // RoundedRect HRGNs require an additional pixel of padding.
-                        hrgn = _CreateRoundRectRgn(new Rect(windowSize), topLeftRadius);
-                    }
-                    else
-                    {
-                        // We need to combine HRGNs for each of the corners.
-                        // Create one for each quadrant, but let it overlap into the two adjacent ones
-                        // by the radius amount to ensure that there aren't corners etched into the middle
-                        // of the window.
-                        hrgn = _CreateRoundRectRgn(new Rect(0, 0, windowSize.Width / 2 + topLeftRadius, windowSize.Height / 2 + topLeftRadius), topLeftRadius);
-
-                        double topRightRadius = DpiHelper.LogicalPixelsToDevice(new Point(_chromeInfo.CornerRadius.TopRight, 0), dpi.DpiScaleX, dpi.DpiScaleY).X;
-                        topRightRadius = Math.Min(topRightRadius, shortestDimension / 2);
-                        Rect topRightRegionRect = new Rect(0, 0, windowSize.Width / 2 + topRightRadius, windowSize.Height / 2 + topRightRadius);
-                        topRightRegionRect.Offset(windowSize.Width / 2 - topRightRadius, 0);
-                        Assert.AreEqual(topRightRegionRect.Right, windowSize.Width);
-
-                        _CreateAndCombineRoundRectRgn(hrgn, topRightRegionRect, topRightRadius);
-
-                        double bottomLeftRadius = DpiHelper.LogicalPixelsToDevice(new Point(_chromeInfo.CornerRadius.BottomLeft, 0), dpi.DpiScaleX, dpi.DpiScaleY).X;
-                        bottomLeftRadius = Math.Min(bottomLeftRadius, shortestDimension / 2);
-                        Rect bottomLeftRegionRect = new Rect(0, 0, windowSize.Width / 2 + bottomLeftRadius, windowSize.Height / 2 + bottomLeftRadius);
-                        bottomLeftRegionRect.Offset(0, windowSize.Height / 2 - bottomLeftRadius);
-                        Assert.AreEqual(bottomLeftRegionRect.Bottom, windowSize.Height);
-
-                        _CreateAndCombineRoundRectRgn(hrgn, bottomLeftRegionRect, bottomLeftRadius);
-
-                        double bottomRightRadius = DpiHelper.LogicalPixelsToDevice(new Point(_chromeInfo.CornerRadius.BottomRight, 0), dpi.DpiScaleX, dpi.DpiScaleY).X;
-                        bottomRightRadius = Math.Min(bottomRightRadius, shortestDimension / 2);
-                        Rect bottomRightRegionRect = new Rect(0, 0, windowSize.Width / 2 + bottomRightRadius, windowSize.Height / 2 + bottomRightRadius);
-                        bottomRightRegionRect.Offset(windowSize.Width / 2 - bottomRightRadius, windowSize.Height / 2 - bottomRightRadius);
-                        Assert.AreEqual(bottomRightRegionRect.Right, windowSize.Width);
-                        Assert.AreEqual(bottomRightRegionRect.Bottom, windowSize.Height);
-
-                        _CreateAndCombineRoundRectRgn(hrgn, bottomRightRegionRect, bottomRightRadius);
-                    }
+                    hrgn = _CreateRectRgn(new Rect(windowSize));
 
                     NativeMethods.SetWindowRgn(_hwnd, hrgn, NativeMethods.IsWindowVisible(_hwnd));
                     hrgn = IntPtr.Zero;
@@ -1609,71 +1565,13 @@ namespace ControlzEx.Windows.Shell
         ///   Critical : Calls critical methods
         /// </SecurityNote>
         [SecurityCritical]
-        private static IntPtr _CreateRoundRectRgn(Rect region, double radius)
+        private static IntPtr _CreateRectRgn(Rect region)
         {
-            // Round outwards.
-
-            if (DoubleUtilities.AreClose(0, radius))
-            {
-                return NativeMethods.CreateRectRgn(
-                    (int)Math.Floor(region.Left),
-                    (int)Math.Floor(region.Top),
-                    (int)Math.Ceiling(region.Right),
-                    (int)Math.Ceiling(region.Bottom));
-            }
-
-            // RoundedRect HRGNs require an additional pixel of padding on the bottom right to look correct.
-            return NativeMethods.CreateRoundRectRgn(
+            return NativeMethods.CreateRectRgn(
                 (int)Math.Floor(region.Left),
                 (int)Math.Floor(region.Top),
-                (int)Math.Ceiling(region.Right) + 1,
-                (int)Math.Ceiling(region.Bottom) + 1,
-                (int)Math.Ceiling(radius),
-                (int)Math.Ceiling(radius));
-        }
-
-        /// <SecurityNote>
-        ///   Critical : Calls critical methods
-        /// </SecurityNote>
-        [SecurityCritical]
-        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "HRGNs")]
-        private static void _CreateAndCombineRoundRectRgn(IntPtr hrgnSource, Rect region, double radius)
-        {
-            IntPtr hrgn = IntPtr.Zero;
-            try
-            {
-                hrgn = _CreateRoundRectRgn(region, radius);
-                CombineRgnResult result = NativeMethods.CombineRgn(hrgnSource, hrgnSource, hrgn, RGN.OR);
-                if (result == CombineRgnResult.ERROR)
-                {
-                    throw new InvalidOperationException("Unable to combine two HRGNs.");
-                }
-            }
-            catch
-            {
-                Utility.SafeDeleteObject(ref hrgn);
-                throw;
-            }
-        }
-
-        private static bool _IsUniform(CornerRadius cornerRadius)
-        {
-            if (!DoubleUtilities.AreClose(cornerRadius.BottomLeft, cornerRadius.BottomRight))
-            {
-                return false;
-            }
-
-            if (!DoubleUtilities.AreClose(cornerRadius.TopLeft, cornerRadius.TopRight))
-            {
-                return false;
-            }
-
-            if (!DoubleUtilities.AreClose(cornerRadius.BottomLeft, cornerRadius.TopRight))
-            {
-                return false;
-            }
-
-            return true;
+                (int)Math.Ceiling(region.Right),
+                (int)Math.Ceiling(region.Bottom));
         }
 
         /// <SecurityNote>
