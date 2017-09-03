@@ -194,7 +194,6 @@ namespace ControlzEx.Behaviors
             BindingOperations.SetBinding(this.windowChrome, WindowChrome.ResizeBorderThicknessProperty, new Binding { Path = new PropertyPath(ResizeBorderThicknessProperty), Source = this });
             BindingOperations.SetBinding(this.windowChrome, WindowChrome.GlassFrameThicknessProperty, new Binding { Path = new PropertyPath(GlassFrameThicknessProperty), Source = this });
             this.windowChrome.CaptionHeight = 0;
-            this.windowChrome.UseAeroCaptionButtons = false;
 
             this.AssociatedObject.SetValue(WindowChrome.WindowChromeProperty, this.windowChrome);
         }

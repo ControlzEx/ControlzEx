@@ -219,18 +219,6 @@ namespace ControlzEx.Windows.Shell
             set { SetValue(GlassFrameThicknessProperty, value); }
         }
 
-        public static readonly DependencyProperty UseAeroCaptionButtonsProperty = DependencyProperty.Register(
-            "UseAeroCaptionButtons",
-            typeof(bool),
-            typeof(WindowChrome),
-            new FrameworkPropertyMetadata(true));
-
-        public bool UseAeroCaptionButtons
-        {
-            get { return (bool)GetValue(UseAeroCaptionButtonsProperty); }
-            set { SetValue(UseAeroCaptionButtonsProperty, value); }
-        }
-
         /// <summary>Dependency property for IgnoreTaskbarOnMaximize</summary>
         public static readonly DependencyProperty IgnoreTaskbarOnMaximizeProperty = DependencyProperty.Register(
             "IgnoreTaskbarOnMaximize",

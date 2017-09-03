@@ -614,23 +614,6 @@ namespace ControlzEx.Windows.Shell
                 }
             }
 
-            // It's not opted out, so offer up the hittest to DWM, then to our custom non-client area logic.
-            if (_chromeInfo.UseAeroCaptionButtons)
-            {
-                IntPtr lRet;
-                if (Utility.IsOSVistaOrNewer && _chromeInfo.GlassFrameThickness != default(Thickness) && _isGlassEnabled)
-                {
-                    // If we're on Vista, give the DWM a chance to handle the message first.
-                    handled = NativeMethods.DwmDefWindowProc(_hwnd, uMsg, wParam, lParam, out lRet);
-
-                    if (IntPtr.Zero != lRet)
-                    {
-                        // If DWM claims to have handled this, then respect their call.
-                        return lRet;
-                    }
-                }
-            }
-
             HT ht = _HitTestNca(
                 DpiHelper.DeviceRectToLogical(windowPosition, dpi.DpiScaleX, dpi.DpiScaleY),
                 DpiHelper.DevicePixelsToLogical(mousePosScreen, dpi.DpiScaleX, dpi.DpiScaleY));
