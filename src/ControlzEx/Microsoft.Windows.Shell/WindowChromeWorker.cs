@@ -19,9 +19,6 @@ namespace ControlzEx.Windows.Shell
 
     internal class WindowChromeWorker : DependencyObject
     {
-        // Delegate signature used for Dispatcher.BeginInvoke.
-        private delegate void _Action();
-
         #region Fields
 
         private const SWP _SwpFlags = SWP.FRAMECHANGED | SWP.NOSIZE | SWP.NOMOVE | SWP.NOZORDER | SWP.NOOWNERZORDER | SWP.NOACTIVATE;
@@ -46,12 +43,6 @@ namespace ControlzEx.Windows.Shell
         private HwndSource _hwndSource = null;
 
         private bool _isHooked = false;
-
-        // These fields are for tracking workarounds for WPF 3.5SP1 behaviors.
-        private bool _isFixedUp = false;
-        private bool _isUserResizing = false;
-        private bool _hasUserMovedWindow = false;
-        private Point _windowPosAtStartOfUserMove = default(Point);
 
         /// <summary>Object that describes the current modifications being made to the chrome.</summary>
         private WindowChrome _chromeInfo;
