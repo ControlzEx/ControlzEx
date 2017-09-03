@@ -104,8 +104,8 @@ namespace ControlzEx.Behaviors
         /// <summary>The extent of the top of the window to treat as the caption.</summary>
         public double CaptionHeight
         {
-            get { return (double)GetValue(CaptionHeightProperty); }
-            set { SetValue(CaptionHeightProperty, value); }
+            get { return (double)this.GetValue(CaptionHeightProperty); }
+            set { this.SetValue(CaptionHeightProperty, value); }
         }
 
         /// <summary>
@@ -322,7 +322,7 @@ namespace ControlzEx.Behaviors
 
                 this.hwndSource?.RemoveHook(this.WindowProc);
 
-                _RestoreStandardChromeState(isClosing);
+                this._RestoreStandardChromeState(isClosing);
             }
         }
 
@@ -366,7 +366,7 @@ namespace ControlzEx.Behaviors
             this.hwndSource = HwndSource.FromHwnd(this.windowHandle);
             this.hwndSource?.AddHook(this.WindowProc);
 
-            _ApplyNewCustomChrome();
+            this._ApplyNewCustomChrome();
 
             // handle the maximized state here too (to handle the border in a correct way)
             this.HandleMaximize();
