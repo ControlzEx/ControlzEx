@@ -275,12 +275,14 @@ namespace ControlzEx.Behaviors
             var behavior = (WindowChromeBehavior)d;
             behavior._OnChromePropertyChangedThatRequiresRepaint();
 
-            // another special hack to avoid nasty resizing
-            // repro
-            // ResizeMode="NoResize"
-            // WindowState="Maximized"
-            // IgnoreTaskbarOnMaximize="True"
-            // this only happens if we change this at runtime
+            // A few things to consider when removing the below hack
+            // - ResizeMode="NoResize"
+            //   WindowState="Maximized"
+            //   IgnoreTaskbarOnMaximize="True"
+            // - Changing IgnoreTaskbarOnMaximize while window is maximized
+
+            // Changing the WindowState solves all, known, issues with changing IgnoreTaskbarOnMaximize.
+            // Since IgnoreTaskbarOnMaximize is not changed all the time this hack seems to be less risky than anything else.
             if (behavior.AssociatedObject.WindowState == WindowState.Maximized)
             {
                 behavior.AssociatedObject.WindowState = WindowState.Normal;
