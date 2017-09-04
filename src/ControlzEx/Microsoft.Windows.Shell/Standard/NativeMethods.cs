@@ -902,6 +902,7 @@ namespace ControlzEx.Standard
         IME_KEYUP = 0x0291,
 
         NCMOUSELEAVE = 0x02A2,
+        MOUSELEAVE = 0x02A3,
 
         TABLET_DEFBASE = 0x02C0,
         //WM_TABLET_MAXOFFSET = 0x20,
