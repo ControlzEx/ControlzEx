@@ -413,6 +413,15 @@ namespace ControlzEx.Behaviors
 
             if (this.AssociatedObject.WindowState == WindowState.Maximized)
             {
+                // Workaround for:
+                // MaxWidth="someValue"
+                // SizeToContent = "WidthAndHeight"
+                // Dragging the window to the top with those things set does not change the height of the Window
+                if (this.AssociatedObject.SizeToContent != SizeToContent.Manual)
+                {
+                    this.AssociatedObject.SizeToContent = SizeToContent.Manual;
+                }
+
                 if (this.windowHandle != IntPtr.Zero)
                 {
                     // WindowChrome handles the size false if the main monitor is lesser the monitor where the window is maximized
