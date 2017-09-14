@@ -3504,10 +3504,20 @@ namespace ControlzEx.Standard
         [DllImport("user32.dll", EntryPoint = "GetWindowLongPtr", SetLastError = true)]
         private static extern IntPtr GetWindowLongPtr64(IntPtr hWnd, GWL nIndex);
 
+        /// <summary>
+        /// Retrieves the show state and the restored, minimized, and maximized positions of the specified window.
+        /// </summary>
+        /// <param name="hwnd">A handle to the window.</param>
+        /// <param name="lpwndpl">A pointer to the WINDOWPLACEMENT structure that receives the show state and position information.</param>
+        /// <remarks>
+        /// Before calling GetWindowPlacement, set the length member to sizeof(WINDOWPLACEMENT).
+        /// GetWindowPlacement fails if lpwndpl-> length is not set correctly.
+        /// </remarks>
+        /// <returns>If the function succeeds, the return value is nonzero. If the function fails, the return value is zero.</returns>
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("user32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool GetWindowPlacement(IntPtr hwnd, WINDOWPLACEMENT lpwndpl);
+        private static extern bool GetWindowPlacement(IntPtr hwnd, [In, Out] WINDOWPLACEMENT lpwndpl);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static WINDOWPLACEMENT GetWindowPlacement(IntPtr hwnd)
@@ -3519,6 +3529,21 @@ namespace ControlzEx.Standard
             }
             throw new Win32Exception();
         }
+
+        /// <summary>
+        /// Sets the show state and the restored, minimized, and maximized positions of the specified window.
+        /// </summary>
+        /// <param name="hWnd">A handle to the window.</param>
+        /// <param name="lpwndpl">A pointer to a WINDOWPLACEMENT structure that specifies the new show state and window positions.</param>
+        /// <remarks>
+        /// Before calling SetWindowPlacement, set the length member of the WINDOWPLACEMENT structure to sizeof(WINDOWPLACEMENT).
+        /// SetWindowPlacement fails if the length member is not set correctly.
+        /// </remarks>
+        /// <returns>If the function succeeds, the return value is nonzero. If the function fails, the return value is zero.</returns>
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SetWindowPlacement(IntPtr hWnd, [In] WINDOWPLACEMENT lpwndpl);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("user32.dll", EntryPoint = "GetWindowRect", SetLastError = true)]
