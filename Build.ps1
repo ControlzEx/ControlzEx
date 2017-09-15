@@ -12,7 +12,7 @@ $ErrorActionPreference = "Stop"
 . $PSScriptRoot\MSBuildHelper.ps1
 
 $target = "Build"
-if ($Publish) { $target = "PublishVersion" }
+if ($Publish) { $target = "MakeNuGetPackage" }
 
 Write-Output Building
 $msbuild = Get-MSBuild
