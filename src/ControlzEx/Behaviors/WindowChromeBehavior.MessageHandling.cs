@@ -1129,7 +1129,7 @@ namespace ControlzEx.Behaviors
             var onResizeBorder = false;
 
             // Determine if the point is at the top or bottom of the window.
-            if (mousePosition.Y >= windowPosition.Top && mousePosition.Y < windowPosition.Top + this.ResizeBorderThickness.Top + this.CaptionHeight)
+            if (mousePosition.Y >= windowPosition.Top && mousePosition.Y < windowPosition.Top + this.ResizeBorderThickness.Top)
             {
                 onResizeBorder = (mousePosition.Y < (windowPosition.Top + this.ResizeBorderThickness.Top));
                 uRow = 0; // top (caption or resize border)

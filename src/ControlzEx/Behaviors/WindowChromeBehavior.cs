@@ -99,15 +99,6 @@ namespace ControlzEx.Behaviors
             return thickness;
         }
 
-        public static readonly DependencyProperty CaptionHeightProperty = DependencyProperty.Register(nameof(CaptionHeight), typeof(double), typeof(WindowChromeBehavior), new PropertyMetadata(0d, (d, e) => ((WindowChromeBehavior)d)._OnChromePropertyChangedThatRequiresRepaint()), value => (double)value >= 0d);
-
-        /// <summary>The extent of the top of the window to treat as the caption.</summary>
-        public double CaptionHeight
-        {
-            get { return (double)this.GetValue(CaptionHeightProperty); }
-            set { this.SetValue(CaptionHeightProperty, value); }
-        }
-
         /// <summary>
         /// <see cref="DependencyProperty"/> for <see cref="GlowBrush"/>.
         /// </summary>
@@ -234,7 +225,7 @@ namespace ControlzEx.Behaviors
 #if NET45 || NET462
             return SystemParameters.WindowResizeBorderThickness;
 #else
-            return SystemParameters2.Current.WindowResizeBorderThickness;
+            return ControlzEx.Windows.Shell.SystemParameters2.Current.WindowResizeBorderThickness;
 #endif
         }
 
@@ -593,7 +584,6 @@ namespace ControlzEx.Behaviors
 
         private static readonly List<_SystemParameterBoundProperty> _BoundProperties = new List<_SystemParameterBoundProperty>
                                                                                        {
-                                                                                           new _SystemParameterBoundProperty { DependencyProperty = CaptionHeightProperty, SystemParameterPropertyName = "WindowCaptionHeight" },
                                                                                            new _SystemParameterBoundProperty { DependencyProperty = ResizeBorderThicknessProperty, SystemParameterPropertyName = "WindowResizeBorderThickness" },
                                                                                            new _SystemParameterBoundProperty { DependencyProperty = GlassFrameThicknessProperty, SystemParameterPropertyName = "WindowNonClientFrameThickness" },
                                                                                        };
