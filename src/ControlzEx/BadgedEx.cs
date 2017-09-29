@@ -58,6 +58,15 @@ namespace ControlzEx
             set { SetValue(BadgePlacementModeProperty, value); }
         }
 
+        public static readonly DependencyProperty BadgeMarginProperty = DependencyProperty.Register(
+            "BadgeMargin", typeof(Thickness), typeof(BadgedEx), new PropertyMetadata(default(Thickness)));
+
+        public Thickness BadgeMargin
+        {
+            get { return (Thickness)GetValue(BadgeMarginProperty); }
+            set { SetValue(BadgeMarginProperty, value); }
+        }
+
         public static readonly RoutedEvent BadgeChangedEvent =
             EventManager.RegisterRoutedEvent(
                 "BadgeChanged",
