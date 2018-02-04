@@ -18,8 +18,8 @@ using System.Windows;
 // Only increase AssemblyVersion for major releases. 
 // Otherwise we get issues with nuget version ranges for dependent projects.
 // Especially dependent projects which use strong names get problems with changing version numbers.
-[assembly: AssemblyVersion("3.0.1.0")]
-[assembly: AssemblyFileVersion("3.0.1.0")]
+[assembly: AssemblyVersion("4.0.0")]
+[assembly: AssemblyFileVersion("4.0.0")]
 [assembly: AssemblyInformationalVersion("SRC")]
 
 [assembly: ComVisible(false)]
