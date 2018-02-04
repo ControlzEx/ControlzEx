@@ -10,7 +10,6 @@ namespace ControlzEx.Standard
     using System.Runtime.InteropServices.ComTypes;
     using System.Security;
     using System.Text;
-    using ControlzEx.Native;
     using Microsoft.Win32.SafeHandles;
 
     // Some COM interfaces and Win32 structures are already declared in the framework.

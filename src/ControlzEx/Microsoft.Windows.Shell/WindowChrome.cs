@@ -5,11 +5,9 @@
 namespace ControlzEx.Windows.Shell
 {
     using System;
-    using System.Collections.Generic;
     using System.ComponentModel;
     using System.Diagnostics.CodeAnalysis;
     using System.Windows;
-    using System.Windows.Data;
     using ControlzEx;
     using ControlzEx.Standard;
 
@@ -46,7 +44,7 @@ namespace ControlzEx.Windows.Shell
             var dobj = inputElement as DependencyObject;
             if (dobj == null)
             {
-                throw new ArgumentException("The element must be a DependencyObject", "inputElement");
+                throw new ArgumentException("The element must be a DependencyObject", nameof(inputElement));
             }
             return (bool)dobj.GetValue(IsHitTestVisibleInChromeProperty);
         }
@@ -59,7 +57,7 @@ namespace ControlzEx.Windows.Shell
             var dobj = inputElement as DependencyObject;
             if (dobj == null)
             {
-                throw new ArgumentException("The element must be a DependencyObject", "inputElement");
+                throw new ArgumentException("The element must be a DependencyObject", nameof(inputElement));
             }
             dobj.SetValue(IsHitTestVisibleInChromeProperty, hitTestVisible);
         }
@@ -79,7 +77,7 @@ namespace ControlzEx.Windows.Shell
             var dobj = inputElement as DependencyObject;
             if (dobj == null)
             {
-                throw new ArgumentException("The element must be a DependencyObject", "inputElement");
+                throw new ArgumentException("The element must be a DependencyObject", nameof(inputElement));
             }
             return (ResizeGripDirection)dobj.GetValue(ResizeGripDirectionProperty);
         }
@@ -92,7 +90,7 @@ namespace ControlzEx.Windows.Shell
             var dobj = inputElement as DependencyObject;
             if (dobj == null)
             {
-                throw new ArgumentException("The element must be a DependencyObject", "inputElement");
+                throw new ArgumentException("The element must be a DependencyObject", nameof(inputElement));
             }
             dobj.SetValue(ResizeGripDirectionProperty, direction);
         }
