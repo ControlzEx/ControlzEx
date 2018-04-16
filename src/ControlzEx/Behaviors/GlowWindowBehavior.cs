@@ -1,6 +1,7 @@
 ﻿namespace ControlzEx.Behaviors
 {
     using System;
+    using System.Linq;
     using System.Runtime.InteropServices;
     using System.Windows;
     using System.Windows.Interactivity;
@@ -53,6 +54,18 @@
         public static bool GetIsGlowTransitionEnabled(DependencyObject element)
         {
             return (bool)element.GetValue(IsGlowTransitionEnabledProperty);
+        }
+
+        public static readonly DependencyProperty ResizeBorderThicknessProperty = DependencyProperty.RegisterAttached("ResizeBorderThickness", typeof(Thickness), typeof(GlowWindowBehavior), new PropertyMetadata(WindowChromeBehavior.GetDefaultResizeBorderThickness()));
+
+        public static void SetResizeBorderThickness(DependencyObject element, Thickness value)
+        {
+            element.SetValue(ResizeBorderThicknessProperty, value);
+        }
+
+        public static Thickness GetResizeBorderThickness(DependencyObject element)
+        {
+            return (Thickness)element.GetValue(ResizeBorderThicknessProperty);
         }
 
         private bool IsGlowDisabled

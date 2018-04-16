@@ -22,7 +22,6 @@ namespace ControlzEx.Controls
         private readonly Func<RECT, double> getWidth;
         private readonly Func<RECT, double> getHeight;
         private const double edgeSize = 20.0;
-        private const double glowSize = 6.0;
         private IntPtr handle;
         private IntPtr ownerHandle;
         private bool closing = false;
@@ -64,11 +63,12 @@ namespace ControlzEx.Controls
             }
 
             {
-                var b = new Binding(nameof(this.BorderThickness))
+                var b = new Binding
                         {
+                            Path = new PropertyPath(GlowWindowBehavior.ResizeBorderThicknessProperty),
                             Source = owner
                         };
-                this.glow.SetBinding(BorderThicknessProperty, b);
+                this.SetBinding(ResizeBorderThicknessProperty, b);
             }
 
             this.glow.Direction = direction;
@@ -78,9 +78,9 @@ namespace ControlzEx.Controls
                 case GlowDirection.Left:
                     this.glow.Orientation = Orientation.Vertical;
                     this.glow.HorizontalAlignment = HorizontalAlignment.Right;
-                    this.getLeft = (rect) => rect.Left - glowSize + 1;
+                    this.getLeft = (rect) => rect.Left - this.ResizeBorderThickness.Left + 1;
                     this.getTop = (rect) => rect.Top - 2;
-                    this.getWidth = (rect) => glowSize;
+                    this.getWidth = (rect) => this.ResizeBorderThickness.Left;
                     this.getHeight = (rect) => rect.Height + 4;
                     this.getHitTestValue = (p, rect) => new Rect(0, 0, rect.Width, edgeSize).Contains(p)
                         ? HT.TOPLEFT
@@ -98,7 +98,7 @@ namespace ControlzEx.Controls
                     this.glow.HorizontalAlignment = HorizontalAlignment.Left;
                     this.getLeft = (rect) => rect.Right - 1;
                     this.getTop = (rect) => rect.Top - 2;
-                    this.getWidth = (rect) => glowSize;
+                    this.getWidth = (rect) => this.ResizeBorderThickness.Right;
                     this.getHeight = (rect) => rect.Height + 4;
                     this.getHitTestValue = (p, rect) => new Rect(0, 0, rect.Width, edgeSize).Contains(p)
                         ? HT.TOPRIGHT
@@ -123,17 +123,17 @@ namespace ControlzEx.Controls
                     this.glow.Orientation = Orientation.Horizontal;
                     this.glow.VerticalAlignment = VerticalAlignment.Bottom;
                     this.getLeft = (rect) => rect.Left - 2;
-                    this.getTop = (rect) => rect.Top - glowSize + 1;
+                    this.getTop = (rect) => rect.Top - this.ResizeBorderThickness.Top + 1;
                     this.getWidth = (rect) => rect.Width + 4;
-                    this.getHeight = (rect) => glowSize;
-                    this.getHitTestValue = (p, rect) => new Rect(0, 0, edgeSize - glowSize, rect.Height).Contains(p)
+                    this.getHeight = (rect) => this.ResizeBorderThickness.Top;
+                    this.getHitTestValue = (p, rect) => new Rect(0, 0, edgeSize - this.ResizeBorderThickness.Top, rect.Height).Contains(p)
                         ? HT.TOPLEFT
-                        : new Rect(rect.Width + 4 - edgeSize + glowSize, 0, edgeSize - glowSize, rect.Height).Contains(p)
+                        : new Rect(rect.Width + 4 - edgeSize + this.ResizeBorderThickness.Top, 0, edgeSize - this.ResizeBorderThickness.Top, rect.Height).Contains(p)
                             ? HT.TOPRIGHT
                             : HT.TOP;
-                    this.getCursor = (p, rect) => new Rect(0, 0, edgeSize - glowSize, rect.Height).Contains(p)
+                    this.getCursor = (p, rect) => new Rect(0, 0, edgeSize - this.ResizeBorderThickness.Top, rect.Height).Contains(p)
                         ? Cursors.SizeNWSE
-                        : new Rect(rect.Width + 4 - edgeSize + glowSize, 0, edgeSize - glowSize, rect.Height).Contains(p)
+                        : new Rect(rect.Width + 4 - edgeSize + this.ResizeBorderThickness.Top, 0, edgeSize - this.ResizeBorderThickness.Top, rect.Height).Contains(p)
                             ? Cursors.SizeNESW
                             : Cursors.SizeNS;
                     break;
@@ -150,15 +150,15 @@ namespace ControlzEx.Controls
                     this.getLeft = (rect) => rect.Left - 2;
                     this.getTop = (rect) => rect.Bottom - 1;
                     this.getWidth = (rect) => rect.Width + 4;
-                    this.getHeight = (rect) => glowSize;
-                    this.getHitTestValue = (p, rect) => new Rect(0, 0, edgeSize - glowSize, rect.Height).Contains(p)
+                    this.getHeight = (rect) => this.ResizeBorderThickness.Bottom;
+                    this.getHitTestValue = (p, rect) => new Rect(0, 0, edgeSize - this.ResizeBorderThickness.Bottom, rect.Height).Contains(p)
                         ? HT.BOTTOMLEFT
-                        : new Rect(rect.Width + 4 - edgeSize + glowSize, 0, edgeSize - glowSize, rect.Height).Contains(p)
+                        : new Rect(rect.Width + 4 - edgeSize + this.ResizeBorderThickness.Bottom, 0, edgeSize - this.ResizeBorderThickness.Bottom, rect.Height).Contains(p)
                             ? HT.BOTTOMRIGHT
                             : HT.BOTTOM;
-                    this.getCursor = (p, rect) => new Rect(0, 0, edgeSize - glowSize, rect.Height).Contains(p)
+                    this.getCursor = (p, rect) => new Rect(0, 0, edgeSize - this.ResizeBorderThickness.Bottom, rect.Height).Contains(p)
                         ? Cursors.SizeNESW
-                        : new Rect(rect.Width + 4 - edgeSize + glowSize, 0, edgeSize - glowSize, rect.Height).Contains(p)
+                        : new Rect(rect.Width + 4 - edgeSize + this.ResizeBorderThickness.Bottom, 0, edgeSize - this.ResizeBorderThickness.Bottom, rect.Height).Contains(p)
                             ? Cursors.SizeNWSE
                             : Cursors.SizeNS;
                     break;
@@ -184,6 +184,14 @@ namespace ControlzEx.Controls
         }
 
         public Storyboard OpacityStoryboard { get; set; }
+
+        public static readonly DependencyProperty ResizeBorderThicknessProperty = DependencyProperty.Register(nameof(ResizeBorderThickness), typeof(Thickness), typeof(GlowWindow), new PropertyMetadata(WindowChromeBehavior.GetDefaultResizeBorderThickness()));
+
+        public Thickness ResizeBorderThickness
+        {
+            get { return (Thickness)this.GetValue(ResizeBorderThicknessProperty); }
+            set { this.SetValue(ResizeBorderThicknessProperty, value); }
+        }
 
         public override void OnApplyTemplate()
         {

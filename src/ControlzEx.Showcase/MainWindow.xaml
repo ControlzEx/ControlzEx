@@ -15,6 +15,7 @@
                           Width="600"
                           controlzEx:GlowWindowBehavior.GlowBrush="Red"
                           controlzEx:GlowWindowBehavior.NonActiveGlowBrush="Blue"
+                          controlzEx:GlowWindowBehavior.ResizeBorderThickness="{Binding ElementName=WindowChromeBehavior, Path=ResizeBorderThickness}"
                           BorderThickness="0"
                           AllowsTransparency="False"
                           WindowStyle="None">
