@@ -13,7 +13,9 @@
                           Style="{Binding ElementName=StyleComboBox, Path=SelectedValue}"
                           Height="480"
                           Width="600"
-                          BorderBrush="Blue"
+                          controlzEx:GlowWindowBehavior.GlowBrush="Red"
+                          controlzEx:GlowWindowBehavior.NonActiveGlowBrush="Blue"
+                          BorderThickness="0"
                           AllowsTransparency="False"
                           WindowStyle="None">
     <local:WindowChromeWindow.Resources>
@@ -30,6 +32,7 @@
         <controlzEx:WindowChromeBehavior x:Name="WindowChromeBehavior"
                                          GlassFrameThickness="{Binding ElementName=Window, Path=GlassFrameThickness}"
                                          ResizeBorderThickness="{Binding ElementName=Window, Path=ResizeBorderThickness}" />
+        <controlzEx:GlowWindowBehavior />
     </i:Interaction.Behaviors>
 
     <Grid SnapsToDevicePixels="True">
@@ -103,7 +106,23 @@
                                   ItemsSource="{Binding Source={StaticResource ResizeModeEnumValues}}"
                                   SelectedItem="{Binding ElementName=Window, Path=ResizeMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-                        <CheckBox Grid.Row="2"
+                        <Label Grid.Row="2"
+                               Grid.Column="0">GlowBrush</Label>
+                        <ComboBox Grid.Row="2"
+                                  Grid.Column="1"
+                                  ItemsSource="{Binding Brushes, ElementName=Window}"
+                                  SelectedValuePath="Value"
+                                  SelectedValue="{Binding ElementName=Window, Path=(controlzEx:GlowWindowBehavior.GlowBrush), Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        
+                        <Label Grid.Row="3"
+                               Grid.Column="0">NonActiveGlowBrush</Label>
+                        <ComboBox Grid.Row="3"
+                                  Grid.Column="1"
+                                  ItemsSource="{Binding Brushes, ElementName=Window}"
+                                  SelectedValuePath="Value"
+                                  SelectedValue="{Binding ElementName=Window, Path=(controlzEx:GlowWindowBehavior.NonActiveGlowBrush), Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                        <CheckBox Grid.Row="4"
                                   Grid.Column="0"
                                   Grid.ColumnSpan="2"
                                   IsChecked="{Binding ElementName=WindowChromeBehavior, Path=IgnoreTaskbarOnMaximize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
