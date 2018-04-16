@@ -85,13 +85,12 @@
 
             if(this.AssociatedObject.WindowState == WindowState.Normal)
             {
-                //var metroWindow = this.AssociatedObject as MetroWindow;
-                //var ignoreTaskBar = metroWindow != null && metroWindow.IgnoreTaskbarOnMaximize;
-                //if (this.makeGlowVisibleTimer != null && SystemParameters.MinimizeAnimation && !ignoreTaskBar)
-                //{
-                //    this.makeGlowVisibleTimer.Start();
-                //}
-                //else
+                var ignoreTaskBar = Interaction.GetBehaviors(this.AssociatedObject).OfType<WindowChromeBehavior>().FirstOrDefault()?.IgnoreTaskbarOnMaximize == true;
+                if (this.makeGlowVisibleTimer != null && SystemParameters.MinimizeAnimation && !ignoreTaskBar)
+                {
+                    this.makeGlowVisibleTimer.Start();
+                }
+                else
                 {
                     this.RestoreGlow();
                 }
