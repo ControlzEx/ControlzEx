@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2026
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlzEx.NET4", "src\ControlzEx\ControlzEx.NET4.csproj", "{CBA7A977-88F5-4E19-B802-6E63AC3FA548}"
 EndProject
@@ -10,9 +10,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4A8A36F7-129E-4867-9134-EF4651CB8018}"
 	ProjectSection(SolutionItems) = preProject
 		appveyor.yml = appveyor.yml
+		Build.ps1 = Build.ps1
 		ControlzEx.msbuild = ControlzEx.msbuild
 		ControlzEx.nuspec = ControlzEx.nuspec
 		src\GlobalAssemblyInfo.cs = src\GlobalAssemblyInfo.cs
+		MSBuildHelper.ps1 = MSBuildHelper.ps1
 		README.md = README.md
 	EndProjectSection
 EndProject
@@ -57,5 +59,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B6C7DC18-6FE7-4CCF-ABAC-5AA379EE1A52}
 	EndGlobalSection
 EndGlobal
