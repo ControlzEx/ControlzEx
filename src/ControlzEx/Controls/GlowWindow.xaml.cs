@@ -15,13 +15,12 @@ namespace ControlzEx.Controls
 
     partial class GlowWindow
     {
-        private readonly Func<Point, RECT, Cursor> getCursor;
         private readonly Func<Point, RECT, HT> getHitTestValue;
         private readonly Func<RECT, double> getLeft;
         private readonly Func<RECT, double> getTop;
         private readonly Func<RECT, double> getWidth;
         private readonly Func<RECT, double> getHeight;
-        private const double edgeSize = 20.0;
+        
         private IntPtr handle;
         private IntPtr ownerHandle;
         private bool closing = false;
@@ -43,6 +42,8 @@ namespace ControlzEx.Controls
 
             this.ShowInTaskbar = false;
             this.glow.Visibility = Visibility.Collapsed;
+
+            this.glow.Direction = direction;
 
             {
                 var b = new Binding
@@ -71,7 +72,6 @@ namespace ControlzEx.Controls
                 this.SetBinding(ResizeBorderThicknessProperty, b);
             }
 
-            this.glow.Direction = direction;
 
             switch (direction)
             {
@@ -79,37 +79,27 @@ namespace ControlzEx.Controls
                     this.glow.Orientation = Orientation.Vertical;
                     this.glow.HorizontalAlignment = HorizontalAlignment.Right;
                     this.getLeft = (rect) => rect.Left - this.ResizeBorderThickness.Left + 1;
-                    this.getTop = (rect) => rect.Top - 2;
+                    this.getTop = (rect) => rect.Top - this.ResizeBorderThickness.Top / 2; 
                     this.getWidth = (rect) => this.ResizeBorderThickness.Left;
-                    this.getHeight = (rect) => rect.Height + 4;
-                    this.getHitTestValue = (p, rect) => new Rect(0, 0, rect.Width, edgeSize).Contains(p)
+                    this.getHeight = (rect) => rect.Height + this.ResizeBorderThickness.Top; 
+                    this.getHitTestValue = (p, rect) => new Rect(0, 0, rect.Width, this.ResizeBorderThickness.Top * 2).Contains(p)
                         ? HT.TOPLEFT
-                        : new Rect(0, rect.Height + 4 - edgeSize, rect.Width, edgeSize).Contains(p)
+                        : new Rect(0, rect.Height - this.ResizeBorderThickness.Bottom, rect.Width, this.ResizeBorderThickness.Bottom * 2).Contains(p)
                             ? HT.BOTTOMLEFT
                             : HT.LEFT;
-                    this.getCursor = (p, rect) => new Rect(0, 0, rect.Width, edgeSize).Contains(p)
-                        ? Cursors.SizeNWSE
-                        : new Rect(0, rect.Height + 4 - edgeSize, rect.Width, edgeSize).Contains(p)
-                            ? Cursors.SizeNESW
-                            : Cursors.SizeWE;
                     break;
                 case GlowDirection.Right:
                     this.glow.Orientation = Orientation.Vertical;
                     this.glow.HorizontalAlignment = HorizontalAlignment.Left;
                     this.getLeft = (rect) => rect.Right - 1;
-                    this.getTop = (rect) => rect.Top - 2;
+                    this.getTop = (rect) => rect.Top - this.ResizeBorderThickness.Top / 2; 
                     this.getWidth = (rect) => this.ResizeBorderThickness.Right;
-                    this.getHeight = (rect) => rect.Height + 4;
-                    this.getHitTestValue = (p, rect) => new Rect(0, 0, rect.Width, edgeSize).Contains(p)
+                    this.getHeight = (rect) => rect.Height + this.ResizeBorderThickness.Top; 
+                    this.getHitTestValue = (p, rect) => new Rect(0, 0, rect.Width, this.ResizeBorderThickness.Top * 2).Contains(p)
                         ? HT.TOPRIGHT
-                        : new Rect(0, rect.Height + 4 - edgeSize, rect.Width, edgeSize).Contains(p)
+                        : new Rect(0, rect.Height - this.ResizeBorderThickness.Bottom, rect.Width, this.ResizeBorderThickness.Bottom * 2).Contains(p)
                             ? HT.BOTTOMRIGHT
                             : HT.RIGHT;
-                    this.getCursor = (p, rect) => new Rect(0, 0, rect.Width, edgeSize).Contains(p)
-                        ? Cursors.SizeNESW
-                        : new Rect(0, rect.Height + 4 - edgeSize, rect.Width, edgeSize).Contains(p)
-                            ? Cursors.SizeNWSE
-                            : Cursors.SizeWE;
                     break;
 
                 case GlowDirection.Top:
@@ -122,20 +112,15 @@ namespace ControlzEx.Controls
                         };
                     this.glow.Orientation = Orientation.Horizontal;
                     this.glow.VerticalAlignment = VerticalAlignment.Bottom;
-                    this.getLeft = (rect) => rect.Left - 2;
+                    this.getLeft = (rect) => rect.Left - this.ResizeBorderThickness.Left / 2; 
                     this.getTop = (rect) => rect.Top - this.ResizeBorderThickness.Top + 1;
-                    this.getWidth = (rect) => rect.Width + 4;
+                    this.getWidth = (rect) => rect.Width + this.ResizeBorderThickness.Left; 
                     this.getHeight = (rect) => this.ResizeBorderThickness.Top;
-                    this.getHitTestValue = (p, rect) => new Rect(0, 0, edgeSize - this.ResizeBorderThickness.Top, rect.Height).Contains(p)
+                    this.getHitTestValue = (p, rect) => new Rect(0, 0, this.ResizeBorderThickness.Left * 2, rect.Height).Contains(p)
                         ? HT.TOPLEFT
-                        : new Rect(rect.Width + 4 - edgeSize + this.ResizeBorderThickness.Top, 0, edgeSize - this.ResizeBorderThickness.Top, rect.Height).Contains(p)
+                        : new Rect(rect.Width - this.ResizeBorderThickness.Right, 0, this.ResizeBorderThickness.Right * 2, rect.Height).Contains(p)
                             ? HT.TOPRIGHT
                             : HT.TOP;
-                    this.getCursor = (p, rect) => new Rect(0, 0, edgeSize - this.ResizeBorderThickness.Top, rect.Height).Contains(p)
-                        ? Cursors.SizeNWSE
-                        : new Rect(rect.Width + 4 - edgeSize + this.ResizeBorderThickness.Top, 0, edgeSize - this.ResizeBorderThickness.Top, rect.Height).Contains(p)
-                            ? Cursors.SizeNESW
-                            : Cursors.SizeNS;
                     break;
                 case GlowDirection.Bottom:
                     this.PreviewMouseDoubleClick += (sender, e) =>
@@ -147,20 +132,15 @@ namespace ControlzEx.Controls
                         };
                     this.glow.Orientation = Orientation.Horizontal;
                     this.glow.VerticalAlignment = VerticalAlignment.Top;
-                    this.getLeft = (rect) => rect.Left - 2;
+                    this.getLeft = (rect) => rect.Left - this.ResizeBorderThickness.Left / 2; 
                     this.getTop = (rect) => rect.Bottom - 1;
-                    this.getWidth = (rect) => rect.Width + 4;
+                    this.getWidth = (rect) => rect.Width + this.ResizeBorderThickness.Left; 
                     this.getHeight = (rect) => this.ResizeBorderThickness.Bottom;
-                    this.getHitTestValue = (p, rect) => new Rect(0, 0, edgeSize - this.ResizeBorderThickness.Bottom, rect.Height).Contains(p)
+                    this.getHitTestValue = (p, rect) => new Rect(0, 0, this.ResizeBorderThickness.Left * 2, rect.Height).Contains(p)
                         ? HT.BOTTOMLEFT
-                        : new Rect(rect.Width + 4 - edgeSize + this.ResizeBorderThickness.Bottom, 0, edgeSize - this.ResizeBorderThickness.Bottom, rect.Height).Contains(p)
+                        : new Rect(rect.Width - this.ResizeBorderThickness.Right, 0, this.ResizeBorderThickness.Right * 2, rect.Height).Contains(p)
                             ? HT.BOTTOMRIGHT
                             : HT.BOTTOM;
-                    this.getCursor = (p, rect) => new Rect(0, 0, edgeSize - this.ResizeBorderThickness.Bottom, rect.Height).Contains(p)
-                        ? Cursors.SizeNESW
-                        : new Rect(rect.Width + 4 - edgeSize + this.ResizeBorderThickness.Bottom, 0, edgeSize - this.ResizeBorderThickness.Bottom, rect.Height).Contains(p)
-                            ? Cursors.SizeNWSE
-                            : Cursors.SizeNS;
                     break;
             }
 
@@ -348,7 +328,7 @@ namespace ControlzEx.Controls
                             Point pt;
                             if (NativeMethods.TryGetRelativeMousePosition(this.handle, out pt))
                             {
-                                cursor = this.getCursor(pt, rect);
+                                cursor = GetSizeCursor(this.getHitTestValue(pt, rect));
                             }
                         }
                     }
@@ -359,6 +339,31 @@ namespace ControlzEx.Controls
                     break;
             }
             return IntPtr.Zero;
+        }
+
+        private static Cursor GetSizeCursor(HT ht)
+        {
+            switch (ht)
+            {
+                case HT.LEFT:                    
+                case HT.RIGHT:
+                    return Cursors.SizeWE;
+
+                case HT.TOP:
+                case HT.BOTTOM:
+                    return Cursors.SizeNS;
+                    
+                case HT.TOPRIGHT:         
+                case HT.BOTTOMLEFT:
+                    return Cursors.SizeNESW;
+
+                case HT.TOPLEFT:
+                case HT.BOTTOMRIGHT:
+                    return Cursors.SizeNWSE;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(ht), ht, "Not a valid sizing hittest-result.");
+            }
         }
 
         private void Invoke([NotNull] Action invokeAction)
