@@ -69,9 +69,26 @@ namespace ControlzEx.Controls
                             Path = new PropertyPath(GlowWindowBehavior.ResizeBorderThicknessProperty),
                             Source = owner
                         };
-                this.SetBinding(ResizeBorderThicknessProperty, b);
+                this.glow.SetBinding(Glow.ResizeBorderThicknessProperty, b);
             }
 
+            {
+                var b = new Binding
+                        {
+                            Path = new PropertyPath(BorderThicknessProperty),
+                            Source = owner
+                        };
+                this.glow.SetBinding(BorderThicknessProperty, b);
+            }
+
+            {
+                var b = new Binding
+                        {
+                            Path = new PropertyPath(GlowWindowBehavior.ResizeBorderThicknessProperty),
+                            Source = owner
+                        };
+                this.SetBinding(ResizeBorderThicknessProperty, b);
+            }            
 
             switch (direction)
             {
