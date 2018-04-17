@@ -68,15 +68,9 @@
             return (Thickness)element.GetValue(ResizeBorderThicknessProperty);
         }
 
-        private bool IsGlowDisabled
-        {
-            get { return GetGlowBrush(this.AssociatedObject) == null && GetGlowBrush(this) == null; }
-        }
+        private bool IsGlowDisabled => GetGlowBrush(this.AssociatedObject) == null;
 
-        private bool IsGlowTransitionEnabled
-        {
-            get { return GetIsGlowTransitionEnabled(this.AssociatedObject) || GetIsGlowTransitionEnabled(this); }
-        }
+        private bool IsGlowTransitionEnabled => GetIsGlowTransitionEnabled(this.AssociatedObject);
 
         protected override void OnAttached()
         {
