@@ -12,7 +12,8 @@
                 Radius="3"
                 options:Freeze="True" />
 
-    <ControlTemplate x:Key="TopGlowTemplate">
+    <ControlTemplate x:Key="TopGlowTemplate"
+                     TargetType="controls:Glow">
         <Border x:Name="GlowBorder"
                 Background="{TemplateBinding Background}"
                 CornerRadius="6 6 6 6"
@@ -33,7 +34,8 @@
         </ControlTemplate.Triggers>
     </ControlTemplate>
 
-    <ControlTemplate x:Key="BottomGlowTemplate">
+    <ControlTemplate x:Key="BottomGlowTemplate"
+                     TargetType="controls:Glow">
         <Border x:Name="GlowBorder"
                 Background="{TemplateBinding Background}"
                 CornerRadius="6 6 6 6"
@@ -54,7 +56,8 @@
         </ControlTemplate.Triggers>
     </ControlTemplate>
 
-    <ControlTemplate x:Key="LeftGlowTemplate">
+    <ControlTemplate x:Key="LeftGlowTemplate"
+                     TargetType="controls:Glow">
         <Border x:Name="GlowBorder"
                 Background="{TemplateBinding Background}"
                 CornerRadius="6 6 6 6"
@@ -75,7 +78,8 @@
         </ControlTemplate.Triggers>
     </ControlTemplate>
 
-    <ControlTemplate x:Key="RightGlowTemplate">
+    <ControlTemplate x:Key="RightGlowTemplate"
+                     TargetType="controls:Glow">
         <Border x:Name="GlowBorder"
                 Background="{TemplateBinding Background}"
                 CornerRadius="6 6 6 6"
