@@ -100,30 +100,6 @@
         </ControlTemplate.Triggers>
     </ControlTemplate>
 
-    <!--  obsolete  -->
-    <ControlTemplate x:Key="GlowTemplate" TargetType="{x:Type controls:Glow}">
-        <Grid Margin="{TemplateBinding Padding}" Background="Transparent">
-            <Grid x:Name="glowBorder" Background="{TemplateBinding Background}" />
-            <Grid x:Name="glowSource"
-                  Margin="-1 0"
-                  Background="{TemplateBinding Background}"
-                  Opacity="0.6">
-                <Grid.Effect>
-                    <BlurEffect Radius="8" />
-                </Grid.Effect>
-            </Grid>
-        </Grid>
-        <ControlTemplate.Triggers>
-            <Trigger Property="Orientation" Value="Horizontal">
-                <Setter TargetName="glowBorder" Property="Margin" Value="1 0" />
-                <Setter TargetName="glowSource" Property="Margin" Value="0 -1" />
-            </Trigger>
-            <Trigger Property="BorderThickness" Value="0">
-                <Setter TargetName="glowSource" Property="Opacity" Value="1" />
-            </Trigger>
-        </ControlTemplate.Triggers>
-    </ControlTemplate>
-
     <Style TargetType="{x:Type controls:Glow}">
         <Setter Property="Background" Value="{Binding RelativeSource={RelativeSource Self}, Path=GlowBrush}" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
