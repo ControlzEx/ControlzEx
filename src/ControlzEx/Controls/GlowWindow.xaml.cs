@@ -23,18 +23,18 @@ namespace ControlzEx.Controls
         
         private IntPtr handle;
         private IntPtr ownerHandle;
-        private bool closing = false;
+        private bool closing;
         private HwndSource hwndSource;
         private PropertyChangeNotifier resizeModeChangeNotifier;
 
-        private Window _owner;
+        private readonly Window owner;
 
         public GlowWindow(Window owner, GlowDirection direction)
         {
             this.InitializeComponent();
 
             this.Owner = owner;
-            this._owner = owner;
+            this.owner = owner;
 
             this.IsGlowing = true;
             this.AllowsTransparency = true;
@@ -212,7 +212,7 @@ namespace ControlzEx.Controls
             wsex &= ~WS_EX.APPWINDOW;
             wsex |= WS_EX.TOOLWINDOW;
 
-            if (this._owner.ResizeMode == ResizeMode.NoResize || this._owner.ResizeMode == ResizeMode.CanMinimize)
+            if (this.owner.ResizeMode == ResizeMode.NoResize || this.owner.ResizeMode == ResizeMode.CanMinimize)
             {
                 wsex |= WS_EX.TRANSPARENT;
             }
@@ -222,16 +222,16 @@ namespace ControlzEx.Controls
             this.hwndSource.AddHook(this.WndProc);
 
             this.handle = this.hwndSource.Handle;
-            this.ownerHandle = new WindowInteropHelper(this._owner).Handle;
+            this.ownerHandle = new WindowInteropHelper(this.owner).Handle;
 
-            this.resizeModeChangeNotifier = new PropertyChangeNotifier(this._owner, ResizeModeProperty);
+            this.resizeModeChangeNotifier = new PropertyChangeNotifier(this.owner, ResizeModeProperty);
             this.resizeModeChangeNotifier.ValueChanged += this.ResizeModeChanged;
         }
 
         private void ResizeModeChanged(object sender, EventArgs e)
         {
             var wsex = NativeMethods.GetWindowStyleEx(this.hwndSource.Handle);
-            if (this._owner.ResizeMode == ResizeMode.NoResize || this._owner.ResizeMode == ResizeMode.CanMinimize)
+            if (this.owner.ResizeMode == ResizeMode.NoResize || this.owner.ResizeMode == ResizeMode.CanMinimize)
             {
                 wsex |= WS_EX.TRANSPARENT;
             }
@@ -250,7 +250,7 @@ namespace ControlzEx.Controls
             }
 
             RECT rect;
-            if (this._owner.Visibility == Visibility.Hidden)
+            if (this.owner.Visibility == Visibility.Hidden)
             {
                 this.Invoke(() => this.glow.Visibility = Visibility.Collapsed);
                 this.Invoke(() => this.Visibility = Visibility.Collapsed);
@@ -260,7 +260,7 @@ namespace ControlzEx.Controls
                     this.UpdateCore(rect);
                 }
             }
-            else if (this._owner.WindowState == WindowState.Normal)
+            else if (this.owner.WindowState == WindowState.Normal)
             {
                 this.Invoke(() => this.glow.Visibility = this.IsGlowing ? Visibility.Visible : Visibility.Collapsed);
                 this.Invoke(() => this.Visibility = this.IsGlowing ? Visibility.Visible : Visibility.Collapsed);
@@ -334,9 +334,9 @@ namespace ControlzEx.Controls
                     break;
                 case WM.NCHITTEST:
                     Cursor cursor = null;
-                    if (this._owner.ResizeMode == ResizeMode.NoResize || this._owner.ResizeMode == ResizeMode.CanMinimize)
+                    if (this.owner.ResizeMode == ResizeMode.NoResize || this.owner.ResizeMode == ResizeMode.CanMinimize)
                     {
-                        cursor = this._owner.Cursor;
+                        cursor = this.owner.Cursor;
                     }
                     else
                     {
