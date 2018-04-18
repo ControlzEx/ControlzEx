@@ -8,33 +8,26 @@
 
     <system:Double x:Key="GlowOpacity">0.3</system:Double>
     <system:Double x:Key="ShadowOpacity">0.3</system:Double>
+    <BlurEffect x:Key="GlowBlurEffect"
+                Radius="3"
+                options:Freeze="True" />
 
     <ControlTemplate x:Key="TopGlowTemplate"
-                     TargetType="controls:Glow">
-        <Grid HorizontalAlignment="Stretch"
-              VerticalAlignment="Stretch"
-              Background="Transparent">
-            <Border x:Name="GlowBorder"
-                    CornerRadius="{TemplateBinding ResizeBorderThickness}"
-                    Margin="{TemplateBinding Padding}"
-                    Background="{TemplateBinding Background}"
-                    Effect="{TemplateBinding GlowBlurEffect}"
-                    Opacity="{StaticResource GlowOpacity}"
-                    SnapsToDevicePixels="True">
-                <Border.OpacityMask>
-                    <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" options:Freeze="True">
-                        <GradientStop Offset="0" Color="Transparent" />
-                        <GradientStop Offset="1" Color="Black" />
-                    </LinearGradientBrush>
-                </Border.OpacityMask>
-            </Border>
-            <Border Height="1"
-                    Margin="{TemplateBinding Padding}"
-                    HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
-                    VerticalAlignment="{TemplateBinding VerticalAlignment}"
-                    Background="{TemplateBinding Background}"
-                    SnapsToDevicePixels="True" />
-        </Grid>
+                     TargetType="{x:Type controls:Glow}">
+        <Border x:Name="GlowBorder"
+                Background="{TemplateBinding Background}"
+                CornerRadius="6 6 6 6"
+                Margin="{TemplateBinding Padding}"
+                Effect="{StaticResource GlowBlurEffect}"
+                Opacity="{StaticResource GlowOpacity}"
+                SnapsToDevicePixels="True">
+            <Border.OpacityMask>
+                <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" options:Freeze="True">
+                    <GradientStop Offset="0" Color="Transparent" />
+                    <GradientStop Offset="1" Color="Black" />
+                </LinearGradientBrush>
+            </Border.OpacityMask>
+        </Border>
         <ControlTemplate.Triggers>
             <Trigger Property="BorderThickness" Value="0">
                 <Setter TargetName="GlowBorder" Property="Opacity" Value="{StaticResource ShadowOpacity}" />
@@ -43,32 +36,21 @@
     </ControlTemplate>
 
     <ControlTemplate x:Key="BottomGlowTemplate"
-                     TargetType="controls:Glow">
-        <Grid HorizontalAlignment="Stretch"
-              VerticalAlignment="Stretch"
-              Background="Transparent">
-            <Border x:Name="GlowBorder"
-                    CornerRadius="{TemplateBinding ResizeBorderThickness}"
-                    Margin="{TemplateBinding Padding}"
-                    Background="{TemplateBinding Background}"
-                    Effect="{TemplateBinding GlowBlurEffect}"
-                    Opacity="{StaticResource GlowOpacity}"
-                    SnapsToDevicePixels="True">
-                <Border.OpacityMask>
-                    <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" options:Freeze="True">
-                        <GradientStop Offset="0" Color="Black" />
-                        <GradientStop Offset="1" Color="Transparent" />
-                    </LinearGradientBrush>
-                </Border.OpacityMask>
-            </Border>
-            <Border Height="1"
-                    Margin="{TemplateBinding Padding}"
-                    HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
-                    VerticalAlignment="{TemplateBinding VerticalAlignment}"
-                    Background="{TemplateBinding Background}"
-                    Opacity="{StaticResource GlowOpacity}"
-                    SnapsToDevicePixels="True" />
-        </Grid>
+                     TargetType="{x:Type controls:Glow}">
+        <Border x:Name="GlowBorder"
+                Background="{TemplateBinding Background}"
+                CornerRadius="6 6 6 6"
+                Margin="{TemplateBinding Padding}"
+                Effect="{StaticResource GlowBlurEffect}"
+                Opacity="{StaticResource GlowOpacity}"
+                SnapsToDevicePixels="True">
+            <Border.OpacityMask>
+                <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" options:Freeze="True">
+                    <GradientStop Offset="0" Color="Black" />
+                    <GradientStop Offset="1" Color="Transparent" />
+                </LinearGradientBrush>
+            </Border.OpacityMask>
+        </Border>
         <ControlTemplate.Triggers>
             <Trigger Property="BorderThickness" Value="0">
                 <Setter TargetName="GlowBorder" Property="Opacity" Value="{StaticResource ShadowOpacity}" />
@@ -77,31 +59,21 @@
     </ControlTemplate>
 
     <ControlTemplate x:Key="LeftGlowTemplate"
-                     TargetType="controls:Glow">
-        <Grid HorizontalAlignment="Stretch"
-              VerticalAlignment="Stretch"
-              Background="Transparent">
-            <Border x:Name="GlowBorder"
-                    CornerRadius="{TemplateBinding ResizeBorderThickness}"
-                    Margin="{TemplateBinding Padding}"
-                    Background="{TemplateBinding Background}"
-                    Effect="{TemplateBinding GlowBlurEffect}"
-                    Opacity="{StaticResource GlowOpacity}"
-                    SnapsToDevicePixels="True">
-                <Border.OpacityMask>
-                    <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5" options:Freeze="True">
-                        <GradientStop Offset="0" Color="Transparent" />
-                        <GradientStop Offset="1" Color="Black" />
-                    </LinearGradientBrush>
-                </Border.OpacityMask>
-            </Border>
-            <Border Width="1"
-                    Margin="{TemplateBinding Padding}"
-                    HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
-                    VerticalAlignment="{TemplateBinding VerticalAlignment}"
-                    Background="{TemplateBinding Background}"
-                    SnapsToDevicePixels="True" />
-        </Grid>
+                     TargetType="{x:Type controls:Glow}">
+        <Border x:Name="GlowBorder"
+                Background="{TemplateBinding Background}"
+                CornerRadius="6 6 6 6"
+                Margin="{TemplateBinding Padding}"
+                Effect="{StaticResource GlowBlurEffect}"
+                Opacity="{StaticResource GlowOpacity}"
+                SnapsToDevicePixels="True">
+            <Border.OpacityMask>
+                <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5" options:Freeze="True">
+                    <GradientStop Offset="0" Color="Transparent" />
+                    <GradientStop Offset="1" Color="Black" />
+                </LinearGradientBrush>
+            </Border.OpacityMask>
+        </Border>
         <ControlTemplate.Triggers>
             <Trigger Property="BorderThickness" Value="0">
                 <Setter TargetName="GlowBorder" Property="Opacity" Value="{StaticResource ShadowOpacity}" />
@@ -110,31 +82,21 @@
     </ControlTemplate>
 
     <ControlTemplate x:Key="RightGlowTemplate"
-                     TargetType="controls:Glow">
-        <Grid HorizontalAlignment="Stretch"
-              VerticalAlignment="Stretch"
-              Background="Transparent">
-            <Border x:Name="GlowBorder"
-                    CornerRadius="{TemplateBinding ResizeBorderThickness}"
-                    Margin="{TemplateBinding Padding}"
-                    Background="{TemplateBinding Background}"
-                    Effect="{TemplateBinding GlowBlurEffect}"
-                    Opacity="{StaticResource GlowOpacity}"
-                    SnapsToDevicePixels="True">
-                <Border.OpacityMask>
-                    <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5" options:Freeze="True">
-                        <GradientStop Offset="0" Color="Black" />
-                        <GradientStop Offset="1" Color="Transparent" />
-                    </LinearGradientBrush>
-                </Border.OpacityMask>
-            </Border>
-            <Border Width="1"
-                    Margin="{TemplateBinding Padding}"
-                    HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
-                    VerticalAlignment="{TemplateBinding VerticalAlignment}"
-                    Background="{TemplateBinding Background}"
-                    SnapsToDevicePixels="True" />
-        </Grid>
+                     TargetType="{x:Type controls:Glow}">
+        <Border x:Name="GlowBorder"
+                Background="{TemplateBinding Background}"
+                CornerRadius="6 6 6 6"
+                Margin="{TemplateBinding Padding}"
+                Effect="{StaticResource GlowBlurEffect}"
+                Opacity="{StaticResource GlowOpacity}"
+                SnapsToDevicePixels="True">
+            <Border.OpacityMask>
+                <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5" options:Freeze="True">
+                    <GradientStop Offset="0" Color="Black" />
+                    <GradientStop Offset="1" Color="Transparent" />
+                </LinearGradientBrush>
+            </Border.OpacityMask>
+        </Border>
         <ControlTemplate.Triggers>
             <Trigger Property="BorderThickness" Value="0">
                 <Setter TargetName="GlowBorder" Property="Opacity" Value="{StaticResource ShadowOpacity}" />
