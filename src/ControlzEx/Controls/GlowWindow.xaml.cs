@@ -225,6 +225,8 @@ namespace ControlzEx.Controls
                     glowWindow.glow.Padding = new Thickness(glowWindow.ResizeBorderThickness.Left / 4, 0, glowWindow.ResizeBorderThickness.Right / 4, 0);
                     break;
             }
+
+            glowWindow.Update();
         }
 
         public override void OnApplyTemplate()
