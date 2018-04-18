@@ -67,6 +67,7 @@
         {
             var glow = (Glow)d;
 
+            // Add padding to the edges, otherwise the borders/glows overlap
             switch (glow.Direction)
             {
                 case GlowDirection.Left:
@@ -82,8 +83,10 @@
 
             glow.GlowBlurEffect = new BlurEffect
                               {
-                                  KernelType = KernelType.Gaussian,
+                                  KernelType = KernelType.Box,
                                   RenderingBias = RenderingBias.Performance,
+                                  // The blur radius has to be the same as the resize border thickness.
+                                  // Otherwise all pixels in the resize border are fully transparent which would disable hittests.
                                   Radius = GetRelevantResizeBorderThickness(glow)                                  
                               };
             glow.GlowBlurEffect.Freeze();

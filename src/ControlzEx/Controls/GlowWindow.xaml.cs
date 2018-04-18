@@ -29,9 +29,12 @@ namespace ControlzEx.Controls
 
         private readonly Window owner;
 
-        public GlowWindow(Window owner, GlowDirection direction)
+        public GlowWindow(Window owner, GlowWindowBehavior behavior, GlowDirection direction)
         {
             this.InitializeComponent();
+
+            this.Title = $"GlowWindow_{direction}";
+            this.Name = this.Title;
 
             this.Owner = owner;
             this.owner = owner;
@@ -48,8 +51,29 @@ namespace ControlzEx.Controls
             {
                 var b = new Binding
                         {
+                            Path = new PropertyPath(nameof(this.ActualWidth)),
+                            Source = this,
+                            Mode = BindingMode.OneWay
+                        };
+                this.glow.SetBinding(WidthProperty, b);
+            }
+
+            {
+                var b = new Binding
+                        {
+                            Path = new PropertyPath(nameof(this.ActualHeight)),
+                            Source = this,
+                            Mode = BindingMode.OneWay
+                        };
+                this.glow.SetBinding(HeightProperty, b);
+            }
+
+            {
+                var b = new Binding
+                        {
                             Path = new PropertyPath(GlowWindowBehavior.GlowBrushProperty),
-                            Source = owner
+                            Source = behavior,
+                            Mode = BindingMode.OneWay
                         };
                 this.glow.SetBinding(Glow.GlowBrushProperty, b);
             }
@@ -58,7 +82,8 @@ namespace ControlzEx.Controls
                 var b = new Binding
                     {
                         Path = new PropertyPath(GlowWindowBehavior.NonActiveGlowBrushProperty),
-                        Source = owner
+                        Source = behavior,
+                        Mode = BindingMode.OneWay
                     };
                 this.glow.SetBinding(Glow.NonActiveGlowBrushProperty, b);
             }
@@ -67,7 +92,8 @@ namespace ControlzEx.Controls
                 var b = new Binding
                         {
                             Path = new PropertyPath(GlowWindowBehavior.ResizeBorderThicknessProperty),
-                            Source = owner
+                            Source = behavior,
+                            Mode = BindingMode.OneWay
                         };
                 this.glow.SetBinding(Glow.ResizeBorderThicknessProperty, b);
             }
@@ -76,7 +102,8 @@ namespace ControlzEx.Controls
                 var b = new Binding
                         {
                             Path = new PropertyPath(BorderThicknessProperty),
-                            Source = owner
+                            Source = owner,
+                            Mode = BindingMode.OneWay
                         };
                 this.glow.SetBinding(BorderThicknessProperty, b);
             }
@@ -85,7 +112,7 @@ namespace ControlzEx.Controls
                 var b = new Binding
                         {
                             Path = new PropertyPath(GlowWindowBehavior.ResizeBorderThicknessProperty),
-                            Source = owner
+                            Source = behavior
                         };
                 this.SetBinding(ResizeBorderThicknessProperty, b);
             }            
@@ -165,6 +192,7 @@ namespace ControlzEx.Controls
             owner.Activated += (sender, e) =>
                 {
                     this.Update();
+
                     this.glow.IsGlow = true;
                 };
             owner.Deactivated += (sender, e) =>
@@ -296,7 +324,7 @@ namespace ControlzEx.Controls
         {
             // we can handle this._owner.WindowState == WindowState.Normal
             // or use NOZORDER too
-            NativeMethods.SetWindowPos(this.handle, this.ownerHandle,
+            NativeMethods.SetWindowPos(this.handle, this.ownerHandle, 
                                        (int)(this.getLeft(rect)),
                                        (int)(this.getTop(rect)),
                                        (int)(this.getWidth(rect)),

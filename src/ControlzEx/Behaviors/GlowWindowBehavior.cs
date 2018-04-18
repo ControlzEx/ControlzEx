@@ -20,57 +20,63 @@
         private IntPtr handle;
         private HwndSource hwndSource;
 
-        public static readonly DependencyProperty GlowBrushProperty = DependencyProperty.RegisterAttached("GlowBrush", typeof(Brush), typeof(GlowWindowBehavior), new PropertyMetadata(default(Brush)));
+        /// <summary>
+        /// <see cref="DependencyProperty"/> for <see cref="GlowBrush"/>.
+        /// </summary>
+        public static readonly DependencyProperty GlowBrushProperty = DependencyProperty.Register(nameof(GlowBrush), typeof(Brush), typeof(GlowWindowBehavior), new PropertyMetadata(default(Brush)));
 
-        public static void SetGlowBrush(DependencyObject element, Brush value)
+        /// <summary>
+        /// Gets or sets a brush which is used as the glow when the window is active.
+        /// </summary>
+        public Brush GlowBrush
         {
-            element.SetValue(GlowBrushProperty, value);
+            get => (Brush)this.GetValue(GlowBrushProperty);
+            set => this.SetValue(GlowBrushProperty, value);
         }
 
-        public static Brush GetGlowBrush(DependencyObject element)
+        /// <summary>
+        /// <see cref="DependencyProperty"/> for <see cref="NonActiveGlowBrush"/>.
+        /// </summary>
+        public static readonly DependencyProperty NonActiveGlowBrushProperty = DependencyProperty.Register(nameof(NonActiveGlowBrush), typeof(Brush), typeof(GlowWindowBehavior), new PropertyMetadata(default(Brush)));
+
+        /// <summary>
+        /// Gets or sets a brush which is used as the glow when the window is not active.
+        /// </summary>
+        public Brush NonActiveGlowBrush
         {
-            return (Brush)element.GetValue(GlowBrushProperty);
+            get => (Brush)this.GetValue(NonActiveGlowBrushProperty);
+            set => this.SetValue(NonActiveGlowBrushProperty, value);
         }
 
-        public static readonly DependencyProperty NonActiveGlowBrushProperty = DependencyProperty.RegisterAttached("NonActiveGlowBrush", typeof(Brush), typeof(GlowWindowBehavior), new PropertyMetadata(default(Brush)));
+        /// <summary>
+        /// <see cref="DependencyProperty"/> for <see cref="IsGlowTransitionEnabled"/>.
+        /// </summary>
+        public static readonly DependencyProperty IsGlowTransitionEnabledProperty = DependencyProperty.Register(nameof(IsGlowTransitionEnabled), typeof(bool), typeof(GlowWindowBehavior), new PropertyMetadata(default(bool)));
 
-        public static void SetNonActiveGlowBrush(DependencyObject element, Brush value)
+        /// <summary>
+        /// Defines wether glow transitions should be used or not.
+        /// </summary>
+        public bool IsGlowTransitionEnabled
         {
-            element.SetValue(NonActiveGlowBrushProperty, value);
+            get => (bool)this.GetValue(IsGlowTransitionEnabledProperty);
+            set => this.SetValue(IsGlowTransitionEnabledProperty, value);
         }
 
-        public static Brush GetNonActiveGlowBrush(DependencyObject element)
+        /// <summary>
+        /// <see cref="DependencyProperty"/> for <see cref="ResizeBorderThickness"/>.
+        /// </summary>
+        public static readonly DependencyProperty ResizeBorderThicknessProperty = DependencyProperty.Register(nameof(ResizeBorderThickness), typeof(Thickness), typeof(GlowWindowBehavior), new PropertyMetadata(default(Thickness)));
+
+        /// <summary>
+        /// Gets or sets resize border thickness.
+        /// </summary>
+        public Thickness ResizeBorderThickness
         {
-            return (Brush)element.GetValue(NonActiveGlowBrushProperty);
+            get => (Thickness)this.GetValue(ResizeBorderThicknessProperty);
+            set => this.SetValue(ResizeBorderThicknessProperty, value);
         }
 
-        public static readonly DependencyProperty IsGlowTransitionEnabledProperty = DependencyProperty.RegisterAttached("IsGlowTransitionEnabled", typeof(bool), typeof(GlowWindowBehavior), new PropertyMetadata(default(bool)));
-
-        public static void SetIsGlowTransitionEnabled(DependencyObject element, bool value)
-        {
-            element.SetValue(IsGlowTransitionEnabledProperty, value);
-        }
-
-        public static bool GetIsGlowTransitionEnabled(DependencyObject element)
-        {
-            return (bool)element.GetValue(IsGlowTransitionEnabledProperty);
-        }
-
-        public static readonly DependencyProperty ResizeBorderThicknessProperty = DependencyProperty.RegisterAttached("ResizeBorderThickness", typeof(Thickness), typeof(GlowWindowBehavior), new PropertyMetadata(WindowChromeBehavior.GetDefaultResizeBorderThickness()));
-
-        public static void SetResizeBorderThickness(DependencyObject element, Thickness value)
-        {
-            element.SetValue(ResizeBorderThicknessProperty, value);
-        }
-
-        public static Thickness GetResizeBorderThickness(DependencyObject element)
-        {
-            return (Thickness)element.GetValue(ResizeBorderThicknessProperty);
-        }
-
-        private bool IsGlowDisabled => GetGlowBrush(this.AssociatedObject) == null;
-
-        private bool IsGlowTransitionEnabled => GetIsGlowTransitionEnabled(this.AssociatedObject);
+        private bool IsGlowDisabled => this.GlowBrush == null;
 
         protected override void OnAttached()
         {
@@ -163,10 +169,10 @@
                 this.makeGlowVisibleTimer.Tick += this.GlowVisibleTimerOnTick;
             }
 
-            this.left = new GlowWindow(this.AssociatedObject, GlowDirection.Left);
-            this.right = new GlowWindow(this.AssociatedObject, GlowDirection.Right);
-            this.top = new GlowWindow(this.AssociatedObject, GlowDirection.Top);
-            this.bottom = new GlowWindow(this.AssociatedObject, GlowDirection.Bottom);
+            this.left = new GlowWindow(this.AssociatedObject, this, GlowDirection.Left);
+            this.right = new GlowWindow(this.AssociatedObject, this, GlowDirection.Right);
+            this.top = new GlowWindow(this.AssociatedObject, this, GlowDirection.Top);
+            this.bottom = new GlowWindow(this.AssociatedObject, this, GlowDirection.Bottom);
 
             this.Show();
             this.Update();
