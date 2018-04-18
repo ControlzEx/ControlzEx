@@ -15,13 +15,19 @@
               VerticalAlignment="Stretch"
               Background="Transparent">
             <Border x:Name="GlowBorder"
-                    Height="1"
+                    CornerRadius="{TemplateBinding ResizeBorderThickness}"
                     Margin="{TemplateBinding Padding}"
-                    HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
-                    VerticalAlignment="{TemplateBinding VerticalAlignment}"
                     Background="{TemplateBinding Background}"
                     Effect="{TemplateBinding GlowBlurEffect}"
-                    SnapsToDevicePixels="True" />
+                    Opacity="{StaticResource GlowOpacity}"
+                    SnapsToDevicePixels="True">
+                <Border.OpacityMask>
+                    <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" options:Freeze="True">
+                        <GradientStop Offset="0" Color="Transparent" />
+                        <GradientStop Offset="1" Color="Black" />
+                    </LinearGradientBrush>
+                </Border.OpacityMask>
+            </Border>
             <Border Height="1"
                     Margin="{TemplateBinding Padding}"
                     HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
@@ -42,18 +48,25 @@
               VerticalAlignment="Stretch"
               Background="Transparent">
             <Border x:Name="GlowBorder"
-                    Height="1"
+                    CornerRadius="{TemplateBinding ResizeBorderThickness}"
                     Margin="{TemplateBinding Padding}"
-                    HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
-                    VerticalAlignment="{TemplateBinding VerticalAlignment}"
                     Background="{TemplateBinding Background}"
                     Effect="{TemplateBinding GlowBlurEffect}"
-                    SnapsToDevicePixels="True" />
+                    Opacity="{StaticResource GlowOpacity}"
+                    SnapsToDevicePixels="True">
+                <Border.OpacityMask>
+                    <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" options:Freeze="True">
+                        <GradientStop Offset="0" Color="Black" />
+                        <GradientStop Offset="1" Color="Transparent" />
+                    </LinearGradientBrush>
+                </Border.OpacityMask>
+            </Border>
             <Border Height="1"
                     Margin="{TemplateBinding Padding}"
                     HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
                     VerticalAlignment="{TemplateBinding VerticalAlignment}"
                     Background="{TemplateBinding Background}"
+                    Opacity="{StaticResource GlowOpacity}"
                     SnapsToDevicePixels="True" />
         </Grid>
         <ControlTemplate.Triggers>
@@ -69,13 +82,19 @@
               VerticalAlignment="Stretch"
               Background="Transparent">
             <Border x:Name="GlowBorder"
-                    Width="1"
+                    CornerRadius="{TemplateBinding ResizeBorderThickness}"
                     Margin="{TemplateBinding Padding}"
-                    HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
-                    VerticalAlignment="{TemplateBinding VerticalAlignment}"
                     Background="{TemplateBinding Background}"
                     Effect="{TemplateBinding GlowBlurEffect}"
-                    SnapsToDevicePixels="True" />
+                    Opacity="{StaticResource GlowOpacity}"
+                    SnapsToDevicePixels="True">
+                <Border.OpacityMask>
+                    <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5" options:Freeze="True">
+                        <GradientStop Offset="0" Color="Transparent" />
+                        <GradientStop Offset="1" Color="Black" />
+                    </LinearGradientBrush>
+                </Border.OpacityMask>
+            </Border>
             <Border Width="1"
                     Margin="{TemplateBinding Padding}"
                     HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
@@ -96,13 +115,19 @@
               VerticalAlignment="Stretch"
               Background="Transparent">
             <Border x:Name="GlowBorder"
-                    Width="1"
+                    CornerRadius="{TemplateBinding ResizeBorderThickness}"
                     Margin="{TemplateBinding Padding}"
-                    HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
-                    VerticalAlignment="{TemplateBinding VerticalAlignment}"
                     Background="{TemplateBinding Background}"
                     Effect="{TemplateBinding GlowBlurEffect}"
-                    SnapsToDevicePixels="True" />
+                    Opacity="{StaticResource GlowOpacity}"
+                    SnapsToDevicePixels="True">
+                <Border.OpacityMask>
+                    <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5" options:Freeze="True">
+                        <GradientStop Offset="0" Color="Black" />
+                        <GradientStop Offset="1" Color="Transparent" />
+                    </LinearGradientBrush>
+                </Border.OpacityMask>
+            </Border>
             <Border Width="1"
                     Margin="{TemplateBinding Padding}"
                     HorizontalAlignment="{TemplateBinding HorizontalAlignment}"

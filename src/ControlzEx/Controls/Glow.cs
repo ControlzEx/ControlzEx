@@ -82,13 +82,13 @@
             }
 
             glow.GlowBlurEffect = new BlurEffect
-                              {
-                                  KernelType = KernelType.Box,
-                                  RenderingBias = RenderingBias.Performance,
-                                  // The blur radius has to be the same as the resize border thickness.
-                                  // Otherwise all pixels in the resize border are fully transparent which would disable hittests.
-                                  Radius = GetRelevantResizeBorderThickness(glow)                                  
-                              };
+            {
+                KernelType = KernelType.Gaussian,
+                RenderingBias = RenderingBias.Performance,
+                // The blur radius has to be the same as the resize border thickness.
+                // Otherwise all pixels in the resize border are fully transparent which would disable hittests.
+                Radius = GetRelevantResizeBorderThickness(glow)
+            };
             glow.GlowBlurEffect.Freeze();
         }
 
