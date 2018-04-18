@@ -91,16 +91,6 @@ namespace ControlzEx.Controls
             {
                 var b = new Binding
                         {
-                            Path = new PropertyPath(GlowWindowBehavior.ResizeBorderThicknessProperty),
-                            Source = behavior,
-                            Mode = BindingMode.OneWay
-                        };
-                this.glow.SetBinding(Glow.ResizeBorderThicknessProperty, b);
-            }
-
-            {
-                var b = new Binding
-                        {
                             Path = new PropertyPath(BorderThicknessProperty),
                             Source = owner,
                             Mode = BindingMode.OneWay
@@ -210,12 +200,31 @@ namespace ControlzEx.Controls
 
         public Storyboard OpacityStoryboard { get; set; }
 
-        public static readonly DependencyProperty ResizeBorderThicknessProperty = DependencyProperty.Register(nameof(ResizeBorderThickness), typeof(Thickness), typeof(GlowWindow), new PropertyMetadata(WindowChromeBehavior.GetDefaultResizeBorderThickness()));
+        public static readonly DependencyProperty ResizeBorderThicknessProperty = DependencyProperty.Register(nameof(ResizeBorderThickness), typeof(Thickness), typeof(GlowWindow), new PropertyMetadata(WindowChromeBehavior.GetDefaultResizeBorderThickness(), OnResizeBorderThicknessChanged));
 
         public Thickness ResizeBorderThickness
         {
             get { return (Thickness)this.GetValue(ResizeBorderThicknessProperty); }
             set { this.SetValue(ResizeBorderThicknessProperty, value); }
+        }
+
+        private static void OnResizeBorderThicknessChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var glowWindow = (GlowWindow)d;
+
+            // Add padding to the edges, otherwise the borders/glows overlap too much
+            switch (glowWindow.glow.Direction)
+            {
+                case GlowDirection.Left:
+                case GlowDirection.Right:
+                    glowWindow.glow.Padding = new Thickness(0, glowWindow.ResizeBorderThickness.Top / 4, 0, glowWindow.ResizeBorderThickness.Bottom / 4);
+                    break;
+
+                case GlowDirection.Top:
+                case GlowDirection.Bottom:
+                    glowWindow.glow.Padding = new Thickness(glowWindow.ResizeBorderThickness.Left / 4, 0, glowWindow.ResizeBorderThickness.Right / 4, 0);
+                    break;
+            }
         }
 
         public override void OnApplyTemplate()
