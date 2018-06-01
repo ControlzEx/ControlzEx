@@ -9,6 +9,7 @@
   environment:
     semver: 4.0.0
 
+  image: Visual Studio 2017
   version: '%semver%-dev{build}'
   configuration: Release
 
