@@ -3204,6 +3204,27 @@ namespace ControlzEx.Standard
             return pt;
         }
 
+        /// <summary>
+        /// Try to get the relative mouse position to the given handle in client coordinates.
+        /// </summary>
+        /// <param name="hWnd">The handle for this method.</param>
+        /// <param name="point">The relative mouse position to the given handle.</param>
+        public static bool TryGetRelativeMousePosition(IntPtr hWnd, out System.Windows.Point point)
+        {
+            POINT pt = new POINT();
+            var returnValue = hWnd != IntPtr.Zero && TryGetPhysicalCursorPos(out pt);
+            if (returnValue)
+            {
+                ScreenToClient(hWnd, ref pt);
+                point = new System.Windows.Point(pt.X, pt.Y);
+            }
+            else
+            {
+                point = new System.Windows.Point();
+            }
+            return returnValue;
+        }
+
         [SecurityCritical]
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static bool TryGetPhysicalCursorPos(out POINT pt)

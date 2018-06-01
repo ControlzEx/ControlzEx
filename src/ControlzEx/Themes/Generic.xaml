@@ -3,6 +3,7 @@
                     xmlns:controlz="clr-namespace:ControlzEx">
 
     <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/ControlzEx;component/Themes/Glow.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <!-- set up default styles for custom Controlz controls -->
