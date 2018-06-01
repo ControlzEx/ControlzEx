@@ -39,7 +39,7 @@
                    .Where(prop =>
                               typeof(Color).IsAssignableFrom(prop.PropertyType))
                    .Select(prop =>
-                               new KeyValuePair<string, Color>(prop.Name, (Color)prop.GetValue(null)));
+                               new KeyValuePair<string, Color>(prop.Name, (Color)prop.GetValue(null, null)));
         }
 
         public static IEnumerable<KeyValuePair<string, Brush>> GetBrushes()
@@ -49,7 +49,7 @@
                    .Where(prop =>
                               typeof(Brush).IsAssignableFrom(prop.PropertyType))
                    .Select(prop =>
-                               new KeyValuePair<string, Brush>(prop.Name, (Brush)prop.GetValue(null)));
+                               new KeyValuePair<string, Brush>(prop.Name, (Brush)prop.GetValue(null, null)));
         }
 
         private static readonly PropertyInfo criticalHandlePropertyInfo = typeof(Window).GetProperty("CriticalHandle", BindingFlags.NonPublic | BindingFlags.Instance);
