@@ -2,10 +2,10 @@
 namespace ControlzEx.Controls
 {
     using System;
+    using System.Runtime.InteropServices;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Data;
-    using System.Windows.Input;
     using System.Windows.Interop;
     using System.Windows.Media.Animation;
     using ControlzEx.Standard;
@@ -28,6 +28,23 @@ namespace ControlzEx.Controls
         private PropertyChangeNotifier resizeModeChangeNotifier;
 
         private readonly Window owner;
+
+        #region PInvoke
+        
+        [DllImport("user32.dll")]
+        private static extern IntPtr LoadCursor(IntPtr hInstance, IDC_SIZE_CURSORS cursor);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr SetCursor(IntPtr cursor);
+
+        private enum IDC_SIZE_CURSORS {
+            IDC_SIZENWSE = 32642,
+            IDC_SIZENESW = 32643,
+            IDC_SIZEWE = 32644,
+            IDC_SIZENS = 32645,
+        }
+
+        #endregion
 
         public GlowWindow(Window owner, GlowWindowBehavior behavior, GlowDirection direction)
         {
@@ -361,65 +378,60 @@ namespace ControlzEx.Controls
                         NativeMethods.SendMessage(this.ownerHandle, WM.ACTIVATE, wParam, lParam);
                     }
                     return new IntPtr(3);
-                case WM.LBUTTONDOWN:
-                    if (this.ownerHandle != IntPtr.Zero && UnsafeNativeMethods.GetWindowRect(this.ownerHandle, out rect))
+                case WM.NCLBUTTONDOWN:
+                    if (this.ownerHandle != IntPtr.Zero)
                     {
-                        Point pt;
-                        if (NativeMethods.TryGetRelativeMousePosition(this.handle, out pt))
-                        {
-                            NativeMethods.PostMessage(this.ownerHandle, WM.NCLBUTTONDOWN, (IntPtr)this.getHitTestValue(pt, rect), IntPtr.Zero);
-                        }
+                        // Forward message to owner
+                        NativeMethods.PostMessage(this.ownerHandle, WM.NCLBUTTONDOWN, wParam, IntPtr.Zero);
                     }
                     break;
                 case WM.NCHITTEST:
-                    Cursor cursor = null;
-                    if (this.owner.ResizeMode == ResizeMode.NoResize || this.owner.ResizeMode == ResizeMode.CanMinimize)
-                    {
-                        cursor = this.owner.Cursor;
-                    }
-                    else
+                    if (this.owner.ResizeMode == ResizeMode.CanResize 
+                        || this.owner.ResizeMode == ResizeMode.CanResizeWithGrip)
                     {
                         if (this.ownerHandle != IntPtr.Zero && UnsafeNativeMethods.GetWindowRect(this.ownerHandle, out rect))
                         {
                             Point pt;
                             if (NativeMethods.TryGetRelativeMousePosition(this.handle, out pt))
                             {
-                                cursor = GetSizeCursor(this.getHitTestValue(pt, rect));
+                                var hitTestValue = this.getHitTestValue(pt, rect);
+                                handled = true;
+                                return new IntPtr((int)hitTestValue);
                             }
                         }
                     }
-                    if (cursor != null && cursor != this.Cursor)
+                    break;
+
+                case WM.SETCURSOR:
+                    switch ((HT)Utility.LOWORD((int)lParam))
                     {
-                        this.Cursor = cursor;
+                        case HT.LEFT:
+                        case HT.RIGHT:
+                            handled = true;
+                            SetCursor(LoadCursor(IntPtr.Zero, IDC_SIZE_CURSORS.IDC_SIZEWE));
+                            break;
+
+                        case HT.TOP:
+                        case HT.BOTTOM:
+                            handled = true;
+                            SetCursor(LoadCursor(IntPtr.Zero, IDC_SIZE_CURSORS.IDC_SIZENS));
+                            break;
+
+                        case HT.TOPLEFT:
+                        case HT.BOTTOMRIGHT:
+                            handled = true;
+                            SetCursor(LoadCursor(IntPtr.Zero, IDC_SIZE_CURSORS.IDC_SIZENWSE));
+                            break;
+
+                        case HT.TOPRIGHT:             
+                        case HT.BOTTOMLEFT:                       
+                            handled = true;
+                            SetCursor(LoadCursor(IntPtr.Zero, IDC_SIZE_CURSORS.IDC_SIZENESW));
+                            break;
                     }
                     break;
             }
             return IntPtr.Zero;
-        }
-
-        private static Cursor GetSizeCursor(HT ht)
-        {
-            switch (ht)
-            {
-                case HT.LEFT:                    
-                case HT.RIGHT:
-                    return Cursors.SizeWE;
-
-                case HT.TOP:
-                case HT.BOTTOM:
-                    return Cursors.SizeNS;
-                    
-                case HT.TOPRIGHT:         
-                case HT.BOTTOMLEFT:
-                    return Cursors.SizeNESW;
-
-                case HT.TOPLEFT:
-                case HT.BOTTOMRIGHT:
-                    return Cursors.SizeNWSE;
-
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(ht), ht, "Not a valid sizing hittest-result.");
-            }
         }
 
         private void Invoke([NotNull] Action invokeAction)
