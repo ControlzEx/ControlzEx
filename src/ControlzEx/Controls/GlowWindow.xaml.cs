@@ -362,7 +362,6 @@ namespace ControlzEx.Controls
 
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
-            RECT rect;
             switch ((WM)msg)
             {
                 case WM.SHOWWINDOW:
@@ -389,10 +388,9 @@ namespace ControlzEx.Controls
                     if (this.owner.ResizeMode == ResizeMode.CanResize 
                         || this.owner.ResizeMode == ResizeMode.CanResizeWithGrip)
                     {
-                        if (this.ownerHandle != IntPtr.Zero && UnsafeNativeMethods.GetWindowRect(this.ownerHandle, out rect))
+                        if (this.ownerHandle != IntPtr.Zero && UnsafeNativeMethods.GetWindowRect(this.ownerHandle, out var rect))
                         {
-                            Point pt;
-                            if (NativeMethods.TryGetRelativeMousePosition(this.handle, out pt))
+                            if (NativeMethods.TryGetRelativeMousePosition(this.handle, out var pt))
                             {
                                 var hitTestValue = this.getHitTestValue(pt, rect);
                                 handled = true;

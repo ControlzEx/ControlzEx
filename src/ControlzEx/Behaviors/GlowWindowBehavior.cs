@@ -265,8 +265,7 @@
                                 && this.left.CanUpdateCore() && this.right.CanUpdateCore() && this.top.CanUpdateCore() && this.bottom.CanUpdateCore();
             if (canUpdateCore)
             {
-                RECT rect;
-                if (this.handle != IntPtr.Zero && UnsafeNativeMethods.GetWindowRect(this.handle, out rect))
+                if (this.handle != IntPtr.Zero && UnsafeNativeMethods.GetWindowRect(this.handle, out var rect))
                 {
                     this.left.UpdateCore(rect);
                     this.right.UpdateCore(rect);
