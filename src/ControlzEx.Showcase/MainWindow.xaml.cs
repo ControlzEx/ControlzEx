@@ -1,9 +1,12 @@
 ﻿namespace ControlzEx.Showcase
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Reflection;
     using System.Windows;
     using System.Windows.Input;
+    using System.Windows.Media;
     using ControlzEx.Native;
     using ControlzEx.Standard;
 
@@ -17,6 +20,36 @@
             //this.SizeToContent = SizeToContent.WidthAndHeight;
 
             this.InitializeComponent();
+
+            this.Brushes = GetBrushes().ToList();
+        }
+
+        public static readonly DependencyProperty BrushesProperty = DependencyProperty.Register(nameof(Brushes), typeof(List<KeyValuePair<string, Brush>>), typeof(MainWindow), new PropertyMetadata(default(List<KeyValuePair<string, Brush>>)));
+
+        public List<KeyValuePair<string, Brush>> Brushes
+        {
+            get { return (List<KeyValuePair<string, Brush>>)this.GetValue(BrushesProperty); }
+            set { this.SetValue(BrushesProperty, value); }
+        }
+
+        public static IEnumerable<KeyValuePair<string, Color>> GetColors()
+        {
+            return typeof(Colors)
+                   .GetProperties()
+                   .Where(prop =>
+                              typeof(Color).IsAssignableFrom(prop.PropertyType))
+                   .Select(prop =>
+                               new KeyValuePair<string, Color>(prop.Name, (Color)prop.GetValue(null, null)));
+        }
+
+        public static IEnumerable<KeyValuePair<string, Brush>> GetBrushes()
+        {
+            return typeof(Brushes)
+                   .GetProperties()
+                   .Where(prop =>
+                              typeof(Brush).IsAssignableFrom(prop.PropertyType))
+                   .Select(prop =>
+                               new KeyValuePair<string, Brush>(prop.Name, (Brush)prop.GetValue(null, null)));
         }
 
         private static readonly PropertyInfo criticalHandlePropertyInfo = typeof(Window).GetProperty("CriticalHandle", BindingFlags.NonPublic | BindingFlags.Instance);
