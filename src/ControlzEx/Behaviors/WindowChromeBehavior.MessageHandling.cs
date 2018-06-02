@@ -26,7 +26,6 @@ namespace ControlzEx.Behaviors
         // as I've seen using just one cause things to get enough out of [....] that occasionally the caption will redraw.
         private WindowState lastRoundingState;
         private WindowState lastMenuState;
-        private bool isGlassEnabled;
 
         private WINDOWPOS previousWp;
 
@@ -403,7 +402,7 @@ namespace ControlzEx.Behaviors
         [SecurityCritical]
         private IntPtr _HandleNCPAINT(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
-            handled = this.GlassFrameThickness == default(Thickness) && this.GlowBrush == null;
+            handled = this.GlowBrush == null;
             return IntPtr.Zero;
         }
 
@@ -498,21 +497,18 @@ namespace ControlzEx.Behaviors
         [SecurityCritical]
         private IntPtr _HandleWINDOWPOSCHANGING(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
-            if (!this.isGlassEnabled)
+            Assert.IsNotDefault(lParam);
+            var wp = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
+
+            // we don't do bitwise operations cuz we're checking for this flag being the only one there
+            // I have no clue why this works, I tried this because VS2013 has this flag removed on fullscreen window movws
+            if (this.IgnoreTaskbarOnMaximize && this._GetHwndState() == WindowState.Maximized && wp.flags == SWP.FRAMECHANGED)
             {
-                Assert.IsNotDefault(lParam);
-                var wp = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
+                wp.flags = 0;
+                Marshal.StructureToPtr(wp, lParam, true);
 
-                // we don't do bitwise operations cuz we're checking for this flag being the only one there
-                // I have no clue why this works, I tried this because VS2013 has this flag removed on fullscreen window movws
-                if (this.IgnoreTaskbarOnMaximize && this._GetHwndState() == WindowState.Maximized && wp.flags == SWP.FRAMECHANGED)
-                {
-                    wp.flags = 0;
-                    Marshal.StructureToPtr(wp, lParam, true);
-
-                    handled = true;
-                    return IntPtr.Zero;
-                }
+                handled = true;
+                return IntPtr.Zero;
             }
 
             var pos = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
@@ -571,24 +567,21 @@ namespace ControlzEx.Behaviors
 
             this._UpdateSystemMenu(null);
 
-            if (!this.isGlassEnabled)
+            Assert.IsNotDefault(lParam);
+            var wp = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
+
+            if (!wp.Equals(this.previousWp))
             {
-                Assert.IsNotDefault(lParam);
-                var wp = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
-
-                if (!wp.Equals(this.previousWp))
-                {
-                    this.previousWp = wp;
-                    this._SetRegion(wp);
-                }
                 this.previousWp = wp;
-
-                //                if (wp.Equals(_previousWP) && wp.flags.Equals(_previousWP.flags))
-                //                {
-                //                    handled = true;
-                //                    return IntPtr.Zero;
-                //                }
+                this._SetRegion(wp);
             }
+            this.previousWp = wp;
+
+            //                if (wp.Equals(_previousWP) && wp.flags.Equals(_previousWP.flags))
+            //                {
+            //                    handled = true;
+            //                    return IntPtr.Zero;
+            //                }
 
             // Still want to pass this to DefWndProc
             handled = false;
@@ -866,22 +859,9 @@ namespace ControlzEx.Behaviors
                 return;
             }
 
-            // Don't rely on SystemParameters for this, just make the check ourselves.
-            var frameState = NativeMethods.DwmIsCompositionEnabled();
-
-            if (force || frameState != this.isGlassEnabled)
+            if (force)
             {
-                this.isGlassEnabled = frameState && this.GlassFrameThickness != default(Thickness);
-
-                if (!this.isGlassEnabled)
-                {
-                    this._SetRegion(null);
-                }
-                else
-                {
-                    this._ClearRegion();
-                    this._ExtendGlassFrame();
-                }
+                this._SetRegion(null);
 
                 if (this.hwndSource.IsDisposed)
                 {
@@ -1039,77 +1019,6 @@ namespace ControlzEx.Behaviors
                                                (int)Math.Ceiling(region.Bottom));
         }
 
-        /// <SecurityNote>
-        ///   Critical : Calls critical methods
-        /// </SecurityNote>
-        [SecurityCritical]
-        private void _ExtendGlassFrame()
-        {
-            Assert.IsNotNull(this.AssociatedObject);
-
-            // Expect that this might be called on OSes other than Vista.
-            if (!Utility.IsOSVistaOrNewer)
-            {
-                // Not an error.  Just not on Vista so we're not going to get glass.
-                return;
-            }
-
-            if (IntPtr.Zero == this.windowHandle)
-            {
-                // Can't do anything with this call until the Window has been shown.
-                return;
-            }
-
-            if (this.hwndSource.IsDisposed)
-            {
-                // If the window got closed very early
-                return;
-            }
-
-            // Ensure standard HWND background painting when DWM isn't enabled.
-            if (!NativeMethods.DwmIsCompositionEnabled())
-            {
-                // Apply the transparent background to the HWND for disabled DwmIsComposition too
-                // but only if the window has the flag AllowsTransparency turned on
-                if (this.AssociatedObject.AllowsTransparency)
-                {
-                    this.hwndSource.CompositionTarget.BackgroundColor = Colors.Transparent;
-                }
-                else
-                {
-                    this.hwndSource.CompositionTarget.BackgroundColor = SystemColors.WindowColor;
-                }
-            }
-            else
-            {
-                var dpi = this.AssociatedObject.GetDpi();
-
-                // This makes the glass visible at a Win32 level so long as nothing else is covering it.
-                // The Window's Background needs to be changed independent of this.
-
-                // Apply the transparent background to the HWND
-                // but only if the window has the flag AllowsTransparency turned on
-                if (this.AssociatedObject.AllowsTransparency)
-                {
-                    this.hwndSource.CompositionTarget.BackgroundColor = Colors.Transparent;
-                }
-
-                // Thickness is going to be DIPs, need to convert to system coordinates.
-                var deviceGlassThickness = DpiHelper.LogicalThicknessToDevice(this.GlassFrameThickness, dpi.DpiScaleX, dpi.DpiScaleY);
-
-                var dwmMargin = new MARGINS
-                                {
-                                    // err on the side of pushing in glass an extra pixel.
-                                    cxLeftWidth = (int)Math.Ceiling(deviceGlassThickness.Left),
-                                    cxRightWidth = (int)Math.Ceiling(deviceGlassThickness.Right),
-                                    cyTopHeight = (int)Math.Ceiling(deviceGlassThickness.Top),
-                                    cyBottomHeight = (int)Math.Ceiling(deviceGlassThickness.Bottom),
-                                };
-
-                NativeMethods.DwmExtendFrameIntoClientArea(this.windowHandle, ref dwmMargin);
-            }
-        }
-
         /// <summary>
         /// Matrix of the HT values to return when responding to NC window messages.
         /// </summary>
@@ -1178,39 +1087,9 @@ namespace ControlzEx.Behaviors
 
             if (!isClosing && !this.hwndSource.IsDisposed)
             {
-                this._RestoreGlassFrame();
                 this._RestoreHrgn();
 
                 this.AssociatedObject.InvalidateMeasure();
-            }
-        }
-
-        /// <SecurityNote>
-        ///   Critical : Calls critical methods
-        /// </SecurityNote>
-        [SecurityCritical]
-        private void _RestoreGlassFrame()
-        {
-            Assert.IsNotNull(this.AssociatedObject);
-
-            // Expect that this might be called on OSes other than Vista
-            // and if the window hasn't yet been shown, then we don't need to undo anything.
-            if (!Utility.IsOSVistaOrNewer || this.windowHandle == IntPtr.Zero)
-            {
-                return;
-            }
-
-            var hwndSourceCompositionTarget = this.hwndSource.CompositionTarget;
-            if (hwndSourceCompositionTarget != null)
-            {
-                hwndSourceCompositionTarget.BackgroundColor = SystemColors.WindowColor;
-            }
-
-            if (NativeMethods.DwmIsCompositionEnabled())
-            {
-                // If glass is enabled, push it back to the normal bounds.
-                var dwmMargin = new MARGINS();
-                NativeMethods.DwmExtendFrameIntoClientArea(this.windowHandle, ref dwmMargin);
             }
         }
 

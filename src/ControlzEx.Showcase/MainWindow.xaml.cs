@@ -14,11 +14,6 @@
     {
         public MainWindow()
         {
-            //this.ShowActivated = false;
-            //this.MaxWidth = 1000;
-            //this.MaxHeight = 700;
-            //this.SizeToContent = SizeToContent.WidthAndHeight;
-
             this.InitializeComponent();
 
             this.Brushes = GetBrushes().ToList();

@@ -2,10 +2,47 @@
 
 namespace ControlzEx.Showcase
 {
+    using System.Windows.Data;
+    using System.Windows.Interactivity;
     using System.Windows.Media;
+    using ControlzEx.Behaviors;
 
     public class WindowChromeWindow : Window
     {
+        public WindowChromeWindow()
+        {
+            this.InitializeBehaviors();
+        }
+
+        private void InitializeBehaviors()
+        {
+            this.InitializeWindowChromeBehavior();
+        }
+
+        /// <summary>
+        /// Initializes the WindowChromeBehavior which is needed to render the custom WindowChrome.
+        /// </summary>
+        private void InitializeWindowChromeBehavior()
+        {
+            var behavior = new WindowChromeBehavior();
+            BindingOperations.SetBinding(behavior, WindowChromeBehavior.ResizeBorderThicknessProperty, new Binding { Path = new PropertyPath(ResizeBorderThicknessProperty), Source = this });
+            BindingOperations.SetBinding(behavior, WindowChromeBehavior.IgnoreTaskbarOnMaximizeProperty, new Binding { Path = new PropertyPath(IgnoreTaskbarOnMaximizeProperty), Source = this });
+
+            Interaction.GetBehaviors(this).Add(behavior);
+
+            this.WindowChromeBehavior = behavior;
+        }
+
+        private static readonly DependencyPropertyKey WindowChromeBehaviorPropertyKey = DependencyProperty.RegisterReadOnly(nameof(WindowChromeBehavior), typeof(WindowChromeBehavior), typeof(MainWindow), new PropertyMetadata(default(WindowChromeBehavior)));
+
+        public static readonly DependencyProperty WindowChromeBehaviorProperty = WindowChromeBehaviorPropertyKey.DependencyProperty;
+
+        public WindowChromeBehavior WindowChromeBehavior
+        {
+            get { return (WindowChromeBehavior)this.GetValue(WindowChromeBehaviorProperty); }
+            private set { this.SetValue(WindowChromeBehaviorPropertyKey, value); }
+        }
+
         public Thickness ResizeBorderThickness
         {
             get { return (Thickness)this.GetValue(ResizeBorderThicknessProperty); }
@@ -14,22 +51,15 @@ namespace ControlzEx.Showcase
 
         // Using a DependencyProperty as the backing store for ResizeBorderThickness.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ResizeBorderThicknessProperty =
-            DependencyProperty.Register(nameof(ResizeBorderThickness), typeof(Thickness), typeof(WindowChromeWindow), new PropertyMetadata(default(Thickness)));
+            DependencyProperty.Register(nameof(ResizeBorderThickness), typeof(Thickness), typeof(WindowChromeWindow), new PropertyMetadata(WindowChromeBehavior.ResizeBorderThicknessProperty.DefaultMetadata.DefaultValue));
 
-        /// <summary>
-        /// Gets or sets glass border thickness
-        /// </summary>
-        public Thickness GlassFrameThickness
+        public static readonly DependencyProperty IgnoreTaskbarOnMaximizeProperty = DependencyProperty.Register(nameof(IgnoreTaskbarOnMaximize), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(WindowChromeBehavior.IgnoreTaskbarOnMaximizeProperty.DefaultMetadata.DefaultValue));
+
+        public bool IgnoreTaskbarOnMaximize
         {
-            get { return (Thickness)this.GetValue(GlassFrameThicknessProperty); }
-            set { this.SetValue(GlassFrameThicknessProperty, value); }
+            get { return (bool)this.GetValue(IgnoreTaskbarOnMaximizeProperty); }
+            set { this.SetValue(IgnoreTaskbarOnMaximizeProperty, value); }
         }
-
-        /// <summary>
-        /// Using a DependencyProperty as the backing store for GlassFrameThickness.  This enables animation, styling, binding, etc...
-        /// </summary>
-        public static readonly DependencyProperty GlassFrameThicknessProperty =
-            DependencyProperty.Register(nameof(GlassFrameThickness), typeof(Thickness), typeof(WindowChromeWindow), new UIPropertyMetadata(new Thickness(0D)));
 
         /// <summary>
         /// <see cref="DependencyProperty"/> for <see cref="GlowBrush"/>.

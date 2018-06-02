@@ -48,9 +48,6 @@ namespace ControlzEx.Behaviors
         private bool isCleanedUp;
         private IntPtr taskbarHandle;
 
-        // Named property available for fully extending the glass frame.
-        public static Thickness GlassFrameCompleteThickness { get { return new Thickness(-1); } }
-
         private struct _SystemParameterBoundProperty
         {
             public string SystemParameterPropertyName { get; set; }
@@ -71,33 +68,6 @@ namespace ControlzEx.Behaviors
         /// </summary>
         public static readonly DependencyProperty ResizeBorderThicknessProperty =
             DependencyProperty.Register(nameof(ResizeBorderThickness), typeof(Thickness), typeof(WindowChromeBehavior), new PropertyMetadata(GetDefaultResizeBorderThickness()), (value) => ((Thickness)value).IsNonNegative());
-
-        /// <summary>
-        /// Mirror property for <see cref="GlassFrameThickness"/>.
-        /// </summary>
-        public Thickness GlassFrameThickness
-        {
-            get { return (Thickness)this.GetValue(GlassFrameThicknessProperty); }
-            set { this.SetValue(GlassFrameThicknessProperty, value); }
-        }
-
-        /// <summary>
-        /// <see cref="DependencyProperty"/> for <see cref="GlassFrameThickness"/>.
-        /// </summary>
-        public static readonly DependencyProperty GlassFrameThicknessProperty =
-            DependencyProperty.Register(nameof(GlassFrameThickness), typeof(Thickness), typeof(WindowChromeBehavior), new PropertyMetadata(default(Thickness), OnGlassFrameThicknessChanged, (d, o) => _CoerceGlassFrameThickness((Thickness)o)));
-
-        private static object _CoerceGlassFrameThickness(Thickness thickness)
-        {
-            // If it's explicitly set, but set to a thickness with at least one negative side then 
-            // coerce the value to the stock GlassFrameCompleteThickness.
-            if (!thickness.IsNonNegative())
-            {
-                return GlassFrameCompleteThickness;
-            }
-
-            return thickness;
-        }
 
         /// <summary>
         /// <see cref="DependencyProperty"/> for <see cref="GlowBrush"/>.
@@ -252,13 +222,6 @@ namespace ControlzEx.Behaviors
             {
                 this.savedTopMost = window.Topmost;
             }
-        }
-
-        private static void OnGlassFrameThicknessChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var behavior = (WindowChromeBehavior)d;
-
-            behavior._OnChromePropertyChangedThatRequiresRepaint();
         }
 
         private static void OnIgnoreTaskbarOnMaximizePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -585,7 +548,6 @@ namespace ControlzEx.Behaviors
         private static readonly List<_SystemParameterBoundProperty> _BoundProperties = new List<_SystemParameterBoundProperty>
                                                                                        {
                                                                                            new _SystemParameterBoundProperty { DependencyProperty = ResizeBorderThicknessProperty, SystemParameterPropertyName = "WindowResizeBorderThickness" },
-                                                                                           new _SystemParameterBoundProperty { DependencyProperty = GlassFrameThicknessProperty, SystemParameterPropertyName = "WindowNonClientFrameThickness" },
                                                                                        };
     }
 }

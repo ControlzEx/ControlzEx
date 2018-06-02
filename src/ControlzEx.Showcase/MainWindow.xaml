@@ -28,13 +28,10 @@
     </local:WindowChromeWindow.Resources>
 
     <i:Interaction.Behaviors>
-        <controlzEx:WindowChromeBehavior x:Name="WindowChromeBehavior"
-                                         GlassFrameThickness="{Binding ElementName=Window, Path=GlassFrameThickness}"
-                                         ResizeBorderThickness="{Binding ElementName=Window, Path=ResizeBorderThickness}" />
         <controlzEx:GlowWindowBehavior x:Name="GlowWindowBehavior" 
                                        GlowBrush="{Binding ElementName=Window, Path=GlowBrush}" 
                                        NonActiveGlowBrush="{Binding ElementName=Window, Path=NonActiveGlowBrush}" 
-                                       ResizeBorderThickness="{Binding ElementName=WindowChromeBehavior, Path=ResizeBorderThickness}" />
+                                       ResizeBorderThickness="{Binding ElementName=Window, Path=WindowChromeBehavior.ResizeBorderThickness}" />
     </i:Interaction.Behaviors>
 
     <Grid SnapsToDevicePixels="True">
@@ -97,7 +94,6 @@
                                   SelectedValue="{StaticResource NoneWindowStyle}"
                                   SelectedValuePath="Tag">
                             <TextBlock Tag="{StaticResource NoneWindowStyle}">NoneWindowStyle</TextBlock>
-                            <TextBlock Tag="{StaticResource NoneWindowStyleWithGlassFrame}">NoneWindowStyleWithGlassFrame</TextBlock>
                         </ComboBox>
 
                         <Label Grid.Row="1"
@@ -127,7 +123,7 @@
                         <CheckBox Grid.Row="4"
                                   Grid.Column="0"
                                   Grid.ColumnSpan="2"
-                                  IsChecked="{Binding ElementName=WindowChromeBehavior, Path=IgnoreTaskbarOnMaximize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                  IsChecked="{Binding ElementName=Window, Path=IgnoreTaskbarOnMaximize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                   Content="IgnoreTaskbarOnMaximize" />
                     </Grid>
                 </GroupBox>
@@ -156,18 +152,11 @@
                                  Text="{Binding ElementName=Window, Path=WindowStyle}" />
 
                         <Label Grid.Row="2"
-                               Grid.Column="0">GlassFrameThickness</Label>
+                               Grid.Column="0">ResizeBorderThickness</Label>
                         <TextBox Grid.Row="2"
                                  Grid.Column="1"
                                  IsReadOnly="True"
-                                 Text="{Binding ElementName=WindowChromeBehavior, Path=GlassFrameThickness, Mode=TwoWay}" />
-
-                        <Label Grid.Row="3"
-                               Grid.Column="0">ResizeBorderThickness</Label>
-                        <TextBox Grid.Row="3"
-                                 Grid.Column="1"
-                                 IsReadOnly="True"
-                                 Text="{Binding ElementName=WindowChromeBehavior, Path=ResizeBorderThickness, Mode=TwoWay}" />
+                                 Text="{Binding ElementName=Window, Path=WindowChromeBehavior.ResizeBorderThickness, Mode=TwoWay}" />
                     </Grid>
                 </GroupBox>
             </Grid>
