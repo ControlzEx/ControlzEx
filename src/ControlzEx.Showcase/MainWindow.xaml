@@ -46,10 +46,17 @@
                   controlzEx:WindowChrome.IsHitTestVisibleInChrome="True"
                   MouseLeftButtonDown="TitleBarGrid_OnMouseLeftButtonDown"
                   MouseRightButtonDown="TitleBarGrid_OnMouseRightButtonDown">
-                <Border Background="{Binding Source={x:Static SystemColors.WindowBrush}}"
-                        Margin="0,0,150,0" />
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="150" />
+                </Grid.ColumnDefinitions>
+                <Border Grid.ColumnSpan="2" 
+                        Background="{Binding Source={x:Static SystemColors.WindowBrush}}" />
+
                 <TextBlock x:Name="TitlebarText"
+                           Grid.Column="0"
                            Margin="4,0,0,0"
+                           HorizontalAlignment="Center"
                            Text="Use GridSplitter below to move content above titlebar" />
             </Grid>
 
@@ -129,7 +136,7 @@
                 </GroupBox>
 
                 <GroupBox Grid.Row="1"
-                          Header="Current values (readonly)">
+                          Header="Current values">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition />
@@ -145,17 +152,9 @@
                         </Grid.RowDefinitions>
 
                         <Label Grid.Row="1"
-                               Grid.Column="0">WindowStyle</Label>
+                               Grid.Column="0">ResizeBorderThickness</Label>
                         <TextBox Grid.Row="1"
                                  Grid.Column="1"
-                                 IsReadOnly="True"
-                                 Text="{Binding ElementName=Window, Path=WindowStyle}" />
-
-                        <Label Grid.Row="2"
-                               Grid.Column="0">ResizeBorderThickness</Label>
-                        <TextBox Grid.Row="2"
-                                 Grid.Column="1"
-                                 IsReadOnly="True"
                                  Text="{Binding ElementName=Window, Path=WindowChromeBehavior.ResizeBorderThickness, Mode=TwoWay}" />
                     </Grid>
                 </GroupBox>
