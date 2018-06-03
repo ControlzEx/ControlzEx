@@ -9,10 +9,9 @@ namespace ControlzEx.Behaviors
     using System.Security.Permissions;
     using System.Windows;
     using System.Windows.Data;
-    using System.Windows.Media;
     using ControlzEx.Standard;
     using ControlzEx.Windows.Shell;
-    using HANDLE_MESSAGE = System.Collections.Generic.KeyValuePair<ControlzEx.Standard.WM, ControlzEx.Standard.MessageHandler>;
+    using HANDLE_MESSAGE = System.Collections.Generic.KeyValuePair<Standard.WM, Standard.MessageHandler>;
 
     public partial class WindowChromeBehavior
     {
