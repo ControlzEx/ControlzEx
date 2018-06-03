@@ -304,8 +304,7 @@ namespace ControlzEx.Behaviors
                 Invoke(this.AssociatedObject, () =>
                                               {
                                                   this.AssociatedObject.InvalidateMeasure();
-                                                  RECT rect;
-                                                  if (UnsafeNativeMethods.GetWindowRect(this.windowHandle, out rect))
+                                                  if (UnsafeNativeMethods.GetWindowRect(this.windowHandle, out var rect))
                                                   {
                                                       var flags = SWP.SHOWWINDOW;
                                                       if (!this.AssociatedObject.ShowActivated)
