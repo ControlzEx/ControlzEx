@@ -139,6 +139,7 @@ namespace ControlzEx.Controls
                             ? HT.BOTTOMLEFT
                             : HT.LEFT;
                     break;
+
                 case GlowDirection.Right:
                     this.glow.Orientation = Orientation.Vertical;
                     this.glow.HorizontalAlignment = HorizontalAlignment.Left;
@@ -173,6 +174,7 @@ namespace ControlzEx.Controls
                             ? HT.TOPRIGHT
                             : HT.TOP;
                     break;
+
                 case GlowDirection.Bottom:
                     this.PreviewMouseDoubleClick += (sender, e) =>
                         {

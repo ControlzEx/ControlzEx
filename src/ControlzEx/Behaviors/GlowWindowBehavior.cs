@@ -248,21 +248,19 @@
         /// </summary>
         private void Update()
         {
-            var canUpdate = this.left != null && this.right != null && this.top != null && this.bottom != null;
-            if (canUpdate)
-            {
-                this.left.Update();
-                this.right.Update();
-                this.top.Update();
-                this.bottom.Update();
-            }
+            this.left?.Update();
+            this.right?.Update();
+            this.top?.Update();
+            this.bottom?.Update();
         }
 
 #pragma warning disable 618
         private void UpdateCore()
         {
-            var canUpdateCore = this.left != null && this.right != null && this.top != null && this.bottom != null
-                                && this.left.CanUpdateCore() && this.right.CanUpdateCore() && this.top.CanUpdateCore() && this.bottom.CanUpdateCore();
+            var canUpdateCore = this.left?.CanUpdateCore() == true
+                                && this.right?.CanUpdateCore() == true
+                                && this.top?.CanUpdateCore()  == true
+                                && this.bottom?.CanUpdateCore() == true;
             if (canUpdateCore)
             {
                 if (this.handle != IntPtr.Zero && UnsafeNativeMethods.GetWindowRect(this.handle, out var rect))
