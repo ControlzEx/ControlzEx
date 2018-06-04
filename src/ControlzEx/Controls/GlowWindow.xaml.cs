@@ -38,10 +38,10 @@ namespace ControlzEx.Controls
         private static extern IntPtr SetCursor(IntPtr cursor);
 
         private enum IDC_SIZE_CURSORS {
-            IDC_SIZENWSE = 32642,
-            IDC_SIZENESW = 32643,
-            IDC_SIZEWE = 32644,
-            IDC_SIZENS = 32645,
+            SIZENWSE = 32642,
+            SIZENESW = 32643,
+            SIZEWE = 32644,
+            SIZENS = 32645,
         }
 
         #endregion
@@ -129,10 +129,10 @@ namespace ControlzEx.Controls
                 case GlowDirection.Left:
                     this.glow.Orientation = Orientation.Vertical;
                     this.glow.HorizontalAlignment = HorizontalAlignment.Right;
-                    this.getLeft = (rect) => rect.Left - this.ResizeBorderThickness.Left + 1;
-                    this.getTop = (rect) => rect.Top - this.ResizeBorderThickness.Top / 2; 
-                    this.getWidth = (rect) => this.ResizeBorderThickness.Left;
-                    this.getHeight = (rect) => rect.Height + this.ResizeBorderThickness.Top; 
+                    this.getLeft = rect => rect.Left - this.ResizeBorderThickness.Left + 1;
+                    this.getTop = rect => rect.Top - this.ResizeBorderThickness.Top / 2; 
+                    this.getWidth = rect => this.ResizeBorderThickness.Left;
+                    this.getHeight = rect => rect.Height + this.ResizeBorderThickness.Top; 
                     this.getHitTestValue = (p, rect) => new Rect(0, 0, rect.Width, this.ResizeBorderThickness.Top * 2).Contains(p)
                         ? HT.TOPLEFT
                         : new Rect(0, rect.Height - this.ResizeBorderThickness.Bottom, rect.Width, this.ResizeBorderThickness.Bottom * 2).Contains(p)
@@ -143,10 +143,10 @@ namespace ControlzEx.Controls
                 case GlowDirection.Right:
                     this.glow.Orientation = Orientation.Vertical;
                     this.glow.HorizontalAlignment = HorizontalAlignment.Left;
-                    this.getLeft = (rect) => rect.Right - 1;
-                    this.getTop = (rect) => rect.Top - this.ResizeBorderThickness.Top / 2; 
-                    this.getWidth = (rect) => this.ResizeBorderThickness.Right;
-                    this.getHeight = (rect) => rect.Height + this.ResizeBorderThickness.Top; 
+                    this.getLeft = rect => rect.Right - 1;
+                    this.getTop = rect => rect.Top - this.ResizeBorderThickness.Top / 2; 
+                    this.getWidth = rect => this.ResizeBorderThickness.Right;
+                    this.getHeight = rect => rect.Height + this.ResizeBorderThickness.Top; 
                     this.getHitTestValue = (p, rect) => new Rect(0, 0, rect.Width, this.ResizeBorderThickness.Top * 2).Contains(p)
                         ? HT.TOPRIGHT
                         : new Rect(0, rect.Height - this.ResizeBorderThickness.Bottom, rect.Width, this.ResizeBorderThickness.Bottom * 2).Contains(p)
@@ -164,10 +164,10 @@ namespace ControlzEx.Controls
                         };
                     this.glow.Orientation = Orientation.Horizontal;
                     this.glow.VerticalAlignment = VerticalAlignment.Bottom;
-                    this.getLeft = (rect) => rect.Left - this.ResizeBorderThickness.Left / 2; 
-                    this.getTop = (rect) => rect.Top - this.ResizeBorderThickness.Top + 1;
-                    this.getWidth = (rect) => rect.Width + this.ResizeBorderThickness.Left; 
-                    this.getHeight = (rect) => this.ResizeBorderThickness.Top;
+                    this.getLeft = rect => rect.Left - this.ResizeBorderThickness.Left / 2; 
+                    this.getTop = rect => rect.Top - this.ResizeBorderThickness.Top + 1;
+                    this.getWidth = rect => rect.Width + this.ResizeBorderThickness.Left; 
+                    this.getHeight = rect => this.ResizeBorderThickness.Top;
                     this.getHitTestValue = (p, rect) => new Rect(0, 0, this.ResizeBorderThickness.Left * 2, rect.Height).Contains(p)
                         ? HT.TOPLEFT
                         : new Rect(rect.Width - this.ResizeBorderThickness.Right, 0, this.ResizeBorderThickness.Right * 2, rect.Height).Contains(p)
@@ -185,10 +185,10 @@ namespace ControlzEx.Controls
                         };
                     this.glow.Orientation = Orientation.Horizontal;
                     this.glow.VerticalAlignment = VerticalAlignment.Top;
-                    this.getLeft = (rect) => rect.Left - this.ResizeBorderThickness.Left / 2; 
-                    this.getTop = (rect) => rect.Bottom - 1;
-                    this.getWidth = (rect) => rect.Width + this.ResizeBorderThickness.Left; 
-                    this.getHeight = (rect) => this.ResizeBorderThickness.Bottom;
+                    this.getLeft = rect => rect.Left - this.ResizeBorderThickness.Left / 2; 
+                    this.getTop = rect => rect.Bottom - 1;
+                    this.getWidth = rect => rect.Width + this.ResizeBorderThickness.Left; 
+                    this.getHeight = rect => this.ResizeBorderThickness.Bottom;
                     this.getHitTestValue = (p, rect) => new Rect(0, 0, this.ResizeBorderThickness.Left * 2, rect.Height).Contains(p)
                         ? HT.BOTTOMLEFT
                         : new Rect(rect.Width - this.ResizeBorderThickness.Right, 0, this.ResizeBorderThickness.Right * 2, rect.Height).Contains(p)
@@ -260,7 +260,11 @@ namespace ControlzEx.Controls
             base.OnSourceInitialized(e);
 
             this.hwndSource = (HwndSource)PresentationSource.FromVisual(this);
-            if (this.hwndSource == null) return;
+
+            if (this.hwndSource == null)
+            {
+                return;
+            }
 
             var ws = NativeMethods.GetWindowStyle(this.hwndSource.Handle);
             var wsex = NativeMethods.GetWindowStyleEx(this.hwndSource.Handle);
@@ -289,6 +293,7 @@ namespace ControlzEx.Controls
         private void ResizeModeChanged(object sender, EventArgs e)
         {
             var wsex = NativeMethods.GetWindowStyleEx(this.hwndSource.Handle);
+
             if (this.owner.ResizeMode == ResizeMode.NoResize || this.owner.ResizeMode == ResizeMode.CanMinimize)
             {
                 wsex |= WS_EX.TRANSPARENT;
@@ -297,6 +302,7 @@ namespace ControlzEx.Controls
             {
                 wsex ^= WS_EX.TRANSPARENT;
             }
+
             NativeMethods.SetWindowStyleEx(this.hwndSource.Handle, wsex);
         }
 
@@ -347,7 +353,8 @@ namespace ControlzEx.Controls
 
         internal bool CanUpdateCore()
         {
-            return this.ownerHandle != IntPtr.Zero && this.handle != IntPtr.Zero;
+            return this.ownerHandle != IntPtr.Zero 
+                   && this.handle != IntPtr.Zero;
         }
 
         internal void UpdateCore(RECT rect)
@@ -355,10 +362,10 @@ namespace ControlzEx.Controls
             // we can handle this._owner.WindowState == WindowState.Normal
             // or use NOZORDER too
             NativeMethods.SetWindowPos(this.handle, this.ownerHandle, 
-                                       (int)(this.getLeft(rect)),
-                                       (int)(this.getTop(rect)),
-                                       (int)(this.getWidth(rect)),
-                                       (int)(this.getHeight(rect)),
+                                       (int)this.getLeft(rect),
+                                       (int)this.getTop(rect),
+                                       (int)this.getWidth(rect),
+                                       (int)this.getHeight(rect),
                                        SWP.NOACTIVATE | SWP.NOZORDER);
         }
 
@@ -372,6 +379,7 @@ namespace ControlzEx.Controls
                         handled = true; //handle this message so window isn't shown until we want it to       
                     }
                     break;
+
                 case WM.MOUSEACTIVATE:
                     handled = true;
                     if (this.ownerHandle != IntPtr.Zero)
@@ -379,6 +387,7 @@ namespace ControlzEx.Controls
                         NativeMethods.SendMessage(this.ownerHandle, WM.ACTIVATE, wParam, lParam);
                     }
                     return new IntPtr(3);
+
                 case WM.NCLBUTTONDOWN:
                     if (this.ownerHandle != IntPtr.Zero)
                     {
@@ -386,6 +395,7 @@ namespace ControlzEx.Controls
                         NativeMethods.PostMessage(this.ownerHandle, WM.NCLBUTTONDOWN, wParam, IntPtr.Zero);
                     }
                     break;
+
                 case WM.NCHITTEST:
                     if (this.owner.ResizeMode == ResizeMode.CanResize 
                         || this.owner.ResizeMode == ResizeMode.CanResizeWithGrip)
@@ -408,29 +418,30 @@ namespace ControlzEx.Controls
                         case HT.LEFT:
                         case HT.RIGHT:
                             handled = true;
-                            SetCursor(LoadCursor(IntPtr.Zero, IDC_SIZE_CURSORS.IDC_SIZEWE));
+                            SetCursor(LoadCursor(IntPtr.Zero, IDC_SIZE_CURSORS.SIZEWE));
                             break;
 
                         case HT.TOP:
                         case HT.BOTTOM:
                             handled = true;
-                            SetCursor(LoadCursor(IntPtr.Zero, IDC_SIZE_CURSORS.IDC_SIZENS));
+                            SetCursor(LoadCursor(IntPtr.Zero, IDC_SIZE_CURSORS.SIZENS));
                             break;
 
                         case HT.TOPLEFT:
                         case HT.BOTTOMRIGHT:
                             handled = true;
-                            SetCursor(LoadCursor(IntPtr.Zero, IDC_SIZE_CURSORS.IDC_SIZENWSE));
+                            SetCursor(LoadCursor(IntPtr.Zero, IDC_SIZE_CURSORS.SIZENWSE));
                             break;
 
                         case HT.TOPRIGHT:             
                         case HT.BOTTOMLEFT:                       
                             handled = true;
-                            SetCursor(LoadCursor(IntPtr.Zero, IDC_SIZE_CURSORS.IDC_SIZENESW));
+                            SetCursor(LoadCursor(IntPtr.Zero, IDC_SIZE_CURSORS.SIZENESW));
                             break;
                     }
                     break;
             }
+
             return IntPtr.Zero;
         }
 

@@ -221,6 +221,7 @@
                     }
                     this.prevWindowPos = wp;
                     break;
+
                 case WM.SIZE:
                 case WM.SIZING:
                     this.UpdateCore();
@@ -263,7 +264,8 @@
                                 && this.bottom?.CanUpdateCore() == true;
             if (canUpdateCore)
             {
-                if (this.handle != IntPtr.Zero && UnsafeNativeMethods.GetWindowRect(this.handle, out var rect))
+                if (this.handle != IntPtr.Zero 
+                    && UnsafeNativeMethods.GetWindowRect(this.handle, out var rect))
                 {
                     this.left.UpdateCore(rect);
                     this.right.UpdateCore(rect);
