@@ -316,18 +316,31 @@ namespace ControlzEx.Controls
             RECT rect;
             if (this.owner.Visibility == Visibility.Hidden)
             {
-                this.Invoke(() => this.glow.Visibility = Visibility.Collapsed);
-                this.Invoke(() => this.Visibility = Visibility.Collapsed);
+                this.Invoke(() => 
+                            { 
+                                this.glow.Visibility = Visibility.Collapsed;
+                                this.Visibility = Visibility.Collapsed;
+                            });
+
                 //Standard.NativeMethods.ShowWindow(this.handle, Standard.SW.HIDE);
-                if (this.IsGlowing && this.ownerHandle != IntPtr.Zero && UnsafeNativeMethods.GetWindowRect(this.ownerHandle, out rect))
+                if (this.IsGlowing 
+                    && this.ownerHandle != IntPtr.Zero 
+                    && UnsafeNativeMethods.GetWindowRect(this.ownerHandle, out rect))
                 {
                     this.UpdateCore(rect);
                 }
             }
             else if (this.owner.WindowState == WindowState.Normal)
             {
-                this.Invoke(() => this.glow.Visibility = this.IsGlowing ? Visibility.Visible : Visibility.Collapsed);
-                this.Invoke(() => this.Visibility = this.IsGlowing ? Visibility.Visible : Visibility.Collapsed);
+                this.Invoke(() =>
+                            {
+                                this.glow.Visibility = this.IsGlowing
+                                                           ? Visibility.Visible
+                                                           : Visibility.Collapsed;
+                                this.Visibility = this.IsGlowing
+                                                      ? Visibility.Visible
+                                                      : Visibility.Collapsed;
+                            });
 //                if (this.IsGlowing)
 //                {
 //                    Standard.NativeMethods.ShowWindow(this.handle, Standard.SW.SHOWNOACTIVATE);
@@ -343,8 +356,11 @@ namespace ControlzEx.Controls
             }
             else
             {
-                this.Invoke(() => this.glow.Visibility = Visibility.Collapsed);
-                this.Invoke(() => this.Visibility = Visibility.Collapsed);
+                this.Invoke(() =>
+                            {
+                                this.glow.Visibility = Visibility.Collapsed;
+                                this.Visibility = Visibility.Collapsed;
+                            });                
                 //Standard.NativeMethods.ShowWindow(this.handle, Standard.SW.HIDE);
             }
         }
