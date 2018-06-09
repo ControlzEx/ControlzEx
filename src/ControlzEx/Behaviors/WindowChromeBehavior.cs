@@ -251,7 +251,7 @@ namespace ControlzEx.Behaviors
 
             // Changing the WindowState solves all, known, issues with changing IgnoreTaskbarOnMaximize.
             // Since IgnoreTaskbarOnMaximize is not changed all the time this hack seems to be less risky than anything else.
-            if (behavior.AssociatedObject.WindowState == WindowState.Maximized)
+            if (behavior.AssociatedObject?.WindowState == WindowState.Maximized)
             {
                 behavior.AssociatedObject.WindowState = WindowState.Normal;
                 behavior.AssociatedObject.WindowState = WindowState.Maximized;
