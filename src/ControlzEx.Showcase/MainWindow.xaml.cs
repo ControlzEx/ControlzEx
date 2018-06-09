@@ -39,12 +39,15 @@
 
         public static IEnumerable<KeyValuePair<string, Brush>> GetBrushes()
         {
-            return typeof(Brushes)
-                   .GetProperties()
-                   .Where(prop =>
-                              typeof(Brush).IsAssignableFrom(prop.PropertyType))
-                   .Select(prop =>
-                               new KeyValuePair<string, Brush>(prop.Name, (Brush)prop.GetValue(null, null)));
+            var brushes = typeof(Brushes)
+                                .GetProperties()
+                                .Where(prop =>
+                                           typeof(Brush).IsAssignableFrom(prop.PropertyType))
+                                .Select(prop =>
+                                            new KeyValuePair<string, Brush>(prop.Name, (Brush)prop.GetValue(null, null)));
+
+            return new []{ new KeyValuePair<string, Brush>("None", null) }
+                .Concat(brushes);
         }
 
         private static readonly PropertyInfo criticalHandlePropertyInfo = typeof(Window).GetProperty("CriticalHandle", BindingFlags.NonPublic | BindingFlags.Instance);
