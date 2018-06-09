@@ -15,7 +15,8 @@
 
         private void InitializeBehaviors()
         {
-            this.InitializeWindowChromeBehavior();
+            this.InitializeGlowWindowBehavior();
+            this.InitializeWindowChromeBehavior();            
         }
 
         /// <summary>
@@ -29,18 +30,19 @@
             BindingOperations.SetBinding(behavior, WindowChromeBehavior.GlowBrushProperty, new Binding { Path = new PropertyPath(GlowBrushProperty), Source = this });
 
             Interaction.GetBehaviors(this).Add(behavior);
-
-            this.WindowChromeBehavior = behavior;
         }
 
-        private static readonly DependencyPropertyKey WindowChromeBehaviorPropertyKey = DependencyProperty.RegisterReadOnly(nameof(WindowChromeBehavior), typeof(WindowChromeBehavior), typeof(MainWindow), new PropertyMetadata(default(WindowChromeBehavior)));
-
-        public static readonly DependencyProperty WindowChromeBehaviorProperty = WindowChromeBehaviorPropertyKey.DependencyProperty;
-
-        public WindowChromeBehavior WindowChromeBehavior
+        /// <summary>
+        /// Initializes the WindowChromeBehavior which is needed to render the custom WindowChrome.
+        /// </summary>
+        private void InitializeGlowWindowBehavior()
         {
-            get { return (WindowChromeBehavior)this.GetValue(WindowChromeBehaviorProperty); }
-            private set { this.SetValue(WindowChromeBehaviorPropertyKey, value); }
+            var behavior = new GlowWindowBehavior();
+            BindingOperations.SetBinding(behavior, GlowWindowBehavior.ResizeBorderThicknessProperty, new Binding { Path = new PropertyPath(ResizeBorderThicknessProperty), Source = this });
+            BindingOperations.SetBinding(behavior, GlowWindowBehavior.GlowBrushProperty, new Binding { Path = new PropertyPath(GlowBrushProperty), Source = this });
+            BindingOperations.SetBinding(behavior, GlowWindowBehavior.NonActiveGlowBrushProperty, new Binding { Path = new PropertyPath(NonActiveGlowBrushProperty), Source = this });
+
+            Interaction.GetBehaviors(this).Add(behavior);
         }
 
         public Thickness ResizeBorderThickness

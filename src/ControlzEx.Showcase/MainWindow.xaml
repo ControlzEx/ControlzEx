@@ -27,13 +27,6 @@
         </ObjectDataProvider>
     </local:WindowChromeWindow.Resources>
 
-    <i:Interaction.Behaviors>
-        <controlzEx:GlowWindowBehavior x:Name="GlowWindowBehavior" 
-                                       GlowBrush="{Binding ElementName=Window, Path=GlowBrush}" 
-                                       NonActiveGlowBrush="{Binding ElementName=Window, Path=NonActiveGlowBrush}" 
-                                       ResizeBorderThickness="{Binding ElementName=Window, Path=WindowChromeBehavior.ResizeBorderThickness}" />
-    </i:Interaction.Behaviors>
-
     <Grid SnapsToDevicePixels="True">
         <Grid>
             <Grid.RowDefinitions>
