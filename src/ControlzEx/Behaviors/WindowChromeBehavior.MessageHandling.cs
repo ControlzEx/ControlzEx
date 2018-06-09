@@ -416,7 +416,8 @@ namespace ControlzEx.Behaviors
         [SecurityCritical]
         private IntPtr _HandleNCPAINT(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
-            handled = this.GlowBrush == null;
+            handled = this.TryToBeFlickerFree == false
+                    && this.GlowBrush is null;
             return IntPtr.Zero;
         }
 
