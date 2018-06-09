@@ -538,12 +538,12 @@ namespace ControlzEx.Behaviors
 
         private static void Invoke([NotNull] DispatcherObject dispatcherObject, [NotNull] Action invokeAction)
         {
-            if (dispatcherObject == null)
+            if (dispatcherObject is null)
             {
                 throw new ArgumentNullException(nameof(dispatcherObject));
             }
 
-            if (invokeAction == null)
+            if (invokeAction is null)
             {
                 throw new ArgumentNullException(nameof(invokeAction));
             }

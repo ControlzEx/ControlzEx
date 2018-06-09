@@ -76,7 +76,7 @@
             set => this.SetValue(ResizeBorderThicknessProperty, value);
         }
 
-        private bool IsGlowDisabled => this.GlowBrush == null;
+        private bool IsGlowDisabled => this.GlowBrush is null;
 
         protected override void OnAttached()
         {
@@ -116,7 +116,7 @@
 
         private void AssociatedObjectUnloaded(object sender, RoutedEventArgs e)
         {
-            if (this.makeGlowVisibleTimer == null)
+            if (this.makeGlowVisibleTimer is null)
             {
                 return;
             }
@@ -163,7 +163,7 @@
             this.AssociatedObject.StateChanged -= this.AssociatedObjectStateChanged;
             this.AssociatedObject.StateChanged += this.AssociatedObjectStateChanged;
 
-            if (this.makeGlowVisibleTimer == null)
+            if (this.makeGlowVisibleTimer is null)
             {
                 this.makeGlowVisibleTimer = new DispatcherTimer { Interval = glowTimerDelay };
                 this.makeGlowVisibleTimer.Tick += this.GlowVisibleTimerOnTick;
@@ -204,7 +204,7 @@
 
         private IntPtr AssociatedObjectWindowProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
-            if (this.hwndSource?.RootVisual == null)
+            if (this.hwndSource?.RootVisual is null)
             {
                 return IntPtr.Zero;
             }

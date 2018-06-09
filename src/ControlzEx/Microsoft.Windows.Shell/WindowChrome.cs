@@ -42,7 +42,7 @@ namespace ControlzEx.Windows.Shell
         {
             Verify.IsNotNull(inputElement, "inputElement");
             var dobj = inputElement as DependencyObject;
-            if (dobj == null)
+            if (dobj is null)
             {
                 throw new ArgumentException("The element must be a DependencyObject", nameof(inputElement));
             }
@@ -55,7 +55,7 @@ namespace ControlzEx.Windows.Shell
         {
             Verify.IsNotNull(inputElement, "inputElement");
             var dobj = inputElement as DependencyObject;
-            if (dobj == null)
+            if (dobj is null)
             {
                 throw new ArgumentException("The element must be a DependencyObject", nameof(inputElement));
             }
@@ -75,7 +75,7 @@ namespace ControlzEx.Windows.Shell
         {
             Verify.IsNotNull(inputElement, "inputElement");
             var dobj = inputElement as DependencyObject;
-            if (dobj == null)
+            if (dobj is null)
             {
                 throw new ArgumentException("The element must be a DependencyObject", nameof(inputElement));
             }
@@ -88,7 +88,7 @@ namespace ControlzEx.Windows.Shell
         {
             Verify.IsNotNull(inputElement, "inputElement");
             var dobj = inputElement as DependencyObject;
-            if (dobj == null)
+            if (dobj is null)
             {
                 throw new ArgumentException("The element must be a DependencyObject", nameof(inputElement));
             }

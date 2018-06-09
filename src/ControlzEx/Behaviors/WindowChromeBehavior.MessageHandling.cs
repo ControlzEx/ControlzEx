@@ -145,7 +145,7 @@ namespace ControlzEx.Behaviors
 
             // Check if window has a RootVisual to workaround issue #13 (Win32Exception on closing window).
             // RootVisual gets cleared when the window is closing. This happens in CloseWindowFromWmClose of the Window class.
-            if (this.hwndSource?.RootVisual == null)
+            if (this.hwndSource?.RootVisual is null)
             {
                 return IntPtr.Zero;
             }
@@ -534,7 +534,8 @@ namespace ControlzEx.Behaviors
             }
 
             var wnd = this.AssociatedObject;
-            if (wnd == null || this.hwndSource?.CompositionTarget == null)
+            if (wnd is null 
+                || this.hwndSource?.CompositionTarget is null)
             {
                 handled = false;
                 return IntPtr.Zero;

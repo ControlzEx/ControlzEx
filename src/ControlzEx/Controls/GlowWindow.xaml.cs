@@ -261,7 +261,7 @@ namespace ControlzEx.Controls
 
             this.hwndSource = (HwndSource)PresentationSource.FromVisual(this);
 
-            if (this.hwndSource == null)
+            if (this.hwndSource is null)
             {
                 return;
             }
