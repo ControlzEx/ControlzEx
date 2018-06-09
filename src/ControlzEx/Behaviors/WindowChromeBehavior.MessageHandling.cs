@@ -740,15 +740,14 @@ namespace ControlzEx.Behaviors
         private bool _ModifyStyle(WS removeStyle, WS addStyle)
         {
             Assert.IsNotDefault(this.windowHandle);
-            var intPtr = NativeMethods.GetWindowLongPtr(this.windowHandle, GWL.STYLE);
-            var dwStyle = (WS)(Environment.Is64BitProcess ? intPtr.ToInt64() : intPtr.ToInt32());
+            var dwStyle = NativeMethods.GetWindowStyle(this.windowHandle);
             var dwNewStyle = (dwStyle & ~removeStyle) | addStyle;
             if (dwStyle == dwNewStyle)
             {
                 return false;
             }
 
-            NativeMethods.SetWindowLongPtr(this.windowHandle, GWL.STYLE, new IntPtr((int)dwNewStyle));
+            NativeMethods.SetWindowStyle(this.windowHandle, dwNewStyle);
             return true;
         }
 
@@ -812,8 +811,7 @@ namespace ControlzEx.Behaviors
                 var hmenu = NativeMethods.GetSystemMenu(this.windowHandle, false);
                 if (IntPtr.Zero != hmenu)
                 {
-                    var intPtr = NativeMethods.GetWindowLongPtr(this.windowHandle, GWL.STYLE);
-                    var dwStyle = (WS)(Environment.Is64BitProcess ? intPtr.ToInt64() : intPtr.ToInt32());
+                    var dwStyle = NativeMethods.GetWindowStyle(this.windowHandle);
 
                     var canMinimize = Utility.IsFlagSet((int)dwStyle, (int)WS.MINIMIZEBOX);
                     var canMaximize = Utility.IsFlagSet((int)dwStyle, (int)WS.MAXIMIZEBOX);
@@ -853,7 +851,8 @@ namespace ControlzEx.Behaviors
         [SecurityCritical]
         private void _UpdateFrameState(bool force)
         {
-            if (IntPtr.Zero == this.windowHandle || this.hwndSource.IsDisposed)
+            if (IntPtr.Zero == this.windowHandle 
+                || this.hwndSource.IsDisposed)
             {
                 return;
             }

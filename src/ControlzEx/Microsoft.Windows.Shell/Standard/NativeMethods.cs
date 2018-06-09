@@ -305,6 +305,7 @@ namespace ControlzEx.Standard
     public enum GCLP
     {
         HBRBACKGROUND = -10,
+        STYLE = -26
     }
 
     /// <summary>
@@ -3460,7 +3461,7 @@ namespace ControlzEx.Standard
             return ret;
         }
 
-        public static IntPtr GetClassLong(IntPtr hWnd, int nIndex)
+        public static IntPtr GetClassLong(IntPtr hWnd, GCLP nIndex)
         {
             if (IntPtr.Size == 4)
             {
@@ -3471,11 +3472,28 @@ namespace ControlzEx.Standard
         }
 
         [DllImport("user32.dll", EntryPoint = "GetClassLong")]
-        private static extern uint GetClassLong32(IntPtr hWnd, int nIndex);
+        private static extern uint GetClassLong32(IntPtr hWnd, GCLP nIndex);
 
         [DllImport("user32.dll", EntryPoint = "GetClassLongPtr")]
         [SuppressMessage("Microsoft.Interoperability", "CA1400:PInvokeEntryPointsShouldExist")]
-        private static extern IntPtr GetClassLong64(IntPtr hWnd, int nIndex);
+        private static extern IntPtr GetClassLong64(IntPtr hWnd, GCLP nIndex);
+
+        public static IntPtr SetClassLong(IntPtr hWnd, GCLP nIndex, IntPtr value)
+        {
+            if (IntPtr.Size == 4)
+            {
+                return new IntPtr(SetClassLong32(hWnd, nIndex, value));
+            }
+
+            return SetClassLong64(hWnd, nIndex, value);
+        }
+
+        [DllImport("user32.dll", EntryPoint = "SetClassLong")]
+        private static extern uint SetClassLong32(IntPtr hWnd, GCLP nIndex, IntPtr value);
+
+        [DllImport("user32.dll", EntryPoint = "SetClassLongPtr")]
+        [SuppressMessage("Microsoft.Interoperability", "CA1400:PInvokeEntryPointsShouldExist")]
+        private static extern IntPtr SetClassLong64(IntPtr hWnd, GCLP nIndex, IntPtr value);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("user32.dll", EntryPoint="SetProp", CharSet=CharSet.Unicode, SetLastError=true)]
