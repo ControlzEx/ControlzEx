@@ -354,6 +354,9 @@ namespace ControlzEx.Behaviors
                 {
                     var rc = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT));
 
+                    // We have to add or remove one pixel on any side of the window to force a flicker free resize.
+                    // Removing pixels would result in a smaller client area.
+                    // Adding pixels does not seem to really increase the client area.
                     rc.Bottom += 1;
 
                     Marshal.StructureToPtr(rc, lParam, true);
