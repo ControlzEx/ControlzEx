@@ -155,7 +155,7 @@
                                Grid.Column="0">ResizeBorderThickness</Label>
                         <TextBox Grid.Row="1"
                                  Grid.Column="1"
-                                 Text="{Binding ElementName=Window, Path=WindowChromeBehavior.ResizeBorderThickness, Mode=TwoWay}" />
+                                 Text="{Binding ElementName=Window, Path=ResizeBorderThickness, Mode=TwoWay}" />
                     </Grid>
                 </GroupBox>
             </Grid>
