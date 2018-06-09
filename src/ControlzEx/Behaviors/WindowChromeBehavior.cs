@@ -54,6 +54,20 @@ namespace ControlzEx.Behaviors
             public DependencyProperty DependencyProperty { get; set; }
         }
 
+        public static readonly DependencyProperty TryToBeFlickerFreeProperty = DependencyProperty.Register(nameof(TryToBeFlickerFree), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(false, OnTryToBeFlickerFreeChanged));
+
+        private static void OnTryToBeFlickerFreeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var behavior = (WindowChromeBehavior)d;
+            behavior._OnChromePropertyChangedThatRequiresRepaint();
+        }
+
+        public bool TryToBeFlickerFree
+        {
+            get { return (bool)this.GetValue(TryToBeFlickerFreeProperty); }
+            set { this.SetValue(TryToBeFlickerFreeProperty, value); }
+        }
+
         /// <summary>
         /// Mirror property for <see cref="ResizeBorderThickness"/>.
         /// </summary>

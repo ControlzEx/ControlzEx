@@ -347,6 +347,18 @@ namespace ControlzEx.Behaviors
 
                 Marshal.StructureToPtr(rc, lParam, true);
             }
+            else
+            {
+                if (this.TryToBeFlickerFree
+                    && wParam.ToInt32() != 0)
+                {
+                    var rc = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT));
+
+                    rc.Bottom += 1;
+
+                    Marshal.StructureToPtr(rc, lParam, true);
+                }
+            }
 
             handled = true;
 
@@ -859,6 +871,11 @@ namespace ControlzEx.Behaviors
 
             if (force)
             {
+                if (this.TryToBeFlickerFree)
+                {
+                    this._ClearRegion();
+                }
+
                 this._SetRegion(null);
 
                 if (this.hwndSource.IsDisposed)
@@ -919,6 +936,11 @@ namespace ControlzEx.Behaviors
         [SecurityCritical]
         private void _SetRegion(WINDOWPOS? wp)
         {
+            if (this.TryToBeFlickerFree)
+            {
+                return;
+            }
+
             // We're early - WPF hasn't necessarily updated the state of the window.
             // Need to query it ourselves.
             var wpl = NativeMethods.GetWindowPlacement(this.windowHandle);

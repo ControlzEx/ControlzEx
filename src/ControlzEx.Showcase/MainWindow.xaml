@@ -125,6 +125,12 @@
                                   Grid.ColumnSpan="2"
                                   IsChecked="{Binding ElementName=Window, Path=IgnoreTaskbarOnMaximize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                   Content="IgnoreTaskbarOnMaximize" />
+                        
+                        <CheckBox Grid.Row="5"
+                                  Grid.Column="0"
+                                  Grid.ColumnSpan="2"
+                                  IsChecked="{Binding ElementName=Window, Path=TryToBeFlickerFree, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                  Content="TryToBeFlickerFree (experimental)" />
                     </Grid>
                 </GroupBox>
 
