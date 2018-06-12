@@ -215,8 +215,7 @@
                 case WM.WINDOWPOSCHANGING:
                     Assert.IsNotDefault(lParam);
                     var wp = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
-                    if (wp.IsEmpty() == false
-                        && wp.SizeAndPositionEquals(this.prevWindowPos) == false)
+                    if (wp.SizeAndPositionEquals(this.prevWindowPos) == false)
                     {                        
                         this.UpdateCore();
                         this.prevWindowPos = wp;
