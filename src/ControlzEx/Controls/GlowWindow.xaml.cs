@@ -21,8 +21,8 @@ namespace ControlzEx.Controls
         private readonly Func<RECT, double> getWidth;
         private readonly Func<RECT, double> getHeight;
         
-        private IntPtr handle;
-        private IntPtr ownerHandle;
+        private IntPtr windowHandle;
+        private IntPtr ownerWindowHandle;
         private bool closing;
         private HwndSource hwndSource;
         private PropertyChangeNotifier resizeModeChangeNotifier;
@@ -157,9 +157,9 @@ namespace ControlzEx.Controls
                 case GlowDirection.Top:
                     this.PreviewMouseDoubleClick += (sender, e) =>
                         {
-                            if (this.ownerHandle != IntPtr.Zero)
+                            if (this.ownerWindowHandle != IntPtr.Zero)
                             {
-                                NativeMethods.SendMessage(this.ownerHandle, WM.NCLBUTTONDBLCLK, (IntPtr)HT.TOP, IntPtr.Zero);
+                                NativeMethods.SendMessage(this.ownerWindowHandle, WM.NCLBUTTONDBLCLK, (IntPtr)HT.TOP, IntPtr.Zero);
                             }
                         };
                     this.glow.Orientation = Orientation.Horizontal;
@@ -178,9 +178,9 @@ namespace ControlzEx.Controls
                 case GlowDirection.Bottom:
                     this.PreviewMouseDoubleClick += (sender, e) =>
                         {
-                            if (this.ownerHandle != IntPtr.Zero)
+                            if (this.ownerWindowHandle != IntPtr.Zero)
                             {
-                                NativeMethods.SendMessage(this.ownerHandle, WM.NCLBUTTONDBLCLK, (IntPtr)HT.BOTTOM, IntPtr.Zero);
+                                NativeMethods.SendMessage(this.ownerWindowHandle, WM.NCLBUTTONDBLCLK, (IntPtr)HT.BOTTOM, IntPtr.Zero);
                             }
                         };
                     this.glow.Orientation = Orientation.Horizontal;
@@ -216,6 +216,8 @@ namespace ControlzEx.Controls
                     this.Close();
                 };
         }
+
+        public bool IsGlowing { set; get; }
 
         public Storyboard OpacityStoryboard { get; set; }
 
@@ -266,8 +268,11 @@ namespace ControlzEx.Controls
                 return;
             }
 
-            var ws = NativeMethods.GetWindowStyle(this.hwndSource.Handle);
-            var wsex = NativeMethods.GetWindowStyleEx(this.hwndSource.Handle);
+            this.windowHandle = this.hwndSource.Handle;
+            this.ownerWindowHandle = new WindowInteropHelper(this.owner).Handle;
+
+            var ws = NativeMethods.GetWindowStyle(this.windowHandle);
+            var wsex = NativeMethods.GetWindowStyleEx(this.windowHandle);
 
             ws |= WS.POPUP;
 
@@ -279,12 +284,9 @@ namespace ControlzEx.Controls
                 wsex |= WS_EX.TRANSPARENT;
             }
 
-            NativeMethods.SetWindowStyle(this.hwndSource.Handle, ws);
-            NativeMethods.SetWindowStyleEx(this.hwndSource.Handle, wsex);
+            NativeMethods.SetWindowStyle(this.windowHandle, ws);
+            NativeMethods.SetWindowStyleEx(this.windowHandle, wsex);
             this.hwndSource.AddHook(this.WndProc);
-
-            this.handle = this.hwndSource.Handle;
-            this.ownerHandle = new WindowInteropHelper(this.owner).Handle;
 
             this.resizeModeChangeNotifier = new PropertyChangeNotifier(this.owner, ResizeModeProperty);
             this.resizeModeChangeNotifier.ValueChanged += this.ResizeModeChanged;
@@ -292,7 +294,7 @@ namespace ControlzEx.Controls
 
         private void ResizeModeChanged(object sender, EventArgs e)
         {
-            var wsex = NativeMethods.GetWindowStyleEx(this.hwndSource.Handle);
+            var wsex = NativeMethods.GetWindowStyleEx(this.windowHandle);
 
             if (this.owner.ResizeMode == ResizeMode.NoResize || this.owner.ResizeMode == ResizeMode.CanMinimize)
             {
@@ -303,7 +305,7 @@ namespace ControlzEx.Controls
                 wsex ^= WS_EX.TRANSPARENT;
             }
 
-            NativeMethods.SetWindowStyleEx(this.hwndSource.Handle, wsex);
+            NativeMethods.SetWindowStyleEx(this.windowHandle, wsex);
         }
 
         public void Update()
@@ -324,8 +326,8 @@ namespace ControlzEx.Controls
 
                 //Standard.NativeMethods.ShowWindow(this.handle, Standard.SW.HIDE);
                 if (this.IsGlowing 
-                    && this.ownerHandle != IntPtr.Zero 
-                    && UnsafeNativeMethods.GetWindowRect(this.ownerHandle, out rect))
+                    && this.ownerWindowHandle != IntPtr.Zero 
+                    && UnsafeNativeMethods.GetWindowRect(this.ownerWindowHandle, out rect))
                 {
                     this.UpdateCore(rect);
                 }
@@ -349,7 +351,9 @@ namespace ControlzEx.Controls
 //                {
 //                    Standard.NativeMethods.ShowWindow(this.handle, Standard.SW.HIDE);
 //                }
-                if (this.IsGlowing && this.ownerHandle != IntPtr.Zero && UnsafeNativeMethods.GetWindowRect(this.ownerHandle, out rect))
+                if (this.IsGlowing 
+                    && this.ownerWindowHandle != IntPtr.Zero 
+                    && UnsafeNativeMethods.GetWindowRect(this.ownerWindowHandle, out rect))
                 {
                     this.UpdateCore(rect);
                 }
@@ -365,19 +369,17 @@ namespace ControlzEx.Controls
             }
         }
 
-        public bool IsGlowing { set; get; }
-
         internal bool CanUpdateCore()
         {
-            return this.ownerHandle != IntPtr.Zero 
-                   && this.handle != IntPtr.Zero;
+            return this.ownerWindowHandle != IntPtr.Zero 
+                   && this.windowHandle != IntPtr.Zero;
         }
 
         internal void UpdateCore(RECT rect)
         {
             // we can handle this._owner.WindowState == WindowState.Normal
             // or use NOZORDER too
-            NativeMethods.SetWindowPos(this.handle, this.ownerHandle, 
+            NativeMethods.SetWindowPos(this.windowHandle, this.ownerWindowHandle, 
                                        (int)this.getLeft(rect),
                                        (int)this.getTop(rect),
                                        (int)this.getWidth(rect),
@@ -398,17 +400,17 @@ namespace ControlzEx.Controls
 
                 case WM.MOUSEACTIVATE:
                     handled = true;
-                    if (this.ownerHandle != IntPtr.Zero)
+                    if (this.ownerWindowHandle != IntPtr.Zero)
                     {
-                        NativeMethods.SendMessage(this.ownerHandle, WM.ACTIVATE, wParam, lParam);
+                        NativeMethods.SendMessage(this.ownerWindowHandle, WM.ACTIVATE, wParam, lParam);
                     }
                     return new IntPtr(3);
 
                 case WM.NCLBUTTONDOWN:
-                    if (this.ownerHandle != IntPtr.Zero)
+                    if (this.ownerWindowHandle != IntPtr.Zero)
                     {
                         // Forward message to owner
-                        NativeMethods.PostMessage(this.ownerHandle, WM.NCLBUTTONDOWN, wParam, IntPtr.Zero);
+                        NativeMethods.PostMessage(this.ownerWindowHandle, WM.NCLBUTTONDOWN, wParam, IntPtr.Zero);
                     }
                     break;
 
@@ -416,9 +418,9 @@ namespace ControlzEx.Controls
                     if (this.owner.ResizeMode == ResizeMode.CanResize 
                         || this.owner.ResizeMode == ResizeMode.CanResizeWithGrip)
                     {
-                        if (this.ownerHandle != IntPtr.Zero && UnsafeNativeMethods.GetWindowRect(this.ownerHandle, out var rect))
+                        if (this.ownerWindowHandle != IntPtr.Zero && UnsafeNativeMethods.GetWindowRect(this.ownerWindowHandle, out var rect))
                         {
-                            if (NativeMethods.TryGetRelativeMousePosition(this.handle, out var pt))
+                            if (NativeMethods.TryGetRelativeMousePosition(this.windowHandle, out var pt))
                             {
                                 var hitTestValue = this.getHitTestValue(pt, rect);
                                 handled = true;
