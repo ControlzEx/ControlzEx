@@ -23,7 +23,7 @@ namespace ControlzEx.Behaviors
 
         // Keep track of this so we can detect when we need to apply changes.  Tracking these separately
         // as I've seen using just one cause things to get enough out of [....] that occasionally the caption will redraw.
-        private WindowState lastRoundingState;
+        private WindowState lastWindowStateForSetRegion;
         private WindowState lastMenuState;
 
         private WINDOWPOS previousWp;
@@ -167,7 +167,8 @@ namespace ControlzEx.Behaviors
         [SecurityCritical]
         private IntPtr _HandleNCUAHDRAWCAPTION(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
-            if (false == this.AssociatedObject.ShowInTaskbar && this._GetHwndState() == WindowState.Minimized)
+            if (false == this.AssociatedObject.ShowInTaskbar 
+                && this._GetHwndState() == WindowState.Minimized)
             {
                 var modified = this._ModifyStyle(WS.VISIBLE, 0);
 
@@ -219,9 +220,9 @@ namespace ControlzEx.Behaviors
             var currentState = wpl.showCmd;
             var systemCommand = (SC)(Environment.Is64BitProcess ? wParam.ToInt64() : wParam.ToInt32());
 
-            if (SC.RESTORE == systemCommand 
-                && currentState == SW.SHOWMAXIMIZED 
-                && this.MinimizeAnimation)
+            if (this.MinimizeAnimation
+                && systemCommand == SC.RESTORE 
+                && currentState == SW.SHOWMAXIMIZED)
             {
                 var modified = this._ModifyStyle(WS.SYSMENU, 0);
 
@@ -230,7 +231,7 @@ namespace ControlzEx.Behaviors
                 // Put back the style we removed.
                 if (modified)
                 {
-                    modified = this._ModifyStyle(0, WS.SYSMENU);
+                    this._ModifyStyle(0, WS.SYSMENU);
                 }
 
                 handled = true;
@@ -282,7 +283,7 @@ namespace ControlzEx.Behaviors
             NativeMethods.SHAppBarMessage((int)ABMsg.ABM_GETTASKBARPOS, ref abd);
             var autoHide = Convert.ToBoolean(NativeMethods.SHAppBarMessage((int)ABMsg.ABM_GETSTATE, ref abd));
 
-            if (!autoHide)
+            if (autoHide == false)
             {
                 return area;
             }
@@ -326,7 +327,8 @@ namespace ControlzEx.Behaviors
             // Since the first field of NCCALCSIZE_PARAMS is a RECT and is the only field we care about
             // we can unconditionally treat it as a RECT.
 
-            if (NativeMethods.GetWindowPlacement(this.windowHandle).showCmd == SW.MAXIMIZE && this.MinimizeAnimation)
+            if (this.MinimizeAnimation
+                && NativeMethods.GetWindowPlacement(this.windowHandle).showCmd == SW.MAXIMIZE)
             {
                 var monitor = NativeMethods.MonitorFromWindow(this.windowHandle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
                 var monitorInfo = NativeMethods.GetMonitorInfo(monitor);
@@ -457,9 +459,8 @@ namespace ControlzEx.Behaviors
                 }
             }
 
-            var ht = this._HitTestNca(
-                                DpiHelper.DeviceRectToLogical(windowPosition, dpi.DpiScaleX, dpi.DpiScaleY),
-                                DpiHelper.DevicePixelsToLogical(mousePosScreen, dpi.DpiScaleX, dpi.DpiScaleY));
+            var ht = this._HitTestNca(DpiHelper.DeviceRectToLogical(windowPosition, dpi.DpiScaleX, dpi.DpiScaleY),
+                                      DpiHelper.DevicePixelsToLogical(mousePosScreen, dpi.DpiScaleX, dpi.DpiScaleY));
 
             handled = true;
             return new IntPtr((int)ht);
@@ -499,6 +500,7 @@ namespace ControlzEx.Behaviors
             {
                 state = WindowState.Maximized;
             }
+
             this._UpdateSystemMenu(state);
 
             // Still let the default WndProc handle this.
@@ -517,7 +519,9 @@ namespace ControlzEx.Behaviors
 
             // we don't do bitwise operations cuz we're checking for this flag being the only one there
             // I have no clue why this works, I tried this because VS2013 has this flag removed on fullscreen window movws
-            if (this.IgnoreTaskbarOnMaximize && this._GetHwndState() == WindowState.Maximized && wp.flags == SWP.FRAMECHANGED)
+            if (this.IgnoreTaskbarOnMaximize 
+                && this._GetHwndState() == WindowState.Maximized 
+                && wp.flags == SWP.FRAMECHANGED)
             {
                 wp.flags = 0;
                 Marshal.StructureToPtr(wp, lParam, true);
@@ -556,7 +560,7 @@ namespace ControlzEx.Behaviors
             if (pos.cx > maxWidth && maxWidth > 0) { pos.cx = (int)Math.Round(maxWidth); changedPos = true; }
             if (pos.cy > maxHeight && maxHeight > 0) { pos.cy = (int)Math.Round(maxHeight); changedPos = true; }
 
-            if (!changedPos)
+            if (changedPos == false)
             {
                 handled = false;
                 return IntPtr.Zero;
@@ -586,11 +590,12 @@ namespace ControlzEx.Behaviors
             Assert.IsNotDefault(lParam);
             var wp = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
 
-            if (!wp.Equals(this.previousWp))
+            if (wp.Equals(this.previousWp) == false)
             {
                 this.previousWp = wp;
                 this._SetRegion(wp);
             }
+
             this.previousWp = wp;
 
             //                if (wp.Equals(_previousWP) && wp.flags.Equals(_previousWP.flags))
@@ -618,8 +623,8 @@ namespace ControlzEx.Behaviors
              * This fix is not really a full fix. Moving the Window back gives us the wrong size, because
              * MonitorFromWindow gives us the wrong (old) monitor! This is fixed in _HandleMoveForRealSize.
              */
-            var ignoreTaskBar = this.IgnoreTaskbarOnMaximize;
-            if (ignoreTaskBar && NativeMethods.IsZoomed(this.windowHandle))
+            if (this.IgnoreTaskbarOnMaximize 
+                && NativeMethods.IsZoomed(this.windowHandle))
             {
                 var mmi = (MINMAXINFO)Marshal.PtrToStructure(lParam, typeof(MINMAXINFO));
                 var monitor = NativeMethods.MonitorFromWindow(this.windowHandle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
@@ -780,9 +785,13 @@ namespace ControlzEx.Behaviors
             var wpl = NativeMethods.GetWindowPlacement(this.windowHandle);
             switch (wpl.showCmd)
             {
-                case SW.SHOWMINIMIZED: return WindowState.Minimized;
-                case SW.SHOWMAXIMIZED: return WindowState.Maximized;
+                case SW.SHOWMINIMIZED: 
+                    return WindowState.Minimized;
+
+                case SW.SHOWMAXIMIZED: 
+                    return WindowState.Maximized;
             }
+
             return WindowState.Normal;
         }
 
@@ -821,7 +830,8 @@ namespace ControlzEx.Behaviors
 
             var state = assumeState ?? this._GetHwndState();
 
-            if (null != assumeState || this.lastMenuState != state)
+            if (null != assumeState 
+                || this.lastMenuState != state)
             {
                 this.lastMenuState = state;
 
@@ -843,6 +853,7 @@ namespace ControlzEx.Behaviors
                             NativeMethods.EnableMenuItem(hmenu, SC.MINIMIZE, canMinimize ? MF_ENABLED : MF_DISABLED);
                             NativeMethods.EnableMenuItem(hmenu, SC.MAXIMIZE, MF_DISABLED);
                             break;
+
                         case WindowState.Minimized:
                             NativeMethods.EnableMenuItem(hmenu, SC.RESTORE, MF_ENABLED);
                             NativeMethods.EnableMenuItem(hmenu, SC.MOVE, MF_DISABLED);
@@ -850,6 +861,7 @@ namespace ControlzEx.Behaviors
                             NativeMethods.EnableMenuItem(hmenu, SC.MINIMIZE, MF_DISABLED);
                             NativeMethods.EnableMenuItem(hmenu, SC.MAXIMIZE, canMaximize ? MF_ENABLED : MF_DISABLED);
                             break;
+
                         default:
                             NativeMethods.EnableMenuItem(hmenu, SC.RESTORE, MF_DISABLED);
                             NativeMethods.EnableMenuItem(hmenu, SC.MOVE, MF_ENABLED);
@@ -922,7 +934,7 @@ namespace ControlzEx.Behaviors
             var windowRect = NativeMethods.GetWindowRect(hWnd);
             var clientRect = NativeMethods.GetClientRect(hWnd);
 
-            var test = new POINT() { X = 0, Y = 0 };
+            var test = new POINT { X = 0, Y = 0 };
             NativeMethods.ClientToScreen(hWnd, ref test);
             if (this.AssociatedObject.FlowDirection == FlowDirection.RightToLeft)
             {
@@ -1000,11 +1012,13 @@ namespace ControlzEx.Behaviors
                 Size windowSize;
 
                 // Use the size if it's specified.
-                if (null != wp && !Utility.IsFlagSet((int)wp.Value.flags, (int)SWP.NOSIZE))
+                if (null != wp 
+                    && Utility.IsFlagSet((int)wp.Value.flags, (int)SWP.NOSIZE) == false)
                 {
                     windowSize = new Size(wp.Value.cx, wp.Value.cy);
                 }
-                else if (null != wp && (this.lastRoundingState == this.AssociatedObject.WindowState))
+                else if (null != wp 
+                         && this.lastWindowStateForSetRegion == this.AssociatedObject.WindowState)
                 {
                     return;
                 }
@@ -1013,7 +1027,7 @@ namespace ControlzEx.Behaviors
                     windowSize = this._GetWindowRect().Size;
                 }
 
-                this.lastRoundingState = this.AssociatedObject.WindowState;
+                this.lastWindowStateForSetRegion = this.AssociatedObject.WindowState;
 
                 var hrgn = IntPtr.Zero;
                 try
@@ -1037,8 +1051,7 @@ namespace ControlzEx.Behaviors
         [SecurityCritical]
         private static IntPtr _CreateRectRgn(Rect region)
         {
-            return NativeMethods.CreateRectRgn(
-                                               (int)Math.Floor(region.Left),
+            return NativeMethods.CreateRectRgn((int)Math.Floor(region.Left),
                                                (int)Math.Floor(region.Top),
                                                (int)Math.Ceiling(region.Right),
                                                (int)Math.Ceiling(region.Bottom));
@@ -1048,12 +1061,11 @@ namespace ControlzEx.Behaviors
         /// Matrix of the HT values to return when responding to NC window messages.
         /// </summary>
         [SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional", MessageId = "Member")]
-        private static readonly HT[,] hitTestBorders = new[,]
-                                                        {
+        private static readonly HT[,] hitTestBorders = {
                                                             { HT.TOPLEFT,    HT.TOP,     HT.TOPRIGHT    },
                                                             { HT.LEFT,       HT.CLIENT,  HT.RIGHT       },
                                                             { HT.BOTTOMLEFT, HT.BOTTOM,  HT.BOTTOMRIGHT },
-                                                        };
+                                                       };
 
         private HT _HitTestNca(Rect windowPosition, Point mousePosition)
         {
@@ -1063,36 +1075,43 @@ namespace ControlzEx.Behaviors
             var onResizeBorder = false;
 
             // Determine if the point is at the top or bottom of the window.
-            if (mousePosition.Y >= windowPosition.Top && mousePosition.Y < windowPosition.Top + this.ResizeBorderThickness.Top)
+            if (mousePosition.Y >= windowPosition.Top 
+                && mousePosition.Y < windowPosition.Top + this.ResizeBorderThickness.Top)
             {
                 onResizeBorder = (mousePosition.Y < (windowPosition.Top + this.ResizeBorderThickness.Top));
                 uRow = 0; // top (caption or resize border)
             }
-            else if (mousePosition.Y < windowPosition.Bottom && mousePosition.Y >= windowPosition.Bottom - (int)this.ResizeBorderThickness.Bottom)
+            else if (mousePosition.Y < windowPosition.Bottom 
+                     && mousePosition.Y >= windowPosition.Bottom - (int)this.ResizeBorderThickness.Bottom)
             {
                 uRow = 2; // bottom
             }
 
             // Determine if the point is at the left or right of the window.
-            if (mousePosition.X >= windowPosition.Left && mousePosition.X < windowPosition.Left + (int)this.ResizeBorderThickness.Left)
+            if (mousePosition.X >= windowPosition.Left 
+                && mousePosition.X < windowPosition.Left + (int)this.ResizeBorderThickness.Left)
             {
                 uCol = 0; // left side
             }
-            else if (mousePosition.X < windowPosition.Right && mousePosition.X >= windowPosition.Right - this.ResizeBorderThickness.Right)
+            else if (mousePosition.X < windowPosition.Right 
+                     && mousePosition.X >= windowPosition.Right - this.ResizeBorderThickness.Right)
             {
                 uCol = 2; // right side
             }
 
             // If the cursor is in one of the top edges by the caption bar, but below the top resize border,
             // then resize left-right rather than diagonally.
-            if (uRow == 0 && uCol != 1 && !onResizeBorder)
+            if (uRow == 0 
+                && uCol != 1 
+                && onResizeBorder == false)
             {
                 uRow = 1;
             }
 
             var ht = hitTestBorders[uRow, uCol];
 
-            if (ht == HT.TOP && !onResizeBorder)
+            if (ht == HT.TOP 
+                && onResizeBorder == false)
             {
                 ht = HT.CAPTION;
             }
@@ -1110,7 +1129,8 @@ namespace ControlzEx.Behaviors
         {
             this.VerifyAccess();
 
-            if (!isClosing && !this.hwndSource.IsDisposed)
+            if (isClosing == false
+                && this.hwndSource.IsDisposed == false)
             {
                 this._RestoreHrgn();
 
