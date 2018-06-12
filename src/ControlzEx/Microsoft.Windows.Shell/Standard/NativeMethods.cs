@@ -2487,6 +2487,22 @@ namespace ControlzEx.Standard
         {
             return $"x: {this.x}; y: {this.y}; cx: {this.cx}; cy: {this.cy}; flags: {this.flags}";
         }
+
+        public bool SizeAndPositionEquals(WINDOWPOS other)
+        {
+            return this.x == other.x 
+                   && this.y == other.y 
+                   && this.cx == other.cx 
+                   && this.cy == other.cy;
+        }
+
+        public bool IsEmpty()
+        {
+            return this.x == 0 
+                   && this.y == 0 
+                   && this.cx == 0 
+                   && this.cy == 0;
+        }
     }
 
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
