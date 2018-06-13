@@ -43,7 +43,7 @@ namespace ControlzEx.Behaviors
         private Thickness? savedBorderThickness;
         private Thickness? savedResizeBorderThickness;
         private bool savedTopMost;
-        private bool isWindwos10OrHigher;
+        private bool isWindows10OrHigher;
 
         private bool isCleanedUp;
         private IntPtr taskbarHandle;
@@ -147,7 +147,7 @@ namespace ControlzEx.Behaviors
         /// <inheritdoc />
         protected override void OnAttached()
         {
-            this.isWindwos10OrHigher = IsWindows10OrHigher();
+            this.isWindows10OrHigher = IsWindows10OrHigher();
 
             // no transparany, because it hase more then one unwanted issues
             if (this.AssociatedObject.AllowsTransparency
@@ -277,7 +277,7 @@ namespace ControlzEx.Behaviors
             this.isCleanedUp = true;
 
             if (this.taskbarHandle != IntPtr.Zero
-                && this.isWindwos10OrHigher)
+                && this.isWindows10OrHigher)
             {
                 this.DeactivateTaskbarFix(this.taskbarHandle);
             }
@@ -408,7 +408,7 @@ namespace ControlzEx.Behaviors
                         var cy = monitorRect.Height;
 
                         if (this.IgnoreTaskbarOnMaximize
-                            && this.isWindwos10OrHigher)
+                            && this.isWindows10OrHigher)
                         {
                             this.ActivateTaskbarFix(monitor);
                         }
@@ -422,7 +422,7 @@ namespace ControlzEx.Behaviors
                 // #2694 make sure the window is not on top after restoring window
                 // this issue was introduced after fixing the windows 10 bug with the taskbar and a maximized window that ignores the taskbar
                 if (this.taskbarHandle != IntPtr.Zero
-                    && this.isWindwos10OrHigher)
+                    && this.isWindows10OrHigher)
                 {
                     this.DeactivateTaskbarFix(this.taskbarHandle);
                 }
