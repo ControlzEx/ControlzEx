@@ -412,8 +412,7 @@ namespace ControlzEx.Behaviors
         [SecurityCritical]
         private IntPtr _HandleNCPAINT(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
-            handled = this.TryToBeFlickerFree == false
-                    && this.GlowBrush is null;
+            handled = this.GlowBrush is null;
             return IntPtr.Zero;
         }
 
@@ -884,6 +883,9 @@ namespace ControlzEx.Behaviors
             {
                 if (this.TryToBeFlickerFree)
                 {
+                    // Remove WindowTheme to prevent classic borders etc. from being rendered
+                    NativeMethods.SetWindowTheme(this.windowHandle, string.Empty, string.Empty);
+
                     this._ClearRegion();
                 }
 
