@@ -286,6 +286,7 @@ namespace ControlzEx.Controls
 
             NativeMethods.SetWindowStyle(this.windowHandle, ws);
             NativeMethods.SetWindowStyleEx(this.windowHandle, wsex);
+
             this.hwndSource.AddHook(this.WndProc);
 
             this.resizeModeChangeNotifier = new PropertyChangeNotifier(this.owner, ResizeModeProperty);
