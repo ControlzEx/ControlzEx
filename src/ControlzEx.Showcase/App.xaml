@@ -19,6 +19,13 @@
                                     <ContentPresenter/>
                                 </AdornerDecorator>
 
+                                <Border x:Name="PART_Border2"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch"
+                                        Background="{x:Null}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        UseLayoutRounding="True" />
+
                                 <Border x:Name="PART_Border"
                                         HorizontalAlignment="Stretch"
                                         VerticalAlignment="Stretch"
@@ -26,7 +33,7 @@
                                         BorderBrush="{TemplateBinding GlowBrush}"
                                         BorderThickness="{TemplateBinding BorderThickness}"
                                         UseLayoutRounding="True" />
-
+                                
                                 <ResizeGrip x:Name="WindowResizeGrip"
                                             HorizontalAlignment="Right"
                                             VerticalAlignment="Bottom"
@@ -37,6 +44,9 @@
                                 <!--  handle active/inactive state  -->
                                 <Trigger Property="IsActive" Value="False">
                                     <Setter TargetName="PART_Border" Property="BorderBrush" Value="{Binding Path=NonActiveGlowBrush, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" />
+                                </Trigger>
+                                <Trigger Property="BorderBrush" SourceName="PART_Border" Value="{x:Null}">
+                                    <Setter TargetName="PART_Border2" Property="BorderBrush" Value="Black" />
                                 </Trigger>
                                 <MultiTrigger>
                                     <MultiTrigger.Conditions>
