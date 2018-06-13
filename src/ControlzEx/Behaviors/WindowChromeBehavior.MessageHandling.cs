@@ -109,12 +109,6 @@ namespace ControlzEx.Behaviors
                 return;
             }
 
-            if (this.MinimizeAnimation)
-            {
-                // allow animation
-                this._ModifyStyle(0, WS.CAPTION);
-            }
-
             // Force this the first time.
             this._UpdateSystemMenu(this.AssociatedObject.WindowState);
             this._UpdateFrameState(true);
