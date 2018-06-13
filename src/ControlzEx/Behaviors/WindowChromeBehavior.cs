@@ -269,29 +269,31 @@ namespace ControlzEx.Behaviors
         [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         private void Cleanup(bool isClosing)
         {
-            if (!this.isCleanedUp)
+            if (this.isCleanedUp)
             {
-                this.isCleanedUp = true;
-
-                if (this.taskbarHandle != IntPtr.Zero
-                    && this.isWindwos10OrHigher)
-                {
-                    this.DeactivateTaskbarFix(this.taskbarHandle);
-                }
-
-                // clean up events
-                this.AssociatedObject.SourceInitialized -= this.AssociatedObject_SourceInitialized;
-                this.AssociatedObject.Loaded -= this.AssociatedObject_Loaded;
-                this.AssociatedObject.Unloaded -= this.AssociatedObject_Unloaded;
-                this.AssociatedObject.Closed -= this.AssociatedObject_Closed;
-                this.AssociatedObject.StateChanged -= this.AssociatedObject_StateChanged;
-                this.AssociatedObject.LostFocus -= this.AssociatedObject_LostFocus;
-                this.AssociatedObject.Deactivated -= this.AssociatedObject_Deactivated;
-
-                this.hwndSource?.RemoveHook(this.WindowProc);
-
-                this._RestoreStandardChromeState(isClosing);
+                return;
             }
+
+            this.isCleanedUp = true;
+
+            if (this.taskbarHandle != IntPtr.Zero
+                && this.isWindwos10OrHigher)
+            {
+                this.DeactivateTaskbarFix(this.taskbarHandle);
+            }
+
+            // clean up events
+            this.AssociatedObject.SourceInitialized -= this.AssociatedObject_SourceInitialized;
+            this.AssociatedObject.Loaded -= this.AssociatedObject_Loaded;
+            this.AssociatedObject.Unloaded -= this.AssociatedObject_Unloaded;
+            this.AssociatedObject.Closed -= this.AssociatedObject_Closed;
+            this.AssociatedObject.StateChanged -= this.AssociatedObject_StateChanged;
+            this.AssociatedObject.LostFocus -= this.AssociatedObject_LostFocus;
+            this.AssociatedObject.Deactivated -= this.AssociatedObject_Deactivated;
+
+            this.hwndSource?.RemoveHook(this.WindowProc);
+
+            this._RestoreStandardChromeState(isClosing);
         }
 
         /// <inheritdoc />
@@ -311,7 +313,8 @@ namespace ControlzEx.Behaviors
                 throw new Exception("Uups, at this point we really need the Handle from the associated object!");
             }
 
-            if (this.AssociatedObject.SizeToContent != SizeToContent.Manual && this.AssociatedObject.WindowState == WindowState.Normal)
+            if (this.AssociatedObject.SizeToContent != SizeToContent.Manual 
+                && this.AssociatedObject.WindowState == WindowState.Normal)
             {
                 // Another try to fix SizeToContent
                 // without this we get nasty glitches at the borders
