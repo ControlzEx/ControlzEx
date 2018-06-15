@@ -951,6 +951,12 @@ namespace ControlzEx.Behaviors
         {
             if (this.TryToBeFlickerFree)
             {
+                // prevent a black background during maximize
+                if (this._GetHwndState() == WindowState.Maximized)
+                {                    
+                    this._ClearRegion();
+                }
+
                 return;
             }
 
