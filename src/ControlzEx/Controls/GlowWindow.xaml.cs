@@ -254,7 +254,7 @@ namespace ControlzEx.Controls
         {
             base.OnApplyTemplate();
 
-            this.OpacityStoryboard = this.TryFindResource("OpacityStoryboard") as Storyboard;
+            this.OpacityStoryboard = this.TryFindResource("ControlzEx.GlowWindow.OpacityStoryboard") as Storyboard;
         }
 
         protected override void OnSourceInitialized(EventArgs e)
