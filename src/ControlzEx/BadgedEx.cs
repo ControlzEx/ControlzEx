@@ -20,33 +20,35 @@ namespace ControlzEx
     public class BadgedEx : ContentControl
     {
         public const string BadgeContainerPartName = "PART_BadgeContainer";
-        protected FrameworkElement _badgeContainer;
+        protected FrameworkElement BadgeContainer;
 
         public static readonly DependencyProperty BadgeProperty = DependencyProperty.Register(
             "Badge", typeof(object), typeof(BadgedEx), new FrameworkPropertyMetadata(default(object), FrameworkPropertyMetadataOptions.AffectsArrange, OnBadgeChanged));
 
         public object Badge
         {
-            get { return (object) GetValue(BadgeProperty); }
-            set { SetValue(BadgeProperty, value); }
+            get => this.GetValue(BadgeProperty);
+            set => this.SetValue(BadgeProperty, value);
         }
 
         public static readonly DependencyProperty BadgeBackgroundProperty = DependencyProperty.Register(
             "BadgeBackground", typeof(Brush), typeof(BadgedEx), new PropertyMetadata(default(Brush)));
 
+/*
         public Brush BadgeBackground
         {
-            get { return (Brush) GetValue(BadgeBackgroundProperty); }
-            set { SetValue(BadgeBackgroundProperty, value); }
+            get => (Brush) this.GetValue(BadgeBackgroundProperty);
+            set => this.SetValue(BadgeBackgroundProperty, value);
         }
+*/
 
         public static readonly DependencyProperty BadgeForegroundProperty = DependencyProperty.Register(
             "BadgeForeground", typeof(Brush), typeof(BadgedEx), new PropertyMetadata(default(Brush)));
 
         public Brush BadgeForeground
         {
-            get { return (Brush) GetValue(BadgeForegroundProperty); }
-            set { SetValue(BadgeForegroundProperty, value); }
+            get => (Brush) this.GetValue(BadgeForegroundProperty);
+            set => this.SetValue(BadgeForegroundProperty, value);
         }
 
         public static readonly DependencyProperty BadgePlacementModeProperty = DependencyProperty.Register(
@@ -54,8 +56,8 @@ namespace ControlzEx
 
         public BadgePlacementMode BadgePlacementMode
         {
-            get { return (BadgePlacementMode) GetValue(BadgePlacementModeProperty); }
-            set { SetValue(BadgePlacementModeProperty, value); }
+            get => (BadgePlacementMode) this.GetValue(BadgePlacementModeProperty);
+            set => this.SetValue(BadgePlacementModeProperty, value);
         }
 
         public static readonly RoutedEvent BadgeChangedEvent =
@@ -67,8 +69,8 @@ namespace ControlzEx
 
         public event RoutedPropertyChangedEventHandler<object> BadgeChanged
         {
-            add { AddHandler(BadgeChangedEvent, value); }
-            remove { RemoveHandler(BadgeChangedEvent, value); }
+            add => this.AddHandler(BadgeChangedEvent, value);
+            remove => this.RemoveHandler(BadgeChangedEvent, value);
         }
 
         private static readonly DependencyPropertyKey IsBadgeSetPropertyKey =
@@ -81,8 +83,8 @@ namespace ControlzEx
 
         public bool IsBadgeSet
         {
-            get { return (bool) GetValue(IsBadgeSetProperty); }
-            private set { SetValue(IsBadgeSetPropertyKey, value); }
+            get => (bool) this.GetValue(IsBadgeSetProperty);
+            private set => this.SetValue(IsBadgeSetPropertyKey, value);
         }
 
         private static void OnBadgeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -101,27 +103,27 @@ namespace ControlzEx
         {
             base.OnApplyTemplate();
 
-            _badgeContainer = GetTemplateChild(BadgeContainerPartName) as FrameworkElement;
+            this.BadgeContainer = this.GetTemplateChild(BadgeContainerPartName) as FrameworkElement;
         }        
 
         protected override Size ArrangeOverride(Size arrangeBounds)
         {
             var result = base.ArrangeOverride(arrangeBounds);
 
-            if (_badgeContainer == null) return result;
+            if (this.BadgeContainer == null) return result;
             
-            var containerDesiredSize = _badgeContainer.DesiredSize;
+            var containerDesiredSize = this.BadgeContainer.DesiredSize;
             if ((containerDesiredSize.Width <= 0.0 || containerDesiredSize.Height <= 0.0)
-                && !double.IsNaN(_badgeContainer.ActualWidth) && !double.IsInfinity(_badgeContainer.ActualWidth)
-                && !double.IsNaN(_badgeContainer.ActualHeight) && !double.IsInfinity(_badgeContainer.ActualHeight))
+                && !double.IsNaN(this.BadgeContainer.ActualWidth) && !double.IsInfinity(this.BadgeContainer.ActualWidth)
+                && !double.IsNaN(this.BadgeContainer.ActualHeight) && !double.IsInfinity(this.BadgeContainer.ActualHeight))
             {
-                containerDesiredSize = new Size(_badgeContainer.ActualWidth, _badgeContainer.ActualHeight);
+                containerDesiredSize = new Size(this.BadgeContainer.ActualWidth, this.BadgeContainer.ActualHeight);
             }
 
             var h = 0 - containerDesiredSize.Width / 2;
             var v = 0 - containerDesiredSize.Height / 2;
-            _badgeContainer.Margin = new Thickness(0);
-            _badgeContainer.Margin = new Thickness(h, v, h, v);
+            this.BadgeContainer.Margin = new Thickness(0);
+            this.BadgeContainer.Margin = new Thickness(h, v, h, v);
 
             return result;
         }

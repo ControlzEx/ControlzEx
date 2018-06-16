@@ -7,7 +7,7 @@ namespace ControlzEx.Standard
 
     internal static partial class Utility
     {
-        private static readonly Version _osVersion = Environment.OSVersion.Version;
+        private static readonly Version OsVersion = Environment.OSVersion.Version;
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static void SafeDestroyIcon(ref IntPtr hicon)
@@ -94,16 +94,9 @@ namespace ControlzEx.Standard
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public static bool IsOSVistaOrNewer
-        {
-            get { return _osVersion >= new Version(6, 0); }
-        }
+        public static bool IsOsVistaOrNewer => OsVersion >= new Version(6, 0);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public static bool IsOSWindows7OrNewer
-        {
-            get { return _osVersion >= new Version(6, 1); }
-        }
-
+        public static bool IsOsWindows7OrNewer => OsVersion >= new Version(6, 1);
     }
 }

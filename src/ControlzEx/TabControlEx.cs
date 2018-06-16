@@ -6,6 +6,7 @@ using System.Windows.Controls.Primitives;
 
 namespace ControlzEx
 {
+    /// <inheritdoc />
     /// <summary>
     /// The standard WPF TabControl is quite bad in the fact that it only
     /// even contains the current TabItem in the VisualTree, so if you
@@ -16,7 +17,6 @@ namespace ControlzEx
     /// It does this by keeping all TabItem content in the VisualTree but
     /// hides all inactive TabItem content, and only keeps the active TabItem
     /// content shown.
-    /// 
     /// Acknowledgement
     ///     Eric Burke
     ///         http://eric.burke.name/dotnetmania/2009/04/26/22.09.28
@@ -41,15 +41,15 @@ namespace ControlzEx
         /// </value>
         public Visibility ChildContentVisibility
         {
-            get { return (Visibility)this.GetValue(ChildContentVisibilityProperty); }
-            set { this.SetValue(ChildContentVisibilityProperty, value); }
+            get => (Visibility)this.GetValue(ChildContentVisibilityProperty);
+            set => this.SetValue(ChildContentVisibilityProperty, value);
         }
 
         public TabControlEx()
         {
             // this is necessary so that we get the initial databound selected item
             this.ItemContainerGenerator.StatusChanged += this.ItemContainerGenerator_StatusChanged;
-            this.Loaded += TabControlEx_Loaded;
+            this.Loaded += this.TabControlEx_Loaded;
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace ControlzEx
         /// <param name="e"></param>
         private void TabControlEx_Loaded(object sender, RoutedEventArgs e)
         {
-            UpdateSelectedItem();
+            this.UpdateSelectedItem();
         }
 
         /// <summary>
@@ -160,7 +160,7 @@ namespace ControlzEx
             // show the right child
             foreach (ContentPresenter child in this._itemsHolder.Children)
             {
-                child.Visibility = ((child.Tag as TabItem).IsSelected) ? Visibility.Visible : this.ChildContentVisibility;
+                child.Visibility = (((TabItem) child.Tag).IsSelected) ? Visibility.Visible : this.ChildContentVisibility;
             }
         }
 
@@ -169,31 +169,32 @@ namespace ControlzEx
         /// </summary>
         /// <param name = "item"></param>
         /// <returns></returns>
-        private ContentPresenter CreateChildContentPresenter(object item)
+        private void CreateChildContentPresenter(object item)
         {
             if (item == null)
             {
-                return null;
+                return;
             }
 
             ContentPresenter cp = this.FindChildContentPresenter(item);
 
             if (cp != null)
             {
-                return cp;
+                return;
             }
 
             // the actual child to be added.  cp.Tag is a reference to the TabItem
             var tabItem = item as TabItem;
-            cp = new ContentPresenter();
-            cp.Content = tabItem != null ? tabItem.Content : item;
-            cp.ContentTemplate = this.SelectedContentTemplate;
-            cp.ContentTemplateSelector = this.SelectedContentTemplateSelector;
-            cp.ContentStringFormat = this.SelectedContentStringFormat;
-            cp.Visibility = this.ChildContentVisibility;
-            cp.Tag = tabItem ?? this.ItemContainerGenerator.ContainerFromItem(item);
+            cp = new ContentPresenter
+            {
+                Content = tabItem != null ? tabItem.Content : item,
+                ContentTemplate = this.SelectedContentTemplate,
+                ContentTemplateSelector = this.SelectedContentTemplateSelector,
+                ContentStringFormat = this.SelectedContentStringFormat,
+                Visibility = this.ChildContentVisibility,
+                Tag = tabItem ?? this.ItemContainerGenerator.ContainerFromItem(item)
+            };
             this._itemsHolder.Children.Add(cp);
-            return cp;
         }
 
         /// <summary>
@@ -235,19 +236,18 @@ namespace ControlzEx
         /// <returns></returns>
         protected TabItem GetSelectedTabItem()
         {
-            object selectedItem = base.SelectedItem;
+            object selectedItem = this.SelectedItem;
             if (selectedItem == null)
             {
                 return null;
             }
-            TabItem item = selectedItem as TabItem;
-            if (item == null)
+            if (!(selectedItem is TabItem item))
             {
-                item = base.ItemContainerGenerator.ContainerFromIndex(base.SelectedIndex) as TabItem;
+                item = this.ItemContainerGenerator.ContainerFromIndex(this.SelectedIndex) as TabItem;
             }
             return item;
         }
 
-        private Panel _itemsHolder = null;
+        private Panel _itemsHolder;
     }
 }

@@ -33,7 +33,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// HIGHCONTRAST flags
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [Flags]
     public enum HCF
     {
@@ -74,7 +74,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// BITMAPINFOHEADER Compression type.  BI_*.
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum BI
     {
         RGB = 0,
@@ -83,7 +83,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// CombingRgn flags.  RGN_*
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum RGN
     {
         /// <summary>
@@ -108,7 +108,7 @@ namespace ControlzEx.Standard
         COPY = 5,
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum CombineRgnResult
     {
         ERROR = 0,
@@ -220,7 +220,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// DATAOBJ_GET_ITEM_FLAGS.  DOGIF_*.
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum DOGIF
     {
         DEFAULT = 0x0000,
@@ -230,14 +230,14 @@ namespace ControlzEx.Standard
         ONLY_IF_ONE = 0x0008,    // only return the item if there is one item in the array
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum DWM_SIT
     {
         None,
         DISPLAYFRAME = 1,
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [Flags]
     public enum ErrorModes
     {
@@ -270,7 +270,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// Non-client hit test values, HT*
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum HT
     {
         ERROR = -2,
@@ -302,7 +302,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// GetClassLongPtr values, GCLP_*
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum GCLP
     {
         HBRBACKGROUND = -10,
@@ -311,7 +311,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// GetWindowLongPtr values, GWL_*
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum GWL
     {
         WNDPROC = (-4),
@@ -326,7 +326,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// SystemMetrics.  SM_*
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum SM
     {
         CXSCREEN = 0,
@@ -418,7 +418,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// SystemParameterInfo values, SPI_*
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum SPI
     {
         GETBEEP = 0x0001,
@@ -658,7 +658,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// SystemParameterInfo flag values, SPIF_*
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [Flags]
     public enum SPIF
     {
@@ -704,7 +704,7 @@ namespace ControlzEx.Standard
         VALID = 0x3FFFFFFF,
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum StockObject : int
     {
         WHITE_BRUSH = 0,
@@ -724,7 +724,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// CS_*
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [Flags]
     public enum CS : uint
     {
@@ -746,7 +746,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// WindowStyle values, WS_*
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [Flags]
     public enum WS : uint
     {
@@ -785,7 +785,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// Window message values, WM_*
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum WM
     {
         NULL = 0x0000,
@@ -959,7 +959,7 @@ namespace ControlzEx.Standard
     /// Window style extended values, WS_EX_*
     /// </summary>
     [Flags]
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum WS_EX : uint
     {
         None = 0,
@@ -994,7 +994,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// GetDeviceCaps nIndex values.
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum DeviceCap
     {
         /// <summary>Number of bits per pixel
@@ -1014,7 +1014,7 @@ namespace ControlzEx.Standard
         LOGPIXELSY = 90,
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum FO : int
     {
         MOVE = 0x0001,
@@ -1026,7 +1026,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// "FILEOP_FLAGS", FOF_*.
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum FOF : ushort
     {
         MULTIDESTFILES = 0x0001,
@@ -1050,7 +1050,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// EnableMenuItem uEnable values, MF_*
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [Flags]
     public enum MF : uint
     {
@@ -1065,7 +1065,7 @@ namespace ControlzEx.Standard
     }
 
     /// <summary>Specifies the type of visual style attribute to set on a window.</summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum WINDOWTHEMEATTRIBUTETYPE : uint
     {
         /// <summary>Non-client area window attributes will be set.</summary>
@@ -1075,7 +1075,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// DWMFLIP3DWINDOWPOLICY.  DWMFLIP3D_*
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum DWMFLIP3D 
     {
         DEFAULT,
@@ -1122,7 +1122,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// WindowThemeNonClientAttributes
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [Flags]
     public enum WTNCA : uint
     {
@@ -1141,7 +1141,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// SetWindowPos options
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [Flags]
     public enum SWP
     {
@@ -1167,7 +1167,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// ShowWindow options
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum SW
     {
         HIDE = 0,
@@ -1186,7 +1186,7 @@ namespace ControlzEx.Standard
         FORCEMINIMIZE = 11,
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum SC
     {
         SIZE = 0xF000,
@@ -1221,7 +1221,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// GDI+ Status codes
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum Status
     {
         Ok = 0,
@@ -1258,7 +1258,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// MSGFLT_*.  New in Vista.  Realiased in Windows 7.
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum MSGFLT
     {
         // Win7 versions of this enum:
@@ -1271,7 +1271,7 @@ namespace ControlzEx.Standard
         // REMOVE = 2,
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum MSGFLTINFO
     {
         NONE = 0,
@@ -1288,7 +1288,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// Shell_NotifyIcon messages.  NIM_*
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum NIM : uint
     {
         ADD = 0,
@@ -1312,7 +1312,7 @@ namespace ControlzEx.Standard
         APPIDINFOLINK = 0x00000007, // indicates the data type is a pointer to a SHARDAPPIDINFOLINK structure 
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [Flags]
     public enum SLGP
     {
@@ -1324,7 +1324,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// Shell_NotifyIcon flags.  NIF_*
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [Flags]
     public enum NIF : uint
     {
@@ -1372,14 +1372,14 @@ namespace ControlzEx.Standard
     /// <summary>
     /// AC_*
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum AC : byte
     {
         SRC_OVER = 0,
         SRC_ALPHA = 1,
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum ULW
     {
         ALPHA = 2,
@@ -1387,6 +1387,7 @@ namespace ControlzEx.Standard
         OPAQUE = 4,
     }
 
+    [Flags]
     internal enum WVR
     {
         ALIGNTOP = 0x0010,
@@ -1431,7 +1432,7 @@ namespace ControlzEx.Standard
 
     #region SafeHandles
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public sealed class SafeFindHandle : SafeHandleZeroOrMinusOneIsInvalid
     {
         [SecurityCritical]
@@ -1439,11 +1440,11 @@ namespace ControlzEx.Standard
 
         protected override bool ReleaseHandle()
         {
-            return NativeMethods.FindClose(handle);
+            return NativeMethods.FindClose(this.handle);
         }
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public sealed class SafeDC : SafeHandleZeroOrMinusOneIsInvalid
     {
         private static class NativeMethods
@@ -1479,8 +1480,8 @@ namespace ControlzEx.Standard
         {
             set
             {
-                Assert.NullableIsNull(_hwnd);
-                _hwnd = value;
+                Assert.NullableIsNull(this._hwnd);
+                this._hwnd = value;
             }
         }
 
@@ -1489,17 +1490,17 @@ namespace ControlzEx.Standard
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         protected override bool ReleaseHandle()
         {
-            if (_created)
+            if (this._created)
             {
-                return NativeMethods.DeleteDC(handle);
+                return NativeMethods.DeleteDC(this.handle);
             }
 
-            if (!_hwnd.HasValue || _hwnd.Value == IntPtr.Zero)
+            if (!this._hwnd.HasValue || this._hwnd.Value == IntPtr.Zero)
             {
                 return true;
             }
 
-            return NativeMethods.ReleaseDC(_hwnd.Value, handle) == 1;
+            return NativeMethods.ReleaseDC(this._hwnd.Value, this.handle) == 1;
         }
 
         [SuppressMessage("Microsoft.Usage", "CA2201:DoNotRaiseReservedExceptionTypes"), SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
@@ -1542,7 +1543,7 @@ namespace ControlzEx.Standard
                 dc = NativeMethods.CreateCompatibleDC(hPtr);
                 if (dc == null)
                 {
-                    HRESULT.ThrowLastError();
+                    Hresult.ThrowLastError();
                 }
             }
             finally
@@ -1553,7 +1554,7 @@ namespace ControlzEx.Standard
                 }
             }
 
-            if (dc.IsInvalid)
+            if (dc != null && dc.IsInvalid)
             {
                 dc.Dispose();
                 throw new SystemException("Unable to create a device context from the specified device information.");
@@ -1581,7 +1582,7 @@ namespace ControlzEx.Standard
             if (dc.IsInvalid)
             {
                 // GetDC does not set the last error...
-                HRESULT.E_FAIL.ThrowIfFailed();
+                Hresult.E_FAIL.ThrowIfFailed();
             }
 
             return dc;
@@ -1610,7 +1611,7 @@ namespace ControlzEx.Standard
         }
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public sealed class SafeHBITMAP : SafeHandleZeroOrMinusOneIsInvalid
     {
         private SafeHBITMAP() : base(true) { }
@@ -1618,7 +1619,7 @@ namespace ControlzEx.Standard
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         protected override bool ReleaseHandle()
         {
-            return NativeMethods.DeleteObject(handle);
+            return NativeMethods.DeleteObject(this.handle);
         }
     }
 
@@ -1626,7 +1627,7 @@ namespace ControlzEx.Standard
     {
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         private SafeGdiplusStartupToken(IntPtr ptr) : base(true) {
-            handle = ptr;
+            this.handle = ptr;
         }
 
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
@@ -1640,9 +1641,7 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Usage", "CA2201:DoNotRaiseReservedExceptionTypes")]
         public static SafeGdiplusStartupToken Startup()
         {
-            IntPtr unsafeHandle;
-            StartupOutput output;
-            Status s = NativeMethods.GdiplusStartup(out unsafeHandle, new StartupInput(), out output);
+            Status s = NativeMethods.GdiplusStartup(out IntPtr unsafeHandle, new StartupInput(), out StartupOutput output);
             if (s == Status.Ok)
             {
                 SafeGdiplusStartupToken safeHandle = new SafeGdiplusStartupToken(unsafeHandle);
@@ -1666,20 +1665,20 @@ namespace ControlzEx.Standard
             Verify.IsNotNull(sink, "sink");
             Verify.IsNotDefault(eventId, "eventId");
 
-            handle = IntPtr.Zero;
+            this.handle = IntPtr.Zero;
 
             IConnectionPoint cp = null;
             try
             {
-                int dwCookie;
                 target.FindConnectionPoint(ref eventId, out cp);
-                cp.Advise(sink, out dwCookie);
+                cp.Advise(sink, out int dwCookie);
                 if (dwCookie == 0)
                 {
                     throw new InvalidOperationException("IConnectionPoint::Advise returned an invalid cookie.");
                 }
-                handle = new IntPtr(dwCookie);
-                _cp = cp;
+
+                this.handle = new IntPtr(dwCookie);
+                this._cp = cp;
                 cp = null;
             }
             finally
@@ -1691,7 +1690,7 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public void Disconnect()
         {
-            ReleaseHandle();
+            this.ReleaseHandle();
         }
 
         [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
@@ -1702,17 +1701,17 @@ namespace ControlzEx.Standard
             {
                 if (!this.IsInvalid)
                 {
-                    int dwCookie = handle.ToInt32();
-                    handle = IntPtr.Zero;
+                    int dwCookie = this.handle.ToInt32();
+                    this.handle = IntPtr.Zero;
 
-                    Assert.IsNotNull(_cp);
+                    Assert.IsNotNull(this._cp);
                     try
                     {
-                        _cp.Unadvise(dwCookie);
+                        this._cp.Unadvise(dwCookie);
                     }
                     finally
                     {
-                        Utility.SafeRelease(ref _cp);
+                        Utility.SafeRelease(ref this._cp);
                     }
                 }
                 return true;
@@ -1728,7 +1727,7 @@ namespace ControlzEx.Standard
 
     #region Native Types
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     public struct BLENDFUNCTION
     {
@@ -1742,7 +1741,7 @@ namespace ControlzEx.Standard
         public AC AlphaFormat;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     public struct HIGHCONTRAST
     {
@@ -1753,7 +1752,7 @@ namespace ControlzEx.Standard
         public IntPtr lpszDefaultScheme;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     public struct RGBQUAD
     {
@@ -1763,7 +1762,7 @@ namespace ControlzEx.Standard
         public byte rgbReserved;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential, Pack=2)]
     public struct BITMAPINFOHEADER 
     { 
@@ -1780,7 +1779,7 @@ namespace ControlzEx.Standard
         public int biClrImportant;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     public struct BITMAPINFO
     { 
@@ -1813,7 +1812,7 @@ namespace ControlzEx.Standard
         public WS_EX dwExStyle;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode, Pack = 1)]
     public struct SHFILEOPSTRUCT
     {
@@ -1864,7 +1863,7 @@ namespace ControlzEx.Standard
         public RECT rgrect_CloseButton;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses")]
     [StructLayout(LayoutKind.Sequential)]
     public class NOTIFYICONDATA
@@ -1903,7 +1902,7 @@ namespace ControlzEx.Standard
         private static class NativeMethods
         {
             [DllImport("ole32.dll")]
-            internal static extern HRESULT PropVariantClear(PROPVARIANT pvar);
+            internal static extern Hresult PropVariantClear(PROPVARIANT pvar);
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
@@ -1924,18 +1923,15 @@ namespace ControlzEx.Standard
         private short boolVal;
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public VarEnum VarType
-        {
-            get { return (VarEnum)vt; }
-        }
+        public VarEnum VarType => (VarEnum) this.vt;
 
         // Right now only using this for strings.
         [SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
         public string GetValue()
         {
-            if (vt == (ushort)VarEnum.VT_LPWSTR)
+            if (this.vt == (ushort)VarEnum.VT_LPWSTR)
             {
-                return Marshal.PtrToStringUni(pointerVal);
+                return Marshal.PtrToStringUni(this.pointerVal);
             }
 
             return null;
@@ -1943,22 +1939,22 @@ namespace ControlzEx.Standard
 
         public void SetValue(bool f)
         {
-            Clear();
-            vt = (ushort)VarEnum.VT_BOOL;
-            boolVal = (short)(f ? -1 : 0);
+            this.Clear();
+            this.vt = (ushort)VarEnum.VT_BOOL;
+            this.boolVal = (short)(f ? -1 : 0);
         }
 
         [SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
         public void SetValue(string val)
         {
-            Clear();
-            vt = (ushort)VarEnum.VT_LPWSTR;
-            pointerVal = Marshal.StringToCoTaskMemUni(val);
+            this.Clear();
+            this.vt = (ushort)VarEnum.VT_LPWSTR;
+            this.pointerVal = Marshal.StringToCoTaskMemUni(val);
         }
 
         public void Clear()
         {
-            HRESULT hr = NativeMethods.PropVariantClear(this);
+            Hresult hr = NativeMethods.PropVariantClear(this);
             Assert.IsTrue(hr.Succeeded);
         }
 
@@ -1966,25 +1962,25 @@ namespace ControlzEx.Standard
 
         public void Dispose()
         {
-            Dispose(true);
+            this.Dispose(true);
             GC.SuppressFinalize(this);
         }
 
         ~PROPVARIANT()
         {
-            Dispose(false);
+            this.Dispose(false);
         }
 
         [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "disposing")]
         private void Dispose(bool disposing)
         {
-            Clear();
+            this.Clear();
         }
 
         #endregion
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses")]
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public class SHARDAPPIDINFO
@@ -1995,7 +1991,7 @@ namespace ControlzEx.Standard
         string pszAppID;  // The id of the application that should be associated with this recent doc.
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses")]
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public class SHARDAPPIDINFOIDLIST
@@ -2014,11 +2010,13 @@ namespace ControlzEx.Standard
         IntPtr psl;     // An IShellLink instance that when launched opens a recently used item in the specified 
         // application. This link is not added to the recent docs folder, but will be added to the
         // specified application's destination list.
+/*
         [MarshalAs(UnmanagedType.LPWStr)]
         string pszAppID;  // The id of the application that should be associated with this recent doc.
+*/
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
     public struct LOGFONT
     {
@@ -2049,7 +2047,7 @@ namespace ControlzEx.Standard
         public POINT ptMaxTrackSize;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     public struct NONCLIENTMETRICS
     {
@@ -2075,8 +2073,10 @@ namespace ControlzEx.Standard
         {
             get
             {
-                var ncm = new NONCLIENTMETRICS();
-                ncm.cbSize = Marshal.SizeOf(typeof(NONCLIENTMETRICS));
+                var ncm = new NONCLIENTMETRICS
+                {
+                    cbSize = Marshal.SizeOf(typeof(NONCLIENTMETRICS))
+                };
                 return ncm;
             }
         }
@@ -2085,16 +2085,18 @@ namespace ControlzEx.Standard
         {
             get
             {
-                var ncm = new NONCLIENTMETRICS();
-                // Account for the missing iPaddedBorderWidth
-                ncm.cbSize = Marshal.SizeOf(typeof(NONCLIENTMETRICS)) - sizeof(int);
+                var ncm = new NONCLIENTMETRICS
+                {
+                    // Account for the missing iPaddedBorderWidth
+                    cbSize = Marshal.SizeOf(typeof(NONCLIENTMETRICS)) - sizeof(int)
+                };
                 return ncm;
             }
         }
     }
 
     /// <summary>Defines options that are used to set window visual style attributes.</summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Explicit)]
     public struct WTA_OPTIONS
     {
@@ -2119,7 +2121,7 @@ namespace ControlzEx.Standard
         public WTNCA dwMask;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     public struct MARGINS
     {
@@ -2133,7 +2135,7 @@ namespace ControlzEx.Standard
         public int cyBottomHeight;
     };
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
     public struct POINT
@@ -2143,20 +2145,20 @@ namespace ControlzEx.Standard
 
         public POINT(int x, int y)
         {
-            _x = x;
-            _y = y;
+            this._x = x;
+            this._y = y;
         }
 
         public int X
         {
-            get { return _x; }
-            set { _x = value; }
+            get => this._x;
+            set => this._x = value;
         }
 
         public int Y
         {
-            get { return _y; }
-            set { _y = value; }
+            get => this._y;
+            set => this._y = value;
         }
 
         public override bool Equals(object obj)
@@ -2165,13 +2167,13 @@ namespace ControlzEx.Standard
             {
                 var point = (POINT)obj;
 
-                return point._x == _x && point._y == _y;
+                return point._x == this._x && point._y == this._y;
             }
             return base.Equals(obj);
         }
         public override int GetHashCode()
         {
-            return _x.GetHashCode() ^ _y.GetHashCode();
+            return this._x.GetHashCode() ^ this._y.GetHashCode();
         }
 
         public static bool operator ==(POINT a, POINT b)
@@ -2185,7 +2187,7 @@ namespace ControlzEx.Standard
         }
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses")]
     [StructLayout(LayoutKind.Sequential)]
     public class RefPOINT
@@ -2194,7 +2196,7 @@ namespace ControlzEx.Standard
         public int y;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential, Pack = 0)]
     public struct RECT
     {
@@ -2215,72 +2217,60 @@ namespace ControlzEx.Standard
 
         public RECT(RECT rcSrc)
         {
-            _left = rcSrc.Left;
-            _top = rcSrc.Top;
-            _right = rcSrc.Right;
-            _bottom = rcSrc.Bottom;
+            this._left = rcSrc.Left;
+            this._top = rcSrc.Top;
+            this._right = rcSrc.Right;
+            this._bottom = rcSrc.Bottom;
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public void Offset(int dx, int dy)
         {
-            _left += dx;
-            _top += dy;
-            _right += dx;
-            _bottom += dy;
+            this._left += dx;
+            this._top += dy;
+            this._right += dx;
+            this._bottom += dy;
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public int Left
         {
-            get { return _left; }
-            set { _left = value; }
+            get => this._left;
+            set => this._left = value;
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public int Right
         {
-            get { return _right; }
-            set { _right = value; }
+            get => this._right;
+            set => this._right = value;
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public int Top
         {
-            get { return _top; }
-            set { _top = value; }
+            get => this._top;
+            set => this._top = value;
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public int Bottom
         {
-            get { return _bottom; }
-            set { _bottom = value; }
+            get => this._bottom;
+            set => this._bottom = value;
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public int Width
-        {
-            get { return _right - _left; }
-        }
+        public int Width => this._right - this._left;
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public int Height
-        {
-            get { return _bottom - _top; }
-        }
+        public int Height => this._bottom - this._top;
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public POINT Position
-        {
-            get { return new POINT { X = _left, Y = _top }; }
-        }
+        public POINT Position => new POINT { X = this._left, Y = this._top };
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public SIZE Size
-        {
-            get { return new SIZE { cx = Width, cy = Height }; }
-        }
+        public SIZE Size => new SIZE { cx = this.Width, cy = this.Height };
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static RECT Union(RECT rect1, RECT rect2)
@@ -2299,10 +2289,10 @@ namespace ControlzEx.Standard
             try
             {
                 var rc = (RECT)obj;
-                return rc._bottom == _bottom
-                    && rc._left == _left
-                    && rc._right == _right
-                    && rc._top == _top;
+                return rc._bottom == this._bottom
+                    && rc._left == this._left
+                    && rc._right == this._right
+                    && rc._top == this._top;
             }
             catch (InvalidCastException)
             {
@@ -2310,25 +2300,18 @@ namespace ControlzEx.Standard
             }
         }
 
-        public bool IsEmpty
-        {
-            get
-            {
-                // BUGBUG : On Bidi OS (hebrew arabic) left > right
-                return Left >= Right || Top >= Bottom;
-            }
-        }
+        public bool IsEmpty => this.Left >= this.Right || this.Top >= this.Bottom;
 
         public override string ToString()
         {
             if (this == Empty)
                 return "RECT {Empty}";
-            return "RECT { left : " + Left + " / top : " + Top + " / right : " + Right + " / bottom : " + Bottom + " }";
+            return "RECT { left : " + this.Left + " / top : " + this.Top + " / right : " + this.Right + " / bottom : " + this.Bottom + " }";
         }
 
         public override int GetHashCode()
         {
-            return (_left << 16 | Utility.LOWORD(_right)) ^ (_top << 16 | Utility.LOWORD(_bottom));
+            return (this._left << 16 | Utility.Loword(this._right)) ^ (this._top << 16 | Utility.Loword(this._bottom));
         }
 
         public static bool operator ==(RECT rect1, RECT rect2)
@@ -2354,63 +2337,57 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public RefRECT(int left, int top, int right, int bottom)
         {
-            _left = left;
-            _top = top;
-            _right = right;
-            _bottom = bottom;
+            this._left = left;
+            this._top = top;
+            this._right = right;
+            this._bottom = bottom;
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public int Width
-        {
-            get { return _right - _left; }
-        }
+        public int Width => this._right - this._left;
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public int Height
-        {
-            get { return _bottom - _top; }
-        }
+        public int Height => this._bottom - this._top;
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public int Left
         {
-            get { return _left; }
-            set { _left = value; }
+            get => this._left;
+            set => this._left = value;
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public int Right
         {
-            get { return _right; }
-            set { _right = value; }
+            get => this._right;
+            set => this._right = value;
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public int Top
         {
-            get { return _top; }
-            set { _top = value; }
+            get => this._top;
+            set => this._top = value;
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public int Bottom
         {
-            get { return _bottom; }
-            set { _bottom = value; }
+            get => this._bottom;
+            set => this._bottom = value;
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public void Offset(int dx, int dy)
         {
-            _left += dx;
-            _top += dy;
-            _right += dx;
-            _bottom += dy;
+            this._left += dx;
+            this._top += dy;
+            this._right += dx;
+            this._bottom += dy;
         }
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     public struct SIZE
     {
@@ -2418,7 +2395,7 @@ namespace ControlzEx.Standard
         public int cy;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     public struct StartupOutput
     {
@@ -2426,7 +2403,7 @@ namespace ControlzEx.Standard
         public IntPtr unhook;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     public class StartupInput
     {
@@ -2436,7 +2413,7 @@ namespace ControlzEx.Standard
         public bool SuppressExternalCodecs;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses")]
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
     [BestFitMapping(false)]
@@ -2456,7 +2433,7 @@ namespace ControlzEx.Standard
         public string cAlternateFileName;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
     public class WINDOWPLACEMENT
@@ -2469,7 +2446,7 @@ namespace ControlzEx.Standard
         public RECT normalPosition;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     public struct WINDOWPOS
     {
@@ -2488,7 +2465,7 @@ namespace ControlzEx.Standard
         }
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Unicode)]
     public struct WNDCLASSEX
     {
@@ -2508,7 +2485,7 @@ namespace ControlzEx.Standard
         public IntPtr hIconSm;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     public struct WINDOWINFO
     {
@@ -2524,7 +2501,7 @@ namespace ControlzEx.Standard
         public ushort wCreatorVersion;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     public struct MOUSEINPUT
     {
@@ -2536,7 +2513,7 @@ namespace ControlzEx.Standard
         public IntPtr dwExtraInfo;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     public struct INPUT
     {
@@ -2544,7 +2521,7 @@ namespace ControlzEx.Standard
         public MOUSEINPUT mi;
     };
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     public struct UNSIGNED_RATIO
     {
@@ -2552,7 +2529,7 @@ namespace ControlzEx.Standard
         public uint uiDenominator;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct DWM_TIMING_INFO
     {
@@ -2617,7 +2594,7 @@ namespace ControlzEx.Standard
         public string szInsert;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     public struct APPBARDATA
     {
@@ -2639,7 +2616,7 @@ namespace ControlzEx.Standard
     [
         ComImport,
         InterfaceType(ComInterfaceType.InterfaceIsIUnknown),
-        Guid(IID.ServiceProvider)
+        Guid(Iid.ServiceProvider)
     ]
     internal interface IServiceProvider
     {
@@ -2649,7 +2626,7 @@ namespace ControlzEx.Standard
 
     [
         ComImport,
-        Guid(IID.DragSourceHelper),
+        Guid(Iid.DragSourceHelper),
         InterfaceType(ComInterfaceType.InterfaceIsIUnknown)
     ]
     internal interface IDragSourceHelper
@@ -2660,7 +2637,7 @@ namespace ControlzEx.Standard
 
     [
         ComImport,
-        Guid(IID.DragSourceHelper2),
+        Guid(Iid.DragSourceHelper2),
         InterfaceType(ComInterfaceType.InterfaceIsIUnknown)
     ]
     internal interface IDragSourceHelper2 : IDragSourceHelper
@@ -2675,7 +2652,7 @@ namespace ControlzEx.Standard
 
     [
         ComImport,
-        Guid(IID.DropTargetHelper),
+        Guid(Iid.DropTargetHelper),
         InterfaceType(ComInterfaceType.InterfaceIsIUnknown)
     ]
     internal interface IDropTargetHelper
@@ -2690,14 +2667,14 @@ namespace ControlzEx.Standard
     #endregion
 
     /// <summary>Delegate declaration that matches native WndProc signatures.</summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public delegate IntPtr WndProc(IntPtr hwnd, WM uMsg, IntPtr wParam, IntPtr lParam);
 
     /// <summary>Delegate declaration that matches managed WndProc signatures.</summary>
     internal delegate IntPtr MessageHandler(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled);
 
     // Some native methods are shimmed through public versions that handle converting failures into thrown exceptions.
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public static class NativeMethods
     {
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
@@ -2711,7 +2688,7 @@ namespace ControlzEx.Standard
             // Native version modifies the parameter in place.
             if (!_AdjustWindowRectEx(ref lpRect, dwStyle, bMenu, dwExStyle))
             {
-                HRESULT.ThrowLastError();
+                Hresult.ThrowLastError();
             }
 
             return lpRect;
@@ -2734,7 +2711,7 @@ namespace ControlzEx.Standard
         {
             if (!_AllowSetForegroundWindow(dwProcessId))
             {
-                HRESULT.ThrowLastError();
+                Hresult.ThrowLastError();
             }
         }
 
@@ -2751,7 +2728,7 @@ namespace ControlzEx.Standard
         // Note that processes at or below SECURITY_MANDATORY_LOW_RID are not allowed to change the message filter.
         // If those processes call this function, it will fail and generate the extended error code, ERROR_ACCESS_DENIED.
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public static HRESULT ChangeWindowMessageFilterEx(IntPtr hwnd, WM message, MSGFLT action, out MSGFLTINFO filterInfo)
+        public static Hresult ChangeWindowMessageFilterEx(IntPtr hwnd, WM message, MSGFLT action, out MSGFLTINFO filterInfo)
         {
             filterInfo = MSGFLTINFO.NONE;
 
@@ -2759,34 +2736,34 @@ namespace ControlzEx.Standard
 
             // This origins of this API were added for Vista.  The Ex version was added for Windows 7.
             // If we're not on either, then this message filter isolation doesn't exist.
-            if (!Utility.IsOSVistaOrNewer)
+            if (!Utility.IsOsVistaOrNewer)
             {
-                return HRESULT.S_FALSE;
+                return Hresult.S_FALSE;
             }
 
             // If we're on Vista rather than Win7 then we can't use the Ex version of this function.
             // The Ex version is preferred if possible because this results in process-wide modifications of the filter
             // and is deprecated as of Win7.
-            if (!Utility.IsOSWindows7OrNewer)
+            if (!Utility.IsOsWindows7OrNewer)
             {
                 // Note that the Win7 MSGFLT_ALLOW/DISALLOW enum values map to the Vista MSGFLT_ADD/REMOVE
                 ret = _ChangeWindowMessageFilter(message, action);
                 if (!ret)
                 {
-                    return (HRESULT)Win32Error.GetLastError();
+                    return (Hresult)Win32Error.GetLastError();
                 }
-                return HRESULT.S_OK;
+                return Hresult.S_OK;
             }
 
             var filterstruct = new CHANGEFILTERSTRUCT { cbSize = (uint)Marshal.SizeOf(typeof(CHANGEFILTERSTRUCT)) };
             ret = _ChangeWindowMessageFilterEx(hwnd, message, action, ref filterstruct);
             if (!ret)
             {
-                return (HRESULT)Win32Error.GetLastError();
+                return (Hresult)Win32Error.GetLastError();
             }
 
             filterInfo = filterstruct.ExtStatus;
-            return HRESULT.S_OK;
+            return Hresult.S_OK;
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
@@ -2811,9 +2788,8 @@ namespace ControlzEx.Standard
             IntPtr argv = IntPtr.Zero;
             try
             {
-                int numArgs = 0;
 
-                argv = _CommandLineToArgvW(cmdLine, out numArgs);
+                argv = _CommandLineToArgvW(cmdLine, out int numArgs);
                 if (argv == IntPtr.Zero)
                 {
                     throw new Win32Exception();
@@ -2861,7 +2837,7 @@ namespace ControlzEx.Standard
 
             if (hBitmap.IsInvalid)
             {
-                HRESULT.ThrowLastError();
+                Hresult.ThrowLastError();
             }
 
             return hBitmap;
@@ -2950,7 +2926,7 @@ namespace ControlzEx.Standard
             IntPtr ret = _CreateWindowEx(dwExStyle, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
             if (IntPtr.Zero == ret)
             {
-                HRESULT.ThrowLastError();
+                Hresult.ThrowLastError();
             }
 
             return ret;
@@ -2986,15 +2962,15 @@ namespace ControlzEx.Standard
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("dwmapi.dll", EntryPoint = "DwmGetColorizationColor", PreserveSig = true)]
-        private static extern HRESULT _DwmGetColorizationColor(out uint pcrColorization, [Out, MarshalAs(UnmanagedType.Bool)] out bool pfOpaqueBlend);
+        private static extern Hresult _DwmGetColorizationColor(out uint pcrColorization, [Out, MarshalAs(UnmanagedType.Bool)] out bool pfOpaqueBlend);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static bool DwmGetColorizationColor(out uint pcrColorization, out bool pfOpaqueBlend)
         {
             // Make this call safe to make on downlevel OSes...
-            if (Utility.IsOSVistaOrNewer && IsThemeActive())
+            if (Utility.IsOsVistaOrNewer && IsThemeActive())
             {
-                HRESULT hr = _DwmGetColorizationColor(out pcrColorization, out pfOpaqueBlend);
+                Hresult hr = _DwmGetColorizationColor(out pcrColorization, out pfOpaqueBlend);
                 if (hr.Succeeded)
                 {
                     return true;
@@ -3014,20 +2990,20 @@ namespace ControlzEx.Standard
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("dwmapi.dll", EntryPoint = "DwmGetCompositionTimingInfo")]
-        private static extern HRESULT _DwmGetCompositionTimingInfo(IntPtr hwnd, ref DWM_TIMING_INFO pTimingInfo);
+        private static extern Hresult _DwmGetCompositionTimingInfo(IntPtr hwnd, ref DWM_TIMING_INFO pTimingInfo);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static DWM_TIMING_INFO? DwmGetCompositionTimingInfo(IntPtr hwnd)
         {
-            if (!Utility.IsOSVistaOrNewer)
+            if (!Utility.IsOsVistaOrNewer)
             {
                 // API was new to Vista.
                 return null;
             }
 
             var dti = new DWM_TIMING_INFO { cbSize = Marshal.SizeOf(typeof(DWM_TIMING_INFO)) };
-            HRESULT hr = _DwmGetCompositionTimingInfo(hwnd, ref dti);
-            if (hr == HRESULT.E_PENDING)
+            Hresult hr = _DwmGetCompositionTimingInfo(hwnd, ref dti);
+            if (hr == Hresult.E_PENDING)
             {
                 // The system isn't yet ready to respond.  Return null rather than throw.
                 return null;
@@ -3046,7 +3022,7 @@ namespace ControlzEx.Standard
         public static bool DwmIsCompositionEnabled()
         {
             // Make this call safe to make on downlevel OSes...
-            if (!Utility.IsOSVistaOrNewer)
+            if (!Utility.IsOsVistaOrNewer)
             {
                 return false;
             }
@@ -3065,7 +3041,7 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static void DwmSetWindowAttributeFlip3DPolicy(IntPtr hwnd, DWMFLIP3D flip3dPolicy)
         {
-            Assert.IsTrue(Utility.IsOSVistaOrNewer);
+            Assert.IsTrue(Utility.IsOsVistaOrNewer);
             var dwPolicy = (int)flip3dPolicy;
             _DwmSetWindowAttribute(hwnd, DWMWA.FLIP3D_POLICY, ref dwPolicy, sizeof(int)); 
         }
@@ -3073,7 +3049,7 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static void DwmSetWindowAttributeDisallowPeek(IntPtr hwnd, bool disallowPeek)
         {
-            Assert.IsTrue(Utility.IsOSWindows7OrNewer);
+            Assert.IsTrue(Utility.IsOsWindows7OrNewer);
             int dwDisallow = (int)(disallowPeek ? Win32Value.TRUE : Win32Value.FALSE);
             _DwmSetWindowAttribute(hwnd, DWMWA.DISALLOW_PEEK, ref dwDisallow, sizeof(int));
         }
@@ -3143,10 +3119,9 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static RECT GetClientRect(IntPtr hwnd)
         {
-            RECT rc;
-            if (!_GetClientRect(hwnd, out rc))
+            if (!_GetClientRect(hwnd, out RECT rc))
             {
-                HRESULT.ThrowLastError();
+                Hresult.ThrowLastError();
             }
             return rc;
         }
@@ -3161,10 +3136,9 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static POINT GetCursorPos()
         {
-            POINT pt;
-            if (!_GetCursorPos(out pt))
+            if (!_GetCursorPos(out POINT pt))
             {
-                HRESULT.ThrowLastError();
+                Hresult.ThrowLastError();
             }
             return pt;
         }
@@ -3196,10 +3170,9 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static POINT GetPhysicalCursorPos()
         {
-            POINT pt;
-            if (!_GetPhysicalCursorPos(out pt))
+            if (!_GetPhysicalCursorPos(out POINT pt))
             {
-                HRESULT.ThrowLastError();
+                Hresult.ThrowLastError();
             }
             return pt;
         }
@@ -3223,7 +3196,7 @@ namespace ControlzEx.Standard
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("uxtheme.dll", EntryPoint = "GetCurrentThemeName", CharSet = CharSet.Unicode)]
-        private static extern HRESULT _GetCurrentThemeName(
+        private static extern Hresult _GetCurrentThemeName(
             StringBuilder pszThemeFileName,
             int dwMaxNameChars,
             StringBuilder pszColorBuff,
@@ -3276,7 +3249,7 @@ namespace ControlzEx.Standard
                 int size = _GetModuleFileName(hModule, buffer, buffer.Capacity);
                 if (size == 0)
                 {
-                    HRESULT.ThrowLastError();
+                    Hresult.ThrowLastError();
                 }
 
                 // GetModuleFileName returns nSize when it's truncated but does NOT set the last error.
@@ -3302,7 +3275,7 @@ namespace ControlzEx.Standard
             IntPtr retPtr = _GetModuleHandle(lpModuleName);
             if (retPtr == IntPtr.Zero)
             {
-                HRESULT.ThrowLastError();
+                Hresult.ThrowLastError();
             }
             return retPtr;
         }
@@ -3310,12 +3283,12 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("user32.dll", EntryPoint = "GetMonitorInfo", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool _GetMonitorInfo(IntPtr hMonitor, [In, Out] MONITORINFO lpmi);
+        private static extern bool _GetMonitorInfo(IntPtr hMonitor, [In, Out] Monitorinfo lpmi);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public static MONITORINFO GetMonitorInfo(IntPtr hMonitor)
+        public static Monitorinfo GetMonitorInfo(IntPtr hMonitor)
         {
-            var mi = new MONITORINFO();
+            var mi = new Monitorinfo();
             if (!_GetMonitorInfo(hMonitor, mi))
             {
                 throw new Win32Exception();
@@ -3326,12 +3299,12 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("user32.dll", EntryPoint = "GetMonitorInfoW", SetLastError = true, ExactSpelling = true, CharSet = CharSet.Unicode)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool _GetMonitorInfoW([In] IntPtr hMonitor, [Out] MONITORINFO lpmi);
+        private static extern bool _GetMonitorInfoW([In] IntPtr hMonitor, [Out] Monitorinfo lpmi);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public static MONITORINFO GetMonitorInfoW(IntPtr hMonitor)
+        public static Monitorinfo GetMonitorInfoW(IntPtr hMonitor)
         {
-            var mi = new MONITORINFO();
+            var mi = new Monitorinfo();
             if (!_GetMonitorInfoW(hMonitor, mi))
             {
                 throw new Win32Exception();
@@ -3342,13 +3315,13 @@ namespace ControlzEx.Standard
         public static IntPtr GetTaskBarHandleForMonitor(IntPtr monitor)
         {
             // maybe we can use ReBarWindow32 isntead Shell_TrayWnd
-            var hwnd = NativeMethods.FindWindow("Shell_TrayWnd", null);
-            var monitorWithTaskbarOnIt = NativeMethods.MonitorFromWindow(hwnd, MonitorOptions.MONITOR_DEFAULTTONEAREST);
+            var hwnd = FindWindow("Shell_TrayWnd", null);
+            var monitorWithTaskbarOnIt = MonitorFromWindow(hwnd, MonitorOptions.MonitorDefaulttonearest);
 
             if (!Equals(monitor, monitorWithTaskbarOnIt))
             {
-                hwnd = NativeMethods.FindWindow("Shell_SecondaryTrayWnd", null);
-                monitorWithTaskbarOnIt = NativeMethods.MonitorFromWindow(hwnd, MonitorOptions.MONITOR_DEFAULTTONEAREST);
+                hwnd = FindWindow("Shell_SecondaryTrayWnd", null);
+                monitorWithTaskbarOnIt = MonitorFromWindow(hwnd, MonitorOptions.MonitorDefaulttonearest);
 
                 if (!Equals(monitor, monitorWithTaskbarOnIt))
                 {
@@ -3369,7 +3342,7 @@ namespace ControlzEx.Standard
             IntPtr retPtr = _GetStockObject(fnObject);
             if (retPtr == null)
             {
-                HRESULT.ThrowLastError();
+                Hresult.ThrowLastError();
             }
             return retPtr;
         }
@@ -3394,7 +3367,7 @@ namespace ControlzEx.Standard
             };
             if (!_GetWindowInfo(hWnd, ref info))
             {
-                HRESULT.ThrowLastError();
+                Hresult.ThrowLastError();
             }
             return info;
         }
@@ -3466,7 +3439,7 @@ namespace ControlzEx.Standard
         {
             if (!_SetProp(hwnd, lpString, hData))
             {
-                HRESULT.ThrowLastError();
+                Hresult.ThrowLastError();
             }
         }
 
@@ -3552,10 +3525,9 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static RECT GetWindowRect(IntPtr hwnd)
         {
-            RECT rc;
-            if (!_GetWindowRect(hwnd, out rc))
+            if (!_GetWindowRect(hwnd, out RECT rc))
             {
-                HRESULT.ThrowLastError();
+                Hresult.ThrowLastError();
             }
             return rc;
         }
@@ -3743,7 +3715,7 @@ namespace ControlzEx.Standard
             short ret = _RegisterClassEx(ref lpwcx);
             if (ret == 0)
             {
-                HRESULT.ThrowLastError();
+                Hresult.ThrowLastError();
             }
 
             return ret;
@@ -3759,7 +3731,7 @@ namespace ControlzEx.Standard
             uint iRet = _RegisterWindowMessage(lpString);
             if (iRet == 0)
             {
-                HRESULT.ThrowLastError();
+                Hresult.ThrowLastError();
             }
             return (WM)iRet;
         }
@@ -3775,7 +3747,7 @@ namespace ControlzEx.Standard
             IntPtr ret = _SetActiveWindow(hwnd);
             if (ret == IntPtr.Zero)
             {
-                HRESULT.ThrowLastError();
+                Hresult.ThrowLastError();
             }
 
             return ret;
@@ -3895,20 +3867,20 @@ namespace ControlzEx.Standard
         {
             if (!_SystemParametersInfo_String(uiAction, uiParam, pvParam, fWinIni))
             {
-                HRESULT.ThrowLastError();
+                Hresult.ThrowLastError();
             }
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static NONCLIENTMETRICS SystemParameterInfo_GetNONCLIENTMETRICS()
         {
-            var metrics = Utility.IsOSVistaOrNewer
+            var metrics = Utility.IsOsVistaOrNewer
                 ? NONCLIENTMETRICS.VistaMetricsStruct
                 : NONCLIENTMETRICS.XPMetricsStruct;
 
             if (!_SystemParametersInfo_NONCLIENTMETRICS(SPI.GETNONCLIENTMETRICS, metrics.cbSize, ref metrics, SPIF.None))
             {
-                HRESULT.ThrowLastError();
+                Hresult.ThrowLastError();
             }
 
             return metrics;
@@ -3922,7 +3894,7 @@ namespace ControlzEx.Standard
 
             if (!_SystemParametersInfo_HIGHCONTRAST(SPI.GETHIGHCONTRAST, hc.cbSize, ref hc, SPIF.None))
             {
-                HRESULT.ThrowLastError();
+                Hresult.ThrowLastError();
             }
 
             return hc;
@@ -3944,7 +3916,7 @@ namespace ControlzEx.Standard
             IntPtr ret = _SelectObject(hdc, hgdiobj);
             if (ret == IntPtr.Zero)
             {
-                HRESULT.ThrowLastError();
+                Hresult.ThrowLastError();
             }
             return ret;
         }
@@ -3959,7 +3931,7 @@ namespace ControlzEx.Standard
             IntPtr ret = _SelectObjectSafeHBITMAP(hdc, hgdiobj);
             if (ret == IntPtr.Zero)
             {
-                HRESULT.ThrowLastError();
+                Hresult.ThrowLastError();
             }
             return ret;
         }
@@ -3993,7 +3965,7 @@ namespace ControlzEx.Standard
         {
             if (!_UnregisterClassAtom(new IntPtr(atom), hinstance))
             {
-                HRESULT.ThrowLastError();
+                Hresult.ThrowLastError();
             }
         }
 
@@ -4002,7 +3974,7 @@ namespace ControlzEx.Standard
         {
             if (!_UnregisterClassName(lpClassName, hInstance))
             {
-                HRESULT.ThrowLastError();
+                Hresult.ThrowLastError();
             }
         }
 
@@ -4048,7 +4020,7 @@ namespace ControlzEx.Standard
         {
             if (!_UpdateLayeredWindow(hwnd, hdcDst, ref pptDst, ref psize, hdcSrc, ref pptSrc, crKey, ref pblend, dwFlags))
             {
-                HRESULT.ThrowLastError();
+                Hresult.ThrowLastError();
             }
         }
 
@@ -4061,7 +4033,7 @@ namespace ControlzEx.Standard
         {
             if (!_UpdateLayeredWindowIntPtr(hwnd, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, crKey, ref pblend, dwFlags))
             {
-                HRESULT.ThrowLastError();
+                Hresult.ThrowLastError();
             }
         }
 
@@ -4075,7 +4047,7 @@ namespace ControlzEx.Standard
             uint ret = _RegisterClipboardFormat(formatName);
             if (ret == 0)
             {
-                HRESULT.ThrowLastError();
+                Hresult.ThrowLastError();
             }
 
             return ret;
@@ -4087,11 +4059,11 @@ namespace ControlzEx.Standard
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("ole32.dll")]
-        public static extern HRESULT CreateStreamOnHGlobal(IntPtr hGlobal, [MarshalAs(UnmanagedType.Bool)] bool fDeleteOnRelease, out IStream ppstm);
+        public static extern Hresult CreateStreamOnHGlobal(IntPtr hGlobal, [MarshalAs(UnmanagedType.Bool)] bool fDeleteOnRelease, out IStream ppstm);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("urlmon.dll")]
-        public static extern HRESULT CopyStgMedium(ref STGMEDIUM pcstgmedSrc, ref STGMEDIUM pstgmedDest);
+        public static extern Hresult CopyStgMedium(ref STGMEDIUM pcstgmedSrc, ref STGMEDIUM pstgmedDest);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("user32.dll", SetLastError = true)]
@@ -4162,7 +4134,7 @@ namespace ControlzEx.Standard
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("shell32.dll", PreserveSig = false)]
-        public static extern HRESULT SHCreateItemFromParsingName([MarshalAs(UnmanagedType.LPWStr)] string pszPath, IBindCtx pbc, [In] ref Guid riid, [Out, MarshalAs(UnmanagedType.Interface)] out object ppv);
+        public static extern Hresult SHCreateItemFromParsingName([MarshalAs(UnmanagedType.LPWStr)] string pszPath, IBindCtx pbc, [In] ref Guid riid, [Out, MarshalAs(UnmanagedType.Interface)] out object ppv);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("shell32.dll")]
@@ -4183,7 +4155,7 @@ namespace ControlzEx.Standard
         /// <param name="AppID"></param>
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("shell32.dll")]
-        public static extern HRESULT GetCurrentProcessExplicitAppUserModelID([Out, MarshalAs(UnmanagedType.LPWStr)] out string AppID);
+        public static extern Hresult GetCurrentProcessExplicitAppUserModelID([Out, MarshalAs(UnmanagedType.LPWStr)] out string AppID);
 
         #endregion
     }

@@ -11,84 +11,84 @@ namespace ControlzEx.Standard
     #region Enums and Static Property Classes
 
     /// <summary>ASSOCIATIONLEVEL, AL_*</summary>
-    internal enum AL
+    internal enum Al
     {
-        MACHINE,
-        EFFECTIVE,
-        USER,
+        Machine,
+        Effective,
+        User,
     }
 
     /// <summary>ASSOCIATIONTYPE, AT_*</summary>
-    internal enum AT
+    internal enum At
     {
-        FILEEXTENSION,
-        URLPROTOCOL,
-        STARTMENUCLIENT,
-        MIMETYPE,
+        Fileextension,
+        Urlprotocol,
+        Startmenuclient,
+        Mimetype,
     }
 
     /// <summary>FileDialog AddPlace options.  FDAP_*</summary>
-    internal enum FDAP : uint
+    internal enum Fdap : uint
     {
-        BOTTOM = 0x00000000,
-        TOP = 0x00000001,
+        Bottom = 0x00000000,
+        Top = 0x00000001,
     }
 
     /// <summary>IFileDialog options.  FOS_*</summary>
     [Flags]
-    internal enum FOS : uint
+    internal enum Fos : uint
     {
-        OVERWRITEPROMPT = 0x00000002,
-        STRICTFILETYPES = 0x00000004,
-        NOCHANGEDIR = 0x00000008,
-        PICKFOLDERS = 0x00000020,
-        FORCEFILESYSTEM = 0x00000040,
-        ALLNONSTORAGEITEMS = 0x00000080,
-        NOVALIDATE = 0x00000100,
-        ALLOWMULTISELECT = 0x00000200,
-        PATHMUSTEXIST = 0x00000800,
-        FILEMUSTEXIST = 0x00001000,
-        CREATEPROMPT = 0x00002000,
-        SHAREAWARE = 0x00004000,
-        NOREADONLYRETURN = 0x00008000,
-        NOTESTFILECREATE = 0x00010000,
-        HIDEMRUPLACES = 0x00020000,
-        HIDEPINNEDPLACES = 0x00040000,
-        NODEREFERENCELINKS = 0x00100000,
-        DONTADDTORECENT = 0x02000000,
-        FORCESHOWHIDDEN = 0x10000000,
-        DEFAULTNOMINIMODE = 0x20000000,
-        FORCEPREVIEWPANEON = 0x40000000,
+        Overwriteprompt = 0x00000002,
+        Strictfiletypes = 0x00000004,
+        Nochangedir = 0x00000008,
+        Pickfolders = 0x00000020,
+        Forcefilesystem = 0x00000040,
+        Allnonstorageitems = 0x00000080,
+        Novalidate = 0x00000100,
+        Allowmultiselect = 0x00000200,
+        Pathmustexist = 0x00000800,
+        Filemustexist = 0x00001000,
+        Createprompt = 0x00002000,
+        Shareaware = 0x00004000,
+        Noreadonlyreturn = 0x00008000,
+        Notestfilecreate = 0x00010000,
+        Hidemruplaces = 0x00020000,
+        Hidepinnedplaces = 0x00040000,
+        Nodereferencelinks = 0x00100000,
+        Dontaddtorecent = 0x02000000,
+        Forceshowhidden = 0x10000000,
+        Defaultnominimode = 0x20000000,
+        Forcepreviewpaneon = 0x40000000,
     }
 
     /// <summary>FDE_OVERWRITE_RESPONSE.  FDEOR_*</summary>
-    internal enum FDEOR
+    internal enum Fdeor
     {
-        DEFAULT = 0x00000000,
-        ACCEPT = 0x00000001,
-        REFUSE = 0x00000002,
+        Default = 0x00000000,
+        Accept = 0x00000001,
+        Refuse = 0x00000002,
     }
 
     /// <summary>FDE_SHAREVIOLATION_RESPONSE.  FDESVR_*</summary>
-    internal enum FDESVR
+    internal enum Fdesvr
     {
-        DEFAULT = 0x00000000,
-        ACCEPT = 0x00000001,
-        REFUSE = 0x00000002,
+        Default = 0x00000000,
+        Accept = 0x00000001,
+        Refuse = 0x00000002,
     }
 
     /// <summary>ShellItem attribute flags.  SIATTRIBFLAGS_*</summary>
-    internal enum SIATTRIBFLAGS
+    internal enum Siattribflags
     {
-        AND = 0x00000001,
-        OR = 0x00000002,
-        APPCOMPAT = 0x00000003,
+        And = 0x00000001,
+        Or = 0x00000002,
+        Appcompat = 0x00000003,
     }
 
-    internal enum APPDOCLISTTYPE
+    internal enum Appdoclisttype
     {
-        ADLT_RECENT = 0,   // The recently used documents list
-        ADLT_FREQUENT,     // The frequently used documents list
+        AdltRecent = 0,   // The recently used documents list
+        AdltFrequent,     // The frequently used documents list
     }
 
     /// <summary>
@@ -96,13 +96,13 @@ namespace ControlzEx.Standard
     /// </summary>
     /// <remarks>The native enum was called STPFLAG.</remarks>
     [Flags]
-    internal enum STPF
+    internal enum Stpf
     {
-        NONE = 0x00000000,
-        USEAPPTHUMBNAILALWAYS = 0x00000001,
-        USEAPPTHUMBNAILWHENACTIVE = 0x00000002,
-        USEAPPPEEKALWAYS = 0x00000004,
-        USEAPPPEEKWHENACTIVE = 0x00000008,
+        None = 0x00000000,
+        Useappthumbnailalways = 0x00000001,
+        Useappthumbnailwhenactive = 0x00000002,
+        Useapppeekalways = 0x00000004,
+        Useapppeekwhenactive = 0x00000008,
     }
 
     /// <summary>
@@ -111,40 +111,40 @@ namespace ControlzEx.Standard
     /// <remarks>
     /// The native enum was called TBPFLAG.
     /// </remarks>
-    internal enum TBPF
+    internal enum Tbpf
     {
-        NOPROGRESS = 0x00000000,
-        INDETERMINATE = 0x00000001,
-        NORMAL = 0x00000002,
-        ERROR = 0x00000004,
-        PAUSED = 0x00000008,
+        Noprogress = 0x00000000,
+        Indeterminate = 0x00000001,
+        Normal = 0x00000002,
+        Error = 0x00000004,
+        Paused = 0x00000008,
     }
 
     /// <summary>
     /// THUMBBUTTON mask.  THB_*
     /// </summary>
     [Flags]
-    internal enum THB : uint
+    internal enum Thb : uint
     {
-        BITMAP = 0x0001,
-        ICON = 0x0002,
-        TOOLTIP = 0x0004,
-        FLAGS = 0x0008,
+        Bitmap = 0x0001,
+        Icon = 0x0002,
+        Tooltip = 0x0004,
+        Flags = 0x0008,
     }
 
     /// <summary>
     /// THUMBBUTTON flags.  THBF_*
     /// </summary>
     [Flags]
-    internal enum THBF : uint
+    internal enum Thbf : uint
     {
-        ENABLED = 0x0000,
-        DISABLED = 0x0001,
-        DISMISSONCLICK = 0x0002,
-        NOBACKGROUND = 0x0004,
-        HIDDEN = 0x0008,
+        Enabled = 0x0000,
+        Disabled = 0x0001,
+        Dismissonclick = 0x0002,
+        Nobackground = 0x0004,
+        Hidden = 0x0008,
         // Added post-beta
-        NONINTERACTIVE = 0x0010,
+        Noninteractive = 0x0010,
     }
 
     /// <summary>
@@ -153,7 +153,7 @@ namespace ControlzEx.Standard
     /// <remarks>
     /// These are new for Vista, but are used in downlevel components
     /// </remarks>
-    internal enum GPS
+    internal enum Gps
     {
         // If no flags are specified (GPS_DEFAULT), a read-only property store is returned that includes properties for the file or item.
         // In the case that the shell item is a file, the property store contains:
@@ -166,37 +166,37 @@ namespace ControlzEx.Standard
         // Non-file shell items should return a similar read-only store
         //
         // Specifying other GPS_ flags modifies the store that is returned
-        DEFAULT = 0x00000000,
-        HANDLERPROPERTIESONLY = 0x00000001,   // only include properties directly from the file's property handler
-        READWRITE = 0x00000002,   // Writable stores will only include handler properties
-        TEMPORARY = 0x00000004,   // A read/write store that only holds properties for the lifetime of the IShellItem object
-        FASTPROPERTIESONLY = 0x00000008,   // do not include any properties from the file's property handler (because the file's property handler will hit the disk)
-        OPENSLOWITEM = 0x00000010,   // include properties from a file's property handler, even if it means retrieving the file from offline storage.
-        DELAYCREATION = 0x00000020,   // delay the creation of the file's property handler until those properties are read, written, or enumerated
-        BESTEFFORT = 0x00000040,   // For readonly stores, succeed and return all available properties, even if one or more sources of properties fails. Not valid with GPS_READWRITE.
-        NO_OPLOCK = 0x00000080,   // some data sources protect the read property store with an oplock, this disables that
-        MASK_VALID = 0x000000FF,
+        Default = 0x00000000,
+        Handlerpropertiesonly = 0x00000001,   // only include properties directly from the file's property handler
+        Readwrite = 0x00000002,   // Writable stores will only include handler properties
+        Temporary = 0x00000004,   // A read/write store that only holds properties for the lifetime of the IShellItem object
+        Fastpropertiesonly = 0x00000008,   // do not include any properties from the file's property handler (because the file's property handler will hit the disk)
+        Openslowitem = 0x00000010,   // include properties from a file's property handler, even if it means retrieving the file from offline storage.
+        Delaycreation = 0x00000020,   // delay the creation of the file's property handler until those properties are read, written, or enumerated
+        Besteffort = 0x00000040,   // For readonly stores, succeed and return all available properties, even if one or more sources of properties fails. Not valid with GPS_READWRITE.
+        NoOplock = 0x00000080,   // some data sources protect the read property store with an oplock, this disables that
+        MaskValid = 0x000000FF,
     }
 
     /// <summary>
     /// KNOWNDESTCATEGORY.  KDC_*
     /// </summary>
-    internal enum KDC
+    internal enum Kdc
     {
-        FREQUENT = 1,
-        RECENT,
+        Frequent = 1,
+        Recent,
     }
 
     // IShellFolder::GetAttributesOf flags
     [Flags]
-    internal enum SFGAO : uint
+    internal enum Sfgao : uint
     {
         /// <summary>Objects can be copied</summary>
         /// <remarks>DROPEFFECT_COPY</remarks>
-        CANCOPY = 0x1,
+        Cancopy = 0x1,
         /// <summary>Objects can be moved</summary>
         /// <remarks>DROPEFFECT_MOVE</remarks>
-        CANMOVE = 0x2,
+        Canmove = 0x2,
         /// <summary>Objects can be linked</summary>
         /// <remarks>
         /// DROPEFFECT_LINK.
@@ -210,96 +210,96 @@ namespace ControlzEx.Standard
         /// should be added when the item in your folder is dragged to another
         /// folder.
         /// </remarks>
-        CANLINK = 0x4,
+        Canlink = 0x4,
         /// <summary>supports BindToObject(IID_IStorage)</summary>
-        STORAGE = 0x00000008,
+        Storage = 0x00000008,
         /// <summary>Objects can be renamed</summary>
-        CANRENAME = 0x00000010,
+        Canrename = 0x00000010,
         /// <summary>Objects can be deleted</summary>
-        CANDELETE = 0x00000020,
+        Candelete = 0x00000020,
         /// <summary>Objects have property sheets</summary>
-        HASPROPSHEET = 0x00000040,
+        Haspropsheet = 0x00000040,
 
         // unused = 0x00000080,
 
         /// <summary>Objects are drop target</summary>
-        DROPTARGET = 0x00000100,
-        CAPABILITYMASK = 0x00000177,
+        Droptarget = 0x00000100,
+        Capabilitymask = 0x00000177,
         // unused = 0x00000200,
         // unused = 0x00000400,
         // unused = 0x00000800,
         // unused = 0x00001000,
         /// <summary>Object is encrypted (use alt color)</summary>
-        ENCRYPTED = 0x00002000,
+        Encrypted = 0x00002000,
         /// <summary>'Slow' object</summary>
-        ISSLOW = 0x00004000,
+        Isslow = 0x00004000,
         /// <summary>Ghosted icon</summary>
-        GHOSTED = 0x00008000,
+        Ghosted = 0x00008000,
         /// <summary>Shortcut (link)</summary>
-        LINK = 0x00010000,
+        Link = 0x00010000,
         /// <summary>Shared</summary>
-        SHARE = 0x00020000,
+        Share = 0x00020000,
         /// <summary>Read-only</summary>
-        READONLY = 0x00040000,
+        Readonly = 0x00040000,
         /// <summary> Hidden object</summary>
-        HIDDEN = 0x00080000,
-        DISPLAYATTRMASK = 0x000FC000,
+        Hidden = 0x00080000,
+        Displayattrmask = 0x000FC000,
         /// <summary> May contain children with SFGAO_FILESYSTEM</summary>
-        FILESYSANCESTOR = 0x10000000,
+        Filesysancestor = 0x10000000,
         /// <summary>Support BindToObject(IID_IShellFolder)</summary>
-        FOLDER = 0x20000000,
+        Folder = 0x20000000,
         /// <summary>Is a win32 file system object (file/folder/root)</summary>
-        FILESYSTEM = 0x40000000,
+        Filesystem = 0x40000000,
         /// <summary>May contain children with SFGAO_FOLDER (may be slow)</summary>
-        HASSUBFOLDER = 0x80000000,
-        CONTENTSMASK = 0x80000000,
+        Hassubfolder = 0x80000000,
+        Contentsmask = 0x80000000,
         /// <summary>Invalidate cached information (may be slow)</summary>
-        VALIDATE = 0x01000000,
+        Validate = 0x01000000,
         /// <summary>Is this removeable media?</summary>
-        REMOVABLE = 0x02000000,
+        Removable = 0x02000000,
         /// <summary> Object is compressed (use alt color)</summary>
-        COMPRESSED = 0x04000000,
+        Compressed = 0x04000000,
         /// <summary>Supports IShellFolder, but only implements CreateViewObject() (non-folder view)</summary>
-        BROWSABLE = 0x08000000,
+        Browsable = 0x08000000,
         /// <summary>Is a non-enumerated object (should be hidden)</summary>
-        NONENUMERATED = 0x00100000,
+        Nonenumerated = 0x00100000,
         /// <summary>Should show bold in explorer tree</summary>
-        NEWCONTENT = 0x00200000,
+        Newcontent = 0x00200000,
         /// <summary>Obsolete</summary>
-        CANMONIKER = 0x00400000,
+        Canmoniker = 0x00400000,
         /// <summary>Obsolete</summary>
-        HASSTORAGE = 0x00400000,
+        Hasstorage = 0x00400000,
         /// <summary>Supports BindToObject(IID_IStream)</summary>
-        STREAM = 0x00400000,
+        Stream = 0x00400000,
         /// <summary>May contain children with SFGAO_STORAGE or SFGAO_STREAM</summary>
-        STORAGEANCESTOR = 0x00800000,
+        Storageancestor = 0x00800000,
         /// <summary>For determining storage capabilities, ie for open/save semantics</summary>
-        STORAGECAPMASK = 0x70C50008,
+        Storagecapmask = 0x70C50008,
         /// <summary>
         /// Attributes that are masked out for PKEY_SFGAOFlags because they are considered
         /// to cause slow calculations or lack context
         /// (SFGAO_VALIDATE | SFGAO_ISSLOW | SFGAO_HASSUBFOLDER and others)
         /// </summary>
-        PKEYSFGAOMASK = 0x81044000,
+        Pkeysfgaomask = 0x81044000,
     }
 
     /// <summary>
     /// IShellFolder::EnumObjects grfFlags bits.  Also called SHCONT
     /// </summary>
-    internal enum SHCONTF
+    internal enum Shcontf
     {
-        CHECKING_FOR_CHILDREN = 0x0010,   // hint that client is checking if (what) child items the folder contains - not all details (e.g. short file name) are needed
-        FOLDERS = 0x0020,   // only want folders enumerated (SFGAO_FOLDER)
-        NONFOLDERS = 0x0040,   // include non folders (items without SFGAO_FOLDER)
-        INCLUDEHIDDEN = 0x0080,   // show items normally hidden (items with SFGAO_HIDDEN)
-        INIT_ON_FIRST_NEXT = 0x0100,   // DEFUNCT - this is always assumed
-        NETPRINTERSRCH = 0x0200,   // hint that client is looking for printers
-        SHAREABLE = 0x0400,   // hint that client is looking sharable resources (local drives or hidden root shares)
-        STORAGE = 0x0800,   // include all items with accessible storage and their ancestors
-        NAVIGATION_ENUM = 0x1000,   // mark child folders to indicate that they should provide a "navigation" enumeration by default
-        FASTITEMS = 0x2000,   // hint that client is only interested in items that can be enumerated quickly
-        FLATLIST = 0x4000,   // enumerate items as flat list even if folder is stacked
-        ENABLE_ASYNC = 0x8000,   // inform enumerator that client is listening for change notifications so enumerator does not need to be complete, items can be reported via change notifications
+        CheckingForChildren = 0x0010,   // hint that client is checking if (what) child items the folder contains - not all details (e.g. short file name) are needed
+        Folders = 0x0020,   // only want folders enumerated (SFGAO_FOLDER)
+        Nonfolders = 0x0040,   // include non folders (items without SFGAO_FOLDER)
+        Includehidden = 0x0080,   // show items normally hidden (items with SFGAO_HIDDEN)
+        InitOnFirstNext = 0x0100,   // DEFUNCT - this is always assumed
+        Netprintersrch = 0x0200,   // hint that client is looking for printers
+        Shareable = 0x0400,   // hint that client is looking sharable resources (local drives or hidden root shares)
+        Storage = 0x0800,   // include all items with accessible storage and their ancestors
+        NavigationEnum = 0x1000,   // mark child folders to indicate that they should provide a "navigation" enumeration by default
+        Fastitems = 0x2000,   // hint that client is only interested in items that can be enumerated quickly
+        Flatlist = 0x4000,   // enumerate items as flat list even if folder is stacked
+        EnableAsync = 0x8000,   // inform enumerator that client is listening for change notifications so enumerator does not need to be complete, items can be reported via change notifications
     }
 
     /// <summary>
@@ -309,43 +309,43 @@ namespace ControlzEx.Standard
     /// For compatibility with SIGDN, these bits must all sit in the LOW word.
     /// </remarks>
     [Flags]
-    internal enum SHGDN
+    internal enum Shgdn
     {
-        SHGDN_NORMAL = 0x0000,  // default (display purpose)
-        SHGDN_INFOLDER = 0x0001,  // displayed under a folder (relative)
-        SHGDN_FOREDITING = 0x1000,  // for in-place editing
-        SHGDN_FORADDRESSBAR = 0x4000,  // UI friendly parsing name (remove ugly stuff)
-        SHGDN_FORPARSING = 0x8000,  // parsing name for ParseDisplayName()
+        ShgdnNormal = 0x0000,  // default (display purpose)
+        ShgdnInfolder = 0x0001,  // displayed under a folder (relative)
+        ShgdnForediting = 0x1000,  // for in-place editing
+        ShgdnForaddressbar = 0x4000,  // UI friendly parsing name (remove ugly stuff)
+        ShgdnForparsing = 0x8000,  // parsing name for ParseDisplayName()
     }
 
     /// <summary>
     /// SHELLITEMCOMPAREHINTF.  SICHINT_*.
     /// </summary>
-    internal enum SICHINT : uint
+    internal enum Sichint : uint
     {
         /// <summary>iOrder based on display in a folder view</summary>
-        DISPLAY = 0x00000000,
+        Display = 0x00000000,
         /// <summary>exact instance compare</summary>
-        ALLFIELDS = 0x80000000,
+        Allfields = 0x80000000,
         /// <summary>iOrder based on canonical name (better performance)</summary>
-        CANONICAL = 0x10000000,
-        TEST_FILESYSPATH_IF_NOT_EQUAL = 0x20000000,
+        Canonical = 0x10000000,
+        TestFilesyspathIfNotEqual = 0x20000000,
     };
 
     /// <summary>
     /// ShellItem enum.  SIGDN_*.
     /// </summary>
-    internal enum SIGDN : uint
+    internal enum Sigdn : uint
     {                                             // lower word (& with 0xFFFF)
-        NORMALDISPLAY = 0x00000000, // SHGDN_NORMAL
-        PARENTRELATIVEPARSING = 0x80018001, // SHGDN_INFOLDER | SHGDN_FORPARSING
-        DESKTOPABSOLUTEPARSING = 0x80028000, // SHGDN_FORPARSING
-        PARENTRELATIVEEDITING = 0x80031001, // SHGDN_INFOLDER | SHGDN_FOREDITING
-        DESKTOPABSOLUTEEDITING = 0x8004c000, // SHGDN_FORPARSING | SHGDN_FORADDRESSBAR
-        FILESYSPATH = 0x80058000, // SHGDN_FORPARSING
-        URL = 0x80068000, // SHGDN_FORPARSING
-        PARENTRELATIVEFORADDRESSBAR = 0x8007c001, // SHGDN_INFOLDER | SHGDN_FORPARSING | SHGDN_FORADDRESSBAR
-        PARENTRELATIVE = 0x80080001, // SHGDN_INFOLDER
+        Normaldisplay = 0x00000000, // SHGDN_NORMAL
+        Parentrelativeparsing = 0x80018001, // SHGDN_INFOLDER | SHGDN_FORPARSING
+        Desktopabsoluteparsing = 0x80028000, // SHGDN_FORPARSING
+        Parentrelativeediting = 0x80031001, // SHGDN_INFOLDER | SHGDN_FOREDITING
+        Desktopabsoluteediting = 0x8004c000, // SHGDN_FORPARSING | SHGDN_FORADDRESSBAR
+        Filesyspath = 0x80058000, // SHGDN_FORPARSING
+        Url = 0x80068000, // SHGDN_FORPARSING
+        Parentrelativeforaddressbar = 0x8007c001, // SHGDN_INFOLDER | SHGDN_FORPARSING | SHGDN_FORADDRESSBAR
+        Parentrelative = 0x80080001, // SHGDN_INFOLDER
     }
 
     /// <summary>
@@ -366,14 +366,14 @@ namespace ControlzEx.Standard
     /// There is no STR_ equivalent for GPS_TEMPORARY because temporary property stores
     /// are provided by IShellItem2 only -- not by the underlying IShellFolder.
     /// </remarks>
-    internal static class STR_GPS
+    internal static class StrGps
     {
-        public const string HANDLERPROPERTIESONLY = "GPS_HANDLERPROPERTIESONLY";
-        public const string FASTPROPERTIESONLY = "GPS_FASTPROPERTIESONLY";
-        public const string OPENSLOWITEM = "GPS_OPENSLOWITEM";
-        public const string DELAYCREATION = "GPS_DELAYCREATION";
-        public const string BESTEFFORT = "GPS_BESTEFFORT";
-        public const string NO_OPLOCK = "GPS_NO_OPLOCK";
+        public const string Handlerpropertiesonly = "GPS_HANDLERPROPERTIESONLY";
+        public const string Fastpropertiesonly = "GPS_FASTPROPERTIESONLY";
+        public const string Openslowitem = "GPS_OPENSLOWITEM";
+        public const string Delaycreation = "GPS_DELAYCREATION";
+        public const string Besteffort = "GPS_BESTEFFORT";
+        public const string NoOplock = "GPS_NO_OPLOCK";
     }
 
     #endregion
@@ -381,7 +381,7 @@ namespace ControlzEx.Standard
     #region Structs
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-    internal struct COMDLG_FILTERSPEC
+    internal struct ComdlgFilterspec
     {
         [MarshalAs(UnmanagedType.LPWStr)]
         public string pszName;
@@ -391,49 +391,42 @@ namespace ControlzEx.Standard
 
 
     [StructLayout(LayoutKind.Sequential, Pack = 8, CharSet = CharSet.Unicode)]
-    internal struct THUMBBUTTON
+    internal struct Thumbbutton
     {
         /// <summary>
         /// WPARAM value for a THUMBBUTTON being clicked.
         /// </summary>
-        public const int THBN_CLICKED = 0x1800;
+        public const int ThbnClicked = 0x1800;
 
-        public THB dwMask;
+        public Thb dwMask;
         public uint iId;
         public uint iBitmap;
         public IntPtr hIcon;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
         public string szTip;
-        public THBF dwFlags;
+        public Thbf dwFlags;
     }
 
 
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    internal struct PKEY
+    internal struct Pkey
     {
-        /// <summary>fmtid</summary>
-        private readonly Guid _fmtid;
-        /// <summary>pid</summary>
-        private readonly uint _pid;
-
-        public PKEY(Guid fmtid, uint pid)
+        public Pkey(Guid fmtid, uint pid)
         {
-            _fmtid = fmtid;
-            _pid = pid;
         }
 
         /// <summary>PKEY_Title</summary>
-        public static readonly PKEY Title = new PKEY(new Guid("F29F85E0-4FF9-1068-AB91-08002B27B3D9"), 2);
+        public static readonly Pkey Title = new Pkey(new Guid("F29F85E0-4FF9-1068-AB91-08002B27B3D9"), 2);
         /// <summary>PKEY_AppUserModel_ID</summary>
-        public static readonly PKEY AppUserModel_ID = new PKEY(new Guid("9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3"), 5);
+        public static readonly Pkey AppUserModel_ID = new Pkey(new Guid("9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3"), 5);
         /// <summary>PKEY_AppUserModel_IsDestListSeparator</summary>
-        public static readonly PKEY AppUserModel_IsDestListSeparator = new PKEY(new Guid("9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3"), 6);
+        public static readonly Pkey AppUserModel_IsDestListSeparator = new Pkey(new Guid("9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3"), 6);
         /// <summary>PKEY_AppUserModel_RelaunchCommand</summary>
-        public static readonly PKEY AppUserModel_RelaunchCommand = new PKEY(new Guid("9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3"), 2);
+        public static readonly Pkey AppUserModel_RelaunchCommand = new Pkey(new Guid("9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3"), 2);
         /// <summary>PKEY_AppUserModel_RelaunchDisplayNameResource</summary>
-        public static readonly PKEY AppUserModel_RelaunchDisplayNameResource = new PKEY(new Guid("9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3"), 4);
+        public static readonly Pkey AppUserModel_RelaunchDisplayNameResource = new Pkey(new Guid("9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3"), 4);
         /// <summary>PKEY_AppUserModel_RelaunchIconResource</summary>
-        public static readonly PKEY AppUserModel_RelaunchIconResource = new PKEY(new Guid("9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3"), 3);
+        public static readonly Pkey AppUserModel_RelaunchIconResource = new Pkey(new Guid("9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3"), 3);
     }
 
     #endregion
@@ -444,32 +437,32 @@ namespace ControlzEx.Standard
     [
         ComImport,
         InterfaceType(ComInterfaceType.InterfaceIsIUnknown),
-        Guid(IID.ApplicationAssociationRegistration),
+        Guid(Iid.ApplicationAssociationRegistration),
     ]
     internal interface IApplicationAssociationRegistration
     {
         [return: MarshalAs(UnmanagedType.LPWStr)]
         string QueryCurrentDefault(
             [MarshalAs(UnmanagedType.LPWStr)] string pszQuery,
-            AT atQueryType,
-            AL alQueryLevel);
+            At atQueryType,
+            Al alQueryLevel);
 
         [return: MarshalAs(UnmanagedType.Bool)]
         bool QueryAppIsDefault(
             [MarshalAs(UnmanagedType.LPWStr)] string pszQuery,
-            AT atQueryType,
-            AL alQueryLevel,
+            At atQueryType,
+            Al alQueryLevel,
             [MarshalAs(UnmanagedType.LPWStr)] string pszAppRegistryName);
 
         [return: MarshalAs(UnmanagedType.Bool)]
         bool QueryAppIsDefaultAll(
-            AL alQueryLevel,
+            Al alQueryLevel,
             [MarshalAs(UnmanagedType.LPWStr)] string pszAppRegistryName);
 
         void SetAppAsDefault(
             [MarshalAs(UnmanagedType.LPWStr)] string pszAppRegistryName,
             [MarshalAs(UnmanagedType.LPWStr)] string pszSet,
-            AT atSetType);
+            At atSetType);
 
         void SetAppAsDefaultAll([MarshalAs(UnmanagedType.LPWStr)] string pszAppRegistryName);
 
@@ -479,14 +472,14 @@ namespace ControlzEx.Standard
     [
         ComImport,
         InterfaceType(ComInterfaceType.InterfaceIsIUnknown),
-        Guid(IID.EnumIdList),
+        Guid(Iid.EnumIdList),
     ]
     internal interface IEnumIDList
     {
         [PreserveSig()]
-        HRESULT Next(uint celt, out IntPtr rgelt, out int pceltFetched);
+        Hresult Next(uint celt, out IntPtr rgelt, out int pceltFetched);
         [PreserveSig()]
-        HRESULT Skip(uint celt);
+        Hresult Skip(uint celt);
         void Reset();
         void Clone([Out, MarshalAs(UnmanagedType.Interface)] out IEnumIDList ppenum);
     }
@@ -494,7 +487,7 @@ namespace ControlzEx.Standard
     [
         ComImport,
         InterfaceType(ComInterfaceType.InterfaceIsIUnknown),
-        Guid(IID.EnumObjects),
+        Guid(Iid.EnumObjects),
     ]
     internal interface IEnumObjects
     {
@@ -521,7 +514,7 @@ namespace ControlzEx.Standard
     [
         ComImport,
         InterfaceType(ComInterfaceType.InterfaceIsIUnknown),
-        Guid(IID.ObjectArray),
+        Guid(Iid.ObjectArray),
     ]
     internal interface IObjectArray
     {
@@ -533,7 +526,7 @@ namespace ControlzEx.Standard
     [
         ComImport,
         InterfaceType(ComInterfaceType.InterfaceIsIUnknown),
-        Guid(IID.ObjectArray),
+        Guid(Iid.ObjectArray),
     ]
     interface IObjectCollection : IObjectArray
     {
@@ -552,21 +545,21 @@ namespace ControlzEx.Standard
     [
         ComImport,
         InterfaceType(ComInterfaceType.InterfaceIsIUnknown),
-        Guid(IID.PropertyStore)
+        Guid(Iid.PropertyStore)
     ]
     internal interface IPropertyStore
     {
         uint GetCount();
-        PKEY GetAt(uint iProp);
-        void GetValue([In] ref PKEY pkey, [In, Out] PROPVARIANT pv);
-        void SetValue([In] ref PKEY pkey, PROPVARIANT pv);
+        Pkey GetAt(uint iProp);
+        void GetValue([In] ref Pkey pkey, [In, Out] PROPVARIANT pv);
+        void SetValue([In] ref Pkey pkey, PROPVARIANT pv);
         void Commit();
     }
 
     [
         ComImport,
         InterfaceType(ComInterfaceType.InterfaceIsIUnknown),
-        Guid(IID.ShellFolder),
+        Guid(Iid.ShellFolder),
     ]
     internal interface IShellFolder
     {
@@ -580,7 +573,7 @@ namespace ControlzEx.Standard
 
         IEnumIDList EnumObjects(
             [In] IntPtr hwnd,
-            [In] SHCONTF grfFlags);
+            [In] Shcontf grfFlags);
 
         // returns an instance of a sub-folder which is specified by the IDList (pidl).
         // IShellFolder or derived interfaces
@@ -602,7 +595,7 @@ namespace ControlzEx.Standard
         // use the macro ResultFromShort() to extract the result comparison
         // it deals with the casting and type conversion issues for you
         [PreserveSig]
-        HRESULT CompareIDs([In] IntPtr lParam, [In] IntPtr pidl1, [In] IntPtr pidl2);
+        Hresult CompareIDs([In] IntPtr lParam, [In] IntPtr pidl1, [In] IntPtr pidl2);
 
         // creates a view object of the folder itself. The view
         // object is a difference instance from the shell folder object.
@@ -624,7 +617,7 @@ namespace ControlzEx.Standard
         void GetAttributesOf(
             [In] uint cidl,
             [In] IntPtr apidl,
-            [In, Out] ref SFGAO rgfInOut);
+            [In, Out] ref Sfgao rgfInOut);
 
         // creates a UI object to be used for specified objects.
         // The shell explorer passes either IID_IDataObject (for transfer operation)
@@ -645,7 +638,7 @@ namespace ControlzEx.Standard
         // task allocator, or fills in a buffer.
         // use the helper APIS StrRetToStr() or StrRetToBuf() to deal with the different
         // forms of the STRRET structure
-        void GetDisplayNameOf([In] IntPtr pidl, [In] SHGDN uFlags, [Out] out IntPtr pName);
+        void GetDisplayNameOf([In] IntPtr pidl, [In] Shgdn uFlags, [Out] out IntPtr pName);
 
         // sets the display name of the specified object.
         // If it changes the ID as well, it returns the new ID which is
@@ -653,7 +646,7 @@ namespace ControlzEx.Standard
         void SetNameOf([In] IntPtr hwnd,
             [In] IntPtr pidl,
             [In, MarshalAs(UnmanagedType.LPWStr)] string pszName,
-            [In] SHGDN uFlags,
+            [In] Shgdn uFlags,
             [Out] out IntPtr ppidlOut);
     }
 
@@ -663,7 +656,7 @@ namespace ControlzEx.Standard
     [
         ComImport,
         InterfaceType(ComInterfaceType.InterfaceIsIUnknown),
-        Guid(IID.ShellItem),
+        Guid(Iid.ShellItem),
     ]
     internal interface IShellItem
     {
@@ -673,17 +666,17 @@ namespace ControlzEx.Standard
         IShellItem GetParent();
 
         [return: MarshalAs(UnmanagedType.LPWStr)]
-        string GetDisplayName(SIGDN sigdnName);
+        string GetDisplayName(Sigdn sigdnName);
 
-        SFGAO GetAttributes(SFGAO sfgaoMask);
+        Sfgao GetAttributes(Sfgao sfgaoMask);
 
-        int Compare(IShellItem psi, SICHINT hint);
+        int Compare(IShellItem psi, Sichint hint);
     }
 
     [
         ComImport,
         InterfaceType(ComInterfaceType.InterfaceIsIUnknown),
-        Guid(IID.ShellItemArray),
+        Guid(Iid.ShellItemArray),
     ]
     internal interface IShellItemArray
     {
@@ -694,9 +687,9 @@ namespace ControlzEx.Standard
         object GetPropertyStore(int flags, [In] ref Guid riid);
 
         [return: MarshalAs(UnmanagedType.Interface)]
-        object GetPropertyDescriptionList([In] ref PKEY keyType, [In] ref Guid riid);
+        object GetPropertyDescriptionList([In] ref Pkey keyType, [In] ref Guid riid);
 
-        uint GetAttributes(SIATTRIBFLAGS dwAttribFlags, uint sfgaoMask);
+        uint GetAttributes(Siattribflags dwAttribFlags, uint sfgaoMask);
 
         uint GetCount();
 
@@ -712,7 +705,7 @@ namespace ControlzEx.Standard
     [
         ComImport,
         InterfaceType(ComInterfaceType.InterfaceIsIUnknown),
-        Guid(IID.ShellItem2),
+        Guid(Iid.ShellItem2),
     ]
     interface IShellItem2 : IShellItem
     {
@@ -721,19 +714,19 @@ namespace ControlzEx.Standard
         new object BindToHandler([In] IBindCtx pbc, [In] ref Guid bhid, [In] ref Guid riid);
         new IShellItem GetParent();
         [return: MarshalAs(UnmanagedType.LPWStr)]
-        new string GetDisplayName(SIGDN sigdnName);
-        new SFGAO GetAttributes(SFGAO sfgaoMask);
-        new int Compare(IShellItem psi, SICHINT hint);
+        new string GetDisplayName(Sigdn sigdnName);
+        new Sfgao GetAttributes(Sfgao sfgaoMask);
+        new int Compare(IShellItem psi, Sichint hint);
         #endregion
 
         [return: MarshalAs(UnmanagedType.Interface)]
         object GetPropertyStore(
-            GPS flags,
+            Gps flags,
             [In] ref Guid riid);
 
         [return: MarshalAs(UnmanagedType.Interface)]
         object GetPropertyStoreWithCreateObject(
-            GPS flags,
+            Gps flags,
             [MarshalAs(UnmanagedType.IUnknown)] object punkCreateObject,   // factory for low-rights creation of type ICreateObject
             [In] ref Guid riid);
 
@@ -741,7 +734,7 @@ namespace ControlzEx.Standard
         object GetPropertyStoreForKeys(
             IntPtr rgKeys,
             uint cKeys,
-            GPS flags,
+            Gps flags,
             [In] ref Guid riid);
 
         [return: MarshalAs(UnmanagedType.Interface)]
@@ -771,11 +764,11 @@ namespace ControlzEx.Standard
         void GetBool(IntPtr key);
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [
         ComImport,
         InterfaceTypeAttribute(ComInterfaceType.InterfaceIsIUnknown),
-        Guid(IID.ShellLink),
+        Guid(Iid.ShellLink),
     ]
     public interface IShellLinkW
     {
@@ -802,7 +795,7 @@ namespace ControlzEx.Standard
     [
         ComImport,
         InterfaceType(ComInterfaceType.InterfaceIsIUnknown),
-        Guid(IID.TaskbarList),
+        Guid(Iid.TaskbarList),
     ]
     internal interface ITaskbarList
     {
@@ -839,7 +832,7 @@ namespace ControlzEx.Standard
     [
         ComImport,
         InterfaceType(ComInterfaceType.InterfaceIsIUnknown),
-        Guid(IID.TaskbarList2),
+        Guid(Iid.TaskbarList2),
     ]
     internal interface ITaskbarList2 : ITaskbarList
     {
@@ -870,14 +863,14 @@ namespace ControlzEx.Standard
     [
         ComImport,
         InterfaceType(ComInterfaceType.InterfaceIsIUnknown),
-        Guid(IID.ApplicationDestinations)
+        Guid(Iid.ApplicationDestinations)
     ]
     internal interface IApplicationDestinations
     {
         // Set the App User Model ID for the application removing destinations from its list.  If an AppID is not provided 
         // via this method, the system will use a heuristically determined ID.  This method must be called before
         // RemoveDestination or RemoveAllDestinations.
-        void SetAppID([In, MarshalAs(UnmanagedType.LPWStr)] string pszAppID);
+        void SetAppID([In, MarshalAs(UnmanagedType.LPWStr)] string pszAppId);
 
         // Remove an IShellItem or an IShellLink from the automatic destination list
         void RemoveDestination([MarshalAs(UnmanagedType.IUnknown)] object punk);
@@ -892,7 +885,7 @@ namespace ControlzEx.Standard
     [
         ComImport,
         InterfaceType(ComInterfaceType.InterfaceIsIUnknown),
-        Guid(IID.ApplicationDocumentLists)
+        Guid(Iid.ApplicationDocumentLists)
     ]
     internal interface IApplicationDocumentLists
     {
@@ -900,8 +893,8 @@ namespace ControlzEx.Standard
         /// Set the App User Model ID for the application retrieving this list.  If an AppID is not provided via this method,
         /// the system will use a heuristically determined ID.  This method must be called before GetList. 
         /// </summary>
-        /// <param name="pszAppID">App Id.</param>
-        void SetAppID([MarshalAs(UnmanagedType.LPWStr)] string pszAppID);
+        /// <param name="pszAppId">App Id.</param>
+        void SetAppID([MarshalAs(UnmanagedType.LPWStr)] string pszAppId);
 
         /// <summary>
         /// Retrieve an IEnumObjects or IObjectArray for IShellItems and/or IShellLinks. 
@@ -909,18 +902,18 @@ namespace ControlzEx.Standard
         /// </summary>
         /// <returns></returns>
         [return: MarshalAs(UnmanagedType.IUnknown)]
-        object GetList([In] APPDOCLISTTYPE listtype, [In] uint cItemsDesired, [In] ref Guid riid);
+        object GetList([In] Appdoclisttype listtype, [In] uint cItemsDesired, [In] ref Guid riid);
     }
 
     // Custom Destination List
     [
         ComImport,
         InterfaceType(ComInterfaceType.InterfaceIsIUnknown),
-        Guid(IID.CustomDestinationList)
+        Guid(Iid.CustomDestinationList)
     ]
     internal interface ICustomDestinationList
     {
-        void SetAppID([In, MarshalAs(UnmanagedType.LPWStr)] string pszAppID);
+        void SetAppID([In, MarshalAs(UnmanagedType.LPWStr)] string pszAppId);
 
         // Retrieve IObjectArray of IShellItems or IShellLinks that represent removed destinations
         [return: MarshalAs(UnmanagedType.Interface)]
@@ -929,16 +922,16 @@ namespace ControlzEx.Standard
         // PreserveSig because this will return custom errors when attempting to add unregistered ShellItems.
         // Can't readily detect that case without just trying to append it.
         [PreserveSig]
-        HRESULT AppendCategory([MarshalAs(UnmanagedType.LPWStr)] string pszCategory, IObjectArray poa);
-        void AppendKnownCategory(KDC category);
+        Hresult AppendCategory([MarshalAs(UnmanagedType.LPWStr)] string pszCategory, IObjectArray poa);
+        void AppendKnownCategory(Kdc category);
         [PreserveSig]
-        HRESULT AddUserTasks(IObjectArray poa);
+        Hresult AddUserTasks(IObjectArray poa);
         void CommitList();
 
         // Retrieve IObjectCollection of IShellItems
         [return: MarshalAs(UnmanagedType.Interface)]
         object GetRemovedDestinations([In] ref Guid riid);
-        void DeleteList([MarshalAs(UnmanagedType.LPWStr)] string pszAppID);
+        void DeleteList([MarshalAs(UnmanagedType.LPWStr)] string pszAppId);
         void AbortList();
     }
 
@@ -948,11 +941,11 @@ namespace ControlzEx.Standard
     [
         ComImport,
         InterfaceType(ComInterfaceType.InterfaceIsIUnknown),
-        Guid(IID.ObjectWithAppUserModelId)
+        Guid(Iid.ObjectWithAppUserModelId)
     ]
     internal interface IObjectWithAppUserModelId
     {
-        void SetAppID([MarshalAs(UnmanagedType.LPWStr)] string pszAppID);
+        void SetAppID([MarshalAs(UnmanagedType.LPWStr)] string pszAppId);
         [return: MarshalAs(UnmanagedType.LPWStr)]
         string GetAppID();
     };
@@ -963,11 +956,11 @@ namespace ControlzEx.Standard
     [
         ComImport,
         InterfaceType(ComInterfaceType.InterfaceIsIUnknown),
-        Guid(IID.ObjectWithProgId)
+        Guid(Iid.ObjectWithProgId)
     ]
     internal interface IObjectWithProgId
     {
-        void SetProgID([MarshalAs(UnmanagedType.LPWStr)] string pszProgID);
+        void SetProgID([MarshalAs(UnmanagedType.LPWStr)] string pszProgId);
         [return: MarshalAs(UnmanagedType.LPWStr)]
         string GetProgID();
     };
@@ -975,7 +968,7 @@ namespace ControlzEx.Standard
     [
         ComImport,
         InterfaceType(ComInterfaceType.InterfaceIsIUnknown),
-        Guid(IID.TaskbarList3),
+        Guid(Iid.TaskbarList3),
     ]
     internal interface ITaskbarList3 : ITaskbarList2
     {
@@ -994,47 +987,47 @@ namespace ControlzEx.Standard
         #endregion
 
         [PreserveSig]
-        HRESULT SetProgressValue(IntPtr hwnd, ulong ullCompleted, ulong ullTotal);
+        Hresult SetProgressValue(IntPtr hwnd, ulong ullCompleted, ulong ullTotal);
 
         [PreserveSig]
-        HRESULT SetProgressState(IntPtr hwnd, TBPF tbpFlags);
+        Hresult SetProgressState(IntPtr hwnd, Tbpf tbpFlags);
 
         [PreserveSig]
-        HRESULT RegisterTab(IntPtr hwndTab, IntPtr hwndMDI);
+        Hresult RegisterTab(IntPtr hwndTab, IntPtr hwndMdi);
 
         [PreserveSig]
-        HRESULT UnregisterTab(IntPtr hwndTab);
+        Hresult UnregisterTab(IntPtr hwndTab);
 
         [PreserveSig]
-        HRESULT SetTabOrder(IntPtr hwndTab, IntPtr hwndInsertBefore);
+        Hresult SetTabOrder(IntPtr hwndTab, IntPtr hwndInsertBefore);
 
         [PreserveSig]
-        HRESULT SetTabActive(IntPtr hwndTab, IntPtr hwndMDI, uint dwReserved);
+        Hresult SetTabActive(IntPtr hwndTab, IntPtr hwndMdi, uint dwReserved);
 
         [PreserveSig]
-        HRESULT ThumbBarAddButtons(IntPtr hwnd, uint cButtons, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)] THUMBBUTTON[] pButtons);
+        Hresult ThumbBarAddButtons(IntPtr hwnd, uint cButtons, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)] Thumbbutton[] pButtons);
 
         [PreserveSig]
-        HRESULT ThumbBarUpdateButtons(IntPtr hwnd, uint cButtons, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)] THUMBBUTTON[] pButtons);
+        Hresult ThumbBarUpdateButtons(IntPtr hwnd, uint cButtons, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)] Thumbbutton[] pButtons);
 
         [PreserveSig]
-        HRESULT ThumbBarSetImageList(IntPtr hwnd, [MarshalAs(UnmanagedType.IUnknown)] object himl);
+        Hresult ThumbBarSetImageList(IntPtr hwnd, [MarshalAs(UnmanagedType.IUnknown)] object himl);
 
         [PreserveSig]
-        HRESULT SetOverlayIcon(IntPtr hwnd, IntPtr hIcon, [MarshalAs(UnmanagedType.LPWStr)] string pszDescription);
+        Hresult SetOverlayIcon(IntPtr hwnd, IntPtr hIcon, [MarshalAs(UnmanagedType.LPWStr)] string pszDescription);
 
         [PreserveSig]
-        HRESULT SetThumbnailTooltip(IntPtr hwnd, [MarshalAs(UnmanagedType.LPWStr)] string pszTip);
+        Hresult SetThumbnailTooltip(IntPtr hwnd, [MarshalAs(UnmanagedType.LPWStr)] string pszTip);
 
         // Using RefRECT to making passing NULL possible.  Removes clipping from the HWND.
         [PreserveSig]
-        HRESULT SetThumbnailClip(IntPtr hwnd, RefRECT prcClip);
+        Hresult SetThumbnailClip(IntPtr hwnd, RefRECT prcClip);
     }
 
     [
         ComImport,
         InterfaceType(ComInterfaceType.InterfaceIsIUnknown),
-        Guid(IID.TaskbarList3),
+        Guid(Iid.TaskbarList3),
     ]
     internal interface ITaskbarList4 : ITaskbarList3
     {
@@ -1054,78 +1047,78 @@ namespace ControlzEx.Standard
 
         #endregion
 
-        [PreserveSig] new  HRESULT SetProgressValue(IntPtr hwnd, ulong ullCompleted, ulong ullTotal);
-        [PreserveSig] new HRESULT SetProgressState(IntPtr hwnd, TBPF tbpFlags);
-        [PreserveSig] new HRESULT RegisterTab(IntPtr hwndTab, IntPtr hwndMDI);
-        [PreserveSig] new HRESULT UnregisterTab(IntPtr hwndTab);
-        [PreserveSig] new HRESULT SetTabOrder(IntPtr hwndTab, IntPtr hwndInsertBefore);
-        [PreserveSig] new HRESULT SetTabActive(IntPtr hwndTab, IntPtr hwndMDI, uint dwReserved);
-        [PreserveSig] new HRESULT ThumbBarAddButtons(IntPtr hwnd, uint cButtons, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)] THUMBBUTTON[] pButtons);
-        [PreserveSig] new HRESULT ThumbBarUpdateButtons(IntPtr hwnd, uint cButtons, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)] THUMBBUTTON[] pButtons);
-        [PreserveSig] new HRESULT ThumbBarSetImageList(IntPtr hwnd, [MarshalAs(UnmanagedType.IUnknown)] object himl);
-        [PreserveSig] new HRESULT SetOverlayIcon(IntPtr hwnd, IntPtr hIcon, [MarshalAs(UnmanagedType.LPWStr)] string pszDescription);
-        [PreserveSig] new HRESULT SetThumbnailTooltip(IntPtr hwnd, [MarshalAs(UnmanagedType.LPWStr)] string pszTip);
+        [PreserveSig] new  Hresult SetProgressValue(IntPtr hwnd, ulong ullCompleted, ulong ullTotal);
+        [PreserveSig] new Hresult SetProgressState(IntPtr hwnd, Tbpf tbpFlags);
+        [PreserveSig] new Hresult RegisterTab(IntPtr hwndTab, IntPtr hwndMdi);
+        [PreserveSig] new Hresult UnregisterTab(IntPtr hwndTab);
+        [PreserveSig] new Hresult SetTabOrder(IntPtr hwndTab, IntPtr hwndInsertBefore);
+        [PreserveSig] new Hresult SetTabActive(IntPtr hwndTab, IntPtr hwndMdi, uint dwReserved);
+        [PreserveSig] new Hresult ThumbBarAddButtons(IntPtr hwnd, uint cButtons, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)] Thumbbutton[] pButtons);
+        [PreserveSig] new Hresult ThumbBarUpdateButtons(IntPtr hwnd, uint cButtons, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)] Thumbbutton[] pButtons);
+        [PreserveSig] new Hresult ThumbBarSetImageList(IntPtr hwnd, [MarshalAs(UnmanagedType.IUnknown)] object himl);
+        [PreserveSig] new Hresult SetOverlayIcon(IntPtr hwnd, IntPtr hIcon, [MarshalAs(UnmanagedType.LPWStr)] string pszDescription);
+        [PreserveSig] new Hresult SetThumbnailTooltip(IntPtr hwnd, [MarshalAs(UnmanagedType.LPWStr)] string pszTip);
         // Using RefRECT to making passing NULL possible.  Removes clipping from the HWND.
-        [PreserveSig] new HRESULT SetThumbnailClip(IntPtr hwnd, RefRECT prcClip);
+        [PreserveSig] new Hresult SetThumbnailClip(IntPtr hwnd, RefRECT prcClip);
 
         #endregion
 
-        void SetTabProperties(IntPtr hwndTab, STPF stpFlags);
+        void SetTabProperties(IntPtr hwndTab, Stpf stpFlags);
     }
 
     [
     ComImport,
     InterfaceType(ComInterfaceType.InterfaceIsIUnknown),
-    Guid(IID.FileDialogEvents),
+    Guid(Iid.FileDialogEvents),
 ]
     internal interface IFileDialogEvents
     {
         [PreserveSig]
-        HRESULT OnFileOk(IFileDialog pfd);
+        Hresult OnFileOk(IFileDialog pfd);
 
         [PreserveSig]
-        HRESULT OnFolderChanging(IFileDialog pfd, IShellItem psiFolder);
+        Hresult OnFolderChanging(IFileDialog pfd, IShellItem psiFolder);
 
         [PreserveSig]
-        HRESULT OnFolderChange(IFileDialog pfd);
+        Hresult OnFolderChange(IFileDialog pfd);
 
         [PreserveSig]
-        HRESULT OnSelectionChange(IFileDialog pfd);
+        Hresult OnSelectionChange(IFileDialog pfd);
 
         [PreserveSig]
-        HRESULT OnShareViolation(IFileDialog pfd, IShellItem psi, out FDESVR pResponse);
+        Hresult OnShareViolation(IFileDialog pfd, IShellItem psi, out Fdesvr pResponse);
 
         [PreserveSig]
-        HRESULT OnTypeChange(IFileDialog pfd);
+        Hresult OnTypeChange(IFileDialog pfd);
 
         [PreserveSig]
-        HRESULT OnOverwrite(IFileDialog pfd, IShellItem psi, out FDEOR pResponse);
+        Hresult OnOverwrite(IFileDialog pfd, IShellItem psi, out Fdeor pResponse);
     }
 
     [
         ComImport,
         InterfaceType(ComInterfaceType.InterfaceIsIUnknown),
-        Guid(IID.ModalWindow),
+        Guid(Iid.ModalWindow),
     ]
     internal interface IModalWindow
     {
         [PreserveSig]
-        HRESULT Show(IntPtr parent);
+        Hresult Show(IntPtr parent);
     }
 
     [
         ComImport,
         InterfaceType(ComInterfaceType.InterfaceIsIUnknown),
-        Guid(IID.FileDialog),
+        Guid(Iid.FileDialog),
     ]
     internal interface IFileDialog : IModalWindow
     {
         #region IModalWindow redeclarations
         [PreserveSig]
-        new HRESULT Show(IntPtr parent);
+        new Hresult Show(IntPtr parent);
         #endregion
 
-        void SetFileTypes(uint cFileTypes, [In] ref COMDLG_FILTERSPEC rgFilterSpec);
+        void SetFileTypes(uint cFileTypes, [In] ref ComdlgFilterspec rgFilterSpec);
 
         void SetFileTypeIndex(uint iFileType);
 
@@ -1135,9 +1128,9 @@ namespace ControlzEx.Standard
 
         void Unadvise(uint dwCookie);
 
-        void SetOptions(FOS fos);
+        void SetOptions(Fos fos);
 
-        FOS GetOptions();
+        Fos GetOptions();
 
         void SetDefaultFolder(IShellItem psi);
 
@@ -1160,7 +1153,7 @@ namespace ControlzEx.Standard
 
         IShellItem GetResult();
 
-        void AddPlace(IShellItem psi, FDAP alignment);
+        void AddPlace(IShellItem psi, Fdap alignment);
 
         void SetDefaultExtension([MarshalAs(UnmanagedType.LPWStr)] string pszDefaultExtension);
 
@@ -1176,7 +1169,7 @@ namespace ControlzEx.Standard
     [
         ComImport,
         InterfaceType(ComInterfaceType.InterfaceIsIUnknown),
-        Guid(IID.FileOpenDialog),
+        Guid(Iid.FileOpenDialog),
     ]
     internal interface IFileOpenDialog : IFileDialog
     {
@@ -1184,16 +1177,16 @@ namespace ControlzEx.Standard
 
         #region IModalDialog redeclarations
         [PreserveSig]
-        new HRESULT Show(IntPtr parent);
+        new Hresult Show(IntPtr parent);
         #endregion
 
-        new void SetFileTypes(uint cFileTypes, [In] ref COMDLG_FILTERSPEC rgFilterSpec);
+        new void SetFileTypes(uint cFileTypes, [In] ref ComdlgFilterspec rgFilterSpec);
         new void SetFileTypeIndex(uint iFileType);
         new uint GetFileTypeIndex();
         new uint Advise(IFileDialogEvents pfde);
         new void Unadvise(uint dwCookie);
-        new void SetOptions(FOS fos);
-        new FOS GetOptions();
+        new void SetOptions(Fos fos);
+        new Fos GetOptions();
         new void SetDefaultFolder(IShellItem psi);
         new void SetFolder(IShellItem psi);
         new IShellItem GetFolder();
@@ -1205,7 +1198,7 @@ namespace ControlzEx.Standard
         new void SetOkButtonLabel([MarshalAs(UnmanagedType.LPWStr)] string pszText);
         new void SetFileNameLabel([MarshalAs(UnmanagedType.LPWStr)] string pszLabel);
         new IShellItem GetResult();
-        new void AddPlace(IShellItem psi, FDAP fdcp);
+        new void AddPlace(IShellItem psi, Fdap fdcp);
         new void SetDefaultExtension([MarshalAs(UnmanagedType.LPWStr)] string pszDefaultExtension);
         new void Close([MarshalAs(UnmanagedType.Error)] int hr);
         new void SetClientGuid([In] ref Guid guid);
@@ -1222,7 +1215,7 @@ namespace ControlzEx.Standard
     [
         ComImport,
         InterfaceType(ComInterfaceType.InterfaceIsIUnknown),
-        Guid(IID.FileSaveDialog),
+        Guid(Iid.FileSaveDialog),
     ]
     internal interface IFileSaveDialog : IFileDialog
     {
@@ -1230,16 +1223,16 @@ namespace ControlzEx.Standard
 
         #region IModalDialog redeclarations
         [PreserveSig]
-        new HRESULT Show(IntPtr parent);
+        new Hresult Show(IntPtr parent);
         #endregion
 
-        new void SetFileTypes(uint cFileTypes, [In] ref COMDLG_FILTERSPEC rgFilterSpec);
+        new void SetFileTypes(uint cFileTypes, [In] ref ComdlgFilterspec rgFilterSpec);
         new void SetFileTypeIndex(uint iFileType);
         new uint GetFileTypeIndex();
         new uint Advise(IFileDialogEvents pfde);
         new void Unadvise(uint dwCookie);
-        new void SetOptions(FOS fos);
-        new FOS GetOptions();
+        new void SetOptions(Fos fos);
+        new Fos GetOptions();
         new void SetDefaultFolder(IShellItem psi);
         new void SetFolder(IShellItem psi);
         new IShellItem GetFolder();
@@ -1251,7 +1244,7 @@ namespace ControlzEx.Standard
         new void SetOkButtonLabel([MarshalAs(UnmanagedType.LPWStr)] string pszText);
         new void SetFileNameLabel([MarshalAs(UnmanagedType.LPWStr)] string pszLabel);
         new IShellItem GetResult();
-        new void AddPlace(IShellItem psi, FDAP fdcp);
+        new void AddPlace(IShellItem psi, Fdap fdcp);
         new void SetDefaultExtension([MarshalAs(UnmanagedType.LPWStr)] string pszDefaultExtension);
         new void Close([MarshalAs(UnmanagedType.Error)] int hr);
         new void SetClientGuid([In] ref Guid guid);
@@ -1277,7 +1270,7 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static string GetPathFromShellItem(IShellItem item)
         {
-            return item.GetDisplayName(SIGDN.DESKTOPABSOLUTEPARSING);
+            return item.GetDisplayName(Sigdn.Desktopabsoluteparsing);
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
@@ -1289,15 +1282,14 @@ namespace ControlzEx.Standard
                 return null;
             }
 
-            Guid iidShellItem2 = new Guid(IID.ShellItem2);
-            object unk;
-            HRESULT hr = NativeMethods.SHCreateItemFromParsingName(path, null, ref iidShellItem2, out unk);
+            Guid iidShellItem2 = new Guid(Iid.ShellItem2);
+            Hresult hr = NativeMethods.SHCreateItemFromParsingName(path, null, ref iidShellItem2, out object unk);
 
             // Silently absorb errors such as ERROR_FILE_NOT_FOUND, ERROR_PATH_NOT_FOUND.
             // Let others pass through
-            if (hr == (HRESULT)Win32Error.ERROR_FILE_NOT_FOUND || hr == (HRESULT)Win32Error.ERROR_PATH_NOT_FOUND)
+            if (hr == (Hresult)Win32Error.ERROR_FILE_NOT_FOUND || hr == (Hresult)Win32Error.ERROR_PATH_NOT_FOUND)
             {
-                hr = HRESULT.S_OK;
+                hr = Hresult.S_OK;
                 unk = null;
             }
 

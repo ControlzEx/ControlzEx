@@ -235,7 +235,7 @@ namespace ControlzEx.Standard
         [DebuggerStepThrough]
         public static void UriIsAbsolute(Uri uri, string parameterName)
         {
-            Verify.IsNotNull(uri, parameterName);
+            IsNotNull(uri, parameterName);
             if (!uri.IsAbsoluteUri)
             {
                 Assert.Fail();
@@ -277,8 +277,8 @@ namespace ControlzEx.Standard
         public static void TypeSupportsInterface(Type type, Type interfaceType, string parameterName)
         {
             Assert.IsNeitherNullNorEmpty(parameterName);
-            Verify.IsNotNull(type, "type");
-            Verify.IsNotNull(interfaceType, "interfaceType");
+            IsNotNull(type, "type");
+            IsNotNull(interfaceType, "interfaceType");
 
             if (type.GetInterface(interfaceType.Name) == null)
             {
@@ -291,7 +291,7 @@ namespace ControlzEx.Standard
         [DebuggerStepThrough]
         public static void FileExists(string filePath, string parameterName)
         {
-            Verify.IsNeitherNullNorEmpty(filePath, parameterName);
+            IsNeitherNullNorEmpty(filePath, parameterName);
             if (!File.Exists(filePath))
             {
                 Assert.Fail();

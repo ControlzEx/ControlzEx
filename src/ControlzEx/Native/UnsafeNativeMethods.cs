@@ -21,7 +21,7 @@ namespace ControlzEx.Native
         /// <devdoc>http://msdn.microsoft.com/en-us/library/dd144901%28v=VS.85%29.aspx</devdoc>
         [DllImport("user32", EntryPoint = "GetMonitorInfoW", ExactSpelling = true, CharSet = CharSet.Unicode)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool GetMonitorInfo([In] IntPtr hMonitor, [Out] MONITORINFO lpmi);
+        internal static extern bool GetMonitorInfo([In] IntPtr hMonitor, [Out] Monitorinfo lpmi);
 
         /// <devdoc>http://msdn.microsoft.com/en-us/library/dd145064%28v=VS.85%29.aspx</devdoc>
         [DllImport("user32")]
@@ -32,7 +32,7 @@ namespace ControlzEx.Native
 
         /// <devdoc>http://msdn.microsoft.com/en-us/library/windows/desktop/ms647486%28v=vs.85%29.aspx</devdoc>
         [DllImport("user32", CharSet = CharSet.Unicode, ExactSpelling = true, EntryPoint = "LoadStringW", SetLastError = true, CallingConvention = CallingConvention.Winapi)]
-        public static extern int LoadString([In] [Optional] SafeLibraryHandle hInstance, [In] uint uID, [Out] StringBuilder lpBuffer, [In] int nBufferMax);
+        public static extern int LoadString([In] [Optional] SafeLibraryHandle hInstance, [In] uint uId, [Out] StringBuilder lpBuffer, [In] int nBufferMax);
 
         /// <devdoc>http://msdn.microsoft.com/en-us/library/windows/desktop/ms633528(v=vs.85).aspx</devdoc>
         [DllImport("user32", CharSet = CharSet.Auto, ExactSpelling = true)]
@@ -48,7 +48,7 @@ namespace ControlzEx.Native
 
         /// <devdoc>http://msdn.microsoft.com/en-us/library/windows/desktop/ms644944(v=vs.85).aspx</devdoc>
         [DllImport("user32", EntryPoint = "PostMessage", SetLastError = true)]
-        private static extern bool _PostMessage([In] [Optional] IntPtr hWnd, [In] uint Msg, [In] IntPtr wParam, [In] IntPtr lParam);
+        private static extern bool _PostMessage([In] [Optional] IntPtr hWnd, [In] uint msg, [In] IntPtr wParam, [In] IntPtr lParam);
 
         /// <devdoc>http://msdn.microsoft.com/en-us/library/windows/desktop/ms684175%28v=vs.85%29.aspx</devdoc>
         [DllImport("kernel32", CharSet = CharSet.Unicode, ExactSpelling = true, EntryPoint = "LoadLibraryW", SetLastError = true, CallingConvention = CallingConvention.Winapi)]
@@ -62,9 +62,9 @@ namespace ControlzEx.Native
         [DllImportAttribute("user32.dll")]
         public static extern bool ReleaseCapture();
 
-        internal static void PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam)
+        internal static void PostMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam)
         {
-            if (!_PostMessage(hWnd, Msg, wParam, lParam))
+            if (!_PostMessage(hWnd, msg, wParam, lParam))
             {
                 throw new Win32Exception();
             }

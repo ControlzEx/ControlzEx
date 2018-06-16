@@ -55,37 +55,37 @@ namespace ControlzEx.Native
             NoFrame = 0x800
         }
 
-        public const int GCLP_HBRBACKGROUND = -0x0A;
+        public const int GclpHbrbackground = -0x0A;
 
-        public const uint TPM_RETURNCMD = 0x0100;        
-        public const uint TPM_LEFTBUTTON = 0x0;
+        public const uint TpmReturncmd = 0x0100;        
+        public const uint TpmLeftbutton = 0x0;
 
-        public const uint SYSCOMMAND = 0x0112;
+        public const uint Syscommand = 0x0112;
 
-        public const int MF_GRAYED = 0x00000001;
-        public const int MF_BYCOMMAND = 0x00000000;
-        public const int MF_ENABLED = 0x00000000;
+        public const int MfGrayed = 0x00000001;
+        public const int MfBycommand = 0x00000000;
+        public const int MfEnabled = 0x00000000;
 
-        public const int VK_SHIFT = 0x10;
-        public const int VK_CONTROL = 0x11;
-        public const int VK_MENU = 0x12;
+        public const int VkShift = 0x10;
+        public const int VkControl = 0x11;
+        public const int VkMenu = 0x12;
 
         /* used by UnsafeNativeMethods.MapVirtualKey */
-        public const uint MAPVK_VK_TO_VSC = 0x00;
-        public const uint MAPVK_VSC_TO_VK = 0x01;
-        public const uint MAPVK_VK_TO_CHAR = 0x02;
-        public const uint MAPVK_VSC_TO_VK_EX = 0x03;
-        public const uint MAPVK_VK_TO_VSC_EX = 0x04;
+        public const uint MapvkVkToVsc = 0x00;
+        public const uint MapvkVscToVk = 0x01;
+        public const uint MapvkVkToChar = 0x02;
+        public const uint MapvkVscToVkEx = 0x03;
+        public const uint MapvkVkToVscEx = 0x04;
         /* used by UnsafeNativeMethods.MapVirtualKey (end) */
 
-        public static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
-        public static readonly IntPtr HWND_NOTOPMOST = new IntPtr(-2);
-        public static readonly IntPtr HWND_TOP = new IntPtr(0);
-        public static readonly IntPtr HWND_BOTTOM = new IntPtr(1);
+        public static readonly IntPtr HwndTopmost = new IntPtr(-1);
+        public static readonly IntPtr HwndNotopmost = new IntPtr(-2);
+        public static readonly IntPtr HwndTop = new IntPtr(0);
+        public static readonly IntPtr HwndBottom = new IntPtr(1);
 
         /// <summary>
         /// Causes the dialog box to display all available colors in the set of basic colors. 
         /// </summary>
-        public const int CC_ANYCOLOR = 0x00000100;
+        public const int CcAnycolor = 0x00000100;
     }
 }

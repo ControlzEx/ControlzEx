@@ -50,8 +50,8 @@ namespace ControlzEx
         /// </summary>
         public TKind Kind
         {
-            get { return (TKind)GetValue(KindProperty); }
-            set { SetValue(KindProperty, value); }
+            get => (TKind) this.GetValue(KindProperty);
+            set => this.SetValue(KindProperty, value);
         }
 
 #if NETFX_CORE
@@ -79,8 +79,8 @@ namespace ControlzEx
         [TypeConverter(typeof(GeometryConverter))]
         public string Data
         {
-            get { return (string)GetValue(DataProperty); }
-            private set { SetValue(DataPropertyKey, value); }
+            get => (string) this.GetValue(DataProperty);
+            private set => this.SetValue(DataPropertyKey, value);
         }
 #endif
 
@@ -92,15 +92,14 @@ namespace ControlzEx
         {
             base.OnApplyTemplate();
 
-            UpdateData();
+            this.UpdateData();
         }
 
         internal override void UpdateData()
         {
             string data = null;
-            if (_dataIndex.Value != null)
-                _dataIndex.Value.TryGetValue(Kind, out data);
-            Data = data;
+            _dataIndex.Value?.TryGetValue(this.Kind, out data);
+            this.Data = data;
         }
     }
 }

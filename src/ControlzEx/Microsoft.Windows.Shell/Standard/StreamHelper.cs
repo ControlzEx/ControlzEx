@@ -27,13 +27,13 @@ namespace ControlzEx.Standard
     [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses")]
     internal sealed class ComStream : Stream
     {
-        private const int STATFLAG_NONAME = 1;
+        private const int StatflagNoname = 1;
 
         private IStream _source;
 
         private void _Validate()
         {
-            if (null == _source)
+            if (null == this._source)
             {
                 throw new ObjectDisposedException("this");
             }
@@ -53,7 +53,7 @@ namespace ControlzEx.Standard
         public ComStream(ref IStream stream)
         {
             Verify.IsNotNull(stream, "stream");
-            _source = stream;
+            this._source = stream;
             // Zero out caller's reference to this.  The object now owns the memory.
             stream = null;
         }
@@ -64,32 +64,18 @@ namespace ControlzEx.Standard
         // Overridden implementations aren't called, but Close is as part of the Dispose call.
         public override void Close()
         {
-            if (null != _source)
+            if (null != this._source)
             {
 #if FEATURE_MUTABLE_COM_STREAMS
                 Flush();
 #endif
-                Utility.SafeRelease(ref _source);
+                Utility.SafeRelease(ref this._source);
             }
         }
 
-        public override bool CanRead
-        {
-            get
-            {
-                // For the context of this class, this should be true...
-                return true;
-            }
-        }
+        public override bool CanRead => true;
 
-        public override bool CanSeek
-        {
-            get
-            {
-                // This should be true...
-                return true;
-            }
-        }
+        public override bool CanSeek => true;
 
         public override bool CanWrite
         {
@@ -120,23 +106,22 @@ namespace ControlzEx.Standard
         {
             get
             {
-                _Validate();
+                this._Validate();
 
-                STATSTG statstg;
-                _source.Stat(out statstg, STATFLAG_NONAME);
+                this._source.Stat(out STATSTG statstg, StatflagNoname);
                 return statstg.cbSize;
             }
         }
 
         public override long Position
         {
-            get { return Seek(0, SeekOrigin.Current); }
-            set { Seek(value, SeekOrigin.Begin); }
+            get => this.Seek(0, SeekOrigin.Current);
+            set => this.Seek(value, SeekOrigin.Begin);
         }
 
         public override int Read(byte[] buffer, int offset, int count)
         {
-            _Validate();
+            this._Validate();
 
             IntPtr pcbRead = IntPtr.Zero;
 
@@ -146,7 +131,7 @@ namespace ControlzEx.Standard
 
                 // PERFORMANCE NOTE: This buffer doesn't need to be allocated if offset == 0
                 var tempBuffer = new byte[count];
-                _source.Read(tempBuffer, count, pcbRead);
+                this._source.Read(tempBuffer, count, pcbRead);
                 Array.Copy(tempBuffer, 0, buffer, offset, Marshal.ReadInt32(pcbRead));
 
                 return Marshal.ReadInt32(pcbRead);
@@ -159,14 +144,14 @@ namespace ControlzEx.Standard
 
         public override long Seek(long offset, SeekOrigin origin)
         {
-            _Validate();
+            this._Validate();
 
             IntPtr plibNewPosition = IntPtr.Zero;
 
             try
             {
                 plibNewPosition = Marshal.AllocHGlobal(sizeof(Int64));
-                _source.Seek(offset, (int)origin, plibNewPosition);
+                this._source.Seek(offset, (int)origin, plibNewPosition);
 
                 return Marshal.ReadInt64(plibNewPosition);
             }
@@ -208,9 +193,9 @@ namespace ControlzEx.Standard
     [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses")]
     internal sealed class ManagedIStream : IStream, IDisposable
     {
-        private const int STGTY_STREAM = 2;
-        private const int STGM_READWRITE = 2;
-        private const int LOCK_EXCLUSIVE = 2;
+        private const int StgtyStream = 2;
+        private const int StgmReadwrite = 2;
+        private const int LockExclusive = 2;
 
         private Stream _source;
 
@@ -224,12 +209,12 @@ namespace ControlzEx.Standard
         public ManagedIStream(Stream source)
         {
             Verify.IsNotNull(source, "source");
-            _source = source;
+            this._source = source;
         }
 
         private void _Validate()
         {
-            if (null == _source)
+            if (null == this._source)
             {
                 throw new ObjectDisposedException("this");
             }
@@ -254,7 +239,7 @@ namespace ControlzEx.Standard
         public void Clone(out IStream ppstm)
         {
             ppstm = null;
-            HRESULT.STG_E_INVALIDFUNCTION.ThrowIfFailed("The method is not implemented.");
+            Hresult.STG_E_INVALIDFUNCTION.ThrowIfFailed("The method is not implemented.");
         }
 
         /// <summary>
@@ -269,8 +254,8 @@ namespace ControlzEx.Standard
         /// </remarks>
         public void Commit(int grfCommitFlags)
         {
-            _Validate();
-            _source.Flush();
+            this._Validate();
+            this._source.Flush();
         }
 
         /// <summary>
@@ -299,7 +284,7 @@ namespace ControlzEx.Standard
         {
             Verify.IsNotNull(pstm, "pstm");
 
-            _Validate();
+            this._Validate();
 
             // Reasonbly sized buffer, don't try to copy large streams in bulk.
             var buffer = new byte[4096];
@@ -307,7 +292,7 @@ namespace ControlzEx.Standard
             
             while (cbWritten < cb)
             {
-                int cbRead = _source.Read(buffer, 0, buffer.Length);
+                int cbRead = this._source.Read(buffer, 0, buffer.Length);
                 if (0 == cbRead)
                 {
                     break;
@@ -350,7 +335,7 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "Standard.HRESULT.ThrowIfFailed(System.String)"), Obsolete("The method is not implemented", true)]
         public void LockRegion(long libOffset, long cb, int dwLockType)
         {
-            HRESULT.STG_E_INVALIDFUNCTION.ThrowIfFailed("The method is not implemented.");
+            Hresult.STG_E_INVALIDFUNCTION.ThrowIfFailed("The method is not implemented.");
         }
 
         /// <summary>
@@ -371,9 +356,9 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
         public void Read(byte[] pv, int cb, IntPtr pcbRead)
         {
-            _Validate();
+            this._Validate();
 
-            int cbRead = _source.Read(pv, 0, cb);
+            int cbRead = this._source.Read(pv, 0, cb);
 
             if (IntPtr.Zero != pcbRead)
             {
@@ -391,7 +376,7 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "Standard.HRESULT.ThrowIfFailed(System.String)"), Obsolete("The method is not implemented", true)]
         public void Revert()
         {
-            HRESULT.STG_E_INVALIDFUNCTION.ThrowIfFailed("The method is not implemented.");
+            Hresult.STG_E_INVALIDFUNCTION.ThrowIfFailed("The method is not implemented.");
         }
 
         /// <summary>
@@ -415,9 +400,9 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
         public void Seek(long dlibMove, int dwOrigin, IntPtr plibNewPosition)
         {
-            _Validate();
+            this._Validate();
 
-            long position = _source.Seek(dlibMove, (SeekOrigin)dwOrigin);
+            long position = this._source.Seek(dlibMove, (SeekOrigin)dwOrigin);
 
             if (IntPtr.Zero != plibNewPosition)
             {
@@ -436,8 +421,8 @@ namespace ControlzEx.Standard
         /// </remarks>
         public void SetSize(long libNewSize)
         {
-            _Validate();
-            _source.SetLength(libNewSize);
+            this._Validate();
+            this._source.SetLength(libNewSize);
         }
 
         /// <summary>
@@ -453,12 +438,12 @@ namespace ControlzEx.Standard
         public void Stat(out STATSTG pstatstg, int grfStatFlag)
         {
             pstatstg = default(STATSTG);
-            _Validate();
+            this._Validate();
 
-            pstatstg.type = STGTY_STREAM;
-            pstatstg.cbSize = _source.Length;
-            pstatstg.grfMode = STGM_READWRITE;
-            pstatstg.grfLocksSupported = LOCK_EXCLUSIVE;
+            pstatstg.type = StgtyStream;
+            pstatstg.cbSize = this._source.Length;
+            pstatstg.grfMode = StgmReadwrite;
+            pstatstg.grfLocksSupported = LockExclusive;
         }
 
         /// <summary>
@@ -480,7 +465,7 @@ namespace ControlzEx.Standard
         [Obsolete("The method is not implemented", true)]
         public void UnlockRegion(long libOffset, long cb, int dwLockType)
         {
-            HRESULT.STG_E_INVALIDFUNCTION.ThrowIfFailed("The method is not implemented.");
+            Hresult.STG_E_INVALIDFUNCTION.ThrowIfFailed("The method is not implemented.");
         }
 
         /// <summary>
@@ -500,9 +485,9 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
         public void Write(byte[] pv, int cb, IntPtr pcbWritten)
         {
-            _Validate();
+            this._Validate();
 
-            _source.Write(pv, 0, cb);
+            this._source.Write(pv, 0, cb);
 
             if (IntPtr.Zero != pcbWritten)
             {
@@ -523,7 +508,7 @@ namespace ControlzEx.Standard
         /// </remarks>
         public void Dispose()
         {
-            _source = null;
+            this._source = null;
         }
 
         #endregion
