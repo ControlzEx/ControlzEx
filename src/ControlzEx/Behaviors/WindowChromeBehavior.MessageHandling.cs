@@ -82,6 +82,7 @@ namespace ControlzEx.Behaviors
                                 new HANDLE_MESSAGE(WM.ENTERSIZEMOVE,          this._HandleENTERSIZEMOVEForAnimation),
                                 new HANDLE_MESSAGE(WM.MOVE,                   this._HandleMOVEForRealSize),
                                 new HANDLE_MESSAGE(WM.EXITSIZEMOVE,           this._HandleEXITSIZEMOVEForAnimation),
+                                new HANDLE_MESSAGE(WM.DPICHANGED,             this._HandleDPICHANGED)
                             };
         }
 
@@ -737,6 +738,23 @@ namespace ControlzEx.Behaviors
                     NativeMethods.SetWindowPos(this.windowHandle, IntPtr.Zero, 0, 0, 0, 0, SwpFlags);
                 }
             }
+
+            handled = false;
+            return IntPtr.Zero;
+        }
+
+        /// <SecurityNote>
+        ///   Critical : Calls critical methods
+        /// </SecurityNote>
+        [SecurityCritical]
+        private IntPtr _HandleDPICHANGED(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        {
+            var rect = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT));
+
+            // We have to cause a size change to force the correctly scaled window size after a dpi change.
+            // This is only needed because we overwrite NCCALCSIZE which causes windows/wpf to receive a non scaled window size after a dpi change.
+            // The window will have it's correct size even if we ask for a different one here.
+            NativeMethods.SetWindowPos(this.windowHandle, IntPtr.Zero, rect.Left, rect.Top, rect.Width - 1, rect.Height, SWP.NOZORDER | SWP.NOACTIVATE | SWP.FRAMECHANGED);
 
             handled = false;
             return IntPtr.Zero;
