@@ -413,7 +413,8 @@ namespace ControlzEx.Behaviors
         [SecurityCritical]
         private IntPtr _HandleNCPAINT(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
-            handled = this.GlowBrush is null;
+            handled = this.TryToBeFlickerFree == false
+                    && this.GlowBrush is null;
             return IntPtr.Zero;
         }
 
@@ -901,8 +902,9 @@ namespace ControlzEx.Behaviors
             {
                 if (this.TryToBeFlickerFree)
                 {
-                    // Remove WindowTheme to prevent classic borders etc. from being rendered
-                    NativeMethods.SetWindowTheme(this.windowHandle, string.Empty, string.Empty);
+                    // Remove WindowTheme to prevent classic borders etc. from being rendered.
+                    // Sadly this causes issues with maximized windows, causing the window to be larger than the monitor.
+                    //NativeMethods.SetWindowTheme(this.windowHandle, string.Empty, string.Empty);
 
                     this._ClearRegion();
                 }
