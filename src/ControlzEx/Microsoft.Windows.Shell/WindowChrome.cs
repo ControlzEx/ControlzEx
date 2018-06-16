@@ -45,14 +45,14 @@ namespace ControlzEx.Windows.Shell
 
     public class WindowChrome : Freezable
     {
-        private struct _SystemParameterBoundProperty
+        private struct SystemParameterBoundProperty
         {
             public string SystemParameterPropertyName { get; set; }
             public DependencyProperty DependencyProperty { get; set; }
         }
 
         // Named property available for fully extending the glass frame.
-        public static Thickness GlassFrameCompleteThickness { get { return new Thickness(-1); } }
+        public static Thickness GlassFrameCompleteThickness => new Thickness(-1);
 
         #region Attached Properties
 
@@ -68,7 +68,7 @@ namespace ControlzEx.Windows.Shell
             // Rather than try to support this concept in the design surface let the designer draw its own
             // chrome anyways.
             // There's certainly room for improvement here.
-            if (System.ComponentModel.DesignerProperties.GetIsInDesignMode(d))
+            if (DesignerProperties.GetIsInDesignMode(d))
             {
                 return;
             }
@@ -121,10 +121,9 @@ namespace ControlzEx.Windows.Shell
         public static bool GetIsHitTestVisibleInChrome(IInputElement inputElement)
         {
             Verify.IsNotNull(inputElement, "inputElement");
-            var dobj = inputElement as DependencyObject;
-            if (dobj == null)
+            if (!(inputElement is DependencyObject dobj))
             {
-                throw new ArgumentException("The element must be a DependencyObject", "inputElement");
+                throw new ArgumentException("The element must be a DependencyObject", nameof(inputElement));
             }
             return (bool)dobj.GetValue(IsHitTestVisibleInChromeProperty);
         }
@@ -134,10 +133,9 @@ namespace ControlzEx.Windows.Shell
         public static void SetIsHitTestVisibleInChrome(IInputElement inputElement, bool hitTestVisible)
         {
             Verify.IsNotNull(inputElement, "inputElement");
-            var dobj = inputElement as DependencyObject;
-            if (dobj == null)
+            if (!(inputElement is DependencyObject dobj))
             {
-                throw new ArgumentException("The element must be a DependencyObject", "inputElement");
+                throw new ArgumentException("The element must be a DependencyObject", nameof(inputElement));
             }
             dobj.SetValue(IsHitTestVisibleInChromeProperty, hitTestVisible);
         }
@@ -154,10 +152,9 @@ namespace ControlzEx.Windows.Shell
         public static ResizeGripDirection GetResizeGripDirection(IInputElement inputElement)
         {
             Verify.IsNotNull(inputElement, "inputElement");
-            var dobj = inputElement as DependencyObject;
-            if (dobj == null)
+            if (!(inputElement is DependencyObject dobj))
             {
-                throw new ArgumentException("The element must be a DependencyObject", "inputElement");
+                throw new ArgumentException("The element must be a DependencyObject", nameof(inputElement));
             }
             return (ResizeGripDirection)dobj.GetValue(ResizeGripDirectionProperty);
         }
@@ -167,10 +164,9 @@ namespace ControlzEx.Windows.Shell
         public static void SetResizeGripDirection(IInputElement inputElement, ResizeGripDirection direction)
         {
             Verify.IsNotNull(inputElement, "inputElement");
-            var dobj = inputElement as DependencyObject;
-            if (dobj == null)
+            if (!(inputElement is DependencyObject dobj))
             {
-                throw new ArgumentException("The element must be a DependencyObject", "inputElement");
+                throw new ArgumentException("The element must be a DependencyObject", nameof(inputElement));
             }
             dobj.SetValue(ResizeGripDirectionProperty, direction);
         }
@@ -191,8 +187,8 @@ namespace ControlzEx.Windows.Shell
         /// <summary>The extent of the top of the window to treat as the caption.</summary>
         public double CaptionHeight
         {
-            get { return (double)GetValue(CaptionHeightProperty); }
-            set { SetValue(CaptionHeightProperty, value); }
+            get => (double) this.GetValue(CaptionHeightProperty);
+            set => this.SetValue(CaptionHeightProperty, value);
         }
 
         public static readonly DependencyProperty ResizeBorderThicknessProperty = DependencyProperty.Register(
@@ -204,8 +200,8 @@ namespace ControlzEx.Windows.Shell
 
         public Thickness ResizeBorderThickness
         {
-            get { return (Thickness)GetValue(ResizeBorderThicknessProperty); }
-            set { SetValue(ResizeBorderThicknessProperty, value); }
+            get => (Thickness) this.GetValue(ResizeBorderThicknessProperty);
+            set => this.SetValue(ResizeBorderThicknessProperty, value);
         }
 
         public static readonly DependencyProperty GlassFrameThicknessProperty = DependencyProperty.Register(
@@ -231,8 +227,8 @@ namespace ControlzEx.Windows.Shell
 
         public Thickness GlassFrameThickness
         {
-            get { return (Thickness)GetValue(GlassFrameThicknessProperty); }
-            set { SetValue(GlassFrameThicknessProperty, value); }
+            get => (Thickness) this.GetValue(GlassFrameThicknessProperty);
+            set => this.SetValue(GlassFrameThicknessProperty, value);
         }
 
         public static readonly DependencyProperty UseAeroCaptionButtonsProperty = DependencyProperty.Register(
@@ -243,8 +239,8 @@ namespace ControlzEx.Windows.Shell
 
         public bool UseAeroCaptionButtons
         {
-            get { return (bool)GetValue(UseAeroCaptionButtonsProperty); }
-            set { SetValue(UseAeroCaptionButtonsProperty, value); }
+            get => (bool) this.GetValue(UseAeroCaptionButtonsProperty);
+            set => this.SetValue(UseAeroCaptionButtonsProperty, value);
         }
 
         /// <summary>Dependency property for IgnoreTaskbarOnMaximize</summary>
@@ -260,8 +256,8 @@ namespace ControlzEx.Windows.Shell
         /// </summary>
         public bool IgnoreTaskbarOnMaximize
         {
-            get { return (bool)GetValue(IgnoreTaskbarOnMaximizeProperty); }
-            set { SetValue(IgnoreTaskbarOnMaximizeProperty, value); }
+            get => (bool) this.GetValue(IgnoreTaskbarOnMaximizeProperty);
+            set => this.SetValue(IgnoreTaskbarOnMaximizeProperty, value);
         }
 
         public static readonly DependencyProperty CornerRadiusProperty = DependencyProperty.Register(
@@ -275,8 +271,8 @@ namespace ControlzEx.Windows.Shell
 
         public CornerRadius CornerRadius
         {
-            get { return (CornerRadius)GetValue(CornerRadiusProperty); }
-            set { SetValue(CornerRadiusProperty, value); }
+            get => (CornerRadius) this.GetValue(CornerRadiusProperty);
+            set => this.SetValue(CornerRadiusProperty, value);
         }
 
         public static readonly DependencyProperty SacrificialEdgeProperty = DependencyProperty.Register(
@@ -288,11 +284,11 @@ namespace ControlzEx.Windows.Shell
                 (d, e) => ((WindowChrome)d)._OnPropertyChangedThatRequiresRepaint()),
                 _IsValidSacrificialEdge);
 
-        private static readonly SacrificialEdge SacrificialEdge_All = SacrificialEdge.Bottom | SacrificialEdge.Top | SacrificialEdge.Left | SacrificialEdge.Right;
+        private static readonly SacrificialEdge SacrificialEdgeAll = SacrificialEdge.Bottom | SacrificialEdge.Top | SacrificialEdge.Left | SacrificialEdge.Right;
 
         private static bool _IsValidSacrificialEdge(object value)
         {
-            SacrificialEdge se = SacrificialEdge.None;
+            SacrificialEdge se;
             try
             {
                 se = (SacrificialEdge)value;
@@ -308,24 +304,24 @@ namespace ControlzEx.Windows.Shell
             }
 
             // Does this only contain valid bits?
-            if ((se | SacrificialEdge_All) != SacrificialEdge_All)
+            if ((se | SacrificialEdgeAll) != SacrificialEdgeAll)
             {
                 return false;
             }
 
             // It can't sacrifice all 4 edges.  Weird things happen.
-            if (se == SacrificialEdge_All)
+            if (se == SacrificialEdgeAll)
             {
                 return false;
             }
 
-            return true; 
+            return true;
         }
 
         public SacrificialEdge SacrificialEdge
         {
-            get { return (SacrificialEdge)GetValue(SacrificialEdgeProperty); }
-            set { SetValue(SacrificialEdgeProperty, value); }
+            get => (SacrificialEdge) this.GetValue(SacrificialEdgeProperty);
+            set => this.SetValue(SacrificialEdgeProperty, value);
         }
 
         #endregion
@@ -335,12 +331,12 @@ namespace ControlzEx.Windows.Shell
             return new WindowChrome();
         }
 
-        private static readonly List<_SystemParameterBoundProperty> _BoundProperties = new List<_SystemParameterBoundProperty>
+        private static readonly List<SystemParameterBoundProperty> BoundProperties = new List<SystemParameterBoundProperty>
         {
-            new _SystemParameterBoundProperty { DependencyProperty = CornerRadiusProperty, SystemParameterPropertyName = "WindowCornerRadius" },
-            new _SystemParameterBoundProperty { DependencyProperty = CaptionHeightProperty, SystemParameterPropertyName = "WindowCaptionHeight" },
-            new _SystemParameterBoundProperty { DependencyProperty = ResizeBorderThicknessProperty, SystemParameterPropertyName = "WindowResizeBorderThickness" },
-            new _SystemParameterBoundProperty { DependencyProperty = GlassFrameThicknessProperty, SystemParameterPropertyName = "WindowNonClientFrameThickness" },
+            new SystemParameterBoundProperty { DependencyProperty = CornerRadiusProperty, SystemParameterPropertyName = "WindowCornerRadius" },
+            new SystemParameterBoundProperty { DependencyProperty = CaptionHeightProperty, SystemParameterPropertyName = "WindowCaptionHeight" },
+            new SystemParameterBoundProperty { DependencyProperty = ResizeBorderThicknessProperty, SystemParameterPropertyName = "WindowResizeBorderThickness" },
+            new SystemParameterBoundProperty { DependencyProperty = GlassFrameThicknessProperty, SystemParameterPropertyName = "WindowNonClientFrameThickness" },
         };
 
         public WindowChrome()
@@ -350,7 +346,7 @@ namespace ControlzEx.Windows.Shell
             // A more correct way to do this would be to Coerce the value iff the source of the DP was the default value.
             // Unfortunately with the current property system we can't detect whether the value being applied at the time
             // of the coersion is the default.
-            foreach (var bp in _BoundProperties)
+            foreach (var bp in BoundProperties)
             {
                 // This list must be declared after the DP's are assigned.
                 Assert.IsNotNull(bp.DependencyProperty);
@@ -373,11 +369,7 @@ namespace ControlzEx.Windows.Shell
 
         private void _OnPropertyChangedThatRequiresRepaint()
         {
-            var handler = PropertyChangedThatRequiresRepaint;
-            if (handler != null)
-            {
-                handler(this, EventArgs.Empty);
-            }
+            this.PropertyChangedThatRequiresRepaint?.Invoke(this, EventArgs.Empty);
         }
 
         internal event EventHandler PropertyChangedThatRequiresRepaint;

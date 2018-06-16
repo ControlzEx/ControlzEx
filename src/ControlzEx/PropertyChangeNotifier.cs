@@ -20,12 +20,7 @@ namespace ControlzEx
     /// </summary>
     public sealed class PropertyChangeNotifier : DependencyObject, IDisposable
     {
-        private WeakReference _propertySource;
-
-        public PropertyChangeNotifier(DependencyObject propertySource, string path)
-            : this(propertySource, new PropertyPath(path))
-        {
-        }
+        private readonly WeakReference _propertySource;
 
         public PropertyChangeNotifier(DependencyObject propertySource, DependencyProperty property)
             : this(propertySource, new PropertyPath(property))
@@ -43,10 +38,12 @@ namespace ControlzEx
                 throw new ArgumentNullException(nameof(property));
             }
             this._propertySource = new WeakReference(propertySource);
-            var binding = new Binding();
-            binding.Path = property;
-            binding.Mode = BindingMode.OneWay;
-            binding.Source = propertySource;
+            var binding = new Binding
+            {
+                Path = property,
+                Mode = BindingMode.OneWay,
+                Source = propertySource
+            };
             BindingOperations.SetBinding(this, ValueProperty, binding);
         }
 
@@ -75,7 +72,7 @@ namespace ControlzEx
         /// </summary>
         public static readonly DependencyProperty ValueProperty
             = DependencyProperty.Register("Value", typeof(object), typeof(PropertyChangeNotifier),
-                                          new FrameworkPropertyMetadata(null, new PropertyChangedCallback(OnPropertyChanged)));
+                                          new FrameworkPropertyMetadata(null, OnPropertyChanged));
 
         /// <summary>
         /// Returns/sets the value of the property
@@ -86,8 +83,8 @@ namespace ControlzEx
         [Bindable(true)]
         public object Value
         {
-            get { return (object)this.GetValue(ValueProperty); }
-            set { this.SetValue(ValueProperty, value); }
+            get => this.GetValue(ValueProperty);
+            set => this.SetValue(ValueProperty, value);
         }
 
         private static void OnPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

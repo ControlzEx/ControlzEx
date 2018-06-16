@@ -17,6 +17,8 @@ namespace ControlzEx.Standard
         /// Convert a point in device independent pixels (1/96") to a point in the system coordinates.
         /// </summary>
         /// <param name="logicalPoint">A point in the logical coordinate system.</param>
+        /// <param name="dpiScaleX"></param>
+        /// <param name="dpiScaleY"></param>
         /// <returns>Returns the parameter converted to the system's coordinates.</returns>
         public static Point LogicalPixelsToDevice(Point logicalPoint, double dpiScaleX, double dpiScaleY)
         {
@@ -28,7 +30,6 @@ namespace ControlzEx.Standard
         /// <summary>
         /// Convert a point in system coordinates to a point in device independent pixels (1/96").
         /// </summary>
-        /// <param name="logicalPoint">A point in the physical coordinate system.</param>
         /// <returns>Returns the parameter converted to the device independent coordinate system.</returns>
         public static Point DevicePixelsToLogical(Point devicePoint, double dpiScaleX, double dpiScaleY)
         {
@@ -137,53 +138,23 @@ namespace ControlzEx.Standard
 
         /// <summary>Gets the DPI scale on the X axis.</summary>
         /// <returns>The DPI scale for the X axis.</returns>
-        public double DpiScaleX
-        {
-            get
-            {
-                return this._dpiScaleX;
-            }
-        }
+        public double DpiScaleX => this._dpiScaleX;
 
         /// <summary>Gets the DPI scale on the Yaxis.</summary>
         /// <returns>The DPI scale for the Y axis.</returns>
-        public double DpiScaleY
-        {
-            get
-            {
-                return this._dpiScaleY;
-            }
-        }
+        public double DpiScaleY => this._dpiScaleY;
 
         /// <summary>Get or sets the PixelsPerDip at which the text should be rendered.</summary>
         /// <returns>The current <see cref="P:System.Windows.DpiScale.PixelsPerDip" /> value.</returns>
-        public double PixelsPerDip
-        {
-            get
-            {
-                return this._dpiScaleY;
-            }
-        }
+        public double PixelsPerDip => this._dpiScaleY;
 
         /// <summary>Gets the DPI along X axis.</summary>
         /// <returns>The DPI along the X axis.</returns>
-        public double PixelsPerInchX
-        {
-            get
-            {
-                return 96.0 * this._dpiScaleX;
-            }
-        }
+        public double PixelsPerInchX => 96.0 * this._dpiScaleX;
 
         /// <summary>Gets the DPI along Y axis.</summary>
         /// <returns>The DPI along the Y axis.</returns>
-        public double PixelsPerInchY
-        {
-            get
-            {
-                return 96.0 * this._dpiScaleY;
-            }
-        }
+        public double PixelsPerInchY => 96.0 * this._dpiScaleY;
 
         /// <summary>Initializes a new instance of the <see cref="T:System.Windows.DpiScale" /> structure.</summary>
         /// <param name="dpiScaleX">The DPI scale on the X axis.</param>

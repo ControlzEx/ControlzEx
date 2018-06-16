@@ -9,16 +9,16 @@ namespace ControlzEx.Standard
         ///     Gets the monitor information from the current cursor position.
         /// </summary>
         /// <returns></returns>
-        public static MONITORINFO GetMonitorInfoFromPoint()
+        public static Monitorinfo GetMonitorInfoFromPoint()
         {
             var cursorPos = NativeMethods.GetCursorPos();
-            var monitor = NativeMethods.MonitorFromPoint(cursorPos, MonitorOptions.MONITOR_DEFAULTTONEAREST);
+            var monitor = NativeMethods.MonitorFromPoint(cursorPos, MonitorOptions.MonitorDefaulttonearest);
             if (monitor != IntPtr.Zero)
             {
                 var monitorInfo = NativeMethods.GetMonitorInfo(monitor);
                 return monitorInfo;
             }
-            return new MONITORINFO();
+            return new Monitorinfo();
         }
     }
 }

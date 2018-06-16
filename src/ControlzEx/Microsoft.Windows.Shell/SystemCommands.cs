@@ -11,11 +11,11 @@ namespace ControlzEx.Windows.Shell
     [Obsolete(DesignerConstants.Win32ElementWarning)]
     public static class SystemCommands
     {
-        public static RoutedCommand CloseWindowCommand { get; private set; }
-        public static RoutedCommand MaximizeWindowCommand { get; private set; }
-        public static RoutedCommand MinimizeWindowCommand { get; private set; }
-        public static RoutedCommand RestoreWindowCommand { get; private set; }
-        public static RoutedCommand ShowSystemMenuCommand { get; private set; }
+        public static RoutedCommand CloseWindowCommand { get; }
+        public static RoutedCommand MaximizeWindowCommand { get; }
+        public static RoutedCommand MinimizeWindowCommand { get; }
+        public static RoutedCommand RestoreWindowCommand { get; }
+        public static RoutedCommand ShowSystemMenuCommand { get; }
 
         static SystemCommands()
         {
@@ -98,7 +98,7 @@ namespace ControlzEx.Windows.Shell
 
             var hmenu = NativeMethods.GetSystemMenu(hwnd, false);
 
-            var cmd = NativeMethods.TrackPopupMenuEx(hmenu, Constants.TPM_LEFTBUTTON | Constants.TPM_RETURNCMD, (int)physicalScreenLocation.X, (int)physicalScreenLocation.Y, hwnd, IntPtr.Zero);
+            var cmd = NativeMethods.TrackPopupMenuEx(hmenu, Constants.TpmLeftbutton | Constants.TpmReturncmd, (int)physicalScreenLocation.X, (int)physicalScreenLocation.Y, hwnd, IntPtr.Zero);
             if (0 != cmd)
             {
                 NativeMethods.PostMessage(hwnd, WM.SYSCOMMAND, new IntPtr(cmd), IntPtr.Zero);

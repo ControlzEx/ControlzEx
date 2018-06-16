@@ -18,7 +18,7 @@ namespace ControlzEx.Standard
 
     internal static partial class Utility
     {
-        private static readonly Version _presentationFrameworkVersion = Assembly.GetAssembly(typeof(Window)).GetName().Version;
+        private static readonly Version PresentationFrameworkVersion = Assembly.GetAssembly(typeof(Window)).GetName().Version;
 
         /// <summary>
         /// Is this using WPF4?
@@ -27,10 +27,7 @@ namespace ControlzEx.Standard
         /// There are a few specific bugs in Window in 3.5SP1 and below that require workarounds
         /// when handling WM_NCCALCSIZE on the HWND.
         /// </remarks>
-        public static bool IsPresentationFrameworkVersionLessThan4
-        {
-            get { return _presentationFrameworkVersion < new Version(4, 0); }
-        }
+        public static bool IsPresentationFrameworkVersionLessThan4 => PresentationFrameworkVersion < new Version(4, 0);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static byte[] GetBytesFromBitmapSource(BitmapSource bmp)
@@ -97,19 +94,19 @@ namespace ControlzEx.Standard
         }
 
         // This can be cached.  It's not going to change under reasonable circumstances.
-        private static int s_bitDepth; // = 0;
+        private static int _sBitDepth; // = 0;
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         private static int _GetBitDepth()
         {
-            if (s_bitDepth == 0)
+            if (_sBitDepth == 0)
             {
                 using (SafeDC dc = SafeDC.GetDesktop())
                 {
-                    s_bitDepth = NativeMethods.GetDeviceCaps(dc, DeviceCap.BITSPIXEL) * NativeMethods.GetDeviceCaps(dc, DeviceCap.PLANES);
+                    _sBitDepth = NativeMethods.GetDeviceCaps(dc, DeviceCap.BITSPIXEL) * NativeMethods.GetDeviceCaps(dc, DeviceCap.PLANES);
                 }
             }
-            return s_bitDepth;
+            return _sBitDepth;
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
@@ -184,13 +181,13 @@ namespace ControlzEx.Standard
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public static int RGB(Color c)
+        public static int Rgb(Color c)
         {
             return c.B | (c.G << 8) | (c.R << 16);
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public static int AlphaRGB(Color c)
+        public static int AlphaRgb(Color c)
         {
             return c.B | (c.G << 8) | (c.R << 16) | (c.A << 24);
         }
@@ -238,7 +235,7 @@ namespace ControlzEx.Standard
         // Caller is responsible to ensure that GDI+ has been initialized.
         [SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public static IntPtr GenerateHICON(ImageSource image, Size dimensions)
+        public static IntPtr GenerateHicon(ImageSource image, Size dimensions)
         {
             if (image == null)
             {
@@ -248,10 +245,10 @@ namespace ControlzEx.Standard
             // If we're getting this from a ".ico" resource, then it comes through as a BitmapFrame.
             // We can use leverage this as a shortcut to get the right 16x16 representation
             // because DrawImage doesn't do that for us.
-            var bf = image as BitmapFrame;
-            if (bf != null)
+            if (image is BitmapFrame bf)
             {
-                bf = GetBestMatch(bf.Decoder.Frames, (int)dimensions.Width, (int)dimensions.Height);
+                if (bf.Decoder != null)
+                    bf = GetBestMatch(bf.Decoder.Frames, (int) dimensions.Width, (int) dimensions.Height);
             }
             else
             {
@@ -308,8 +305,7 @@ namespace ControlzEx.Standard
                             return IntPtr.Zero;
                         }
 
-                        IntPtr hicon;
-                        gpStatus = NativeMethods.GdipCreateHICONFromBitmap(bitmap, out hicon);
+                        gpStatus = NativeMethods.GdipCreateHICONFromBitmap(bitmap, out IntPtr hicon);
                         if (Status.Ok != gpStatus)
                         {
                             return IntPtr.Zero;

@@ -91,29 +91,29 @@ namespace ControlzEx.Standard
         /// <param name="i">The integer value of the error.</param>
         public Win32Error(int i)
         {
-            _value = i;
+            this._value = i;
         }
 
         /// <summary>Performs HRESULT_FROM_WIN32 conversion.</summary>
         /// <param name="error">The Win32 error being converted to an HRESULT.</param>
         /// <returns>The equivilent HRESULT value.</returns>
-        public static explicit operator HRESULT(Win32Error error)
+        public static explicit operator Hresult(Win32Error error)
         {
             // #define __HRESULT_FROM_WIN32(x) 
             //     ((HRESULT)(x) <= 0 ? ((HRESULT)(x)) : ((HRESULT) (((x) & 0x0000FFFF) | (FACILITY_WIN32 << 16) | 0x80000000)))
             if (error._value <= 0)
             {
-                return new HRESULT((uint)error._value);
+                return new Hresult((uint)error._value);
             }
-            return HRESULT.Make(true, Facility.Win32, error._value & 0x0000FFFF);
+            return Hresult.Make(true, Facility.Win32, error._value & 0x0000FFFF);
         }
 
         // Method version of the cast operation
         /// <summary>Performs HRESULT_FROM_WIN32 conversion.</summary>
         /// <returns>The equivilent HRESULT value.</returns>
-        public HRESULT ToHRESULT()
+        public Hresult ToHresult()
         {
-            return (HRESULT)this; 
+            return (Hresult)this; 
         }
 
         /// <summary>Performs the equivalent of Win32's GetLastError()</summary>
@@ -127,7 +127,7 @@ namespace ControlzEx.Standard
         {
             try
             {
-                return ((Win32Error)obj)._value == _value;
+                return obj != null && ((Win32Error)obj)._value == this._value;
             }
             catch (InvalidCastException)
             {
@@ -137,7 +137,7 @@ namespace ControlzEx.Standard
 
         public override int GetHashCode()
         {
-            return _value.GetHashCode();
+            return this._value.GetHashCode();
         }
 
         /// <summary>
@@ -163,7 +163,7 @@ namespace ControlzEx.Standard
         }
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum Facility
     {
         /// <summary>FACILITY_NULL</summary>
@@ -189,9 +189,9 @@ namespace ControlzEx.Standard
     }
 
     /// <summary>Wrapper for HRESULT status codes.</summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Explicit)]
-    public struct HRESULT
+    public struct Hresult
     {
         [FieldOffset(0)]
         private readonly uint _value;
@@ -200,203 +200,203 @@ namespace ControlzEx.Standard
         // picked up by ToString through reflection.
         /// <summary>S_OK</summary>
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT S_OK = new HRESULT(0x00000000);
+        public static readonly Hresult S_OK = new Hresult(0x00000000);
         /// <summary>S_FALSE</summary>
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT S_FALSE = new HRESULT(0x00000001);
+        public static readonly Hresult S_FALSE = new Hresult(0x00000001);
         /// <summary>E_PENDING</summary>
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT E_PENDING = new HRESULT(0x8000000A);
+        public static readonly Hresult E_PENDING = new Hresult(0x8000000A);
         /// <summary>E_NOTIMPL</summary>
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT E_NOTIMPL = new HRESULT(0x80004001);
+        public static readonly Hresult E_NOTIMPL = new Hresult(0x80004001);
         /// <summary>E_NOINTERFACE</summary>
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT E_NOINTERFACE = new HRESULT(0x80004002);
+        public static readonly Hresult E_NOINTERFACE = new Hresult(0x80004002);
         /// <summary>E_POINTER</summary>
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT E_POINTER = new HRESULT(0x80004003);
+        public static readonly Hresult E_POINTER = new Hresult(0x80004003);
         /// <summary>E_ABORT</summary>
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT E_ABORT = new HRESULT(0x80004004);
+        public static readonly Hresult E_ABORT = new Hresult(0x80004004);
         /// <summary>E_FAIL</summary>
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT E_FAIL = new HRESULT(0x80004005);
+        public static readonly Hresult E_FAIL = new Hresult(0x80004005);
         /// <summary>E_UNEXPECTED</summary>
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT E_UNEXPECTED = new HRESULT(0x8000FFFF);
+        public static readonly Hresult E_UNEXPECTED = new Hresult(0x8000FFFF);
         /// <summary>STG_E_INVALIDFUNCTION</summary>
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT STG_E_INVALIDFUNCTION = new HRESULT(0x80030001);
+        public static readonly Hresult STG_E_INVALIDFUNCTION = new Hresult(0x80030001);
 
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT OLE_E_ADVISENOTSUPPORTED = new HRESULT(0x80040003);
+        public static readonly Hresult OLE_E_ADVISENOTSUPPORTED = new Hresult(0x80040003);
 
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT DV_E_FORMATETC = new HRESULT(0x80040064);
+        public static readonly Hresult DV_E_FORMATETC = new Hresult(0x80040064);
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT DV_E_TYMED = new HRESULT(0x80040069);
+        public static readonly Hresult DV_E_TYMED = new Hresult(0x80040069);
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT DV_E_CLIPFORMAT = new HRESULT(0x8004006A);
+        public static readonly Hresult DV_E_CLIPFORMAT = new Hresult(0x8004006A);
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT DV_E_DVASPECT = new HRESULT(0x8004006B);
+        public static readonly Hresult DV_E_DVASPECT = new Hresult(0x8004006B);
 
         /// <summary>REGDB_E_CLASSNOTREG</summary>
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT REGDB_E_CLASSNOTREG = new HRESULT(0x80040154);
+        public static readonly Hresult REGDB_E_CLASSNOTREG = new Hresult(0x80040154);
 
         /// <summary>DESTS_E_NO_MATCHING_ASSOC_HANDLER.  Win7 internal error code for Jump Lists.</summary>
         /// <remarks>There is no Assoc Handler for the given item registered by the specified application.</remarks>
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT DESTS_E_NO_MATCHING_ASSOC_HANDLER = new HRESULT(0x80040F03);
+        public static readonly Hresult DESTS_E_NO_MATCHING_ASSOC_HANDLER = new Hresult(0x80040F03);
         /// <summary>DESTS_E_NORECDOCS.  Win7 internal error code for Jump Lists.</summary>
         /// <remarks>The given item is excluded from the recent docs folder by the NoRecDocs bit on its registration.</remarks>
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT DESTS_E_NORECDOCS = new HRESULT(0x80040F04);
+        public static readonly Hresult DESTS_E_NORECDOCS = new Hresult(0x80040F04);
         /// <summary>DESTS_E_NOTALLCLEARED.  Win7 internal error code for Jump Lists.</summary>
         /// <remarks>Not all of the items were successfully cleared</remarks>
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT DESTS_E_NOTALLCLEARED = new HRESULT(0x80040F05);
+        public static readonly Hresult DESTS_E_NOTALLCLEARED = new Hresult(0x80040F05);
 
         /// <summary>E_ACCESSDENIED</summary>
         /// <remarks>Win32Error ERROR_ACCESS_DENIED.</remarks>
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT E_ACCESSDENIED = new HRESULT(0x80070005);
+        public static readonly Hresult E_ACCESSDENIED = new Hresult(0x80070005);
         /// <summary>E_OUTOFMEMORY</summary>
         /// <remarks>Win32Error ERROR_OUTOFMEMORY.</remarks>
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT E_OUTOFMEMORY = new HRESULT(0x8007000E);
+        public static readonly Hresult E_OUTOFMEMORY = new Hresult(0x8007000E);
         /// <summary>E_INVALIDARG</summary>
         /// <remarks>Win32Error ERROR_INVALID_PARAMETER.</remarks>
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT E_INVALIDARG = new HRESULT(0x80070057);
+        public static readonly Hresult E_INVALIDARG = new Hresult(0x80070057);
         /// <summary>INTSAFE_E_ARITHMETIC_OVERFLOW</summary>
-        public static readonly HRESULT INTSAFE_E_ARITHMETIC_OVERFLOW = new HRESULT(0x80070216);
+        public static readonly Hresult INTSAFE_E_ARITHMETIC_OVERFLOW = new Hresult(0x80070216);
         /// <summary>COR_E_OBJECTDISPOSED</summary>
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT COR_E_OBJECTDISPOSED = new HRESULT(0x80131622);
+        public static readonly Hresult COR_E_OBJECTDISPOSED = new Hresult(0x80131622);
         /// <summary>WC_E_GREATERTHAN</summary>
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WC_E_GREATERTHAN = new HRESULT(0xC00CEE23);
+        public static readonly Hresult WC_E_GREATERTHAN = new Hresult(0xC00CEE23);
         /// <summary>WC_E_SYNTAX</summary>
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WC_E_SYNTAX = new HRESULT(0xC00CEE2D);
+        public static readonly Hresult WC_E_SYNTAX = new Hresult(0xC00CEE2D);
 
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_GENERIC_ERROR = E_FAIL;
+        public static readonly Hresult WINCODEC_ERR_GENERIC_ERROR = E_FAIL;
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_INVALIDPARAMETER = E_INVALIDARG;
+        public static readonly Hresult WINCODEC_ERR_INVALIDPARAMETER = E_INVALIDARG;
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_OUTOFMEMORY = E_OUTOFMEMORY;
+        public static readonly Hresult WINCODEC_ERR_OUTOFMEMORY = E_OUTOFMEMORY;
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_NOTIMPLEMENTED = E_NOTIMPL;
+        public static readonly Hresult WINCODEC_ERR_NOTIMPLEMENTED = E_NOTIMPL;
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_ABORTED = E_ABORT;
+        public static readonly Hresult WINCODEC_ERR_ABORTED = E_ABORT;
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_ACCESSDENIED = E_ACCESSDENIED;
+        public static readonly Hresult WINCODEC_ERR_ACCESSDENIED = E_ACCESSDENIED;
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_VALUEOVERFLOW = INTSAFE_E_ARITHMETIC_OVERFLOW;
+        public static readonly Hresult WINCODEC_ERR_VALUEOVERFLOW = INTSAFE_E_ARITHMETIC_OVERFLOW;
 
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_WRONGSTATE = Make(true, Facility.WinCodec, 0x2f04);
+        public static readonly Hresult WINCODEC_ERR_WRONGSTATE = Make(true, Facility.WinCodec, 0x2f04);
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_VALUEOUTOFRANGE = Make(true, Facility.WinCodec, 0x2f05);
+        public static readonly Hresult WINCODEC_ERR_VALUEOUTOFRANGE = Make(true, Facility.WinCodec, 0x2f05);
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_UNKNOWNIMAGEFORMAT = Make(true, Facility.WinCodec, 0x2f07);
+        public static readonly Hresult WINCODEC_ERR_UNKNOWNIMAGEFORMAT = Make(true, Facility.WinCodec, 0x2f07);
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_UNSUPPORTEDVERSION = Make(true, Facility.WinCodec, 0x2f0B);
+        public static readonly Hresult WINCODEC_ERR_UNSUPPORTEDVERSION = Make(true, Facility.WinCodec, 0x2f0B);
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_NOTINITIALIZED = Make(true, Facility.WinCodec, 0x2f0C);
+        public static readonly Hresult WINCODEC_ERR_NOTINITIALIZED = Make(true, Facility.WinCodec, 0x2f0C);
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_ALREADYLOCKED = Make(true, Facility.WinCodec, 0x2f0D);
+        public static readonly Hresult WINCODEC_ERR_ALREADYLOCKED = Make(true, Facility.WinCodec, 0x2f0D);
 
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_PROPERTYNOTFOUND = Make(true, Facility.WinCodec, 0x2f40);
+        public static readonly Hresult WINCODEC_ERR_PROPERTYNOTFOUND = Make(true, Facility.WinCodec, 0x2f40);
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_PROPERTYNOTSUPPORTED = Make(true, Facility.WinCodec, 0x2f41);
+        public static readonly Hresult WINCODEC_ERR_PROPERTYNOTSUPPORTED = Make(true, Facility.WinCodec, 0x2f41);
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_PROPERTYSIZE = Make(true, Facility.WinCodec, 0x2f42);
+        public static readonly Hresult WINCODEC_ERR_PROPERTYSIZE = Make(true, Facility.WinCodec, 0x2f42);
 
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_CODECPRESENT = Make(true, Facility.WinCodec, 0x2f43);
+        public static readonly Hresult WINCODEC_ERR_CODECPRESENT = Make(true, Facility.WinCodec, 0x2f43);
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_CODECNOTHUMBNAIL = Make(true, Facility.WinCodec, 0x2f44);
+        public static readonly Hresult WINCODEC_ERR_CODECNOTHUMBNAIL = Make(true, Facility.WinCodec, 0x2f44);
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_PALETTEUNAVAILABLE = Make(true, Facility.WinCodec, 0x2f45);
+        public static readonly Hresult WINCODEC_ERR_PALETTEUNAVAILABLE = Make(true, Facility.WinCodec, 0x2f45);
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_CODECTOOMANYSCANLINES = Make(true, Facility.WinCodec, 0x2f46);
+        public static readonly Hresult WINCODEC_ERR_CODECTOOMANYSCANLINES = Make(true, Facility.WinCodec, 0x2f46);
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_INTERNALERROR = Make(true, Facility.WinCodec, 0x2f48);
+        public static readonly Hresult WINCODEC_ERR_INTERNALERROR = Make(true, Facility.WinCodec, 0x2f48);
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_SOURCERECTDOESNOTMATCHDIMENSIONS = Make(true, Facility.WinCodec, 0x2f49);
+        public static readonly Hresult WINCODEC_ERR_SOURCERECTDOESNOTMATCHDIMENSIONS = Make(true, Facility.WinCodec, 0x2f49);
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_COMPONENTNOTFOUND = Make(true, Facility.WinCodec, 0x2f50);
+        public static readonly Hresult WINCODEC_ERR_COMPONENTNOTFOUND = Make(true, Facility.WinCodec, 0x2f50);
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_IMAGESIZEOUTOFRANGE = Make(true, Facility.WinCodec, 0x2f51);
+        public static readonly Hresult WINCODEC_ERR_IMAGESIZEOUTOFRANGE = Make(true, Facility.WinCodec, 0x2f51);
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_TOOMUCHMETADATA = Make(true, Facility.WinCodec, 0x2f52);
+        public static readonly Hresult WINCODEC_ERR_TOOMUCHMETADATA = Make(true, Facility.WinCodec, 0x2f52);
 
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_BADIMAGE = Make(true, Facility.WinCodec, 0x2f60);
+        public static readonly Hresult WINCODEC_ERR_BADIMAGE = Make(true, Facility.WinCodec, 0x2f60);
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_BADHEADER = Make(true, Facility.WinCodec, 0x2f61);
+        public static readonly Hresult WINCODEC_ERR_BADHEADER = Make(true, Facility.WinCodec, 0x2f61);
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_FRAMEMISSING = Make(true, Facility.WinCodec, 0x2f62);
+        public static readonly Hresult WINCODEC_ERR_FRAMEMISSING = Make(true, Facility.WinCodec, 0x2f62);
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_BADMETADATAHEADER = Make(true, Facility.WinCodec, 0x2f63);
+        public static readonly Hresult WINCODEC_ERR_BADMETADATAHEADER = Make(true, Facility.WinCodec, 0x2f63);
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_BADSTREAMDATA = Make(true, Facility.WinCodec, 0x2f70);
+        public static readonly Hresult WINCODEC_ERR_BADSTREAMDATA = Make(true, Facility.WinCodec, 0x2f70);
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_STREAMWRITE = Make(true, Facility.WinCodec, 0x2f71);
+        public static readonly Hresult WINCODEC_ERR_STREAMWRITE = Make(true, Facility.WinCodec, 0x2f71);
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_STREAMREAD = Make(true, Facility.WinCodec, 0x2f72);
+        public static readonly Hresult WINCODEC_ERR_STREAMREAD = Make(true, Facility.WinCodec, 0x2f72);
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_STREAMNOTAVAILABLE = Make(true, Facility.WinCodec, 0x2f73);
+        public static readonly Hresult WINCODEC_ERR_STREAMNOTAVAILABLE = Make(true, Facility.WinCodec, 0x2f73);
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_UNSUPPORTEDPIXELFORMAT = Make(true, Facility.WinCodec, 0x2f80);
+        public static readonly Hresult WINCODEC_ERR_UNSUPPORTEDPIXELFORMAT = Make(true, Facility.WinCodec, 0x2f80);
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_UNSUPPORTEDOPERATION = Make(true, Facility.WinCodec, 0x2f81);
+        public static readonly Hresult WINCODEC_ERR_UNSUPPORTEDOPERATION = Make(true, Facility.WinCodec, 0x2f81);
 
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_INVALIDREGISTRATION = Make(true, Facility.WinCodec, 0x2f8A);
+        public static readonly Hresult WINCODEC_ERR_INVALIDREGISTRATION = Make(true, Facility.WinCodec, 0x2f8A);
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_COMPONENTINITIALIZEFAILURE = Make(true, Facility.WinCodec, 0x2f8B);
+        public static readonly Hresult WINCODEC_ERR_COMPONENTINITIALIZEFAILURE = Make(true, Facility.WinCodec, 0x2f8B);
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_INSUFFICIENTBUFFER = Make(true, Facility.WinCodec, 0x2f8C);
+        public static readonly Hresult WINCODEC_ERR_INSUFFICIENTBUFFER = Make(true, Facility.WinCodec, 0x2f8C);
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_DUPLICATEMETADATAPRESENT = Make(true, Facility.WinCodec, 0x2f8D);
+        public static readonly Hresult WINCODEC_ERR_DUPLICATEMETADATAPRESENT = Make(true, Facility.WinCodec, 0x2f8D);
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_PROPERTYUNEXPECTEDTYPE = Make(true, Facility.WinCodec, 0x2f8E);
+        public static readonly Hresult WINCODEC_ERR_PROPERTYUNEXPECTEDTYPE = Make(true, Facility.WinCodec, 0x2f8E);
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_UNEXPECTEDSIZE = Make(true, Facility.WinCodec, 0x2f8F);
+        public static readonly Hresult WINCODEC_ERR_UNEXPECTEDSIZE = Make(true, Facility.WinCodec, 0x2f8F);
 
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_INVALIDQUERYREQUEST = Make(true, Facility.WinCodec, 0x2f90);
+        public static readonly Hresult WINCODEC_ERR_INVALIDQUERYREQUEST = Make(true, Facility.WinCodec, 0x2f90);
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_UNEXPECTEDMETADATATYPE = Make(true, Facility.WinCodec, 0x2f91);
+        public static readonly Hresult WINCODEC_ERR_UNEXPECTEDMETADATATYPE = Make(true, Facility.WinCodec, 0x2f91);
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_REQUESTONLYVALIDATMETADATAROOT = Make(true, Facility.WinCodec, 0x2f92);
+        public static readonly Hresult WINCODEC_ERR_REQUESTONLYVALIDATMETADATAROOT = Make(true, Facility.WinCodec, 0x2f92);
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly HRESULT WINCODEC_ERR_INVALIDQUERYCHARACTER = Make(true, Facility.WinCodec, 0x2f93);
+        public static readonly Hresult WINCODEC_ERR_INVALIDQUERYCHARACTER = Make(true, Facility.WinCodec, 0x2f93);
 
         /// <summary>
         /// Create an HRESULT from an integer value.
         /// </summary>
         /// <param name="i"></param>
-        public HRESULT(uint i)
+        public Hresult(uint i)
         {
-            _value = i;
+            this._value = i;
         }
 
-        public HRESULT(int i)
+        public Hresult(int i)
         {
-            _value = unchecked((uint)i);
+            this._value = unchecked((uint)i);
         }
 
         /// <summary>
         /// Convert an HRESULT to an int.  Used for COM interface declarations out of our control.
         /// </summary>
-        public static explicit operator int(HRESULT hr)
+        public static explicit operator int(Hresult hr)
         {
             unchecked
             {
@@ -404,7 +404,7 @@ namespace ControlzEx.Standard
             }
         }
 
-        public static HRESULT Make(bool severe, Facility facility, int code)
+        public static Hresult Make(bool severe, Facility facility, int code)
         {
             //#define MAKE_HRESULT(sev,fac,code) \
             //    ((HRESULT) (((unsigned long)(sev)<<31) | ((unsigned long)(fac)<<16) | ((unsigned long)(code))) )
@@ -415,23 +415,17 @@ namespace ControlzEx.Standard
             // Facility has 11 bits reserved (different than SCODES, which have 4 bits reserved)
             // MSDN documentation incorrectly uses 12 bits for the ESE facility (e5e), so go ahead and let that one slide.
             // And WIC also ignores it the documented size...
-            Assert.Implies((int)facility != (int)((int)facility & 0x1FF), facility == Facility.Ese || facility == Facility.WinCodec);
+            Assert.Implies((int)facility != ((int)facility & 0x1FF), facility == Facility.Ese || facility == Facility.WinCodec);
             // Code has 4 bits reserved.
             Assert.AreEqual(code, code & 0xFFFF);
 
-            return new HRESULT((uint)((severe ? (1 << 31) : 0) | ((int)facility << 16) | code));
+            return new Hresult((uint)((severe ? (1 << 31) : 0) | ((int)facility << 16) | code));
         }
 
         /// <summary>
         /// retrieve HRESULT_FACILITY
         /// </summary>
-        public Facility Facility
-        {
-            get
-            {
-                return GetFacility((int)_value);
-            }
-        }
+        public Facility Facility => GetFacility((int) this._value);
 
         public static Facility GetFacility(int errorCode)
         {
@@ -442,18 +436,12 @@ namespace ControlzEx.Standard
         /// <summary>
         /// retrieve HRESULT_CODE
         /// </summary>
-        public int Code
-        {
-            get
-            {
-                return GetCode((int)_value);
-            }
-        }
+        public int Code => GetCode((int) this._value);
 
         public static int GetCode(int error)
         {
             // #define HRESULT_CODE(hr)    ((hr) & 0xFFFF)
-            return (int)(error & 0xFFFF);
+            return error & 0xFFFF;
         }
 
         #region Object class override members
@@ -475,11 +463,11 @@ namespace ControlzEx.Standard
             // CONSIDER: This data is static.  It could be cached 
             // after first usage for fast lookup since the keys are unique.
             //
-            foreach (FieldInfo publicStaticField in typeof(HRESULT).GetFields(BindingFlags.Static | BindingFlags.Public))
+            foreach (FieldInfo publicStaticField in typeof(Hresult).GetFields(BindingFlags.Static | BindingFlags.Public))
             {
-                if (publicStaticField.FieldType == typeof(HRESULT))
+                if (publicStaticField.FieldType == typeof(Hresult))
                 {
-                    var hr = (HRESULT)publicStaticField.GetValue(null);
+                    var hr = (Hresult)publicStaticField.GetValue(null);
                     if (hr == this)
                     {
                         return publicStaticField.Name;
@@ -488,14 +476,14 @@ namespace ControlzEx.Standard
             }
 
             // Try Win32 error codes also
-            if (Facility == Facility.Win32)
+            if (this.Facility == Facility.Win32)
             {
                 foreach (FieldInfo publicStaticField in typeof(Win32Error).GetFields(BindingFlags.Static | BindingFlags.Public))
                 {
                     if (publicStaticField.FieldType == typeof(Win32Error))
                     {
                         var error = (Win32Error)publicStaticField.GetValue(null);
-                        if ((HRESULT)error == this)
+                        if ((Hresult)error == this)
                         {
                             return "HRESULT_FROM_WIN32(" + publicStaticField.Name + ")";
                         }
@@ -505,14 +493,14 @@ namespace ControlzEx.Standard
 
             // If there's no good name for this HRESULT,
             // return the string as readable hex (0x########) format.
-            return string.Format(CultureInfo.InvariantCulture, "0x{0:X8}", _value);
+            return string.Format(CultureInfo.InvariantCulture, "0x{0:X8}", this._value);
         }
 
         public override bool Equals(object obj)
         {
             try
             {
-                return ((HRESULT)obj)._value == _value;
+                return obj != null && ((Hresult)obj)._value == this._value;
             }
             catch (InvalidCastException)
             {
@@ -522,34 +510,28 @@ namespace ControlzEx.Standard
 
         public override int GetHashCode()
         {
-            return _value.GetHashCode();
+            return this._value.GetHashCode();
         }
 
         #endregion
 
-        public static bool operator ==(HRESULT hrLeft, HRESULT hrRight)
+        public static bool operator ==(Hresult hrLeft, Hresult hrRight)
         {
             return hrLeft._value == hrRight._value;
         }
 
-        public static bool operator !=(HRESULT hrLeft, HRESULT hrRight)
+        public static bool operator !=(Hresult hrLeft, Hresult hrRight)
         {
             return !(hrLeft == hrRight);
         }
 
-        public bool Succeeded
-        {
-            get { return (int)_value >= 0; }
-        }
+        public bool Succeeded => (int) this._value >= 0;
 
-        public bool Failed
-        {
-            get { return (int)_value < 0; }
-        }
+        public bool Failed => (int) this._value < 0;
 
         public void ThrowIfFailed()
         {
-            ThrowIfFailed(null);
+            this.ThrowIfFailed(null);
         }
 
         [
@@ -563,16 +545,16 @@ namespace ControlzEx.Standard
         ]
         public void ThrowIfFailed(string message)
         {
-            if (Failed)
+            if (this.Failed)
             {
                 if (string.IsNullOrEmpty(message))
                 {
-                    message = ToString();
+                    message = this.ToString();
                 }
 #if DEBUG
                 else
                 {
-                    message += " (" + ToString() + ")";
+                    message += " (" + this.ToString() + ")";
                 }
 #endif
                 // Wow.  Reflection in a throw call.  Later on this may turn out to have been a bad idea.
@@ -586,7 +568,7 @@ namespace ControlzEx.Standard
                 // the process of implementing an IErrorInfo and then use that.  There's no stock
                 // implementations of IErrorInfo available and I don't think it's worth the maintenance
                 // overhead of doing it, nor would it have significant value over this approach.
-                Exception e = Marshal.GetExceptionForHR((int)_value, new IntPtr(-1));
+                Exception e = Marshal.GetExceptionForHR((int) this._value, new IntPtr(-1));
                 Assert.IsNotNull(e);
                 // ArgumentNullException doesn't have the right constructor parameters,
                 // (nor does Win32Exception...)
@@ -598,13 +580,13 @@ namespace ControlzEx.Standard
                 // then at least check the facility and attempt to do better ourselves.
                 if (e.GetType() == typeof(COMException))
                 {
-                    switch (Facility)
+                    switch (this.Facility)
                     {
                         case Facility.Win32:
-                            e = new Win32Exception(Code, message);
+                            e = new Win32Exception(this.Code, message);
                             break;
                         default:
-                            e = new COMException(message, (int)_value);
+                            e = new COMException(message, (int) this._value);
                             break;
                     }
                 }
@@ -617,7 +599,8 @@ namespace ControlzEx.Standard
                         Assert.IsNotNull(e);
                     }
                 }
-                throw e;
+
+                if (e != null) throw e;
             }
         }
 
@@ -626,7 +609,7 @@ namespace ControlzEx.Standard
         /// </summary>
         public static void ThrowLastError()
         {
-            ((HRESULT)Win32Error.GetLastError()).ThrowIfFailed();
+            ((Hresult)Win32Error.GetLastError()).ThrowIfFailed();
             // Only expecting to call this when we're expecting a failed GetLastError()
             Assert.Fail();
         }

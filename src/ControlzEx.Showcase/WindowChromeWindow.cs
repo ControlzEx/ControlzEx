@@ -6,8 +6,8 @@ namespace ControlzEx.Showcase
     {
         public Thickness ResizeBorderThickness
         {
-            get { return (Thickness)this.GetValue(ResizeBorderThicknessProperty); }
-            set { this.SetValue(ResizeBorderThicknessProperty, value); }
+            get => (Thickness)this.GetValue(ResizeBorderThicknessProperty);
+            set => this.SetValue(ResizeBorderThicknessProperty, value);
         }
 
         // Using a DependencyProperty as the backing store for ResizeBorderThickness.  This enables animation, styling, binding, etc...
@@ -19,8 +19,8 @@ namespace ControlzEx.Showcase
         /// </summary>
         public Thickness GlassFrameThickness
         {
-            get { return (Thickness)this.GetValue(GlassFrameThicknessProperty); }
-            set { this.SetValue(GlassFrameThicknessProperty, value); }
+            get => (Thickness)this.GetValue(GlassFrameThicknessProperty);
+            set => this.SetValue(GlassFrameThicknessProperty, value);
         }
 
         /// <summary>

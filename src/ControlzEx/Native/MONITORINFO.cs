@@ -6,9 +6,9 @@ namespace ControlzEx.Standard
 
     [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-    public class MONITORINFO
+    public class Monitorinfo
     {
-        public int cbSize = Marshal.SizeOf(typeof(MONITORINFO));
+        public int cbSize = Marshal.SizeOf(typeof(Monitorinfo));
         public RECT rcMonitor = new RECT();
         public RECT rcWork = new RECT();
         public int dwFlags = 0;
@@ -17,8 +17,8 @@ namespace ControlzEx.Standard
     [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum MonitorOptions : uint
     {
-        MONITOR_DEFAULTTONULL = 0x00000000,
-        MONITOR_DEFAULTTOPRIMARY = 0x00000001,
-        MONITOR_DEFAULTTONEAREST = 0x00000002
+        MonitorDefaulttonull = 0x00000000,
+        MonitorDefaulttoprimary = 0x00000001,
+        MonitorDefaulttonearest = 0x00000002
     }
 }

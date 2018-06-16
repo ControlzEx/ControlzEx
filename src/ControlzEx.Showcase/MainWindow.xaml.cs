@@ -19,8 +19,8 @@
             this.InitializeComponent();
         }
 
-        private static readonly PropertyInfo criticalHandlePropertyInfo = typeof(Window).GetProperty("CriticalHandle", BindingFlags.NonPublic | BindingFlags.Instance);
-        private static readonly object[] emptyObjectArray = new object[0];
+        private static readonly PropertyInfo CriticalHandlePropertyInfo = typeof(Window).GetProperty("CriticalHandle", BindingFlags.NonPublic | BindingFlags.Instance);
+        private static readonly object[] EmptyObjectArray = new object[0];
 
         private void TitleBarGrid_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -35,7 +35,7 @@
 #pragma warning disable 618
                 UnsafeNativeMethods.ReleaseCapture();
 
-                var criticalHandle = (IntPtr)criticalHandlePropertyInfo.GetValue(this, emptyObjectArray);
+                var criticalHandle = (IntPtr)CriticalHandlePropertyInfo.GetValue(this, EmptyObjectArray);
                 // DragMove works too, but not on maximized windows
                 NativeMethods.SendMessage(criticalHandle, WM.SYSCOMMAND, (IntPtr)SC.MOUSEMOVE, IntPtr.Zero);
                 NativeMethods.SendMessage(criticalHandle, WM.LBUTTONUP, IntPtr.Zero, IntPtr.Zero);
