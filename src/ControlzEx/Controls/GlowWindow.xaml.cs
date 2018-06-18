@@ -410,8 +410,10 @@ namespace ControlzEx.Controls
                 case WM.NCLBUTTONDOWN:
                     if (this.ownerWindowHandle != IntPtr.Zero)
                     {
+                        // WA_CLICKACTIVE = 2
+                        NativeMethods.SendMessage(this.ownerWindowHandle, WM.ACTIVATE, new IntPtr(2), IntPtr.Zero);
                         // Forward message to owner
-                        NativeMethods.PostMessage(this.ownerWindowHandle, WM.NCLBUTTONDOWN, wParam, IntPtr.Zero);
+                        NativeMethods.PostMessage(this.ownerWindowHandle, (WM)msg, wParam, IntPtr.Zero);
                     }
                     break;
 
