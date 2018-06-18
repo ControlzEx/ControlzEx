@@ -846,6 +846,8 @@ namespace ControlzEx.Standard
         NCMBUTTONDOWN = 0x00A7,
         NCMBUTTONUP = 0x00A8,
         NCMBUTTONDBLCLK = 0x00A9,
+        NCXBUTTONDOWN = 0x00ab,
+        NCXBUTTONDBLCLK = 0x00ad,
 
         SYSKEYDOWN = 0x0104,
         SYSKEYUP = 0x0105,
