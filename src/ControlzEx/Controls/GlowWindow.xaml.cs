@@ -406,8 +406,15 @@ namespace ControlzEx.Controls
                         NativeMethods.SendMessage(this.ownerWindowHandle, WM.ACTIVATE, wParam, lParam);
                     }
                     return new IntPtr(3);
-
+                
                 case WM.NCLBUTTONDOWN:
+                case WM.NCLBUTTONDBLCLK:
+                case WM.NCRBUTTONDOWN:
+                case WM.NCRBUTTONDBLCLK:
+                case WM.NCMBUTTONDOWN:
+                case WM.NCMBUTTONDBLCLK:
+                case WM.NCXBUTTONDOWN:
+                case WM.NCXBUTTONDBLCLK:
                     if (this.ownerWindowHandle != IntPtr.Zero)
                     {
                         // WA_CLICKACTIVE = 2
