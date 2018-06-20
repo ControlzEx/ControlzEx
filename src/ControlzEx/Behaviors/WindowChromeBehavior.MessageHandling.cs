@@ -325,7 +325,7 @@ namespace ControlzEx.Behaviors
             if (this.dpiChanged)
             {
                 this.dpiChanged = false;
-                handled = true;
+                handled = false;
                 return IntPtr.Zero;
             }
 
