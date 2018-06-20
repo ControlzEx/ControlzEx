@@ -48,6 +48,8 @@ namespace ControlzEx.Behaviors
         private bool isCleanedUp;
         private IntPtr taskbarHandle;
 
+        private bool dpiChanged;
+
         private struct _SystemParameterBoundProperty
         {
             public string SystemParameterPropertyName { get; set; }

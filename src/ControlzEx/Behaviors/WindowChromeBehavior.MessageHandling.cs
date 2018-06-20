@@ -322,8 +322,15 @@ namespace ControlzEx.Behaviors
             // Since the first field of NCCALCSIZE_PARAMS is a RECT and is the only field we care about
             // we can unconditionally treat it as a RECT.
 
+            if (this.dpiChanged)
+            {
+                this.dpiChanged = false;
+                handled = true;
+                return IntPtr.Zero;
+            }
+
             if (this.MinimizeAnimation
-                && NativeMethods.GetWindowPlacement(this.windowHandle).showCmd == SW.MAXIMIZE)
+                && this._GetHwndState() == WindowState.Maximized)
             {
                 var monitor = NativeMethods.MonitorFromWindow(this.windowHandle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
                 var monitorInfo = NativeMethods.GetMonitorInfo(monitor);
@@ -344,7 +351,7 @@ namespace ControlzEx.Behaviors
 
                 Marshal.StructureToPtr(rc, lParam, true);
             }
-            else
+            else if (this._GetHwndState() == WindowState.Normal)
             {
                 if (this.TryToBeFlickerFree
                     && wParam.ToInt32() != 0)
@@ -354,13 +361,13 @@ namespace ControlzEx.Behaviors
                     // We have to add or remove one pixel on any side of the window to force a flicker free resize.
                     // Removing pixels would result in a smaller client area.
                     // Adding pixels does not seem to really increase the client area.
-                    rc.Bottom += 1;                
+                    rc.Bottom += 1;
 
                     Marshal.StructureToPtr(rc, lParam, true);
                 }
             }
 
-            handled = true;
+            handled = true;            
 
             // Per MSDN for NCCALCSIZE, always return 0 when wParam == FALSE
             // 
@@ -750,12 +757,14 @@ namespace ControlzEx.Behaviors
         [SecurityCritical]
         private IntPtr _HandleDPICHANGED(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
-            var rect = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT));
+            this.dpiChanged = true;
 
-            // We have to cause a size change to force the correctly scaled window size after a dpi change.
-            // This is only needed because we overwrite NCCALCSIZE which causes windows/wpf to receive a non scaled window size after a dpi change.
-            // The window will have it's correct size even if we ask for a different one here.
-            NativeMethods.SetWindowPos(this.windowHandle, IntPtr.Zero, rect.Left, rect.Top, rect.Width - 1, rect.Height, SWP.NOZORDER | SWP.NOACTIVATE | SWP.FRAMECHANGED);
+            if (this._GetHwndState() == WindowState.Normal)
+            {
+                var rect = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT));
+                rect.Bottom += 1;
+                Marshal.StructureToPtr(rect, lParam, true);
+            }
 
             handled = false;
             return IntPtr.Zero;
