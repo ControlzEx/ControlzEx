@@ -325,7 +325,7 @@ namespace ControlzEx.Behaviors
             if (this.dpiChanged)
             {
                 this.dpiChanged = false;
-                handled = false;
+                handled = this.IgnoreTaskbarOnMaximize == false;
                 return IntPtr.Zero;
             }
 
