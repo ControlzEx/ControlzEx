@@ -305,7 +305,9 @@ namespace ControlzEx.Standard
     public enum GCLP
     {
         HBRBACKGROUND = -10,
-        STYLE = -26
+        HICON = -14,
+        STYLE = -26,
+        HICONSM = -34
     }
 
     /// <summary>
