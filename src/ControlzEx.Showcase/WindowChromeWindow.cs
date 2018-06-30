@@ -46,7 +46,7 @@
             Interaction.GetBehaviors(this).Add(behavior);
         }
 
-        public static readonly DependencyProperty TryToBeFlickerFreeProperty = DependencyProperty.Register(nameof(TryToBeFlickerFree), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(false));
+        public static readonly DependencyProperty TryToBeFlickerFreeProperty = DependencyProperty.Register(nameof(TryToBeFlickerFree), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(true));
 
         public bool TryToBeFlickerFree
         {
