@@ -978,13 +978,13 @@ namespace ControlzEx.Behaviors
         [SecurityCritical]
         private void _SetRegion(WINDOWPOS? wp)
         {
-//            if (this.TryToBeFlickerFree)
-//            {
-//                // prevent a black background during large resizes
-//                this._ClearRegion();
-//
-//                return;
-//            }
+           if (this.TryToBeFlickerFree)
+           {
+               // prevent a black background during large resizes
+               this._ClearRegion();
+
+               return;
+           }
 
             // We're early - WPF hasn't necessarily updated the state of the window.
             // Need to query it ourselves.
