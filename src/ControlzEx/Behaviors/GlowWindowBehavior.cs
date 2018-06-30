@@ -1,6 +1,7 @@
 ﻿namespace ControlzEx.Behaviors
 {
     using System;
+    using System.ComponentModel;
     using System.Linq;
     using System.Runtime.InteropServices;
     using System.Windows;
@@ -82,14 +83,36 @@
         {
             base.OnAttached();
 
-            this.AssociatedObject.SourceInitialized += (o, args) =>
-                {
-                    this.handle = new WindowInteropHelper(this.AssociatedObject).Handle;
-                    this.hwndSource = HwndSource.FromHwnd(this.handle);
-                    this.hwndSource?.AddHook(this.AssociatedObjectWindowProc);
-                };
+            this.AssociatedObject.SourceInitialized += this.AssociatedObjectSourceInitialized;
             this.AssociatedObject.Loaded += this.AssociatedObjectOnLoaded;
             this.AssociatedObject.Unloaded += this.AssociatedObjectUnloaded;
+        }
+
+        /// <inheritdoc />
+        protected override void OnDetaching()
+        {
+            this.AssociatedObject.SourceInitialized -= this.AssociatedObjectSourceInitialized;
+            this.AssociatedObject.Loaded -= this.AssociatedObjectOnLoaded;
+            this.AssociatedObject.Unloaded -= this.AssociatedObjectUnloaded;
+
+            this.hwndSource?.RemoveHook(this.AssociatedObjectWindowProc);
+
+            this.AssociatedObject.StateChanged -= this.AssociatedObjectStateChanged;
+            this.AssociatedObject.IsVisibleChanged -= this.AssociatedObjectIsVisibleChanged;
+            this.AssociatedObject.Closing -= this.AssociatedObjectOnClosing;
+
+            this.DestroyGlowVisibleTimer();
+
+            this.Close();
+
+            base.OnDetaching();
+        }
+
+        private void AssociatedObjectSourceInitialized(object sender, EventArgs e)
+        {
+            this.handle = new WindowInteropHelper(this.AssociatedObject).Handle;
+            this.hwndSource = HwndSource.FromHwnd(this.handle);
+            this.hwndSource?.AddHook(this.AssociatedObjectWindowProc);
         }
 
         private void AssociatedObjectStateChanged(object sender, EventArgs e)
@@ -115,6 +138,11 @@
         }
 
         private void AssociatedObjectUnloaded(object sender, RoutedEventArgs e)
+        {
+            this.DestroyGlowVisibleTimer();
+        }
+
+        private void DestroyGlowVisibleTimer()
         {
             if (this.makeGlowVisibleTimer is null)
             {
@@ -189,13 +217,15 @@
                 // hide the glows if window get invisible state
                 this.AssociatedObject.IsVisibleChanged += this.AssociatedObjectIsVisibleChanged;
                 // closing always handled
-                this.AssociatedObject.Closing += (o, args) =>
-                {
-                    if (!args.Cancel)
-                    {
-                        this.AssociatedObject.IsVisibleChanged -= this.AssociatedObjectIsVisibleChanged;
-                    }
-                };
+                this.AssociatedObject.Closing += this.AssociatedObjectOnClosing;
+            }
+        }
+
+        private void AssociatedObjectOnClosing(object o, CancelEventArgs args)
+        {
+            if (!args.Cancel)
+            {
+                this.AssociatedObject.IsVisibleChanged -= this.AssociatedObjectIsVisibleChanged;
             }
         }
 
@@ -316,6 +346,17 @@
             this.right?.Show();
             this.top?.Show();
             this.bottom?.Show();
+        }
+
+        /// <summary>
+        /// Closes all glow windows
+        /// </summary>
+        private void Close()
+        {
+            this.left?.Close();
+            this.right?.Close();
+            this.top?.Close();
+            this.bottom?.Close();
         }
     }
 }
