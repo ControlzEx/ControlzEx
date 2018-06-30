@@ -351,20 +351,17 @@ namespace ControlzEx.Behaviors
 
                 Marshal.StructureToPtr(rc, lParam, true);
             }
-            else if (this._GetHwndState() == WindowState.Normal)
+            else if (this._GetHwndState() == WindowState.Normal
+                     && wParam.ToInt32() != 0)
             {
-                if (this.TryToBeFlickerFree
-                    && wParam.ToInt32() != 0)
-                {
-                    var rc = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT));
+                var rc = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT));
 
-                    // We have to add or remove one pixel on any side of the window to force a flicker free resize.
-                    // Removing pixels would result in a smaller client area.
-                    // Adding pixels does not seem to really increase the client area.
-                    rc.Bottom += 1;
+                // We have to add or remove one pixel on any side of the window to force a flicker free resize.
+                // Removing pixels would result in a smaller client area.
+                // Adding pixels does not seem to really increase the client area.
+                rc.Bottom += 1;
 
-                    Marshal.StructureToPtr(rc, lParam, true);
-                }
+                Marshal.StructureToPtr(rc, lParam, true);
             }
 
             handled = true;            
@@ -420,8 +417,7 @@ namespace ControlzEx.Behaviors
         [SecurityCritical]
         private IntPtr _HandleNCPAINT(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
-            handled = this.TryToBeFlickerFree == false
-                    && this.GlowBrush is null;
+            handled = false;
 
             return IntPtr.Zero;
         }
@@ -970,14 +966,6 @@ namespace ControlzEx.Behaviors
         [SecurityCritical]
         private void _SetRegion(WINDOWPOS? wp)
         {
-           if (this.TryToBeFlickerFree)
-           {
-               // prevent a black background during large resizes
-               this._ClearRegion();
-
-               return;
-           }
-
             // We're early - WPF hasn't necessarily updated the state of the window.
             // Need to query it ourselves.
             var wpl = NativeMethods.GetWindowPlacement(this.windowHandle);
@@ -1009,7 +997,9 @@ namespace ControlzEx.Behaviors
                     var hMon = NativeMethods.MonitorFromWindow(this.windowHandle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
 
                     var mi = NativeMethods.GetMonitorInfo(hMon);
-                    rcMax = this.IgnoreTaskbarOnMaximize ? mi.rcMonitor : mi.rcWork;
+                    rcMax = this.IgnoreTaskbarOnMaximize
+                                ? mi.rcMonitor
+                                : mi.rcWork;
                     // The location of maximized window takes into account the border that Windows was
                     // going to remove, so we also need to consider it.
                     rcMax.Offset(-left, -top);
@@ -1029,52 +1019,8 @@ namespace ControlzEx.Behaviors
             }
             else
             {
-                Size windowSize;
-
-                // Use the size if it's specified.
-                if (null != wp 
-                    && Utility.IsFlagSet((int)wp.Value.flags, (int)SWP.NOSIZE) == false)
-                {
-                    windowSize = new Size(wp.Value.cx, wp.Value.cy);
-                }
-                else if (null != wp 
-                         && this.lastWindowStateForSetRegion == this.AssociatedObject.WindowState)
-                {
-                    return;
-                }
-                else
-                {
-                    windowSize = this._GetWindowRect().Size;
-                }
-
-                this.lastWindowStateForSetRegion = this.AssociatedObject.WindowState;
-
-                var hrgn = IntPtr.Zero;
-                try
-                {
-                    hrgn = _CreateRectRgn(new Rect(windowSize));
-
-                    NativeMethods.SetWindowRgn(this.windowHandle, hrgn, NativeMethods.IsWindowVisible(this.windowHandle));
-                    hrgn = IntPtr.Zero;
-                }
-                finally
-                {
-                    // Free the memory associated with the HRGN if it wasn't assigned to the HWND.
-                    Utility.SafeDeleteObject(ref hrgn);
-                }
+                this._ClearRegion();
             }
-        }
-
-        /// <SecurityNote>
-        ///   Critical : Calls critical methods
-        /// </SecurityNote>
-        [SecurityCritical]
-        private static IntPtr _CreateRectRgn(Rect region)
-        {
-            return NativeMethods.CreateRectRgn((int)Math.Floor(region.Left),
-                                               (int)Math.Floor(region.Top),
-                                               (int)Math.Ceiling(region.Right),
-                                               (int)Math.Ceiling(region.Bottom));
         }
 
         /// <summary>

@@ -35,7 +35,6 @@
         private void InitializeWindowChromeBehavior()
         {
             var behavior = new WindowChromeBehavior();
-            BindingOperations.SetBinding(behavior, WindowChromeBehavior.TryToBeFlickerFreeProperty, new Binding { Path = new PropertyPath(TryToBeFlickerFreeProperty), Source = this });
             BindingOperations.SetBinding(behavior, WindowChromeBehavior.ResizeBorderThicknessProperty, new Binding { Path = new PropertyPath(ResizeBorderThicknessProperty), Source = this });
             BindingOperations.SetBinding(behavior, WindowChromeBehavior.IgnoreTaskbarOnMaximizeProperty, new Binding { Path = new PropertyPath(IgnoreTaskbarOnMaximizeProperty), Source = this });
             BindingOperations.SetBinding(behavior, WindowChromeBehavior.GlowBrushProperty, new Binding { Path = new PropertyPath(GlowBrushProperty), Source = this });
@@ -54,14 +53,6 @@
             BindingOperations.SetBinding(behavior, GlowWindowBehavior.NonActiveGlowBrushProperty, new Binding { Path = new PropertyPath(NonActiveGlowBrushProperty), Source = this });
 
             Interaction.GetBehaviors(this).Add(behavior);
-        }
-
-        public static readonly DependencyProperty TryToBeFlickerFreeProperty = DependencyProperty.Register(nameof(TryToBeFlickerFree), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(true));
-
-        public bool TryToBeFlickerFree
-        {
-            get { return (bool)this.GetValue(TryToBeFlickerFreeProperty); }
-            set { this.SetValue(TryToBeFlickerFreeProperty, value); }
         }
 
         public Thickness ResizeBorderThickness
