@@ -9,12 +9,13 @@
                           x:Name="Window"
                           mc:Ignorable="d"
                           Title="ControlzEx.Showcase"
-                          Background="Transparent"
                           Style="{Binding ElementName=StyleComboBox, Path=SelectedValue}"
-                          Height="480"
-                          Width="640"
-                          AllowsTransparency="False"
-                          WindowStyle="None"
+                          FlowDirection="LeftToRight"
+                          Height="768"
+                          Width="1024"
+                          MinWidth="80"
+                          MinHeight="60"
+                          WindowState="Normal"
                           GlowBrush="Blue" 
                           NonActiveGlowBrush="Red">
     <local:WindowChromeWindow.Resources>
