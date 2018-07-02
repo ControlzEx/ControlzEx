@@ -63,8 +63,12 @@
     <Compile Include="Behaviors\GlowWindowBehavior.cs" />
     <Compile Include="Behaviors\WindowChromeBehavior.cs" />
     <Compile Include="Behaviors\WindowChromeBehavior.MessageHandling.cs" />
+    <Compile Include="Behaviors\ShadowWindowBehavior.cs" />
     <Compile Include="Controls\GlowWindow.xaml.cs">
       <DependentUpon>GlowWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ShadowWindow.xaml.cs">
+      <DependentUpon>ShadowWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="DesignerConstants.cs" />
     <Compile Include="Controls\Glow.cs" />
@@ -106,6 +110,10 @@
     <Page Include="Controls\GlowWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\ShadowWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>

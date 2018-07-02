@@ -5,6 +5,7 @@
     using System.Linq;
     using System.Reflection;
     using System.Windows;
+    using System.Windows.Controls;
     using System.Windows.Input;
     using System.Windows.Media;
     using ControlzEx.Native;
@@ -15,8 +16,9 @@
         public MainWindow()
         {
             this.InitializeComponent();
-
+            
             this.Brushes = GetBrushes().ToList();
+            this.UpdateBehaviors();
         }
 
         public static readonly DependencyProperty BrushesProperty = DependencyProperty.Register(nameof(Brushes), typeof(List<KeyValuePair<string, Brush>>), typeof(MainWindow), new PropertyMetadata(default(List<KeyValuePair<string, Brush>>)));
@@ -95,6 +97,30 @@
 #pragma warning disable 618
             ControlzEx.Windows.Shell.SystemCommands.ShowSystemMenu(this, e);
 #pragma warning restore 618
+        }
+
+        private void EffectBehaviorComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            this.UpdateBehaviors();
+        }
+
+        private void UpdateBehaviors()
+        {
+            switch (this.EffectBehaviorComboBox.SelectedIndex)
+            {
+                case 1:
+                    this.EnableGlowWindowBehavior();
+                    this.DisableShadowWindowBehavior();
+                    break;
+                case 2:
+                    this.EnableShadowWindowBehavior();
+                    this.DisableGlowWindowBehavior();
+                    break;
+                default:
+                    this.DisableGlowWindowBehavior();
+                    this.DisableShadowWindowBehavior();
+                    break;
+            }
         }
     }
 }

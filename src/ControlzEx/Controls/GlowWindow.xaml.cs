@@ -210,11 +210,7 @@ namespace ControlzEx.Controls
                 };
             owner.StateChanged += (sender, e) => this.Update();
             owner.IsVisibleChanged += (sender, e) => this.Update();
-            owner.Closed += (sender, e) =>
-                {
-                    this.closing = true;
-                    this.Close();
-                };
+            owner.Closed += (sender, e) => this.InternalClose();
         }
 
         public bool IsGlowing { set; get; }
@@ -386,6 +382,12 @@ namespace ControlzEx.Controls
                                        (int)this.getWidth(rect),
                                        (int)this.getHeight(rect),
                                        SWP.NOACTIVATE | SWP.NOZORDER);
+        }
+
+        internal void InternalClose()
+        {
+            this.closing = true;
+            this.Close();
         }
 
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)

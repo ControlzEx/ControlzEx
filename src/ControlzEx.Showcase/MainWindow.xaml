@@ -3,7 +3,6 @@
                           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                          xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
                           xmlns:local="clr-namespace:ControlzEx.Showcase"
                           xmlns:controlzEx="urn:controlzex"
                           x:Name="Window"
@@ -106,22 +105,35 @@
                                   SelectedItem="{Binding ElementName=Window, Path=ResizeMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                         <Label Grid.Row="2"
-                               Grid.Column="0">GlowBrush</Label>
+                               Grid.Column="0">Behaviors</Label>
                         <ComboBox Grid.Row="2"
+                                  Grid.Column="1"
+                                  x:Name="EffectBehaviorComboBox"
+                                  SelectedIndex="1"
+                                  SelectionChanged="EffectBehaviorComboBox_OnSelectionChanged"
+                                  SelectedValuePath="Text">
+                            <TextBlock Text="WindowChrome" />
+                            <TextBlock Text="WindowChrome + GlowWindow" />
+                            <TextBlock Text="WindowChrome + ShadowWindow" />
+                        </ComboBox>
+
+                        <Label Grid.Row="3"
+                               Grid.Column="0">GlowBrush</Label>
+                        <ComboBox Grid.Row="3"
                                   Grid.Column="1"
                                   ItemsSource="{Binding Brushes, ElementName=Window}"
                                   SelectedValuePath="Value"
                                   SelectedValue="{Binding ElementName=Window, Path=GlowBrush, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         
-                        <Label Grid.Row="3"
+                        <Label Grid.Row="4"
                                Grid.Column="0">NonActiveGlowBrush</Label>
-                        <ComboBox Grid.Row="3"
+                        <ComboBox Grid.Row="4"
                                   Grid.Column="1"
                                   ItemsSource="{Binding Brushes, ElementName=Window}"
                                   SelectedValuePath="Value"
                                   SelectedValue="{Binding ElementName=Window, Path=NonActiveGlowBrush, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-                        <CheckBox Grid.Row="4"
+                        <CheckBox Grid.Row="5"
                                   Grid.Column="0"
                                   Grid.ColumnSpan="2"
                                   IsChecked="{Binding ElementName=Window, Path=IgnoreTaskbarOnMaximize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
