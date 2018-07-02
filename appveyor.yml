@@ -18,14 +18,13 @@
   
   # Install scripts. (runs after repo cloning)
   install:
-    - nuget restore
+    #- nuget restore
   
   build:
     verbosity: minimal
   
   after_build:
-    - cmd: Tools\GitLink.exe . -u https://github.com/ControlzEx/ControlzEx
-    - cmd: nuget pack ControlzEx.nuspec -Version %appveyor_build_version% -Properties Configuration=%configuration%
+    - cmd: nuget pack src\ControlzEx.nuspec -Version %appveyor_build_version% -Properties Configuration=%configuration%
     - ps: Get-ChildItem .\*.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
   
   assembly_info:
@@ -51,14 +50,13 @@
   
   # Install scripts. (runs after repo cloning)
   install:
-    - nuget restore
+    #- nuget restore
   
   build:
     verbosity: minimal
   
   after_build:
-    - cmd: Tools\GitLink.exe . -u https://github.com/ControlzEx/ControlzEx
-    - cmd: nuget pack ControlzEx.nuspec -Version %appveyor_build_version% -Properties Configuration=%configuration%
+    - cmd: nuget pack src\ControlzEx.nuspec -Version %appveyor_build_version% -Properties Configuration=%configuration%
     - ps: Get-ChildItem .\*.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
   
   assembly_info:
