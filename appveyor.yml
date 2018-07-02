@@ -18,7 +18,7 @@
   
   # Install scripts. (runs after repo cloning)
   install:
-    #- nuget restore
+    - nuget restore
   
   build:
     verbosity: minimal
@@ -50,7 +50,7 @@
   
   # Install scripts. (runs after repo cloning)
   install:
-    #- nuget restore
+    - nuget restore
   
   build:
     verbosity: minimal
