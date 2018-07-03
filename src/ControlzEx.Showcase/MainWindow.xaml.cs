@@ -16,7 +16,7 @@
         public MainWindow()
         {
             this.InitializeComponent();
-            
+
             this.Brushes = GetBrushes().ToList();
             this.UpdateBehaviors();
         }
