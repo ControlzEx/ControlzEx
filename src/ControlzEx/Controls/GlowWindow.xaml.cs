@@ -387,6 +387,19 @@ namespace ControlzEx.Controls
         internal void InternalClose()
         {
             this.closing = true;
+
+            if (this.resizeModeChangeNotifier != null)
+            {
+                this.resizeModeChangeNotifier.ValueChanged -= this.ResizeModeChanged;
+                this.resizeModeChangeNotifier.Dispose();
+            }
+
+            if (this.hwndSource != null)
+            {
+                this.hwndSource.RemoveHook(this.WndProc);
+                this.hwndSource.Dispose();
+            }
+
             this.Close();
         }
 
