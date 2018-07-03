@@ -18,6 +18,6 @@
   build_script:
     - ps: .\build.ps1 -Target Default
 
-    artifacts:
+  artifacts:
     - path: src/bin/ControlzEx*.nupkg
     - path: src/bin/ControlzEx*.zip
