@@ -41,10 +41,14 @@ var solution = "src/ControlzEx.sln";
 
 Setup(ctx =>
 {
+    // Executed BEFORE the first task.
+
     if (!IsRunningOnWindows())
     {
         throw new NotImplementedException("ControlzEx will only build on Windows because it's not possible to target WPF and Windows Forms from UNIX.");
     }
+
+    Information(Figlet("ControlzEx"));
 
     Information("Informational   Version: {0}", gitVersion.InformationalVersion);
     Information("SemVer          Version: {0}", gitVersion.SemVer);
@@ -52,17 +56,12 @@ Setup(ctx =>
     Information("MajorMinorPatch Version: {0}", gitVersion.MajorMinorPatch);
     Information("NuGet           Version: {0}", gitVersion.NuGetVersion);
     Information("IsLocalBuild           : {0}", local);
-
-    Information(Figlet("ControlzEx"));
-
-    // Executed BEFORE the first task.
-    Information("Running tasks...");
+    Information("Configuration          : {0}", configuration);
 });
 
 Teardown(ctx =>
 {
    // Executed AFTER the last task.
-   Information("Finished running tasks.");
 });
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -73,8 +72,8 @@ Task("CleanOutput")
     //.ContinueOnError()
     .Does(() =>
 {
-    DeleteDirectories(GetDirectories("src/**/obj"), recursive:true);
-    DeleteDirectories(GetDirectories("src/**/bin"), recursive:true);
+    var directoriesToDelete = GetDirectories("src/**/obj").Concat(GetDirectories("src/**/bin"));
+    DeleteDirectories(directoriesToDelete, new DeleteDirectorySettings { Recursive = true, Force = true });
 });
 
 Task("Restore")
@@ -157,7 +156,10 @@ Task("Default")
     .IsDependentOn("CleanOutput")
     .IsDependentOn("Restore")
     .IsDependentOn("UpdateGlobalAssemblyInfo")
-    .IsDependentOn("Build")
+    .IsDependentOn("Build");
+
+Task("appveyor")
+    .IsDependentOn("Default")
     .IsDependentOn("PaketPack")
     .IsDependentOn("Zip");
 

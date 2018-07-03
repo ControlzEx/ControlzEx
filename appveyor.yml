@@ -16,7 +16,7 @@
     do_not_increment_build_number: false
 
   build_script:
-    - ps: .\build.ps1 -Target Default
+    - ps: .\build.ps1 -target appveyor
 
   artifacts:
     - path: src/bin/ControlzEx*.nupkg
