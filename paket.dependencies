@@ -1,0 +1,7 @@
+framework: >= net40
+source https://api.nuget.org/v3/index.json
+
+nuget gitlink
+nuget MSBuild.Sdk.Extras 1.5.4
+nuget NuGet.CommandLine
+nuget JetBrains.Annotations

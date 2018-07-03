@@ -52,7 +52,7 @@ namespace ControlzEx.Behaviors
                                              bp.DependencyProperty,
                                              new Binding
                                              {
-#if NET45 || NET462
+#if !NET40
                                                  Path = new PropertyPath("(SystemParameters." + bp.SystemParameterPropertyName + ")"),
 #else
                         Source = SystemParameters2.Current,
