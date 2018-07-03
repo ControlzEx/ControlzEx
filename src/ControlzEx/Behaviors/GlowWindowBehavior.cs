@@ -86,6 +86,12 @@
             this.AssociatedObject.SourceInitialized += this.AssociatedObjectSourceInitialized;
             this.AssociatedObject.Loaded += this.AssociatedObjectOnLoaded;
             this.AssociatedObject.Unloaded += this.AssociatedObjectUnloaded;
+
+            if (this.AssociatedObject.IsLoaded)
+            {
+                this.AssociatedObjectOnLoaded(this.AssociatedObject, new RoutedEventArgs());
+                this.AssociatedObjectSourceInitialized(this.AssociatedObject, EventArgs.Empty);
+            }
         }
 
         /// <inheritdoc />
@@ -353,10 +359,10 @@
         /// </summary>
         private void Close()
         {
-            this.left?.Close();
-            this.right?.Close();
-            this.top?.Close();
-            this.bottom?.Close();
+            this.left?.InternalClose();
+            this.right?.InternalClose();
+            this.top?.InternalClose();
+            this.bottom?.InternalClose();
         }
     }
 }

@@ -8,6 +8,9 @@
 
     public class WindowChromeWindow : Window
     {
+        private GlowWindowBehavior glowWindowBehavior;
+        private ShadowWindowBehavior shadowWindowBehavior;
+
         static WindowChromeWindow()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(WindowChromeWindow), new FrameworkPropertyMetadata(typeof(WindowChromeWindow)));
@@ -23,10 +26,39 @@
             this.InitializeBehaviors();
         }
 
+        protected void EnableGlowWindowBehavior()
+        {
+            var behaviors = Interaction.GetBehaviors(this);
+            if (!behaviors.Contains(this.glowWindowBehavior))
+            {
+                behaviors.Add(this.glowWindowBehavior);
+            }
+        }
+
+        protected void DisableGlowWindowBehavior()
+        {
+            Interaction.GetBehaviors(this).Remove(this.glowWindowBehavior);
+        }
+
+        protected void EnableShadowWindowBehavior()
+        {
+            var behaviors = Interaction.GetBehaviors(this);
+            if (!behaviors.Contains(this.shadowWindowBehavior))
+            {
+                behaviors.Add(this.shadowWindowBehavior);
+            }
+        }
+
+        protected void DisableShadowWindowBehavior()
+        {
+            Interaction.GetBehaviors(this).Remove(this.shadowWindowBehavior);
+        }
+
         private void InitializeBehaviors()
         {
             this.InitializeWindowChromeBehavior();
             this.InitializeGlowWindowBehavior();
+            this.InitializeShadowWindowBehavior();
         }
 
         /// <summary>
@@ -43,16 +75,23 @@
         }
 
         /// <summary>
-        /// Initializes the WindowChromeBehavior which is needed to render the custom WindowChrome.
+        /// Initializes the GlowWindowBehavior.
         /// </summary>
         private void InitializeGlowWindowBehavior()
         {
-            var behavior = new GlowWindowBehavior();
-            BindingOperations.SetBinding(behavior, GlowWindowBehavior.ResizeBorderThicknessProperty, new Binding { Path = new PropertyPath(ResizeBorderThicknessProperty), Source = this });
-            BindingOperations.SetBinding(behavior, GlowWindowBehavior.GlowBrushProperty, new Binding { Path = new PropertyPath(GlowBrushProperty), Source = this });
-            BindingOperations.SetBinding(behavior, GlowWindowBehavior.NonActiveGlowBrushProperty, new Binding { Path = new PropertyPath(NonActiveGlowBrushProperty), Source = this });
+            this.glowWindowBehavior = new GlowWindowBehavior();
+            BindingOperations.SetBinding(this.glowWindowBehavior, GlowWindowBehavior.ResizeBorderThicknessProperty, new Binding { Path = new PropertyPath(ResizeBorderThicknessProperty), Source = this });
+            BindingOperations.SetBinding(this.glowWindowBehavior, GlowWindowBehavior.GlowBrushProperty, new Binding { Path = new PropertyPath(GlowBrushProperty), Source = this });
+            BindingOperations.SetBinding(this.glowWindowBehavior, GlowWindowBehavior.NonActiveGlowBrushProperty, new Binding { Path = new PropertyPath(NonActiveGlowBrushProperty), Source = this });
+        }
 
-            Interaction.GetBehaviors(this).Add(behavior);
+        /// <summary>
+        /// Initializes the ShadowWindowBehavior.
+        /// </summary>
+        private void InitializeShadowWindowBehavior()
+        {
+            this.shadowWindowBehavior = new ShadowWindowBehavior();
+            BindingOperations.SetBinding(this.shadowWindowBehavior, ShadowWindowBehavior.ResizeBorderThicknessProperty, new Binding { Path = new PropertyPath(ResizeBorderThicknessProperty), Source = this });
         }
 
         public Thickness ResizeBorderThickness

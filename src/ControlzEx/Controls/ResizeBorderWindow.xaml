@@ -1,0 +1,15 @@
+﻿<Window
+    x:Class="ControlzEx.Controls.ResizeBorderWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:ControlzEx.Controls"
+    x:ClassModifier="internal"
+    AllowsTransparency="True"
+    Background="{x:Null}"
+    ResizeMode="NoResize"
+    ShowActivated="False"
+    ShowInTaskbar="False"
+    UseLayoutRounding="True"
+    WindowStyle="None">
+    <Border BorderBrush="#01000000" BorderThickness="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:ResizeBorderWindow}}, Path=ResizeBorderThickness}" />
+</Window>

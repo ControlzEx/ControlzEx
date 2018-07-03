@@ -1,0 +1,92 @@
+﻿<Window
+    x:Class="ControlzEx.Controls.ShadowWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:options="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
+    x:ClassModifier="internal"
+    AllowsTransparency="True"
+    Background="{x:Null}"
+    Opacity="0"
+    ResizeMode="NoResize"
+    ShowActivated="False"
+    ShowInTaskbar="False"
+    UseLayoutRounding="True"
+    WindowStyle="None">
+    <Grid UseLayoutRounding="True">
+        <Grid.Resources>
+            <GradientStopCollection options:Freeze="True" x:Key="ControlzEx.ShadowWindow.TopLeftStops">
+                <GradientStop Offset="0" Color="#2A000000" />
+                <GradientStop Offset="0.333" Color="#0F000000" />
+                <GradientStop Offset="0.667" Color="#06000000" />
+                <GradientStop Offset="1" Color="#01000000" />
+            </GradientStopCollection>
+            <GradientStopCollection options:Freeze="True" x:Key="ControlzEx.ShadowWindow.BottomRightStops">
+                <GradientStop Offset="0" Color="#3C000000" />
+                <GradientStop Offset="0.167" Color="#22000000" />
+                <GradientStop Offset="0.333" Color="#16000000" />
+                <GradientStop Offset="0.667" Color="#08000000" />
+                <GradientStop Offset="1" Color="#01000000" />
+            </GradientStopCollection>
+            <GradientStopCollection options:Freeze="True" x:Key="ControlzEx.ShadowWindow.OpacityMaskStops">
+                <GradientStop Offset="0" Color="#BF000000" />
+                <GradientStop Offset="0.01" Color="#F000" />
+            </GradientStopCollection>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="16" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="22" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="17" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="21" />
+        </Grid.ColumnDefinitions>
+        <Rectangle Grid.Row="0" Grid.Column="0">
+            <Rectangle.Fill>
+                <RadialGradientBrush options:Freeze="True" Center="1,1" GradientOrigin="1,1" GradientStops="{StaticResource ControlzEx.ShadowWindow.TopLeftStops}" RadiusX="1" RadiusY="1" />
+            </Rectangle.Fill>
+        </Rectangle>
+        <Rectangle Grid.Row="0" Grid.Column="1">
+            <Rectangle.Fill>
+                <LinearGradientBrush options:Freeze="True" GradientStops="{StaticResource ControlzEx.ShadowWindow.TopLeftStops}" MappingMode="RelativeToBoundingBox" StartPoint="0,1" EndPoint="0,0" />
+            </Rectangle.Fill>
+        </Rectangle>
+        <Rectangle Grid.Row="0" Grid.Column="2">
+            <Rectangle.Fill>
+                <RadialGradientBrush options:Freeze="True" Center="0,1" GradientOrigin="0,1" GradientStops="{StaticResource ControlzEx.ShadowWindow.TopLeftStops}" RadiusX="1" RadiusY="1" />
+            </Rectangle.Fill>
+        </Rectangle>
+        <Rectangle Grid.Row="1" Grid.Column="0">
+            <Rectangle.Fill>
+                <LinearGradientBrush options:Freeze="True" GradientStops="{StaticResource ControlzEx.ShadowWindow.TopLeftStops}" MappingMode="RelativeToBoundingBox" StartPoint="1,0" EndPoint="0,0" />
+            </Rectangle.Fill>
+        </Rectangle>
+        <Rectangle Grid.Row="1" Grid.Column="2">
+            <Rectangle.OpacityMask>
+                <LinearGradientBrush options:Freeze="True" GradientStops="{StaticResource ControlzEx.ShadowWindow.OpacityMaskStops}" EndPoint="0,1" />
+            </Rectangle.OpacityMask>
+            <Rectangle.Fill>
+                <LinearGradientBrush options:Freeze="True" GradientStops="{StaticResource ControlzEx.ShadowWindow.BottomRightStops}" MappingMode="RelativeToBoundingBox" StartPoint="0,0" EndPoint="1,0" />
+            </Rectangle.Fill>
+        </Rectangle>
+        <Rectangle Grid.Row="2" Grid.Column="0">
+            <Rectangle.Fill>
+                <RadialGradientBrush options:Freeze="True" Center="1,0" GradientOrigin="1,0" GradientStops="{StaticResource ControlzEx.ShadowWindow.TopLeftStops}" RadiusX="1" RadiusY="1" />
+            </Rectangle.Fill>
+        </Rectangle>
+        <Rectangle Grid.Row="2" Grid.Column="1">
+            <Rectangle.OpacityMask>
+                <LinearGradientBrush options:Freeze="True" GradientStops="{StaticResource ControlzEx.ShadowWindow.OpacityMaskStops}" />
+            </Rectangle.OpacityMask>
+            <Rectangle.Fill>
+                <LinearGradientBrush options:Freeze="True" GradientStops="{StaticResource ControlzEx.ShadowWindow.BottomRightStops}" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0" EndPoint="0.5,1" />
+            </Rectangle.Fill>
+        </Rectangle>
+        <Rectangle Grid.Row="2" Grid.Column="2">
+            <Rectangle.Fill>
+                <RadialGradientBrush options:Freeze="True" Center="0,0" GradientOrigin="0,0" GradientStops="{StaticResource ControlzEx.ShadowWindow.BottomRightStops}" RadiusX="1" RadiusY="1" />
+            </Rectangle.Fill>
+        </Rectangle>
+    </Grid>
+</Window>
