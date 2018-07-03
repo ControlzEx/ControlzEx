@@ -78,7 +78,7 @@
                 e.Handled = true;
 
 #pragma warning disable 618
-                if (this.WindowState == WindowState.Normal)
+                if (this.WindowState == WindowState.Normal && this.ResizeMode != ResizeMode.NoResize && this.ResizeMode != ResizeMode.CanMinimize)
                 {
                     ControlzEx.Windows.Shell.SystemCommands.MaximizeWindow(this);
                 }
@@ -95,6 +95,16 @@
 #pragma warning disable 618
             ControlzEx.Windows.Shell.SystemCommands.ShowSystemMenu(this, e);
 #pragma warning restore 618
+        }
+
+        private void ButtonMinimizeOnClick(object sender, EventArgs e)
+        {
+            ControlzEx.Windows.Shell.SystemCommands.MinimizeWindow(this);
+        }
+
+        private void ButtonMaximizeOnClick(object sender, EventArgs e)
+        {
+            ControlzEx.Windows.Shell.SystemCommands.MaximizeWindow(this);
         }
     }
 }
