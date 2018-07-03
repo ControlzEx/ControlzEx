@@ -58,7 +58,7 @@
         {
             this.InitializeWindowChromeBehavior();
             this.InitializeGlowWindowBehavior();
-            this.InitializeShadowWindowBevaior();
+            this.InitializeShadowWindowBehavior();
         }
 
         /// <summary>
@@ -88,7 +88,7 @@
         /// <summary>
         /// Initializes the ShadowWindowBehavior.
         /// </summary>
-        private void InitializeShadowWindowBevaior()
+        private void InitializeShadowWindowBehavior()
         {
             this.shadowWindowBehavior = new ShadowWindowBehavior();
             BindingOperations.SetBinding(this.shadowWindowBehavior, ShadowWindowBehavior.ResizeBorderThicknessProperty, new Binding { Path = new PropertyPath(ResizeBorderThicknessProperty), Source = this });
