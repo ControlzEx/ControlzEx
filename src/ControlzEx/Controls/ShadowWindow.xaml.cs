@@ -18,16 +18,19 @@ namespace ControlzEx.Controls
         private readonly Func<RECT, int> getWidth = rect => rect.Width + 38;
         private readonly Func<RECT, int> getHeight = rect => rect.Height + 38;
 
+        private readonly Window owner;
+
         private IntPtr windowHandle;
         private IntPtr ownerWindowHandle;
         private HwndSource hwndSource;
         private bool closing;
 
-        internal ShadowWindow(Window owner)
+        internal ShadowWindow([NotNull] Window owner)
         {
             this.InitializeComponent();
 
             this.Owner = owner;
+            this.owner = owner;
 
             this.AllowsTransparency = true;
             this.ShowActivated = false;
@@ -51,11 +54,11 @@ namespace ControlzEx.Controls
                 return;
             }
 
-            if (this.Owner.WindowState == WindowState.Normal)
+            if (this.owner.WindowState == WindowState.Normal)
             {
                 this.Invoke(() => this.Visibility = Visibility.Visible);
 
-                if (this.ownerWindowHandle != IntPtr.Zero
+                if (this.CanUpdateCore()
                     && UnsafeNativeMethods.GetWindowRect(this.ownerWindowHandle, out var rect))
                 {
                     this.UpdateCore(rect);
@@ -87,15 +90,11 @@ namespace ControlzEx.Controls
         {
             this.closing = true;
 
-            var owner = this.Owner;
-            if (owner != null)
-            {
-                owner.Activated -= this.OnOwnerActivated;
-                owner.Deactivated -= this.OnOwnerDeactivated;
-                owner.StateChanged -= this.OnOwnerStateChanged;
-                owner.IsVisibleChanged -= this.OnOwnerIsVisibleChanged;
-                owner.Closing -= this.OnOwnerClosed;
-            }
+            this.owner.Activated -= this.OnOwnerActivated;
+            this.owner.Deactivated -= this.OnOwnerDeactivated;
+            this.owner.StateChanged -= this.OnOwnerStateChanged;
+            this.owner.IsVisibleChanged -= this.OnOwnerIsVisibleChanged;
+            this.owner.Closing -= this.OnOwnerClosed;
 
             this.hwndSource?.Dispose();
             this.Close();
@@ -114,7 +113,7 @@ namespace ControlzEx.Controls
             }
 
             this.windowHandle = this.hwndSource.Handle;
-            this.ownerWindowHandle = new WindowInteropHelper(this.Owner).Handle;
+            this.ownerWindowHandle = new WindowInteropHelper(this.owner).Handle;
 
             var ws = NativeMethods.GetWindowStyle(this.windowHandle);
             var wsex = NativeMethods.GetWindowStyleEx(this.windowHandle);

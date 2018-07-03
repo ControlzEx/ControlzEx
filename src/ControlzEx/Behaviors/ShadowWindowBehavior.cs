@@ -3,6 +3,7 @@
     using System;
     using System.Runtime.InteropServices;
     using System.Windows;
+    using System.Windows.Data;
     using System.Windows.Interactivity;
     using System.Windows.Interop;
     using System.Windows.Threading;
@@ -13,19 +14,21 @@
     public class ShadowWindowBehavior : Behavior<Window>
     {
         private ShadowWindow shadowWindow;
+        private ResizeBorderWindow resizeBorderWindow;
         private IntPtr handle;
         private HwndSource hwndSource;
+        private PropertyChangeNotifier resizeModeChangeNotifier;
 
         public static readonly DependencyProperty ResizeBorderThicknessProperty = DependencyProperty.Register(
             nameof(ResizeBorderThickness),
             typeof(Thickness),
             typeof(ShadowWindowBehavior),
-            new PropertyMetadata(GetDefaultResizeBorderThickness()));
+            new PropertyMetadata(WindowChromeBehavior.GetDefaultResizeBorderThickness()));
 
         public Thickness ResizeBorderThickness
         {
-            get { return (Thickness)GetValue(ResizeBorderThicknessProperty); }
-            set { SetValue(ResizeBorderThicknessProperty, value); }
+            get { return (Thickness)this.GetValue(ResizeBorderThicknessProperty); }
+            set { this.SetValue(ResizeBorderThicknessProperty, value); }
         }
 
         /// <inheritdoc />
@@ -48,23 +51,21 @@
         {
             this.AssociatedObject.SourceInitialized -= this.AssociatedObjectSourceInitialized;
             this.AssociatedObject.Loaded -= this.AssociatedObjectOnLoaded;
+            this.AssociatedObject.StateChanged -= this.AssociatedObjectStateChanged;
 
             this.hwndSource?.RemoveHook(this.AssociatedObjectWindowProc);
 
-            this.AssociatedObject.StateChanged -= this.AssociatedObjectStateChanged;
+            if (this.resizeModeChangeNotifier != null)
+            {
+                this.resizeModeChangeNotifier.ValueChanged -= this.ResizeModeChanged;
+                this.resizeModeChangeNotifier.Dispose();
+            }
+
+            this.DestroyResizeBorder();
 
             this.Close();
 
             base.OnDetaching();
-        }
-
-        private static Thickness GetDefaultResizeBorderThickness()
-        {
-#if !NET40
-            return SystemParameters.WindowResizeBorderThickness;
-#else
-            return ControlzEx.Windows.Shell.SystemParameters2.Current.WindowResizeBorderThickness;
-#endif
         }
 
         private void AssociatedObjectSourceInitialized(object sender, EventArgs e)
@@ -79,8 +80,18 @@
             this.AssociatedObject.StateChanged -= this.AssociatedObjectStateChanged;
             this.AssociatedObject.StateChanged += this.AssociatedObjectStateChanged;
 
+            this.resizeModeChangeNotifier = new PropertyChangeNotifier(this.AssociatedObject, Window.ResizeModeProperty);
+            this.resizeModeChangeNotifier.ValueChanged += this.ResizeModeChanged;
+
             this.shadowWindow = new ShadowWindow(this.AssociatedObject);
             this.shadowWindow.Show();
+
+            if (this.AssociatedObject.ResizeMode == ResizeMode.CanResize
+                || this.AssociatedObject.ResizeMode == ResizeMode.CanResizeWithGrip)
+            {
+                this.resizeBorderWindow = this.CreateResizeBorder();
+                this.resizeBorderWindow.Show();
+            }
 
             this.Update();
 
@@ -125,13 +136,19 @@
 
         private void UpdateCore()
         {
-            var canUpdateCore = this.shadowWindow?.CanUpdateCore() == true;
-            if (canUpdateCore)
+            var canUpdateShadowCore = this.shadowWindow?.CanUpdateCore() == true;
+            var canUpdateResizeBorder = this.resizeBorderWindow?.CanUpdateCore() == true;
+
+            if (canUpdateShadowCore)
             {
                 if (this.handle != IntPtr.Zero
                     && UnsafeNativeMethods.GetWindowRect(this.handle, out var rect))
                 {
                     this.shadowWindow.UpdateCore(rect);
+                    if (canUpdateResizeBorder)
+                    {
+                        this.resizeBorderWindow.UpdateCore(rect);
+                    }
                 }
             }
         }
@@ -140,11 +157,22 @@
         private void Update()
         {
             this.shadowWindow?.Update();
+            this.resizeBorderWindow?.Update();
         }
 
         private void Close()
         {
             this.shadowWindow?.InternalClose();
+            this.DestroyResizeBorder();
+        }
+
+        private void DestroyResizeBorder()
+        {
+            if (this.resizeBorderWindow != null)
+            {
+                this.resizeBorderWindow.InternalClose();
+                this.resizeBorderWindow = null;
+            }
         }
 
         /// <summary>
@@ -156,6 +184,34 @@
             {
                 this.shadowWindow.Opacity = newOpacity;
             }
+        }
+
+        private void ResizeModeChanged(object sender, EventArgs e)
+        {
+            if (this.AssociatedObject.ResizeMode == ResizeMode.NoResize
+                || this.AssociatedObject.ResizeMode == ResizeMode.CanMinimize)
+            {
+                this.DestroyResizeBorder();
+            }
+            else
+            {
+                this.resizeBorderWindow = this.CreateResizeBorder();
+                this.resizeBorderWindow.Show();
+                this.resizeBorderWindow.Update();
+            }
+        }
+
+        private ResizeBorderWindow CreateResizeBorder()
+        {
+            var resizeBorder = new ResizeBorderWindow(this.AssociatedObject);
+            var resizeBorderThicknessBinding = new Binding
+            {
+                Path = new PropertyPath(ResizeBorderThicknessProperty),
+                Mode = BindingMode.OneWay,
+                Source = this
+            };
+            resizeBorder.SetBinding(ResizeBorderWindow.ResizeBorderThicknessProperty, resizeBorderThicknessBinding);
+            return resizeBorder;
         }
     }
 }
