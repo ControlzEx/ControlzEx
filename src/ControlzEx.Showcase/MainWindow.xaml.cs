@@ -97,14 +97,19 @@
 #pragma warning restore 618
         }
 
-        private void ButtonMinimizeOnClick(object sender, EventArgs e)
+        private void ButtonMinimizeOnClick(object sender, RoutedEventArgs e)
         {
             ControlzEx.Windows.Shell.SystemCommands.MinimizeWindow(this);
         }
 
-        private void ButtonMaximizeOnClick(object sender, EventArgs e)
+        private void ButtonMaximizeOnClick(object sender, RoutedEventArgs e)
         {
             ControlzEx.Windows.Shell.SystemCommands.MaximizeWindow(this);
+        }
+
+        private void ButtonRestoreOnClick(object sender, RoutedEventArgs e)
+        {
+            ControlzEx.Windows.Shell.SystemCommands.RestoreWindow(this);
         }
     }
 }

@@ -109,6 +109,22 @@
                                     </Style>
                                 </Button.Style>
                             </Button>
+                            <Button Content="Restore"
+                                    Click="ButtonRestoreOnClick"
+                                    MinWidth="100"
+                                    Padding="4"
+                                    Margin="4">
+                                <Button.Style>
+                                    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
+                                        <Setter Property="IsEnabled" Value="False" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ElementName=Window, Path=WindowState}" Value="{x:Static WindowState.Maximized}">
+                                                <Setter Property="IsEnabled" Value="True" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
                         </StackPanel>
                     </Grid>
                 </GroupBox>
