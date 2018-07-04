@@ -303,7 +303,7 @@ namespace ControlzEx.Controls
             }
             else
             {
-                wsex ^= WS_EX.TRANSPARENT;
+                wsex &= ~WS_EX.TRANSPARENT;
             }
 
             NativeMethods.SetWindowStyleEx(this.windowHandle, wsex);
