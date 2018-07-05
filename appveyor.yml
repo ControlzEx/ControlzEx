@@ -21,3 +21,6 @@
   artifacts:
     - path: src/bin/ControlzEx*.nupkg
     - path: src/bin/ControlzEx*.zip
+
+  nuget:
+    disable_publish_on_pr: true
