@@ -23,7 +23,6 @@ namespace ControlzEx.Behaviors
 
         // Keep track of this so we can detect when we need to apply changes.  Tracking these separately
         // as I've seen using just one cause things to get enough out of [....] that occasionally the caption will redraw.
-        private WindowState lastWindowStateForSetRegion;
         private WindowState lastMenuState;
 
         private WINDOWPOS previousWp;
@@ -1095,13 +1094,16 @@ namespace ControlzEx.Behaviors
         {
             this.VerifyAccess();
 
-            if (isClosing == false
-                && this.hwndSource.IsDisposed == false)
+            if (isClosing == true
+                || this.hwndSource.IsDisposed == true
+                || this.hwndSource.RootVisual is null)
             {
-                this._RestoreHrgn();
-
-                this.AssociatedObject.InvalidateMeasure();
+                return;
             }
+
+            this._RestoreHrgn();
+
+            this.AssociatedObject.InvalidateMeasure();
         }
 
         /// <SecurityNote>
