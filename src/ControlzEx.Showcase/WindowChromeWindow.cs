@@ -1,9 +1,60 @@
-﻿using System.Windows;
-
-namespace ControlzEx.Showcase
+﻿namespace ControlzEx.Showcase
 {
+    using System.Windows;
+    using System.Windows.Data;
+    using System.Windows.Interactivity;
+    using System.Windows.Media;
+    using ControlzEx.Behaviors;
+
     public class WindowChromeWindow : Window
     {
+        static WindowChromeWindow()
+        {
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(WindowChromeWindow), new FrameworkPropertyMetadata(typeof(WindowChromeWindow)));
+
+            BorderThicknessProperty.OverrideMetadata(typeof(WindowChromeWindow), new FrameworkPropertyMetadata(new Thickness(1)));
+            WindowStyleProperty.OverrideMetadata(typeof(WindowChromeWindow), new FrameworkPropertyMetadata(WindowStyle.None));
+
+            AllowsTransparencyProperty.OverrideMetadata(typeof(WindowChromeWindow), new FrameworkPropertyMetadata(false));
+        }
+
+        public WindowChromeWindow()
+        {
+            this.InitializeBehaviors();
+        }
+
+        private void InitializeBehaviors()
+        {
+            this.InitializeWindowChromeBehavior();
+            this.InitializeGlowWindowBehavior();
+        }
+
+        /// <summary>
+        /// Initializes the WindowChromeBehavior which is needed to render the custom WindowChrome.
+        /// </summary>
+        private void InitializeWindowChromeBehavior()
+        {
+            var behavior = new WindowChromeBehavior();
+            BindingOperations.SetBinding(behavior, WindowChromeBehavior.ResizeBorderThicknessProperty, new Binding { Path = new PropertyPath(ResizeBorderThicknessProperty), Source = this });
+            BindingOperations.SetBinding(behavior, WindowChromeBehavior.IgnoreTaskbarOnMaximizeProperty, new Binding { Path = new PropertyPath(IgnoreTaskbarOnMaximizeProperty), Source = this });
+            BindingOperations.SetBinding(behavior, WindowChromeBehavior.GlowBrushProperty, new Binding { Path = new PropertyPath(GlowBrushProperty), Source = this });
+
+            Interaction.GetBehaviors(this).Add(behavior);
+        }
+
+        /// <summary>
+        /// Initializes the WindowChromeBehavior which is needed to render the custom WindowChrome.
+        /// </summary>
+        private void InitializeGlowWindowBehavior()
+        {
+            var behavior = new GlowWindowBehavior();
+            BindingOperations.SetBinding(behavior, GlowWindowBehavior.ResizeBorderThicknessProperty, new Binding { Path = new PropertyPath(ResizeBorderThicknessProperty), Source = this });
+            BindingOperations.SetBinding(behavior, GlowWindowBehavior.GlowBrushProperty, new Binding { Path = new PropertyPath(GlowBrushProperty), Source = this });
+            BindingOperations.SetBinding(behavior, GlowWindowBehavior.NonActiveGlowBrushProperty, new Binding { Path = new PropertyPath(NonActiveGlowBrushProperty), Source = this });
+
+            Interaction.GetBehaviors(this).Add(behavior);
+        }
+
         public Thickness ResizeBorderThickness
         {
             get { return (Thickness)this.GetValue(ResizeBorderThicknessProperty); }
@@ -12,21 +63,42 @@ namespace ControlzEx.Showcase
 
         // Using a DependencyProperty as the backing store for ResizeBorderThickness.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ResizeBorderThicknessProperty =
-            DependencyProperty.Register(nameof(ResizeBorderThickness), typeof(Thickness), typeof(WindowChromeWindow), new PropertyMetadata(default(Thickness)));
+            DependencyProperty.Register(nameof(ResizeBorderThickness), typeof(Thickness), typeof(WindowChromeWindow), new PropertyMetadata(WindowChromeBehavior.ResizeBorderThicknessProperty.DefaultMetadata.DefaultValue));
 
-        /// <summary>
-        /// Gets or sets glass border thickness
-        /// </summary>
-        public Thickness GlassFrameThickness
+        public static readonly DependencyProperty IgnoreTaskbarOnMaximizeProperty = DependencyProperty.Register(nameof(IgnoreTaskbarOnMaximize), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(WindowChromeBehavior.IgnoreTaskbarOnMaximizeProperty.DefaultMetadata.DefaultValue));
+
+        public bool IgnoreTaskbarOnMaximize
         {
-            get { return (Thickness)this.GetValue(GlassFrameThicknessProperty); }
-            set { this.SetValue(GlassFrameThicknessProperty, value); }
+            get { return (bool)this.GetValue(IgnoreTaskbarOnMaximizeProperty); }
+            set { this.SetValue(IgnoreTaskbarOnMaximizeProperty, value); }
         }
 
         /// <summary>
-        /// Using a DependencyProperty as the backing store for GlassFrameThickness.  This enables animation, styling, binding, etc...
+        /// <see cref="DependencyProperty"/> for <see cref="GlowBrush"/>.
         /// </summary>
-        public static readonly DependencyProperty GlassFrameThicknessProperty =
-            DependencyProperty.Register(nameof(GlassFrameThickness), typeof(Thickness), typeof(WindowChromeWindow), new UIPropertyMetadata(new Thickness(0D)));
+        public static readonly DependencyProperty GlowBrushProperty = DependencyProperty.Register(nameof(GlowBrush), typeof(Brush), typeof(WindowChromeWindow), new PropertyMetadata(default(Brush)));
+
+        /// <summary>
+        /// Gets or sets a brush which is used as the glow when the window is active.
+        /// </summary>
+        public Brush GlowBrush
+        {
+            get { return (Brush)this.GetValue(GlowBrushProperty); }
+            set { this.SetValue(GlowBrushProperty, value); }
+        }
+
+        /// <summary>
+        /// <see cref="DependencyProperty"/> for <see cref="NonActiveGlowBrush"/>.
+        /// </summary>
+        public static readonly DependencyProperty NonActiveGlowBrushProperty = DependencyProperty.Register(nameof(NonActiveGlowBrush), typeof(Brush), typeof(WindowChromeWindow), new PropertyMetadata(default(Brush)));
+
+        /// <summary>
+        /// Gets or sets a brush which is used as the glow when the window is not active.
+        /// </summary>
+        public Brush NonActiveGlowBrush
+        {
+            get { return (Brush)this.GetValue(NonActiveGlowBrushProperty); }
+            set { this.SetValue(NonActiveGlowBrushProperty, value); }
+        }
     }
 }

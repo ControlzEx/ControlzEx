@@ -1,73 +1,23 @@
 # http://www.appveyor.com/docs/appveyor-yml
 
-# configuration for develop/CI branch
+# configuration for develop/CI and master/Release branch
 -
   branches:
     only:
       - develop
-
-  environment:
-    semver: 4.0.0
-
-  version: '%semver%-dev{build}'
-  configuration: Release
-
-  init:
-    - ps: Update-AppveyorBuild -Version "$($env:appveyor_build_version.Replace("-dev$env:appveyor_build_number", "-dev"))$($env:appveyor_build_number.PadLeft(4, '0'))"
-  
-  # Install scripts. (runs after repo cloning)
-  install:
-    - nuget restore
-  
-  build:
-    verbosity: minimal
-  
-  after_build:
-    - cmd: Tools\GitLink.exe . -u https://github.com/ControlzEx/ControlzEx
-    - cmd: nuget pack ControlzEx.nuspec -Version %appveyor_build_version% -Properties Configuration=%configuration%
-    - ps: Get-ChildItem .\*.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
-  
-  assembly_info:
-    patch: true
-    file: src\GlobalAssemblyInfo.*
-    assembly_version: "%semver%.{build}"
-    assembly_file_version: "%semver%.{build}"
-    assembly_informational_version: "{version}+Branch.$(APPVEYOR_REPO_BRANCH).Sha.$(APPVEYOR_REPO_COMMIT)"
-  
-  artifacts:
-    - path: src/bin
-      name: ControlzEx.$(appveyor_build_version)
-      type: zip
-
-# configuration for master/Release branch
--
-  branches:
-    only:
       - master
 
-  version: 3.0.1.{build}
+  skip_tags: true
+  image: Visual Studio 2017
   configuration: Release
-  
-  # Install scripts. (runs after repo cloning)
-  install:
-    - nuget restore
-  
-  build:
-    verbosity: minimal
-  
-  after_build:
-    - cmd: Tools\GitLink.exe . -u https://github.com/ControlzEx/ControlzEx
-    - cmd: nuget pack ControlzEx.nuspec -Version %appveyor_build_version% -Properties Configuration=%configuration%
-    - ps: Get-ChildItem .\*.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
-  
-  assembly_info:
-    patch: true
-    file: src\GlobalAssemblyInfo.*
-    assembly_version: "{version}"
-    assembly_file_version: "{version}"
-    assembly_informational_version: "{version}+Branch.$(APPVEYOR_REPO_BRANCH).Sha.$(APPVEYOR_REPO_COMMIT)"
-  
+  platform: Any CPU
+
+  pull_requests:
+    do_not_increment_build_number: false
+
+  build_script:
+    - ps: .\build.ps1 -target appveyor
+
   artifacts:
-    - path: src/bin
-      name: ControlzEx.$(appveyor_build_version)
-      type: zip
+    - path: src/bin/ControlzEx*.nupkg
+    - path: src/bin/ControlzEx*.zip

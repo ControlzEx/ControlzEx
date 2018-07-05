@@ -14,22 +14,40 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type local:WindowChromeWindow}">
-                            <Border Background="{TemplateBinding Background}"
-                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                    BorderThickness="{TemplateBinding BorderThickness}">
-                                <Grid>
-                                    <AdornerDecorator>
-                                        <ContentPresenter/>
-                                    </AdornerDecorator>
+                            <Grid>
+                                <AdornerDecorator>
+                                    <ContentPresenter/>
+                                </AdornerDecorator>
 
-                                    <ResizeGrip x:Name="WindowResizeGrip"
-                                                HorizontalAlignment="Right"
-                                                VerticalAlignment="Bottom"
-                                                Visibility="Collapsed"
-                                                IsTabStop="false"/>
-                                </Grid>
-                            </Border>
+                                <Border x:Name="PART_Border2"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch"
+                                        Background="{x:Null}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        UseLayoutRounding="True" />
+
+                                <Border x:Name="PART_Border"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch"
+                                        Background="{x:Null}"
+                                        BorderBrush="{TemplateBinding GlowBrush}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        UseLayoutRounding="True" />
+                                
+                                <ResizeGrip x:Name="WindowResizeGrip"
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Bottom"
+                                            Visibility="Collapsed"
+                                            IsTabStop="false"/>
+                            </Grid>
                             <ControlTemplate.Triggers>
+                                <!--  handle active/inactive state  -->
+                                <Trigger Property="IsActive" Value="False">
+                                    <Setter TargetName="PART_Border" Property="BorderBrush" Value="{Binding Path=NonActiveGlowBrush, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" />
+                                </Trigger>
+                                <Trigger Property="BorderBrush" SourceName="PART_Border" Value="{x:Null}">
+                                    <Setter TargetName="PART_Border2" Property="BorderBrush" Value="Black" />
+                                </Trigger>
                                 <MultiTrigger>
                                     <MultiTrigger.Conditions>
                                         <Condition Property="Window.ResizeMode"
@@ -67,17 +85,6 @@
                    BasedOn="{StaticResource {x:Type local:WindowChromeWindow}}">
                 <Setter Property="WindowStyle"
                         Value="None" />
-                <Setter Property="GlassFrameThickness"
-                        Value="0" />
-            </Style>
-
-            <Style TargetType="{x:Type local:WindowChromeWindow}"
-                   x:Key="NoneWindowStyleWithGlassFrame"
-                   BasedOn="{StaticResource {x:Type local:WindowChromeWindow}}">
-                <Setter Property="WindowStyle"
-                        Value="None" />
-                <Setter Property="GlassFrameThickness"
-                        Value="1" />
             </Style>
         </ResourceDictionary>
     </Application.Resources>

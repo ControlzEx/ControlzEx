@@ -1,0 +1,130 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="clr-namespace:ControlzEx.Controls"
+                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                    xmlns:options="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib"                    
+                    mc:Ignorable="options">
+
+    <system:Double x:Key="ControlzEx.Glow.GlowOpacity">0.3</system:Double>
+    <system:Double x:Key="ControlzEx.Glow.ShadowOpacity">0.3</system:Double>
+    <BlurEffect x:Key="ControlzEx.Glow.GlowBlurEffect"
+                Radius="3"
+                options:Freeze="True" />
+
+    <ControlTemplate x:Key="ControlzEx.Glow.TopGlowTemplate"
+                     TargetType="{x:Type controls:Glow}">
+        <Border x:Name="GlowBorder"
+                Background="{TemplateBinding Background}"
+                CornerRadius="6 6 6 6"
+                Margin="{TemplateBinding Padding}"
+                Effect="{StaticResource ControlzEx.Glow.GlowBlurEffect}"
+                Opacity="{StaticResource ControlzEx.Glow.GlowOpacity}"
+                SnapsToDevicePixels="True">
+            <Border.OpacityMask>
+                <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" options:Freeze="True">
+                    <GradientStop Offset="0" Color="Transparent" />
+                    <GradientStop Offset="1" Color="Black" />
+                </LinearGradientBrush>
+            </Border.OpacityMask>
+        </Border>
+        <ControlTemplate.Triggers>
+            <Trigger Property="BorderThickness" Value="0">
+                <Setter TargetName="GlowBorder" Property="Opacity" Value="{StaticResource ControlzEx.Glow.ShadowOpacity}" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="ControlzEx.Glow.BottomGlowTemplate"
+                     TargetType="{x:Type controls:Glow}">
+        <Border x:Name="GlowBorder"
+                Background="{TemplateBinding Background}"
+                CornerRadius="6 6 6 6"
+                Margin="{TemplateBinding Padding}"
+                Effect="{StaticResource ControlzEx.Glow.GlowBlurEffect}"
+                Opacity="{StaticResource ControlzEx.Glow.GlowOpacity}"
+                SnapsToDevicePixels="True">
+            <Border.OpacityMask>
+                <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" options:Freeze="True">
+                    <GradientStop Offset="0" Color="Black" />
+                    <GradientStop Offset="1" Color="Transparent" />
+                </LinearGradientBrush>
+            </Border.OpacityMask>
+        </Border>
+        <ControlTemplate.Triggers>
+            <Trigger Property="BorderThickness" Value="0">
+                <Setter TargetName="GlowBorder" Property="Opacity" Value="{StaticResource ControlzEx.Glow.ShadowOpacity}" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="ControlzEx.Glow.LeftGlowTemplate"
+                     TargetType="{x:Type controls:Glow}">
+        <Border x:Name="GlowBorder"
+                Background="{TemplateBinding Background}"
+                CornerRadius="6 6 6 6"
+                Margin="{TemplateBinding Padding}"
+                Effect="{StaticResource ControlzEx.Glow.GlowBlurEffect}"
+                Opacity="{StaticResource ControlzEx.Glow.GlowOpacity}"
+                SnapsToDevicePixels="True">
+            <Border.OpacityMask>
+                <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5" options:Freeze="True">
+                    <GradientStop Offset="0" Color="Transparent" />
+                    <GradientStop Offset="1" Color="Black" />
+                </LinearGradientBrush>
+            </Border.OpacityMask>
+        </Border>
+        <ControlTemplate.Triggers>
+            <Trigger Property="BorderThickness" Value="0">
+                <Setter TargetName="GlowBorder" Property="Opacity" Value="{StaticResource ControlzEx.Glow.ShadowOpacity}" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="ControlzEx.Glow.RightGlowTemplate"
+                     TargetType="{x:Type controls:Glow}">
+        <Border x:Name="GlowBorder"
+                Background="{TemplateBinding Background}"
+                CornerRadius="6 6 6 6"
+                Margin="{TemplateBinding Padding}"
+                Effect="{StaticResource ControlzEx.Glow.GlowBlurEffect}"
+                Opacity="{StaticResource ControlzEx.Glow.GlowOpacity}"
+                SnapsToDevicePixels="True">
+            <Border.OpacityMask>
+                <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5" options:Freeze="True">
+                    <GradientStop Offset="0" Color="Black" />
+                    <GradientStop Offset="1" Color="Transparent" />
+                </LinearGradientBrush>
+            </Border.OpacityMask>
+        </Border>
+        <ControlTemplate.Triggers>
+            <Trigger Property="BorderThickness" Value="0">
+                <Setter TargetName="GlowBorder" Property="Opacity" Value="{StaticResource ControlzEx.Glow.ShadowOpacity}" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <Style TargetType="{x:Type controls:Glow}">
+        <Setter Property="Background" Value="{Binding RelativeSource={RelativeSource Self}, Path=GlowBrush}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="Template" Value="{StaticResource ControlzEx.Glow.TopGlowTemplate}" />
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        <Style.Triggers>
+            <Trigger Property="IsGlow" Value="False">
+                <Setter Property="Background" Value="{Binding RelativeSource={RelativeSource Self}, Path=NonActiveGlowBrush}" />
+            </Trigger>
+            <Trigger Property="Direction" Value="Bottom">
+                <Setter Property="Template" Value="{StaticResource ControlzEx.Glow.BottomGlowTemplate}" />
+            </Trigger>
+            <Trigger Property="Direction" Value="Left">
+                <Setter Property="Template" Value="{StaticResource ControlzEx.Glow.LeftGlowTemplate}" />
+            </Trigger>
+            <Trigger Property="Direction" Value="Right">
+                <Setter Property="Template" Value="{StaticResource ControlzEx.Glow.RightGlowTemplate}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+</ResourceDictionary>

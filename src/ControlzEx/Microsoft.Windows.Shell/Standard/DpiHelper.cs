@@ -113,10 +113,10 @@ namespace ControlzEx.Standard
 
         public static DpiScale GetDpi(Visual visual)
         {
-#if NET462
-            return VisualTreeHelper.GetDpi(visual);
-#else
+#if OWNDPISCALE
             return new DpiScale(1, 1);
+#else
+            return VisualTreeHelper.GetDpi(visual);
 #endif
         }
 
@@ -128,7 +128,7 @@ namespace ControlzEx.Standard
         #endregion Per monitor dpi support
     }
 
-#if NET4 || NET45
+#if OWNDPISCALE
     /// <summary>Stores DPI information from which a <see cref="T:System.Windows.Media.Visual" /> or <see cref="T:System.Windows.UIElement" /> is rendered.</summary>
     public struct DpiScale
     {

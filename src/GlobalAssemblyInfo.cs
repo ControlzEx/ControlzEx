@@ -11,7 +11,7 @@ using System.Windows;
 #endif
 [assembly: AssemblyCompany("https://github.com/ControlzEx/ControlzEx")]
 [assembly: AssemblyProduct("ControlzEx")]
-[assembly: AssemblyCopyright("Copyright © 2015 - 2017 Jan Karger, Bastian Schmidt, James Willock")]
+[assembly: AssemblyCopyright("Copyright © 2015 - 2018 Jan Karger, Bastian Schmidt, James Willock")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

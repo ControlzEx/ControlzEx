@@ -1,0 +1,19 @@
+framework: >= net40
+source https://api.nuget.org/v3/index.json
+
+nuget gitlink
+nuget MSBuild.Sdk.Extras 1.5.4
+nuget NuGet.CommandLine
+nuget JetBrains.Annotations
+
+group cake
+	framework: net45
+	source https://api.nuget.org/v3/index.json
+	
+	nuget Cake < 0.26
+	nuget Cake.Figlet
+	nuget Cake.Paket
+	nuget Cake.Paket.Module
+	nuget vswhere
+	nuget GitVersion.CommandLine prerelease
+	nuget gitreleasemanager
