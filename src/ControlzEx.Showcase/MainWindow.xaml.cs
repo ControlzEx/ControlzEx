@@ -10,7 +10,7 @@
     using ControlzEx.Native;
     using ControlzEx.Standard;
 
-    public partial class MainWindow
+    public partial class MainWindow : WindowChromeWindow
     {
         public MainWindow()
         {
@@ -31,28 +31,24 @@
         {
             return typeof(Colors)
                    .GetProperties()
-                   .Where(prop =>
-                              typeof(Color).IsAssignableFrom(prop.PropertyType))
-                   .Select(prop =>
-                               new KeyValuePair<string, Color>(prop.Name, (Color)prop.GetValue(null, null)));
+                   .Where(prop => typeof(Color).IsAssignableFrom(prop.PropertyType))
+                   .Select(prop => new KeyValuePair<string, Color>(prop.Name, (Color)prop.GetValue(null, null)));
         }
 
         public static IEnumerable<KeyValuePair<string, Brush>> GetBrushes()
         {
             var brushes = typeof(Brushes)
                                 .GetProperties()
-                                .Where(prop =>
-                                           typeof(Brush).IsAssignableFrom(prop.PropertyType))
-                                .Select(prop =>
-                                            new KeyValuePair<string, Brush>(prop.Name, (Brush)prop.GetValue(null, null)));
+                                .Where(prop => typeof(Brush).IsAssignableFrom(prop.PropertyType))
+                                .Select(prop => new KeyValuePair<string, Brush>(prop.Name, (Brush)prop.GetValue(null, null)));
 
-            return new []{ new KeyValuePair<string, Brush>("None", null) }
-                .Concat(brushes);
+            return new[] { new KeyValuePair<string, Brush>("None", null) }.Concat(brushes);
         }
 
         private static readonly PropertyInfo criticalHandlePropertyInfo = typeof(Window).GetProperty("CriticalHandle", BindingFlags.NonPublic | BindingFlags.Instance);
         private static readonly object[] emptyObjectArray = new object[0];
 
+#pragma warning disable 618
         private void TitleBarGrid_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ClickCount == 1)
@@ -63,53 +59,69 @@
                 this.VerifyAccess();
 
                 // for the touch usage
-#pragma warning disable 618
                 UnsafeNativeMethods.ReleaseCapture();
 
                 var criticalHandle = (IntPtr)criticalHandlePropertyInfo.GetValue(this, emptyObjectArray);
                 // DragMove works too, but not on maximized windows
                 NativeMethods.SendMessage(criticalHandle, WM.SYSCOMMAND, (IntPtr)SC.MOUSEMOVE, IntPtr.Zero);
                 NativeMethods.SendMessage(criticalHandle, WM.LBUTTONUP, IntPtr.Zero, IntPtr.Zero);
-#pragma warning restore 618
             }
-            else if (e.ClickCount == 2
-                     && this.ResizeMode != ResizeMode.NoResize)
+            else if (e.ClickCount == 2 && this.ResizeMode != ResizeMode.NoResize)
             {
                 e.Handled = true;
 
-#pragma warning disable 618
                 if (this.WindowState == WindowState.Normal && this.ResizeMode != ResizeMode.NoResize && this.ResizeMode != ResizeMode.CanMinimize)
                 {
+#if !NET40
+                    SystemCommands.MaximizeWindow(this);
+#else
                     ControlzEx.Windows.Shell.SystemCommands.MaximizeWindow(this);
+#endif
                 }
                 else
                 {
+#if !NET40
+                    SystemCommands.RestoreWindow(this);
+#else
                     ControlzEx.Windows.Shell.SystemCommands.RestoreWindow(this);
+#endif
                 }
-#pragma warning restore 618
             }
         }
 
         private void TitleBarGrid_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-#pragma warning disable 618
             ControlzEx.Windows.Shell.SystemCommands.ShowSystemMenu(this, e);
-#pragma warning restore 618
         }
 
         private void ButtonMinimizeOnClick(object sender, RoutedEventArgs e)
         {
+#if !NET40
+            SystemCommands.MinimizeWindow(this);
+#else
             ControlzEx.Windows.Shell.SystemCommands.MinimizeWindow(this);
+#endif
         }
 
         private void ButtonMaximizeOnClick(object sender, RoutedEventArgs e)
         {
+#if !NET40
+            SystemCommands.MaximizeWindow(this);
+#else
             ControlzEx.Windows.Shell.SystemCommands.MaximizeWindow(this);
+#endif
         }
 
         private void ButtonRestoreOnClick(object sender, RoutedEventArgs e)
         {
+#if !NET40
+            SystemCommands.RestoreWindow(this);
+#else
             ControlzEx.Windows.Shell.SystemCommands.RestoreWindow(this);
+#endif
         }
+
+#pragma warning restore 618
+
     }
 }
