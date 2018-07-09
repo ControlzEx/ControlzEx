@@ -10,7 +10,7 @@ group cake
 	framework: net45
 	source https://api.nuget.org/v3/index.json
 	
-	nuget Cake < 0.26
+	nuget Cake
 	nuget Cake.Figlet
 	nuget Cake.Paket
 	nuget Cake.Paket.Module
