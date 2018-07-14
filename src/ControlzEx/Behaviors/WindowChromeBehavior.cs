@@ -56,12 +56,6 @@ namespace ControlzEx.Behaviors
             public DependencyProperty DependencyProperty { get; set; }
         }
 
-        private static void OnTryToBeFlickerFreeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var behavior = (WindowChromeBehavior)d;
-            behavior._OnChromePropertyChangedThatRequiresRepaint();
-        }
-
         /// <summary>
         /// Mirror property for <see cref="ResizeBorderThickness"/>.
         /// </summary>
