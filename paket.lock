@@ -2,7 +2,7 @@ RESTRICTION: >= net40
 NUGET
   remote: https://api.nuget.org/v3/index.json
     gitlink (3.1)
-    JetBrains.Annotations (11.1)
+    JetBrains.Annotations (11.1) - copy_local: false
     MSBuild.Sdk.Extras (1.5.4)
     NuGet.CommandLine (4.6.2)
 
