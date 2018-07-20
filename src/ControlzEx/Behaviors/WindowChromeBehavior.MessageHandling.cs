@@ -526,10 +526,9 @@ namespace ControlzEx.Behaviors
 
                 handled = true;
                 return IntPtr.Zero;
-            }
+            }            
 
-            var pos = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
-            if ((pos.flags & SWP.NOMOVE) != 0)
+            if ((wp.flags & SWP.NOMOVE) != 0)
             {
                 handled = false;
                 return IntPtr.Zero;
@@ -550,13 +549,13 @@ namespace ControlzEx.Behaviors
 
             var minWidth = wnd.MinWidth * matrix.M11;
             var minHeight = wnd.MinHeight * matrix.M22;
-            if (pos.cx < minWidth) { pos.cx = (int)minWidth; changedPos = true; }
-            if (pos.cy < minHeight) { pos.cy = (int)minHeight; changedPos = true; }
+            if (wp.cx < minWidth) { wp.cx = (int)minWidth; changedPos = true; }
+            if (wp.cy < minHeight) { wp.cy = (int)minHeight; changedPos = true; }
 
             var maxWidth = wnd.MaxWidth * matrix.M11;
             var maxHeight = wnd.MaxHeight * matrix.M22;
-            if (pos.cx > maxWidth && maxWidth > 0) { pos.cx = (int)Math.Round(maxWidth); changedPos = true; }
-            if (pos.cy > maxHeight && maxHeight > 0) { pos.cy = (int)Math.Round(maxHeight); changedPos = true; }
+            if (wp.cx > maxWidth && maxWidth > 0) { wp.cx = (int)Math.Round(maxWidth); changedPos = true; }
+            if (wp.cy > maxHeight && maxHeight > 0) { wp.cy = (int)Math.Round(maxHeight); changedPos = true; }
 
             if (changedPos == false)
             {
