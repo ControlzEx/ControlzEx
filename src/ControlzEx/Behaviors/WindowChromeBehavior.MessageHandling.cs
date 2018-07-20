@@ -119,8 +119,6 @@ namespace ControlzEx.Behaviors
                 this.Cleanup(true);
                 return;
             }
-
-            NativeMethods.SetWindowPos(this.windowHandle, IntPtr.Zero, 0, 0, 0, 0, SwpFlags);
         }
 
         // A borderless window lost his animation, with this we bring it back.
@@ -904,26 +902,29 @@ namespace ControlzEx.Behaviors
 
             if (force)
             {
-                this._SetRegion(null);
-
                 if (this.hwndSource.IsDisposed)
                 {
                     // If the window got closed very early
                     return;
                 }
 
+                var wasStyleModified = false;
                 if (this.MinimizeAnimation)
                 {
                     // allow animation
-                    this._ModifyStyle(0, WS.CAPTION);
+                    wasStyleModified = this._ModifyStyle(0, WS.CAPTION);
                 }
                 else
                 {
                     // no animation
-                    this._ModifyStyle(WS.CAPTION, 0);
+                    wasStyleModified =this._ModifyStyle(WS.CAPTION, 0);
                 }
 
-                NativeMethods.SetWindowPos(this.windowHandle, IntPtr.Zero, 0, 0, 0, 0, SwpFlags);
+                if (wasStyleModified
+                    && NativeMethods.IsWindowVisible(this.windowHandle))
+                {
+                    NativeMethods.SetWindowPos(this.windowHandle, IntPtr.Zero, 0, 0, 0, 0, SwpFlags);
+                }
             }
         }
 

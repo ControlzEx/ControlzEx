@@ -1,9 +1,11 @@
 ﻿namespace ControlzEx.Showcase
 {
+    using System;
     using System.Windows;
     using System.Windows.Data;
     using System.Windows.Interactivity;
     using System.Windows.Media;
+    using System.Windows.Threading;
     using ControlzEx.Behaviors;
 
     public class WindowChromeWindow : Window
@@ -21,12 +23,32 @@
         public WindowChromeWindow()
         {
             this.InitializeBehaviors();
+
+            // Using Loaded causes the glow to show and then window window startup animation renders into that "frame"
+            //this.Loaded += WindowChromeWindow_Loaded;
+
+            // Using ContentRendered causes the window startup animation to show and then shows the glow
+            this.ContentRendered += this.WindowChromeWindow_ContentRendered;
+        }
+
+        private void WindowChromeWindow_ContentRendered(object sender, EventArgs e)
+        {
+            this.ContentRendered -= this.WindowChromeWindow_ContentRendered;
+            this.InitializeGlowWindowBehavior();
+        }
+
+        private void WindowChromeWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            this.Loaded -= this.WindowChromeWindow_Loaded;
+            this.Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, new Action(this.InitializeGlowWindowBehavior));
         }
 
         private void InitializeBehaviors()
         {
             this.InitializeWindowChromeBehavior();
-            this.InitializeGlowWindowBehavior();
+
+            // Uncommenting this causes the window startup animation to not work
+            //this.InitializeGlowWindowBehavior();
         }
 
         /// <summary>
