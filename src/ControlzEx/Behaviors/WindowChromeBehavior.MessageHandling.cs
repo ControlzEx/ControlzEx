@@ -79,8 +79,8 @@ namespace ControlzEx.Behaviors
                                 new HANDLE_MESSAGE(WM.GETMINMAXINFO,          this._HandleGETMINMAXINFO),
                                 new HANDLE_MESSAGE(WM.DWMCOMPOSITIONCHANGED,  this._HandleDWMCOMPOSITIONCHANGED),
                                 new HANDLE_MESSAGE(WM.ENTERSIZEMOVE,          this._HandleENTERSIZEMOVEForAnimation),
-                                new HANDLE_MESSAGE(WM.MOVE,                   this._HandleMOVEForRealSize),
                                 new HANDLE_MESSAGE(WM.EXITSIZEMOVE,           this._HandleEXITSIZEMOVEForAnimation),
+                                new HANDLE_MESSAGE(WM.MOVE,                   this._HandleMOVEForRealSize),                                
                                 new HANDLE_MESSAGE(WM.DPICHANGED,             this._HandleDPICHANGED)
                             };
         }
