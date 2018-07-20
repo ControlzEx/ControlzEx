@@ -685,6 +685,26 @@ namespace ControlzEx.Behaviors
         ///   Critical : Calls critical methods
         /// </SecurityNote>
         [SecurityCritical]
+        private IntPtr _HandleEXITSIZEMOVEForAnimation(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        {
+            if (this.MinimizeAnimation)
+            {
+                // restore DLGFRAME
+                if (this._ModifyStyle(0, WS.CAPTION))
+                {
+                    //_UpdateFrameState(true);
+                    NativeMethods.SetWindowPos(this.windowHandle, IntPtr.Zero, 0, 0, 0, 0, SwpFlags);
+                }
+            }
+
+            handled = false;
+            return IntPtr.Zero;
+        }
+
+        /// <SecurityNote>
+        ///   Critical : Calls critical methods
+        /// </SecurityNote>
+        [SecurityCritical]
         private IntPtr _HandleMOVEForRealSize(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
             /*
@@ -719,26 +739,6 @@ namespace ControlzEx.Behaviors
                      * 
                      */
                     NativeMethods.SetWindowPos(this.windowHandle, IntPtr.Zero, rcMonitorArea.Left, rcMonitorArea.Top, rcMonitorArea.Width, rcMonitorArea.Height, SWP.ASYNCWINDOWPOS | SWP.FRAMECHANGED | SWP.NOCOPYBITS);
-                }
-            }
-
-            handled = false;
-            return IntPtr.Zero;
-        }
-
-        /// <SecurityNote>
-        ///   Critical : Calls critical methods
-        /// </SecurityNote>
-        [SecurityCritical]
-        private IntPtr _HandleEXITSIZEMOVEForAnimation(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
-        {
-            if (this.MinimizeAnimation)
-            {
-                // restore DLGFRAME
-                if (this._ModifyStyle(0, WS.CAPTION))
-                {
-                    //_UpdateFrameState(true);
-                    NativeMethods.SetWindowPos(this.windowHandle, IntPtr.Zero, 0, 0, 0, 0, SwpFlags);
                 }
             }
 
