@@ -563,7 +563,7 @@ namespace ControlzEx.Behaviors
                 return IntPtr.Zero;
             }
 
-            Marshal.StructureToPtr(pos, lParam, true);
+            Marshal.StructureToPtr(wp, lParam, true);
 
             handled = false;
             return IntPtr.Zero;
