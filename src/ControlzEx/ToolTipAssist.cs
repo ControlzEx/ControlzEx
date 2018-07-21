@@ -153,7 +153,9 @@ namespace ControlzEx
 
             var topLeftFromScreen = toolTip.PlacementTarget.PointToScreen(new Point(0, 0));
 
+#pragma warning disable 618
             MONITORINFO monitorINFO = null;
+#pragma warning restore 618
 
             try
             {
