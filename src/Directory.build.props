@@ -4,14 +4,14 @@
         <ExtrasEnableWpfProjectSetup>true</ExtrasEnableWpfProjectSetup>
         <ExtrasDefaultResourceIncludes>Resources\*.xaml</ExtrasDefaultResourceIncludes>
         <TargetFrameworks>net45;net462</TargetFrameworks>
-        <OutputPath>$(MSBuildProjectDirectory)\..\bin\$(Configuration)\$(MSBuildProjectName)</OutputPath>
+        <OutputPath>$(MSBuildThisFileDirectory)\bin\$(Configuration)\$(MSBuildProjectName)</OutputPath>
         <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
         <GenerateDocumentationFile>false</GenerateDocumentationFile>
         <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-        <CodeAnalysisRuleSet>..\ControlzEx.ruleset</CodeAnalysisRuleSet>
+        <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\ControlzEx.ruleset</CodeAnalysisRuleSet>
     </PropertyGroup>
     <ItemGroup>
         <None Include="paket.references" />
@@ -21,7 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Include="..\GlobalAssemblyInfo.cs">
+        <Compile Include="$(MSBuildThisFileDirectory)\GlobalAssemblyInfo.cs">
             <Link>Properties\GlobalAssemblyInfo.cs</Link>
         </Compile>
     </ItemGroup>
