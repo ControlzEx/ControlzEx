@@ -908,23 +908,18 @@ namespace ControlzEx.Behaviors
                     return;
                 }
 
-                var wasStyleModified = false;
                 if (this.MinimizeAnimation)
                 {
                     // allow animation
-                    wasStyleModified = this._ModifyStyle(0, WS.CAPTION);
+                    this._ModifyStyle(0, WS.CAPTION);
                 }
                 else
                 {
                     // no animation
-                    wasStyleModified =this._ModifyStyle(WS.CAPTION, 0);
+                    this._ModifyStyle(WS.CAPTION, 0);
                 }
 
-                if (wasStyleModified
-                    && NativeMethods.IsWindowVisible(this.windowHandle))
-                {
-                    NativeMethods.SetWindowPos(this.windowHandle, IntPtr.Zero, 0, 0, 0, 0, SwpFlags);
-                }
+                NativeMethods.SetWindowPos(this.windowHandle, IntPtr.Zero, 0, 0, 0, 0, SwpFlags);
             }
         }
 
