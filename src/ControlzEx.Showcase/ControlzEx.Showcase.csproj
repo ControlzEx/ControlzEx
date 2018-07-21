@@ -26,8 +26,5 @@
     </Reference>
     <None Include="app.manifest" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile DependentUpon="%(Filename)" SubType="Code" Update="$(MSBuildProjectDirectory)\obj\**\*.g$(_SdkLanguageExtension)" />
-  </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

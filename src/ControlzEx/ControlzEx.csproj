@@ -16,8 +16,5 @@
       <HintPath>..\ExtLibs\NET45\System.Windows.Interactivity.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <Compile DependentUpon="%(Filename)" SubType="Code" Update="$(MSBuildProjectDirectory)\obj\**\*.g$(_SdkLanguageExtension)" />
-  </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
