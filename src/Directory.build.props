@@ -9,8 +9,19 @@
         <GenerateDocumentationFile>false</GenerateDocumentationFile>
         <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
     </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+        <CodeAnalysisRuleSet>..\ControlzEx.ruleset</CodeAnalysisRuleSet>
+    </PropertyGroup>
     <ItemGroup>
+        <None Include="paket.references" />
+
         <None Remove="**\*.png;**\*.jpg;**\*.ico"/>
         <Resource Include="**\*.png;**\*.jpg;**\*.ico"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Include="..\GlobalAssemblyInfo.cs">
+            <Link>Properties\GlobalAssemblyInfo.cs</Link>
+        </Compile>
     </ItemGroup>
 </Project>
