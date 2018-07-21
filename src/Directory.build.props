@@ -2,6 +2,7 @@
     <!-- Project properties -->
     <PropertyGroup>
         <ExtrasEnableWpfProjectSetup>true</ExtrasEnableWpfProjectSetup>
+        <ExtrasDefaultResourceIncludes>Resources\*.xaml</ExtrasDefaultResourceIncludes>
         <TargetFrameworks>net45;net462</TargetFrameworks>
         <OutputPath>$(MSBuildProjectDirectory)\..\bin\$(Configuration)\$(MSBuildProjectName)</OutputPath>
         <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
