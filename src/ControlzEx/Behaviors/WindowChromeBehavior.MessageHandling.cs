@@ -682,11 +682,7 @@ namespace ControlzEx.Behaviors
             if (this.MinimizeAnimation)
             {
                 // restore DLGFRAME
-                if (this._ModifyStyle(0, WS.CAPTION))
-                {
-                    //_UpdateFrameState(true);
-                    NativeMethods.SetWindowPos(this.windowHandle, IntPtr.Zero, 0, 0, 0, 0, SwpFlags);
-                }
+                this._ModifyStyle(0, WS.CAPTION);
             }
 
             handled = false;
