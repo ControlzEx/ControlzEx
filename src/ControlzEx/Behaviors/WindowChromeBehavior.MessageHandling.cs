@@ -242,15 +242,9 @@ namespace ControlzEx.Behaviors
         [SecurityCritical]
         private IntPtr _HandleNCACTIVATE(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
-            // Despite MSDN's documentation of lParam not being used,
-            // calling DefWindowProc with lParam set to -1 causes Windows not to draw over the caption.
-
-            // Directly call DefWindowProc with a custom parameter
-            // which bypasses any other handling of the message.
-            var lRet = NativeMethods.DefWindowProc(this.windowHandle, WM.NCACTIVATE, wParam, new IntPtr(-1));
+            // We don't have any non client area, so we can just discard this message by handling it
             handled = true;
-
-            return lRet;
+            return IntPtr.Zero;
         }
 
         /// <summary>
