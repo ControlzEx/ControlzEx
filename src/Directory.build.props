@@ -10,7 +10,7 @@
         <GenerateDocumentationFile>false</GenerateDocumentationFile>
         <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
     </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
         <CodeAnalysisRuleSet>..\ControlzEx.ruleset</CodeAnalysisRuleSet>
     </PropertyGroup>
     <ItemGroup>
