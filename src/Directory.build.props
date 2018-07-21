@@ -1,13 +1,8 @@
 <Project>
-    <!-- workaround for https://github.com/NuGet/Home/issues/5894 -->
-    <PropertyGroup>
-        <_SdkLanguageName>CSharp</_SdkLanguageName>
-        <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    </PropertyGroup>
-    <Import Condition=" '$(MSBuildProjectExtension)' == '.tmp_proj'" Project="$(MSBuildProjectDirectory)\obj\*.props"/>
     <!-- Project properties -->
     <PropertyGroup>
-        <TargetFrameworks>net47;net462;net46;net45;net40</TargetFrameworks>
+        <ExtrasEnableWpfProjectSetup>true</ExtrasEnableWpfProjectSetup>
+        <TargetFrameworks>net45;net462</TargetFrameworks>
         <OutputPath>$(MSBuildProjectDirectory)\..\bin\$(Configuration)\$(MSBuildProjectName)</OutputPath>
         <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
@@ -18,6 +13,4 @@
         <None Remove="**\*.png;**\*.jpg;**\*.ico"/>
         <Resource Include="**\*.png;**\*.jpg;**\*.ico"/>
     </ItemGroup>
-    <!-- workaround for https://github.com/NuGet/Home/issues/5894 -->
-    <Import Condition=" '$(MSBuildProjectExtension)' == '.tmp_proj'" Project="$(MSBuildProjectDirectory)\obj\*.targets"/>
 </Project>
