@@ -241,6 +241,14 @@
                                   Margin="4"
                                   VerticalAlignment="Center"
                                   IsChecked="{Binding ElementName=Window, Path=IgnoreTaskbarOnMaximize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        
+                        <Label Grid.Row="5"
+                               Grid.Column="0">TryToBeFlickerFree</Label>
+                        <CheckBox Grid.Row="5"
+                                  Grid.Column="1"
+                                  Margin="4"
+                                  VerticalAlignment="Center"
+                                  IsChecked="{Binding ElementName=Window, Path=TryToBeFlickerFree, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     </Grid>
                 </GroupBox>
 

@@ -349,7 +349,8 @@ namespace ControlzEx.Behaviors
 
                 Marshal.StructureToPtr(rc, lParam, true);
             }
-            else if (this._GetHwndState() == WindowState.Normal
+            else if (this.TryToBeFlickerFree
+                     && this._GetHwndState() == WindowState.Normal
                      && wParam.ToInt32() != 0)
             {
                 var rc = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT));

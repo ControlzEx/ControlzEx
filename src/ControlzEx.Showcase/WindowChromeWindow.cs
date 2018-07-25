@@ -59,6 +59,7 @@
             var behavior = new WindowChromeBehavior();
             BindingOperations.SetBinding(behavior, WindowChromeBehavior.ResizeBorderThicknessProperty, new Binding { Path = new PropertyPath(ResizeBorderThicknessProperty), Source = this });
             BindingOperations.SetBinding(behavior, WindowChromeBehavior.IgnoreTaskbarOnMaximizeProperty, new Binding { Path = new PropertyPath(IgnoreTaskbarOnMaximizeProperty), Source = this });
+            BindingOperations.SetBinding(behavior, WindowChromeBehavior.TryToBeFlickerFreeProperty, new Binding { Path = new PropertyPath(TryToBeFlickerFreeProperty), Source = this });
             BindingOperations.SetBinding(behavior, WindowChromeBehavior.GlowBrushProperty, new Binding { Path = new PropertyPath(GlowBrushProperty), Source = this });
 
             Interaction.GetBehaviors(this).Add(behavior);
@@ -94,6 +95,23 @@
             get { return (bool)this.GetValue(IgnoreTaskbarOnMaximizeProperty); }
             set { this.SetValue(IgnoreTaskbarOnMaximizeProperty, value); }
         }
+
+        /// <summary>
+        /// Gets or sets wether the resizing of the window should be tried in a way that does not cause flicker/jitter, especially when resizing from the left side.
+        /// </summary>
+        /// <remarks>
+        /// Please note that setting this to <c>true</c> may cause resize lag and black areas appearing on some systems.
+        /// </remarks>
+        public bool TryToBeFlickerFree
+        {
+            get { return (bool)this.GetValue(TryToBeFlickerFreeProperty); }
+            set { this.SetValue(TryToBeFlickerFreeProperty, value); }
+        }
+
+        /// <summary>
+        /// <see cref="DependencyProperty"/> for <see cref="TryToBeFlickerFree"/>.
+        /// </summary>
+        public static readonly DependencyProperty TryToBeFlickerFreeProperty = DependencyProperty.Register(nameof(TryToBeFlickerFree), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(default(bool)));
 
         /// <summary>
         /// <see cref="DependencyProperty"/> for <see cref="GlowBrush"/>.
