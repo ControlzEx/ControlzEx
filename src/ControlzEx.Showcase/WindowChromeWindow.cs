@@ -59,6 +59,7 @@
             var behavior = new WindowChromeBehavior();
             BindingOperations.SetBinding(behavior, WindowChromeBehavior.ResizeBorderThicknessProperty, new Binding { Path = new PropertyPath(ResizeBorderThicknessProperty), Source = this });
             BindingOperations.SetBinding(behavior, WindowChromeBehavior.IgnoreTaskbarOnMaximizeProperty, new Binding { Path = new PropertyPath(IgnoreTaskbarOnMaximizeProperty), Source = this });
+            BindingOperations.SetBinding(behavior, WindowChromeBehavior.KeepBorderOnMaximizeProperty, new Binding { Path = new PropertyPath(KeepBorderOnMaximizeProperty), Source = this });
             BindingOperations.SetBinding(behavior, WindowChromeBehavior.TryToBeFlickerFreeProperty, new Binding { Path = new PropertyPath(TryToBeFlickerFreeProperty), Source = this });
             BindingOperations.SetBinding(behavior, WindowChromeBehavior.GlowBrushProperty, new Binding { Path = new PropertyPath(GlowBrushProperty), Source = this });
 
@@ -95,6 +96,21 @@
             get { return (bool)this.GetValue(IgnoreTaskbarOnMaximizeProperty); }
             set { this.SetValue(IgnoreTaskbarOnMaximizeProperty, value); }
         }
+
+        /// <summary>
+        /// Gets/sets if the border thickness value should be kept on maximize
+        /// if the MaxHeight/MaxWidth of the window is less than the monitor resolution.
+        /// </summary>
+        public bool KeepBorderOnMaximize
+        {
+            get { return (bool)this.GetValue(KeepBorderOnMaximizeProperty); }
+            set { this.SetValue(KeepBorderOnMaximizeProperty, value); }
+        }
+
+        /// <summary>
+        /// <see cref="DependencyProperty"/> for <see cref="KeepBorderOnMaximize"/>.
+        /// </summary>
+        public static readonly DependencyProperty KeepBorderOnMaximizeProperty = DependencyProperty.Register(nameof(KeepBorderOnMaximize), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(true));
 
         /// <summary>
         /// Gets or sets wether the resizing of the window should be tried in a way that does not cause flicker/jitter, especially when resizing from the left side.

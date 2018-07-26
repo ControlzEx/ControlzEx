@@ -243,8 +243,16 @@
                                   IsChecked="{Binding ElementName=Window, Path=IgnoreTaskbarOnMaximize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         
                         <Label Grid.Row="5"
-                               Grid.Column="0">TryToBeFlickerFree</Label>
+                               Grid.Column="0">KeepBorderOnMaximize</Label>
                         <CheckBox Grid.Row="5"
+                                  Grid.Column="1"
+                                  Margin="4"
+                                  VerticalAlignment="Center"
+                                  IsChecked="{Binding ElementName=Window, Path=KeepBorderOnMaximize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                        <Label Grid.Row="6"
+                               Grid.Column="0">TryToBeFlickerFree</Label>
+                        <CheckBox Grid.Row="6"
                                   Grid.Column="1"
                                   Margin="4"
                                   VerticalAlignment="Center"
@@ -272,8 +280,56 @@
                         </Grid.RowDefinitions>
 
                         <Label Grid.Row="1"
+                               Grid.Column="0">MinSize</Label>
+                        <StackPanel Grid.Row="1"
+                                 Grid.Column="1"
+                                 Margin="4"
+                                 Orientation="Horizontal"
+                                 VerticalAlignment="Center">
+                            <TextBox Width="35"
+                                     Margin="0 0 2 0"
+                                     Padding="2"
+                                     VerticalAlignment="Center"
+                                     Text="{Binding ElementName=Window, Path=MinWidth, Mode=TwoWay}" />
+                            
+                            <TextBox Width="35"
+                                     Margin="0 0 2 0"
+                                     Padding="2"
+                                     VerticalAlignment="Center"
+                                     Text="{Binding ElementName=Window, Path=MinHeight, Mode=TwoWay}" />
+                            
+                            <Button Padding="4"
+                                    Content="Reset"
+                                    Click="ButtonResetMinSizesOnClick"/>
+                        </StackPanel>
+
+                        <Label Grid.Row="2"
+                               Grid.Column="0">MaxSize</Label>
+                        <StackPanel Grid.Row="2"
+                                    Grid.Column="1"
+                                    Margin="4"
+                                    Orientation="Horizontal"
+                                    VerticalAlignment="Center">
+                            <TextBox Width="35" 
+                                     Margin="0 0 2 0"
+                                     Padding="2"
+                                     VerticalAlignment="Center"
+                                     Text="{Binding ElementName=Window, Path=MaxWidth, Mode=TwoWay}" />
+                            
+                            <TextBox Width="35"
+                                     Margin="0 0 2 0"
+                                     Padding="2"
+                                     VerticalAlignment="Center"
+                                     Text="{Binding ElementName=Window, Path=MaxHeight, Mode=TwoWay}" />
+                            
+                            <Button Padding="4"
+                                    Content="Reset"
+                                    Click="ButtonResetMaxSizesOnClick"/>
+                        </StackPanel>
+
+                        <Label Grid.Row="3"
                                Grid.Column="0">ResizeBorderThickness</Label>
-                        <TextBox Grid.Row="1"
+                        <TextBox Grid.Row="3"
                                  Grid.Column="1"
                                  Margin="4"
                                  Padding="2"

@@ -123,5 +123,16 @@
 
 #pragma warning restore 618
 
+        private void ButtonResetMinSizesOnClick(object sender, RoutedEventArgs e)
+        {
+            this.MinWidth = 80;
+            this.MinHeight = 60;
+        }
+
+        private void ButtonResetMaxSizesOnClick(object sender, RoutedEventArgs e)
+        {
+            this.MaxWidth = double.NaN;
+            this.MaxHeight = double.NaN;
+        }
     }
 }
