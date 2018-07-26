@@ -51,12 +51,7 @@ namespace ControlzEx.Behaviors
                                              bp.DependencyProperty,
                                              new Binding
                                              {
-#if !NET40
                                                  Path = new PropertyPath("(SystemParameters." + bp.SystemParameterPropertyName + ")"),
-#else
-                        Source = SystemParameters2.Current,
-                        Path = new PropertyPath(bp.SystemParameterPropertyName),
-#endif
                                                  Mode = BindingMode.OneWay,
                                                  UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
                                              });

@@ -214,11 +214,7 @@ namespace ControlzEx.Behaviors
         /// </summary>
         public static Thickness GetDefaultResizeBorderThickness()
         {
-#if !NET40
             return SystemParameters.WindowResizeBorderThickness;
-#else
-            return ControlzEx.Windows.Shell.SystemParameters2.Current.WindowResizeBorderThickness;
-#endif
         }
 
         private void BorderThicknessChangeNotifierOnValueChanged(object sender, EventArgs e)

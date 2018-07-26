@@ -72,19 +72,11 @@
 
                 if (this.WindowState == WindowState.Normal && this.ResizeMode != ResizeMode.NoResize && this.ResizeMode != ResizeMode.CanMinimize)
                 {
-#if !NET40
                     SystemCommands.MaximizeWindow(this);
-#else
-                    ControlzEx.Windows.Shell.SystemCommands.MaximizeWindow(this);
-#endif
                 }
                 else
                 {
-#if !NET40
                     SystemCommands.RestoreWindow(this);
-#else
-                    ControlzEx.Windows.Shell.SystemCommands.RestoreWindow(this);
-#endif
                 }
             }
         }
@@ -96,29 +88,17 @@
 
         private void ButtonMinimizeOnClick(object sender, RoutedEventArgs e)
         {
-#if !NET40
             SystemCommands.MinimizeWindow(this);
-#else
-            ControlzEx.Windows.Shell.SystemCommands.MinimizeWindow(this);
-#endif
         }
 
         private void ButtonMaximizeOnClick(object sender, RoutedEventArgs e)
         {
-#if !NET40
             SystemCommands.MaximizeWindow(this);
-#else
-            ControlzEx.Windows.Shell.SystemCommands.MaximizeWindow(this);
-#endif
         }
 
         private void ButtonRestoreOnClick(object sender, RoutedEventArgs e)
         {
-#if !NET40
             SystemCommands.RestoreWindow(this);
-#else
-            ControlzEx.Windows.Shell.SystemCommands.RestoreWindow(this);
-#endif
         }
 
 #pragma warning restore 618

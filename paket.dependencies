@@ -1,4 +1,4 @@
-framework: >= net40
+framework: >= net45
 source https://api.nuget.org/v3/index.json
 
 nuget gitlink
