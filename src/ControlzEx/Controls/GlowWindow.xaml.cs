@@ -37,7 +37,8 @@ namespace ControlzEx.Controls
         [DllImport("user32.dll")]
         private static extern IntPtr SetCursor(IntPtr cursor);
 
-        private enum IDC_SIZE_CURSORS {
+        private enum IDC_SIZE_CURSORS 
+        {
             SIZENWSE = 32642,
             SIZENESW = 32643,
             SIZEWE = 32644,
@@ -61,7 +62,6 @@ namespace ControlzEx.Controls
             this.Closing += (sender, e) => e.Cancel = !this.closing;
 
             this.ShowInTaskbar = false;
-            this.glow.Visibility = Visibility.Collapsed;
 
             this.glow.Direction = direction;
 
@@ -312,57 +312,28 @@ namespace ControlzEx.Controls
                 return;
             }
 
-            RECT rect;
-            if (this.owner.Visibility == Visibility.Hidden)
+            if (this.owner.WindowState == WindowState.Normal
+                && this.owner?.Visibility == Visibility.Visible)
             {
-                this.Invoke(() => 
-                            { 
-                                this.glow.Visibility = Visibility.Collapsed;
-                                this.Visibility = Visibility.Collapsed;
-                            });
+                if (this.IsGlowing)
+                {
+                    // Update position before getting visible so there are no chances for artefacts or glitches
+                    if (this.CanUpdateCore()
+                        && UnsafeNativeMethods.GetWindowRect(this.ownerWindowHandle, out var rect))
+                    {
+                        this.UpdateCore(rect);
+                    }
 
-                //Standard.NativeMethods.ShowWindow(this.handle, Standard.SW.HIDE);
-                if (this.IsGlowing 
-                    && this.ownerWindowHandle != IntPtr.Zero 
-                    && UnsafeNativeMethods.GetWindowRect(this.ownerWindowHandle, out rect))
-                {
-                    this.UpdateCore(rect);
+                    NativeMethods.ShowWindow(this.windowHandle, SW.SHOWNOACTIVATE);
                 }
-            }
-            else if (this.owner.WindowState == WindowState.Normal)
-            {
-                this.Invoke(() =>
-                            {
-                                this.glow.Visibility = this.IsGlowing
-                                                           ? Visibility.Visible
-                                                           : Visibility.Collapsed;
-                                this.Visibility = this.IsGlowing
-                                                      ? Visibility.Visible
-                                                      : Visibility.Collapsed;
-                            });
-//                if (this.IsGlowing)
-//                {
-//                    Standard.NativeMethods.ShowWindow(this.handle, Standard.SW.SHOWNOACTIVATE);
-//                }
-//                else
-//                {
-//                    Standard.NativeMethods.ShowWindow(this.handle, Standard.SW.HIDE);
-//                }
-                if (this.IsGlowing 
-                    && this.ownerWindowHandle != IntPtr.Zero 
-                    && UnsafeNativeMethods.GetWindowRect(this.ownerWindowHandle, out rect))
+                else
                 {
-                    this.UpdateCore(rect);
+                    NativeMethods.ShowWindow(this.windowHandle, SW.HIDE);
                 }
             }
             else
-            {
-                this.Invoke(() =>
-                            {
-                                this.glow.Visibility = Visibility.Collapsed;
-                                this.Visibility = Visibility.Collapsed;
-                            });                
-                //Standard.NativeMethods.ShowWindow(this.handle, Standard.SW.HIDE);
+            {        
+                NativeMethods.ShowWindow(this.windowHandle, SW.HIDE);
             }
         }
 
@@ -421,7 +392,7 @@ namespace ControlzEx.Controls
                         NativeMethods.SendMessage(this.ownerWindowHandle, WM.ACTIVATE, wParam, lParam);
                     }
                     return new IntPtr(3);
-                
+
                 case WM.NCLBUTTONDOWN:
                 case WM.NCLBUTTONDBLCLK:
                 case WM.NCRBUTTONDOWN:

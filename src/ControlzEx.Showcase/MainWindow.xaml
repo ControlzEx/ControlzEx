@@ -74,7 +74,7 @@
                           BorderThickness="0 1 0 0"
                           Margin="10"
                           Header="Actions">
-                    <Grid>
+                    <StackPanel Orientation="Vertical">
                         <StackPanel Orientation="Horizontal">
                             <Button Content="Minimize"
                                     Click="ButtonMinimizeOnClick"
@@ -126,7 +126,21 @@
                                 </Button.Style>
                             </Button>
                         </StackPanel>
-                    </Grid>
+                        
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="Open child window"
+                                    Click="ButtonOpenChildWindowOnClick"
+                                    MinWidth="100"
+                                    Padding="4"
+                                    Margin="4" />
+                                                       
+                            <Button Content="Hide"
+                                    Click="ButtonHideOnClick"
+                                    MinWidth="100"
+                                    Padding="4"
+                                    Margin="4" />
+                        </StackPanel>
+                    </StackPanel>
                 </GroupBox>
 
                 <GroupBox Grid.Row="1"

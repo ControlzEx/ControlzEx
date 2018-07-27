@@ -103,6 +103,15 @@
 
 #pragma warning restore 618
 
+        private void ButtonOpenChildWindowOnClick(object sender, RoutedEventArgs e)
+        {
+            var window = new MainWindow
+                         {
+                             Owner = this
+                         };
+            window.Show();
+        }
+
         private void ButtonResetMinSizesOnClick(object sender, RoutedEventArgs e)
         {
             this.MinWidth = 80;
@@ -113,6 +122,11 @@
         {
             this.MaxWidth = double.NaN;
             this.MaxHeight = double.NaN;
+        }
+
+        private void ButtonHideOnClick(object sender, RoutedEventArgs e)
+        {
+            this.Hide();
         }
     }
 }
