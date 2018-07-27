@@ -18,7 +18,7 @@
         private static readonly TimeSpan glowTimerDelay = TimeSpan.FromMilliseconds(200); //200 ms delay, the same as in visual studio
         private GlowWindow left, right, top, bottom;
         private DispatcherTimer makeGlowVisibleTimer;
-        private IntPtr handle;
+        private IntPtr windowHandle;
         private HwndSource hwndSource;
 
         /// <summary>
@@ -116,8 +116,8 @@
 
         private void AssociatedObjectSourceInitialized(object sender, EventArgs e)
         {
-            this.handle = new WindowInteropHelper(this.AssociatedObject).Handle;
-            this.hwndSource = HwndSource.FromHwnd(this.handle);
+            this.windowHandle = new WindowInteropHelper(this.AssociatedObject).Handle;
+            this.hwndSource = HwndSource.FromHwnd(this.windowHandle);
             this.hwndSource?.AddHook(this.AssociatedObjectWindowProc);
         }
 
@@ -298,10 +298,11 @@
                                 && this.right?.CanUpdateCore() == true
                                 && this.top?.CanUpdateCore()  == true
                                 && this.bottom?.CanUpdateCore() == true;
+
             if (canUpdateCore)
             {
-                if (this.handle != IntPtr.Zero 
-                    && UnsafeNativeMethods.GetWindowRect(this.handle, out var rect))
+                if (this.windowHandle != IntPtr.Zero 
+                    && UnsafeNativeMethods.GetWindowRect(this.windowHandle, out var rect))
                 {
                     this.left.UpdateCore(rect);
                     this.right.UpdateCore(rect);
@@ -317,7 +318,11 @@
         /// </summary>
         private void SetOpacityTo(double newOpacity)
         {
-            var canSetOpacity = this.left != null && this.right != null && this.top != null && this.bottom != null;
+            var canSetOpacity = this.left != null 
+                                && this.right != null 
+                                && this.top != null 
+                                && this.bottom != null;
+
             if (canSetOpacity)
             {
                 this.left.Opacity = newOpacity;
@@ -332,8 +337,11 @@
         /// </summary>
         private void StartOpacityStoryboard()
         {
-            var canStartOpacityStoryboard = this.left != null && this.right != null && this.top != null && this.bottom != null
-                                            && this.left.OpacityStoryboard != null && this.right.OpacityStoryboard != null && this.top.OpacityStoryboard != null && this.bottom.OpacityStoryboard != null;
+            var canStartOpacityStoryboard = this.left?.OpacityStoryboard != null 
+                                            && this.right?.OpacityStoryboard != null 
+                                            && this.top?.OpacityStoryboard != null 
+                                            && this.bottom?.OpacityStoryboard != null;
+
             if (canStartOpacityStoryboard)
             {
                 this.left.BeginStoryboard(this.left.OpacityStoryboard);
