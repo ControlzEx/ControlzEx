@@ -71,10 +71,8 @@ namespace ControlzEx.Controls
             this.owner = owner;
 
             this.IsGlowing = true;
-            this.AllowsTransparency = true;
             this.Closing += (sender, e) => e.Cancel = !this.closing;
 
-            this.ShowInTaskbar = false;
 
             this.glow.Direction = direction;
 
