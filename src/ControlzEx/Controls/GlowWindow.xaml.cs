@@ -208,7 +208,6 @@ namespace ControlzEx.Controls
                     break;
             }
 
-            owner.ContentRendered += (sender, e) => this.glow.Visibility = Visibility.Visible;
             owner.Activated += (sender, e) =>
                 {
                     this.Update();
