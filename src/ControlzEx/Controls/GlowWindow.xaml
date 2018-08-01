@@ -6,13 +6,7 @@
         Title="GlowWindow"
         Width="4"
         Height="4"
-        Background="Transparent"
-        Opacity="0"
-        ResizeMode="NoResize"
-        ShowActivated="False"
-        SnapsToDevicePixels="True"
-        WindowStyle="None">
-
+        Opacity="0">
     <Window.Resources>
         <!--  use this storyboard for a smoother visibility  -->
         <Storyboard x:Key="ControlzEx.GlowWindow.OpacityStoryboard">

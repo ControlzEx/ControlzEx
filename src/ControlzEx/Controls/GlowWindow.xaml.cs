@@ -7,7 +7,9 @@ namespace ControlzEx.Controls
     using System.Windows.Controls;
     using System.Windows.Data;
     using System.Windows.Interop;
+    using System.Windows.Media;
     using System.Windows.Media.Animation;
+    using System.Windows.Threading;
     using ControlzEx.Standard;
     using ControlzEx.Native;
     using ControlzEx.Behaviors;
@@ -46,6 +48,17 @@ namespace ControlzEx.Controls
         }
 
         #endregion
+
+        static GlowWindow()
+        {
+            AllowsTransparencyProperty.OverrideMetadata(typeof(GlowWindow), new FrameworkPropertyMetadata(true));
+            BackgroundProperty.OverrideMetadata(typeof(GlowWindow), new FrameworkPropertyMetadata(Brushes.Transparent));
+            ResizeModeProperty.OverrideMetadata(typeof(GlowWindow), new FrameworkPropertyMetadata(ResizeMode.NoResize));
+            ShowActivatedProperty.OverrideMetadata(typeof(GlowWindow), new FrameworkPropertyMetadata(false));
+            ShowInTaskbarProperty.OverrideMetadata(typeof(GlowWindow), new FrameworkPropertyMetadata(false));
+            SnapsToDevicePixelsProperty.OverrideMetadata(typeof(GlowWindow), new FrameworkPropertyMetadata(true));
+            WindowStyleProperty.OverrideMetadata(typeof(GlowWindow), new FrameworkPropertyMetadata(WindowStyle.None));
+        }
 
         public GlowWindow(Window owner, GlowWindowBehavior behavior, GlowDirection direction)
         {
