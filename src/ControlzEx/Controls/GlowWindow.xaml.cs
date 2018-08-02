@@ -168,7 +168,7 @@ namespace ControlzEx.Controls
                 case GlowDirection.Top:
                     this.PreviewMouseDoubleClick += (sender, e) =>
                         {
-                            if (this.ownerWindowHandle != IntPtr.Zero)
+                            if (this.IsOwnerHandleValid())
                             {
                                 NativeMethods.SendMessage(this.ownerWindowHandle, WM.NCLBUTTONDBLCLK, (IntPtr)HT.TOP, IntPtr.Zero);
                             }
@@ -189,7 +189,7 @@ namespace ControlzEx.Controls
                 case GlowDirection.Bottom:
                     this.PreviewMouseDoubleClick += (sender, e) =>
                         {
-                            if (this.ownerWindowHandle != IntPtr.Zero)
+                            if (this.IsOwnerHandleValid())
                             {
                                 NativeMethods.SendMessage(this.ownerWindowHandle, WM.NCLBUTTONDBLCLK, (IntPtr)HT.BOTTOM, IntPtr.Zero);
                             }
@@ -347,9 +347,15 @@ namespace ControlzEx.Controls
             }
         }
 
-        internal bool CanUpdateCore()
+        private bool IsOwnerHandleValid()
         {
             return this.ownerWindowHandle != IntPtr.Zero 
+                   && NativeMethods.IsWindow(this.ownerWindowHandle);
+        }
+
+        internal bool CanUpdateCore()
+        {
+            return this.IsOwnerHandleValid() 
                    && this.windowHandle != IntPtr.Zero;
         }
 
@@ -397,7 +403,7 @@ namespace ControlzEx.Controls
 
                 case WM.MOUSEACTIVATE:
                     handled = true;
-                    if (this.ownerWindowHandle != IntPtr.Zero)
+                    if (this.IsOwnerHandleValid())
                     {
                         NativeMethods.SendMessage(this.ownerWindowHandle, WM.ACTIVATE, wParam, lParam);
                     }
@@ -411,7 +417,7 @@ namespace ControlzEx.Controls
                 case WM.NCMBUTTONDBLCLK:
                 case WM.NCXBUTTONDOWN:
                 case WM.NCXBUTTONDBLCLK:
-                    if (this.ownerWindowHandle != IntPtr.Zero)
+                    if (this.IsOwnerHandleValid())
                     {
                         // WA_CLICKACTIVE = 2
                         NativeMethods.SendMessage(this.ownerWindowHandle, WM.ACTIVATE, new IntPtr(2), IntPtr.Zero);
@@ -424,7 +430,8 @@ namespace ControlzEx.Controls
                     if (this.owner.ResizeMode == ResizeMode.CanResize 
                         || this.owner.ResizeMode == ResizeMode.CanResizeWithGrip)
                     {
-                        if (this.ownerWindowHandle != IntPtr.Zero && UnsafeNativeMethods.GetWindowRect(this.ownerWindowHandle, out var rect))
+                        if (this.IsOwnerHandleValid() 
+                            && UnsafeNativeMethods.GetWindowRect(this.ownerWindowHandle, out var rect))
                         {
                             if (NativeMethods.TryGetRelativeMousePosition(this.windowHandle, out var pt))
                             {
