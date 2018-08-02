@@ -1,9 +1,9 @@
-RESTRICTION: >= net40
+RESTRICTION: >= net45
 NUGET
   remote: https://api.nuget.org/v3/index.json
     gitlink (3.1)
     JetBrains.Annotations (11.1) - copy_local: false
-    MSBuild.Sdk.Extras (1.6.41)
+    MSBuild.Sdk.Extras (1.6.46)
     NuGet.CommandLine (4.6.2)
 
 GROUP cake
