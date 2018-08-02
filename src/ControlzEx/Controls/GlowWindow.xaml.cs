@@ -218,7 +218,6 @@ namespace ControlzEx.Controls
                 {
                     this.glow.IsGlow = false;
                 };
-            owner.StateChanged += (sender, e) => this.Update();
             owner.IsVisibleChanged += (sender, e) => this.Update();
             owner.Closed += (sender, e) => this.InternalClose();
         }
