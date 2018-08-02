@@ -322,28 +322,68 @@ namespace ControlzEx.Controls
                 return;
             }
 
-            if (this.owner.WindowState == WindowState.Normal
-                && this.owner?.Visibility == Visibility.Visible)
+            if (this.WindowState != this.owner.WindowState)
             {
-                if (this.IsGlowing)
-                {
-                    // Update position before getting visible so there are no chances for artefacts or glitches
-                    if (this.CanUpdateCore()
-                        && UnsafeNativeMethods.GetWindowRect(this.ownerWindowHandle, out var rect))
-                    {
-                        this.UpdateCore(rect);
-                    }
+                this.WindowState = this.owner.WindowState;
+            }
 
-                    NativeMethods.ShowWindow(this.windowHandle, SW.SHOWNOACTIVATE);
-                }
-                else
+            RECT rect;
+            if (this.owner.Visibility == Visibility.Hidden)
+            {
+                this.Invoke(() => 
+                            { 
+                                this.glow.Visibility = Visibility.Collapsed;
+                                this.Visibility = Visibility.Collapsed;
+                            });
+
+                if (this.IsGlowing 
+                    && this.IsOwnerHandleValid() 
+                    && UnsafeNativeMethods.GetWindowRect(this.ownerWindowHandle, out rect))
                 {
-                    NativeMethods.ShowWindow(this.windowHandle, SW.HIDE);
+                    this.UpdateCore(rect);
                 }
             }
+            else if (this.owner.WindowState == WindowState.Normal)
+            {
+                var newVisibility = this.IsGlowing
+                                        ? Visibility.Visible
+                                        : Visibility.Collapsed;
+
+                this.Invoke(() =>
+                            {
+                                this.glow.Visibility = newVisibility;
+                                this.Visibility = newVisibility;
+                            });
+
+                
+                if (this.IsGlowing 
+                    && this.IsOwnerHandleValid()
+                    && UnsafeNativeMethods.GetWindowRect(this.ownerWindowHandle, out rect))
+                {
+                    this.UpdateCore(rect);                    
+                }                
+
+                this.InvokeAsync(DispatcherPriority.Background, FixZOrder);
+            }
             else
-            {        
-                NativeMethods.ShowWindow(this.windowHandle, SW.HIDE);
+            {
+                this.Invoke(() =>
+                            {
+                                this.glow.Visibility = Visibility.Collapsed;
+                                this.Visibility = Visibility.Collapsed;
+                            });                
+            }
+
+            void FixZOrder()
+            {
+                if (this.windowHandle == IntPtr.Zero
+                    || NativeMethods.IsWindow(this.windowHandle) == false
+                    || this.IsOwnerHandleValid() == false)
+                {
+                    return;
+                }
+
+                NativeMethods.SetWindowPos(this.windowHandle, this.ownerWindowHandle, 0, 0, 0, 0, SWP.NOMOVE | SWP.NOSIZE | SWP.NOACTIVATE);
             }
         }
 
@@ -486,6 +526,11 @@ namespace ControlzEx.Controls
             {
                 this.Dispatcher.Invoke(invokeAction);
             }
+        }
+
+        private void InvokeAsync(DispatcherPriority dispatcherPriority, Action invokeAction)
+        {
+            this.Dispatcher.BeginInvoke(dispatcherPriority, invokeAction);
         }
     }
 }
