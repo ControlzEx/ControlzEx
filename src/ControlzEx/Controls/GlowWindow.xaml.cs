@@ -321,11 +321,6 @@ namespace ControlzEx.Controls
                 return;
             }
 
-            if (this.WindowState != this.owner.WindowState)
-            {
-                this.WindowState = this.owner.WindowState;
-            }
-
             RECT rect;
             if (this.owner.Visibility == Visibility.Hidden)
             {
