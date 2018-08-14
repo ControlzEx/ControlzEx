@@ -4,11 +4,11 @@
         <ExtrasEnableWpfProjectSetup>true</ExtrasEnableWpfProjectSetup>
         <ExtrasDefaultResourceIncludes>Resources\*.xaml</ExtrasDefaultResourceIncludes>
         <TargetFrameworks>net45;net462</TargetFrameworks>
+        <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
         <OutputPath>$(MSBuildThisFileDirectory)\bin\$(Configuration)\$(MSBuildProjectName)</OutputPath>
         <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-        <GenerateDocumentationFile>false</GenerateDocumentationFile>
-        <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
+        <GenerateDocumentationFile>false</GenerateDocumentationFile>        
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">
         <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\ControlzEx.ruleset</CodeAnalysisRuleSet>
