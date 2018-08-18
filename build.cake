@@ -20,7 +20,10 @@ var configuration = Argument("configuration", "Release");
 ///////////////////////////////////////////////////////////////////////////////
 
 // Set build version
-GitVersion(new GitVersionSettings { OutputType = GitVersionOutput.BuildServer });
+if (BuildSystem.IsLocalBuild == false)
+{
+    GitVersion(new GitVersionSettings { OutputType = GitVersionOutput.BuildServer });
+}
 GitVersion gitVersion = GitVersion(new GitVersionSettings { OutputType = GitVersionOutput.Json });
 
 var latestInstallationPath = VSWhereProducts("*", new VSWhereProductSettings { Version = "[\"15.0\",\"16.0\"]" }).FirstOrDefault();
@@ -85,12 +88,6 @@ Task("Restore")
     MSBuild(solution, msBuildSettings.SetVerbosity(Verbosity.Normal).WithTarget("restore"));
 });
 
-Task("UpdateGlobalAssemblyInfo")
-    .Does(() =>
-{
-	GitVersion(new GitVersionSettings { UpdateAssemblyInfo = true, UpdateAssemblyInfoFilePath = "src/GlobalAssemblyInfo.cs" });
-});
-
 Task("Build")
     .Does(() =>
 {
@@ -99,6 +96,9 @@ Task("Build")
                                    .SetVerbosity(Verbosity.Normal)
                                    //.WithRestore() only with cake 0.28.x
                                    .SetConfiguration(configuration)
+                                   .WithProperty("AssemblyVersion", gitVersion.AssemblySemVer)
+                                   .WithProperty("FileVersion", gitVersion.MajorMinorPatch)
+                                   .WithProperty("InformationalVersion", gitVersion.InformationalVersion)
                                    );
 });
 
@@ -153,9 +153,8 @@ Task("CreateRelease")
 });
 
 Task("Default")
-    .IsDependentOn("CleanOutput")
+    //.IsDependentOn("CleanOutput")
     .IsDependentOn("Restore")
-    .IsDependentOn("UpdateGlobalAssemblyInfo")
     .IsDependentOn("Build");
 
 Task("appveyor")

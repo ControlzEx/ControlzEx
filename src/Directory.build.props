@@ -7,8 +7,17 @@
         <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
         <OutputPath>$(MSBuildThisFileDirectory)\bin\$(Configuration)\$(MSBuildProjectName)</OutputPath>
         <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
-        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-        <GenerateDocumentationFile>false</GenerateDocumentationFile>        
+        <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+        <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    </PropertyGroup>
+    <!-- AssemblyInfo -->
+    <PropertyGroup>
+        <Company>https://github.com/ControlzEx/ControlzEx</Company>
+        <Product>ControlzEx</Product>
+        <Copyright>Copyright © 2015 - $([System.DateTime]::Today.ToString(yyyy)) Jan Karger, Bastian Schmidt, James Willock</Copyright>
+        <AssemblyVersion Condition="'$(AssemblyVersion)' == ''">4.0.0.0</AssemblyVersion>
+        <FileVersion Condition="'$(FileVersion)' == ''">4.0.0.0</FileVersion>
+        <InformationalVersion Condition="'$(InformationalVersion)' == ''">SRC</InformationalVersion>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">
         <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\ControlzEx.ruleset</CodeAnalysisRuleSet>

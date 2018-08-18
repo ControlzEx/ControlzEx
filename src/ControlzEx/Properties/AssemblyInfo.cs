@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
 using System.Windows.Markup;
 
-[assembly: AssemblyTitle("ControlzEx")]
 [assembly: AssemblyDescription("Shared Controlz for WPF and...")]
 
 [assembly: XmlnsPrefix("urn:controlzex", "controlzex")]
