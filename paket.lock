@@ -2,18 +2,17 @@ RESTRICTION: >= net45
 NUGET
   remote: https://api.nuget.org/v3/index.json
     gitlink (3.1)
-    JetBrains.Annotations (11.1) - copy_local: false
-    MSBuild.Sdk.Extras (1.6.46)
-    NuGet.CommandLine (4.6.2)
+    JetBrains.Annotations (2018.2.1) - copy_local: false
+    NuGet.CommandLine (4.7.1)
 
 GROUP cake
 RESTRICTION: == net45
 NUGET
   remote: https://api.nuget.org/v3/index.json
-    Cake (0.29)
-    Cake.Figlet (1.1)
+    Cake (0.30)
+    Cake.Figlet (1.2)
     Cake.Paket (4.0)
     Cake.Paket.Module (4.0)
     gitreleasemanager (0.7.1)
-    GitVersion.CommandLine (4.0.0-beta0012)
+    GitVersion.CommandLine (4.0.0-beta0014)
     vswhere (2.5.2)

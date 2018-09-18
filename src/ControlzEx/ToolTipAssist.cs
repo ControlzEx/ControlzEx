@@ -144,6 +144,8 @@ namespace ControlzEx
 
             var dpi = DpiHelper.GetDpi(toolTip);
 
+            Debug.WriteLine(">>dpi       >> x: {0} \t y: {1}", dpi.DpiScaleX, dpi.DpiScaleY);
+
             var hDPIOffset = DpiHelper.TransformToDeviceX(toolTip.PlacementTarget, hOffsetFromToolTip, dpi.DpiScaleX);
             var vDPIOffset = DpiHelper.TransformToDeviceY(toolTip.PlacementTarget, vOffsetFromToolTip, dpi.DpiScaleY);
 
@@ -168,8 +170,8 @@ namespace ControlzEx
 
             if (monitorINFO != null)
             {
-                Debug.WriteLine(">>rcWork    >> w: {0}     h: {1}", monitorINFO.rcWork.Width, monitorINFO.rcWork.Height);
-                Debug.WriteLine(">>rcMonitor >> w: {0}     h: {1}", monitorINFO.rcMonitor.Width, monitorINFO.rcMonitor.Height);
+                Debug.WriteLine(">>rcWork    >> w: {0} \t h: {1}", monitorINFO.rcWork.Width, monitorINFO.rcWork.Height);
+                Debug.WriteLine(">>rcMonitor >> w: {0} \t h: {1}", monitorINFO.rcMonitor.Width, monitorINFO.rcMonitor.Height);
 
                 var monitorWorkWidth = Math.Abs(monitorINFO.rcWork.Width); // (int)DpiHelper.TransformToDeviceX(toolTip.PlacementTarget, SystemParameters.PrimaryScreenWidth);
                 var monitorWorkHeight = Math.Abs(monitorINFO.rcWork.Height); // (int)DpiHelper.TransformToDeviceY(toolTip.PlacementTarget, SystemParameters.PrimaryScreenHeight);
@@ -186,26 +188,26 @@ namespace ControlzEx
                 var locationX = (int)topLeftFromScreen.X % monitorWorkWidth;
                 var locationY = (int)topLeftFromScreen.Y % monitorWorkHeight;
 
-                var renderDPIWidth = DpiHelper.TransformToDeviceX(toolTip.RenderSize.Width, dpi.DpiScaleX);
+                var renderDPIWidth = DpiHelper.TransformToDeviceX(toolTip.PlacementTarget, toolTip.RenderSize.Width, dpi.DpiScaleX);
                 var rightX = locationX + newHorizontalOffset + renderDPIWidth;
                 if (rightX > monitorWorkWidth)
                 {
                     newHorizontalOffset = position.X - toolTip.RenderSize.Width - 0.5 * hDPIOffset;
                 }
 
-                var renderDPIHeight = DpiHelper.TransformToDeviceY(toolTip.RenderSize.Height, dpi.DpiScaleY);
+                var renderDPIHeight = DpiHelper.TransformToDeviceY(toolTip.PlacementTarget, toolTip.RenderSize.Height, dpi.DpiScaleY);
                 var bottomY = locationY + newVerticalOffset + renderDPIHeight;
                 if (bottomY > monitorWorkHeight)
                 {
                     newVerticalOffset = position.Y - toolTip.RenderSize.Height - 0.5 * vDPIOffset;
                 }
 
-                Debug.WriteLine(">>tooltip   >> bottomY: {0:F}    rightX: {1:F}", bottomY, rightX);
+                Debug.WriteLine(">>tooltip   >> bY: {0:F} \t rX: {1:F}", bottomY, rightX);
 
                 toolTip.HorizontalOffset = newHorizontalOffset;
                 toolTip.VerticalOffset = newVerticalOffset;
 
-                Debug.WriteLine(">>offset    >> ho: {0:F}         vo: {1:F}", toolTip.HorizontalOffset, toolTip.VerticalOffset);
+                Debug.WriteLine(">>offset    >> ho: {0:F} \t vo: {1:F}", toolTip.HorizontalOffset, toolTip.VerticalOffset);
             }
         }
     }
