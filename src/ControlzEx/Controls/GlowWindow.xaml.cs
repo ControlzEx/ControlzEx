@@ -285,6 +285,7 @@ namespace ControlzEx.Controls
 
             wsex &= ~WS_EX.APPWINDOW;
             wsex |= WS_EX.TOOLWINDOW;
+            wsex |= WS_EX.NOACTIVATE;
 
             if (this.owner.ResizeMode == ResizeMode.NoResize || this.owner.ResizeMode == ResizeMode.CanMinimize)
             {
@@ -446,13 +447,22 @@ namespace ControlzEx.Controls
                     }
                     break;
 
+                case WM.ACTIVATE:
+                    if (wParam.ToInt32() != 0
+                        && this.IsOwnerHandleValid())
+                    {
+                        handled = true;
+                        NativeMethods.SetActiveWindow(this.ownerWindowHandle);
+                    }
+                    break;
+
                 case WM.MOUSEACTIVATE:
                     handled = true;
                     if (this.IsOwnerHandleValid())
                     {
                         NativeMethods.SendMessage(this.ownerWindowHandle, WM.ACTIVATE, wParam, lParam);
                     }
-                    return new IntPtr(3);
+                    return new IntPtr(3) /* MA_NOACTIVATE */;
 
                 case WM.NCLBUTTONDOWN:
                 case WM.NCLBUTTONDBLCLK:
