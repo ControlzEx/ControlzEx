@@ -1,4 +1,4 @@
-﻿#pragma warning disable 618
+#pragma warning disable 618
 namespace ControlzEx.Controls
 {
     using System;
@@ -30,6 +30,8 @@ namespace ControlzEx.Controls
         private PropertyChangeNotifier resizeModeChangeNotifier;
 
         private readonly Window owner;
+
+        private WindowState previousOwnerState;
 
         #region PInvoke
         
@@ -316,7 +318,8 @@ namespace ControlzEx.Controls
 
         public void Update()
         {
-            if (this.closing)
+            if (this.closing
+                || this.CanUpdateCore() == false)
             {
                 return;
             }
@@ -331,7 +334,6 @@ namespace ControlzEx.Controls
                             });
 
                 if (this.IsGlowing 
-                    && this.IsOwnerHandleValid() 
                     && UnsafeNativeMethods.GetWindowRect(this.ownerWindowHandle, out rect))
                 {
                     this.UpdateCore(rect);
@@ -351,13 +353,15 @@ namespace ControlzEx.Controls
 
                 
                 if (this.IsGlowing 
-                    && this.IsOwnerHandleValid()
                     && UnsafeNativeMethods.GetWindowRect(this.ownerWindowHandle, out rect))
                 {
                     this.UpdateCore(rect);                    
-                }                
+                }
 
-                this.InvokeAsync(DispatcherPriority.Background, FixZOrder);
+                if (this.previousOwnerState != this.owner.WindowState)
+                {
+                    this.InvokeAsync(DispatcherPriority.Background, FixZOrder);
+                }
             }
             else
             {
@@ -368,17 +372,24 @@ namespace ControlzEx.Controls
                             });                
             }
 
+            this.previousOwnerState = this.owner.WindowState;
+
             void FixZOrder()
             {
-                if (this.windowHandle == IntPtr.Zero
-                    || NativeMethods.IsWindow(this.windowHandle) == false
-                    || this.IsOwnerHandleValid() == false)
+                // We have to check this here because we get called async
+                if (this.CanUpdateCore() == false)
                 {
                     return;
                 }
 
                 NativeMethods.SetWindowPos(this.windowHandle, this.ownerWindowHandle, 0, 0, 0, 0, SWP.NOMOVE | SWP.NOSIZE | SWP.NOACTIVATE);
             }
+        }
+
+        private bool IsWindowHandleValid()
+        {
+            return this.windowHandle != IntPtr.Zero
+                   && NativeMethods.IsWindow(this.windowHandle);
         }
 
         private bool IsOwnerHandleValid()
@@ -389,8 +400,8 @@ namespace ControlzEx.Controls
 
         internal bool CanUpdateCore()
         {
-            return this.IsOwnerHandleValid() 
-                   && this.windowHandle != IntPtr.Zero;
+            return this.IsWindowHandleValid()
+                && this.IsOwnerHandleValid();
         }
 
         internal void UpdateCore(RECT rect)
