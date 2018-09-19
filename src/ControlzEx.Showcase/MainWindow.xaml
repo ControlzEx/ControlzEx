@@ -142,7 +142,6 @@
 
                             <Button Content="ToolTipAssist"
                                     MinWidth="100"
-                                    Padding="4"
                                     Margin="4">
                                 <Button.ToolTip>
                                     <ToolTip controlzEx:ToolTipAssist.AutoMove="True">
