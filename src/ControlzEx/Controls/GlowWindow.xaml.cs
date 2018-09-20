@@ -452,7 +452,8 @@ namespace ControlzEx.Controls
                         && this.IsOwnerHandleValid())
                     {
                         handled = true;
-                        NativeMethods.SetActiveWindow(this.ownerWindowHandle);
+                        // We have to activate the owner async. Otherwise the active window on the taskbar is wrong.
+                        this.Dispatcher.BeginInvoke(DispatcherPriority.Send, new Action(() => NativeMethods.SetActiveWindow(this.ownerWindowHandle)));
                     }
                     break;
 
