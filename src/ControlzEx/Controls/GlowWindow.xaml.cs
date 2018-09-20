@@ -1,4 +1,4 @@
-﻿#pragma warning disable 618
+#pragma warning disable 618
 namespace ControlzEx.Controls
 {
     using System;
@@ -30,6 +30,8 @@ namespace ControlzEx.Controls
         private PropertyChangeNotifier resizeModeChangeNotifier;
 
         private readonly Window owner;
+
+        private WindowState previousOwnerState;
 
         #region PInvoke
         
@@ -283,6 +285,7 @@ namespace ControlzEx.Controls
 
             wsex &= ~WS_EX.APPWINDOW;
             wsex |= WS_EX.TOOLWINDOW;
+            wsex |= WS_EX.NOACTIVATE;
 
             if (this.owner.ResizeMode == ResizeMode.NoResize || this.owner.ResizeMode == ResizeMode.CanMinimize)
             {
@@ -316,7 +319,8 @@ namespace ControlzEx.Controls
 
         public void Update()
         {
-            if (this.closing)
+            if (this.closing
+                || this.CanUpdateCore() == false)
             {
                 return;
             }
@@ -331,7 +335,6 @@ namespace ControlzEx.Controls
                             });
 
                 if (this.IsGlowing 
-                    && this.IsOwnerHandleValid() 
                     && UnsafeNativeMethods.GetWindowRect(this.ownerWindowHandle, out rect))
                 {
                     this.UpdateCore(rect);
@@ -351,13 +354,15 @@ namespace ControlzEx.Controls
 
                 
                 if (this.IsGlowing 
-                    && this.IsOwnerHandleValid()
                     && UnsafeNativeMethods.GetWindowRect(this.ownerWindowHandle, out rect))
                 {
                     this.UpdateCore(rect);                    
-                }                
+                }
 
-                this.InvokeAsync(DispatcherPriority.Background, FixZOrder);
+                if (this.previousOwnerState != this.owner.WindowState)
+                {
+                    this.InvokeAsync(DispatcherPriority.Background, FixZOrder);
+                }
             }
             else
             {
@@ -368,17 +373,24 @@ namespace ControlzEx.Controls
                             });                
             }
 
+            this.previousOwnerState = this.owner.WindowState;
+
             void FixZOrder()
             {
-                if (this.windowHandle == IntPtr.Zero
-                    || NativeMethods.IsWindow(this.windowHandle) == false
-                    || this.IsOwnerHandleValid() == false)
+                // We have to check this here because we get called async
+                if (this.CanUpdateCore() == false)
                 {
                     return;
                 }
 
                 NativeMethods.SetWindowPos(this.windowHandle, this.ownerWindowHandle, 0, 0, 0, 0, SWP.NOMOVE | SWP.NOSIZE | SWP.NOACTIVATE);
             }
+        }
+
+        private bool IsWindowHandleValid()
+        {
+            return this.windowHandle != IntPtr.Zero
+                   && NativeMethods.IsWindow(this.windowHandle);
         }
 
         private bool IsOwnerHandleValid()
@@ -389,8 +401,8 @@ namespace ControlzEx.Controls
 
         internal bool CanUpdateCore()
         {
-            return this.IsOwnerHandleValid() 
-                   && this.windowHandle != IntPtr.Zero;
+            return this.IsWindowHandleValid()
+                && this.IsOwnerHandleValid();
         }
 
         internal void UpdateCore(RECT rect)
@@ -435,13 +447,22 @@ namespace ControlzEx.Controls
                     }
                     break;
 
+                case WM.ACTIVATE:
+                    if (wParam.ToInt32() != 0
+                        && this.IsOwnerHandleValid())
+                    {
+                        handled = true;
+                        NativeMethods.SetActiveWindow(this.ownerWindowHandle);
+                    }
+                    break;
+
                 case WM.MOUSEACTIVATE:
                     handled = true;
                     if (this.IsOwnerHandleValid())
                     {
                         NativeMethods.SendMessage(this.ownerWindowHandle, WM.ACTIVATE, wParam, lParam);
                     }
-                    return new IntPtr(3);
+                    return new IntPtr(3) /* MA_NOACTIVATE */;
 
                 case WM.NCLBUTTONDOWN:
                 case WM.NCLBUTTONDBLCLK:
