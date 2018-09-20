@@ -31,8 +31,6 @@ namespace ControlzEx.Controls
 
         private readonly Window owner;
 
-        private WindowState previousOwnerState;
-
         #region PInvoke
         
         [DllImport("user32.dll")]
@@ -358,11 +356,6 @@ namespace ControlzEx.Controls
                 {
                     this.UpdateCore(rect);                    
                 }
-
-                if (this.previousOwnerState != this.owner.WindowState)
-                {
-                    this.InvokeAsync(DispatcherPriority.Background, FixZOrder);
-                }
             }
             else
             {
@@ -371,19 +364,6 @@ namespace ControlzEx.Controls
                                 this.glow.Visibility = Visibility.Collapsed;
                                 this.Visibility = Visibility.Collapsed;
                             });                
-            }
-
-            this.previousOwnerState = this.owner.WindowState;
-
-            void FixZOrder()
-            {
-                // We have to check this here because we get called async
-                if (this.CanUpdateCore() == false)
-                {
-                    return;
-                }
-
-                NativeMethods.SetWindowPos(this.windowHandle, this.ownerWindowHandle, 0, 0, 0, 0, SWP.NOMOVE | SWP.NOSIZE | SWP.NOACTIVATE);
             }
         }
 
@@ -444,6 +424,11 @@ namespace ControlzEx.Controls
                     if ((int)lParam == 3 && this.Visibility != Visibility.Visible) // 3 == SW_PARENTOPENING
                     {
                         handled = true; //handle this message so window isn't shown until we want it to       
+                    }
+                    else if (this.CanUpdateCore())
+                    {
+                        // this fixes #58
+                        this.Dispatcher.BeginInvoke(DispatcherPriority.Send, new Action(() => NativeMethods.SetWindowPos(this.windowHandle, this.ownerWindowHandle, 0, 0, 0, 0, SWP.NOMOVE | SWP.NOSIZE | SWP.NOACTIVATE)));
                     }
                     break;
 
