@@ -11,7 +11,6 @@ namespace ControlzEx.Behaviors
     using System.Windows.Controls;
     using System.Windows.Interactivity;
     using System.Windows.Interop;
-    using System.Windows.Media;
     using System.Windows.Threading;
     using ControlzEx;
     using ControlzEx.Native;
@@ -70,20 +69,6 @@ namespace ControlzEx.Behaviors
         /// </summary>
         public static readonly DependencyProperty ResizeBorderThicknessProperty =
             DependencyProperty.Register(nameof(ResizeBorderThickness), typeof(Thickness), typeof(WindowChromeBehavior), new PropertyMetadata(GetDefaultResizeBorderThickness()), (value) => ((Thickness)value).IsNonNegative());
-
-        /// <summary>
-        /// <see cref="DependencyProperty"/> for <see cref="GlowBrush"/>.
-        /// </summary>
-        public static readonly DependencyProperty GlowBrushProperty = DependencyProperty.Register(nameof(GlowBrush), typeof(Brush), typeof(WindowChromeBehavior), new PropertyMetadata());
-
-        /// <summary>
-        /// Mirror property for GlowBrush from MetroWindow.
-        /// </summary>
-        public Brush GlowBrush
-        {
-            get { return (Brush)this.GetValue(GlowBrushProperty); }
-            set { this.SetValue(GlowBrushProperty, value); }
-        }
 
         /// <summary>
         /// Defines if the Taskbar should be ignored when maximizing a Window.
