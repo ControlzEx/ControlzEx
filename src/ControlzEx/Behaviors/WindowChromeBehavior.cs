@@ -42,10 +42,8 @@ namespace ControlzEx.Behaviors
         private Thickness? savedBorderThickness;
         private Thickness? savedResizeBorderThickness;
         private bool savedTopMost;
-        private bool isWindows10OrHigher;
 
         private bool isCleanedUp;
-        private IntPtr taskbarHandle;
 
         private bool dpiChanged;
 
@@ -118,28 +116,10 @@ namespace ControlzEx.Behaviors
         /// </summary>
         public static readonly DependencyProperty TryToBeFlickerFreeProperty = DependencyProperty.Register(nameof(TryToBeFlickerFree), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(default(bool), OnTryToBeFlickerFreePropertyChanged));
 
-        private static bool IsWindows10OrHigher()
-        {
-            var version = NtDll.RtlGetVersion();
-            if (default(Version) == version)
-            {
-                // Snippet from Koopakiller https://dotnet-snippets.de/snippet/os-version-name-mit-wmi/4929
-                using (var mos = new ManagementObjectSearcher("SELECT Caption, Version FROM Win32_OperatingSystem"))
-                {
-                    var attribs = mos.Get().OfType<ManagementObject>();
-                    //caption = attribs.FirstOrDefault().GetPropertyValue("Caption").ToString() ?? "Unknown";
-                    version = new Version((attribs.FirstOrDefault()?.GetPropertyValue("Version") ?? "0.0.0.0").ToString());
-                }
-            }
-            return version >= new Version(10, 0);
-        }
-
         /// <inheritdoc />
         protected override void OnAttached()
         {
-            this.isWindows10OrHigher = IsWindows10OrHigher();
-
-            // no transparany, because it hase more then one unwanted issues
+            // no transparency, because it has more then one unwanted issues
             if (this.AssociatedObject.AllowsTransparency
                 && this.AssociatedObject.IsLoaded == false 
                 && new WindowInteropHelper(this.AssociatedObject).Handle == IntPtr.Zero)
@@ -272,12 +252,6 @@ namespace ControlzEx.Behaviors
 
             this.isCleanedUp = true;
 
-            if (this.taskbarHandle != IntPtr.Zero
-                && this.isWindows10OrHigher)
-            {
-                this.DeactivateTaskbarFix(this.taskbarHandle);
-            }
-
             // clean up events
             this.AssociatedObject.SourceInitialized -= this.AssociatedObject_SourceInitialized;
             this.AssociatedObject.Loaded -= this.AssociatedObject_Loaded;
@@ -403,24 +377,8 @@ namespace ControlzEx.Behaviors
                         var cx = monitorRect.Width;
                         var cy = monitorRect.Height;
 
-                        if (this.IgnoreTaskbarOnMaximize
-                            && this.isWindows10OrHigher)
-                        {
-                            this.ActivateTaskbarFix(monitor);
-                        }
-
                         NativeMethods.SetWindowPos(this.windowHandle, Constants.HWND_NOTOPMOST, x, y, cx, cy, SWP.SHOWWINDOW);
                     }
-                }
-            }
-            else
-            {
-                // #2694 make sure the window is not on top after restoring window
-                // this issue was introduced after fixing the windows 10 bug with the taskbar and a maximized window that ignores the taskbar
-                if (this.taskbarHandle != IntPtr.Zero
-                    && this.isWindows10OrHigher)
-                {
-                    this.DeactivateTaskbarFix(this.taskbarHandle);
                 }
             }
 
@@ -509,30 +467,6 @@ namespace ControlzEx.Behaviors
 
             this.borderThicknessChangeNotifier.RaiseValueChanged = true;
             this.resizeBorderThicknessChangeNotifier.RaiseValueChanged = true;
-        }
-
-        private void ActivateTaskbarFix(IntPtr monitor)
-        {
-            var trayWndHandle = NativeMethods.GetTaskBarHandleForMonitor(monitor);
-
-            if (trayWndHandle != IntPtr.Zero)
-            {
-                this.taskbarHandle = trayWndHandle;
-                NativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_BOTTOM, 0, 0, 0, 0, SWP.TOPMOST);
-                NativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_TOP, 0, 0, 0, 0, SWP.TOPMOST);
-                NativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_NOTOPMOST, 0, 0, 0, 0, SWP.TOPMOST);
-            }
-        }
-
-        private void DeactivateTaskbarFix(IntPtr trayWndHandle)
-        {
-            if (trayWndHandle != IntPtr.Zero)
-            {
-                this.taskbarHandle = IntPtr.Zero;
-                NativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_BOTTOM, 0, 0, 0, 0, SWP.TOPMOST);
-                NativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_TOP, 0, 0, 0, 0, SWP.TOPMOST);
-                NativeMethods.SetWindowPos(trayWndHandle, Constants.HWND_TOPMOST, 0, 0, 0, 0, SWP.TOPMOST);
-            }
         }
 
         private static void Invoke([NotNull] DispatcherObject dispatcherObject, [NotNull] Action invokeAction)
