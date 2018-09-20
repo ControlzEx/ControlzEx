@@ -133,6 +133,12 @@
                                     MinWidth="100"
                                     Padding="4"
                                     Margin="4" />
+
+                            <Button Content="Open modal child window"
+                                    Click="ButtonOpenModalChildWindowOnClick"
+                                    MinWidth="100"
+                                    Padding="4"
+                                    Margin="4" />
                                                        
                             <Button Content="Hide"
                                     Click="ButtonHideOnClick"

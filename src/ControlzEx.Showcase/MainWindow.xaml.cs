@@ -112,6 +112,15 @@
             window.Show();
         }
 
+        private void ButtonOpenModalChildWindowOnClick(object sender, RoutedEventArgs e)
+        {
+            var window = new MainWindow
+            {
+                Owner = this
+            };
+            window.ShowDialog();
+        }
+
         private void ButtonResetMinSizesOnClick(object sender, RoutedEventArgs e)
         {
             this.MinWidth = 80;
