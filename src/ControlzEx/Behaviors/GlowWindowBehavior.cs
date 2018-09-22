@@ -55,7 +55,7 @@
         public static readonly DependencyProperty IsGlowTransitionEnabledProperty = DependencyProperty.Register(nameof(IsGlowTransitionEnabled), typeof(bool), typeof(GlowWindowBehavior), new PropertyMetadata(default(bool)));
 
         /// <summary>
-        /// Defines wether glow transitions should be used or not.
+        /// Defines whether glow transitions should be used or not.
         /// </summary>
         public bool IsGlowTransitionEnabled
         {

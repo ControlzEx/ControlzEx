@@ -113,7 +113,7 @@
         public static readonly DependencyProperty KeepBorderOnMaximizeProperty = DependencyProperty.Register(nameof(KeepBorderOnMaximize), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(true));
 
         /// <summary>
-        /// Gets or sets wether the resizing of the window should be tried in a way that does not cause flicker/jitter, especially when resizing from the left side.
+        /// Gets or sets whether the resizing of the window should be tried in a way that does not cause flicker/jitter, especially when resizing from the left side.
         /// </summary>
         /// <remarks>
         /// Please note that setting this to <c>true</c> may cause resize lag and black areas appearing on some systems.
