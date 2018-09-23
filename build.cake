@@ -13,7 +13,16 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 var target = Argument("target", "Default");
+if (string.IsNullOrWhiteSpace(target))
+{
+    target = "Default";
+}
+
 var configuration = Argument("configuration", "Release");
+if (string.IsNullOrWhiteSpace(configuration))
+{
+    configuration = "Release";
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // PREPARATION
@@ -31,8 +40,9 @@ var msBuildPath = latestInstallationPath.CombineWithFilePath("./MSBuild/15.0/Bin
 
 var local = BuildSystem.IsLocalBuild;
 var isPullRequest = AppVeyor.Environment.PullRequest.IsPullRequest;
-var isDevelopBranch = StringComparer.OrdinalIgnoreCase.Equals("develop", AppVeyor.Environment.Repository.Branch);
-var isReleaseBranch = StringComparer.OrdinalIgnoreCase.Equals("master", AppVeyor.Environment.Repository.Branch);
+var branchName = gitVersion.BranchName;
+var isDevelopBranch = StringComparer.OrdinalIgnoreCase.Equals("develop", branchName);
+var isReleaseBranch = StringComparer.OrdinalIgnoreCase.Equals("master", branchName);
 var isTagged = AppVeyor.Environment.Repository.Tag.IsTag;
 
 // Directories and Paths
@@ -59,6 +69,7 @@ Setup(ctx =>
     Information("MajorMinorPatch Version: {0}", gitVersion.MajorMinorPatch);
     Information("NuGet           Version: {0}", gitVersion.NuGetVersion);
     Information("IsLocalBuild           : {0}", local);
+    Information("Branch                 : {0}", branchName);
     Information("Configuration          : {0}", configuration);
 });
 
@@ -127,7 +138,6 @@ Task("Zip")
 });
 
 Task("CreateRelease")
-    .WithCriteria(() => isReleaseBranch)
     .WithCriteria(() => !isTagged)
     .Does(() =>
 {
@@ -146,8 +156,8 @@ Task("CreateRelease")
     GitReleaseManagerCreate(username, token, "ControlzEx", "ControlzEx", new GitReleaseManagerCreateSettings {
         Milestone         = gitVersion.MajorMinorPatch,
         Name              = gitVersion.MajorMinorPatch,
-        Prerelease        = false,
-        TargetCommitish   = "master",
+        Prerelease        = isDevelopBranch,
+        TargetCommitish   = branchName,
         WorkingDirectory  = "."
     });
 });
