@@ -162,6 +162,26 @@ Task("CreateRelease")
     });
 });
 
+Task("ExportReleaseNotes")
+    .Does(() =>
+{
+    var username = EnvironmentVariable("GITHUB_USERNAME");
+    if (string.IsNullOrEmpty(username))
+    {
+        throw new Exception("The GITHUB_USERNAME environment variable is not defined.");
+    }
+
+    var token = EnvironmentVariable("GITHUB_TOKEN");
+    if (string.IsNullOrEmpty(token))
+    {
+        throw new Exception("The GITHUB_TOKEN environment variable is not defined.");
+    }
+
+    GitReleaseManagerExport(username, token, "ControlzEx", "ControlzEx", "releasenotes.md", new GitReleaseManagerExportSettings {
+        TagName         = gitVersion.SemVer
+    });
+});
+
 Task("Default")
     //.IsDependentOn("CleanOutput")
     .IsDependentOn("Restore")
