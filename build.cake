@@ -108,7 +108,7 @@ Task("Build")
                                    //.WithRestore() only with cake 0.28.x
                                    .SetConfiguration(configuration)
                                    .WithProperty("AssemblyVersion", gitVersion.AssemblySemVer)
-                                   .WithProperty("FileVersion", gitVersion.MajorMinorPatch)
+                                   .WithProperty("FileVersion", gitVersion.AssemblySemFileVer)
                                    .WithProperty("InformationalVersion", gitVersion.InformationalVersion)
                                    );
 });
@@ -155,7 +155,7 @@ Task("CreateRelease")
 
     GitReleaseManagerCreate(username, token, "ControlzEx", "ControlzEx", new GitReleaseManagerCreateSettings {
         Milestone         = gitVersion.MajorMinorPatch,
-        Name              = gitVersion.MajorMinorPatch,
+        Name              = gitVersion.AssemblySemFileVer,
         Prerelease        = isDevelopBranch,
         TargetCommitish   = branchName,
         WorkingDirectory  = "."
