@@ -4,7 +4,6 @@
 
 #tool paket:?package=GitVersion.CommandLine
 #tool paket:?package=gitreleasemanager
-#tool paket:?package=vswhere
 #addin paket:?package=Cake.Figlet
 #addin paket:?package=Cake.Paket
 
@@ -24,6 +23,12 @@ if (string.IsNullOrWhiteSpace(configuration))
     configuration = "Release";
 }
 
+var verbosity = Argument("verbosity", Verbosity.Normal);
+if (string.IsNullOrWhiteSpace(configuration))
+{
+    verbosity = Verbosity.Normal;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // PREPARATION
 ///////////////////////////////////////////////////////////////////////////////
@@ -31,14 +36,12 @@ if (string.IsNullOrWhiteSpace(configuration))
 var local = BuildSystem.IsLocalBuild;
 
 // Set build version
-if (local == false)
+if (local == false
+    || verbosity == Verbosity.Verbose))
 {
     GitVersion(new GitVersionSettings { OutputType = GitVersionOutput.BuildServer });
 }
 GitVersion gitVersion = GitVersion(new GitVersionSettings { OutputType = GitVersionOutput.Json });
-
-var latestInstallationPath = VSWhereProducts("*", new VSWhereProductSettings { Version = "[\"15.0\",\"16.0\"]" }).FirstOrDefault();
-var msBuildPath = latestInstallationPath.CombineWithFilePath("./MSBuild/15.0/Bin/MSBuild.exe");
 
 var isPullRequest = AppVeyor.Environment.PullRequest.IsPullRequest;
 var branchName = gitVersion.BranchName;
@@ -55,8 +58,6 @@ var solution = "src/ControlzEx.sln";
 
 Setup(ctx =>
 {
-    // Executed BEFORE the first task.
-
     if (!IsRunningOnWindows())
     {
         throw new NotImplementedException("ControlzEx will only build on Windows because it's not possible to target WPF and Windows Forms from UNIX.");
@@ -76,7 +77,6 @@ Setup(ctx =>
 
 Teardown(ctx =>
 {
-   // Executed AFTER the last task.
 });
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -96,22 +96,28 @@ Task("Restore")
 {
     PaketRestore();
 
-    var msBuildSettings = new MSBuildSettings() { ToolPath = msBuildPath };
-    MSBuild(solution, msBuildSettings.SetVerbosity(Verbosity.Normal).WithTarget("restore"));
+    MSBuild(solution, settings => 
+        settings
+            .SetConfiguration(configuration)
+            .SetVerbosity(Verbosity.Normal)
+            .WithTarget("restore")
+            );
 });
 
 Task("Build")
+    .IsDependentOn("Restore")
     .Does(() =>
 {
-  var msBuildSettings = new MSBuildSettings() { ToolPath = msBuildPath, ArgumentCustomization = args => args.Append("/m") };
-  MSBuild(solution, msBuildSettings.SetMaxCpuCount(0)
-                                   .SetVerbosity(Verbosity.Normal)
-                                   //.WithRestore() only with cake 0.28.x
-                                   .SetConfiguration(configuration)
-                                   .WithProperty("AssemblyVersion", gitVersion.AssemblySemVer)
-                                   .WithProperty("FileVersion", gitVersion.AssemblySemFileVer)
-                                   .WithProperty("InformationalVersion", gitVersion.InformationalVersion)
-                                   );
+    MSBuild(solution, settings => 
+        settings.
+            SetMaxCpuCount(0)
+            .SetConfiguration(configuration)
+            .SetVerbosity(Verbosity.Normal)
+            //.WithRestore() only with cake 0.28.x            
+            .WithProperty("AssemblyVersion", gitVersion.AssemblySemVer)
+            .WithProperty("FileVersion", gitVersion.AssemblySemFileVer)
+            .WithProperty("InformationalVersion", gitVersion.InformationalVersion)
+            );
 });
 
 Task("PaketPack")
