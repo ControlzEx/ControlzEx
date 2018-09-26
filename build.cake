@@ -4,6 +4,7 @@
 
 #tool paket:?package=GitVersion.CommandLine
 #tool paket:?package=gitreleasemanager
+#tool paket:?package=vswhere
 #addin paket:?package=Cake.Figlet
 #addin paket:?package=Cake.Paket
 
@@ -37,11 +38,14 @@ var local = BuildSystem.IsLocalBuild;
 
 // Set build version
 if (local == false
-    || verbosity == Verbosity.Verbose))
+    || verbosity == Verbosity.Verbose)
 {
     GitVersion(new GitVersionSettings { OutputType = GitVersionOutput.BuildServer });
 }
 GitVersion gitVersion = GitVersion(new GitVersionSettings { OutputType = GitVersionOutput.Json });
+
+var latestInstallationPath = VSWhereProducts("*", new VSWhereProductSettings { Version = "[\"15.0\",\"16.0\"]" }).FirstOrDefault();
+var msBuildPath = latestInstallationPath.CombineWithFilePath("./MSBuild/15.0/Bin/MSBuild.exe");
 
 var isPullRequest = AppVeyor.Environment.PullRequest.IsPullRequest;
 var branchName = gitVersion.BranchName;
@@ -96,8 +100,8 @@ Task("Restore")
 {
     PaketRestore();
 
-    MSBuild(solution, settings => 
-        settings
+    var msBuildSettings = new MSBuildSettings { ToolPath = msBuildPath };
+    MSBuild(solution, msBuildSettings
             .SetConfiguration(configuration)
             .SetVerbosity(Verbosity.Normal)
             .WithTarget("restore")
@@ -108,9 +112,9 @@ Task("Build")
     .IsDependentOn("Restore")
     .Does(() =>
 {
-    MSBuild(solution, settings => 
-        settings.
-            SetMaxCpuCount(0)
+    var msBuildSettings = new MSBuildSettings { ToolPath = msBuildPath };
+    MSBuild(solution, msBuildSettings
+            .SetMaxCpuCount(0)
             .SetConfiguration(configuration)
             .SetVerbosity(Verbosity.Normal)
             //.WithRestore() only with cake 0.28.x            
