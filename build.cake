@@ -108,7 +108,7 @@ Task("Build")
                                    .SetVerbosity(Verbosity.Normal)
                                    //.WithRestore() only with cake 0.28.x
                                    .SetConfiguration(configuration)
-                                   .WithProperty("AssemblyVersion", $"{gitVersion.Major}.0.0.0")
+                                   .WithProperty("AssemblyVersion", gitVersion.AssemblySemVer)
                                    .WithProperty("FileVersion", gitVersion.AssemblySemFileVer)
                                    .WithProperty("InformationalVersion", gitVersion.InformationalVersion)
                                    );
