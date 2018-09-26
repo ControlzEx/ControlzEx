@@ -28,8 +28,10 @@ if (string.IsNullOrWhiteSpace(configuration))
 // PREPARATION
 ///////////////////////////////////////////////////////////////////////////////
 
+var local = BuildSystem.IsLocalBuild;
+
 // Set build version
-if (BuildSystem.IsLocalBuild == false)
+if (local == false)
 {
     GitVersion(new GitVersionSettings { OutputType = GitVersionOutput.BuildServer });
 }
@@ -38,7 +40,6 @@ GitVersion gitVersion = GitVersion(new GitVersionSettings { OutputType = GitVers
 var latestInstallationPath = VSWhereProducts("*", new VSWhereProductSettings { Version = "[\"15.0\",\"16.0\"]" }).FirstOrDefault();
 var msBuildPath = latestInstallationPath.CombineWithFilePath("./MSBuild/15.0/Bin/MSBuild.exe");
 
-var local = BuildSystem.IsLocalBuild;
 var isPullRequest = AppVeyor.Environment.PullRequest.IsPullRequest;
 var branchName = gitVersion.BranchName;
 var isDevelopBranch = StringComparer.OrdinalIgnoreCase.Equals("develop", branchName);
@@ -107,7 +108,7 @@ Task("Build")
                                    .SetVerbosity(Verbosity.Normal)
                                    //.WithRestore() only with cake 0.28.x
                                    .SetConfiguration(configuration)
-                                   .WithProperty("AssemblyVersion", gitVersion.Major.ToString())
+                                   .WithProperty("AssemblyVersion", $"{gitVersion.Major}.0.0.0")
                                    .WithProperty("FileVersion", gitVersion.AssemblySemFileVer)
                                    .WithProperty("InformationalVersion", gitVersion.InformationalVersion)
                                    );
