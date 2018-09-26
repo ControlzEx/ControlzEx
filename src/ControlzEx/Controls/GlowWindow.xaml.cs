@@ -428,7 +428,7 @@ namespace ControlzEx.Controls
                     else if (this.CanUpdateCore())
                     {
                         // this fixes #58
-                        this.Dispatcher.BeginInvoke(DispatcherPriority.Send, new Action(() => NativeMethods.SetWindowPos(this.windowHandle, this.ownerWindowHandle, 0, 0, 0, 0, SWP.NOMOVE | SWP.NOSIZE | SWP.NOACTIVATE)));
+                        this.Dispatcher.BeginInvoke(DispatcherPriority.Send, new Action(FixWindowZOrder));
                     }
                     break;
 
@@ -515,6 +515,16 @@ namespace ControlzEx.Controls
             }
 
             return IntPtr.Zero;
+
+            void FixWindowZOrder()
+            {
+                if (this.CanUpdateCore() == false)
+                {
+                    return;
+                }
+
+                NativeMethods.SetWindowPos(this.windowHandle, this.ownerWindowHandle, 0, 0, 0, 0, SWP.NOMOVE | SWP.NOSIZE | SWP.NOACTIVATE);
+            }
         }
 
         private void Invoke([NotNull] Action invokeAction)
