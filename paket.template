@@ -17,9 +17,6 @@ summary
   ControlzEx is a library with some shared Controls for WPF.
 include-pdbs true
 files
-  src/bin/Release/ControlzEx/net40/*.* ==> lib/net40/
   src/bin/Release/ControlzEx/net45/*.* ==> lib/net45/
-  src/bin/Release/ControlzEx/net46/*.* ==> lib/net46/
   src/bin/Release/ControlzEx/net462/*.* ==> lib/net462/
-  src/bin/Release/ControlzEx/net47/*.* ==> lib/net47/
   !src/bin/Release/ControlzEx/**/JetBrains.Annotations.dll
