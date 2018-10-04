@@ -978,8 +978,8 @@ namespace ControlzEx.Behaviors
                     else
                     {
                         var r = this._GetWindowRect();
-                        left = (int) r.Left;
-                        top = (int) r.Top;
+                        left = (int)r.Left;
+                        top = (int)r.Top;
                     }
 
                     var hMon = NativeMethods.MonitorFromWindow(this.windowHandle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
@@ -1012,9 +1012,9 @@ namespace ControlzEx.Behaviors
                 Size windowSize;
 
                 // Use the size if it's specified.
-                if (null != wp && !Utility.IsFlagSet((int) wp.Value.flags, (int) SWP.NOSIZE))
+                if (null != wp && !Utility.IsFlagSet((int)wp.Value.flags, (int)SWP.NOSIZE))
                 {
-                    windowSize = new Size((double) wp.Value.cx, (double) wp.Value.cy);
+                    windowSize = new Size(wp.Value.cx, wp.Value.cy);
                 }
                 else if (null != wp && (this._lastRegionWindowState == this.AssociatedObject.WindowState))
                 {
@@ -1037,6 +1037,10 @@ namespace ControlzEx.Behaviors
                     }
 
                     NativeMethods.SetWindowRgn(this.windowHandle, hrgn, NativeMethods.IsWindowVisible(this.windowHandle));
+                    // After a successful call to SetWindowRgn, the system owns the region specified by the region handle hRgn.
+                    // The system does not make a copy of the region. Thus, you should not make any further function calls with this region handle.
+                    // In particular, do not delete this region handle. The system deletes the region handle when it no longer needed.
+                    hrgn = IntPtr.Zero;
                 }
                 finally
                 {
@@ -1053,10 +1057,10 @@ namespace ControlzEx.Behaviors
         private static IntPtr _CreateRectRgn(Rect region)
         {
             return NativeMethods.CreateRectRgn(
-                (int) Math.Floor(region.Left),
-                (int) Math.Floor(region.Top),
-                (int) Math.Ceiling(region.Right),
-                (int) Math.Ceiling(region.Bottom));
+                (int)Math.Floor(region.Left),
+                (int)Math.Floor(region.Top),
+                (int)Math.Ceiling(region.Right),
+                (int)Math.Ceiling(region.Bottom));
         }
 
         /// <summary>
