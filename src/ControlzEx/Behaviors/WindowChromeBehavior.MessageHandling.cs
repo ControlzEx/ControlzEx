@@ -23,6 +23,7 @@ namespace ControlzEx.Behaviors
 
         // Keep track of this so we can detect when we need to apply changes.  Tracking these separately
         // as I've seen using just one cause things to get enough out of [....] that occasionally the caption will redraw.
+        private WindowState _lastRegionWindowState;
         private WindowState lastMenuState;
 
         private WINDOWPOS previousWp;
@@ -977,16 +978,16 @@ namespace ControlzEx.Behaviors
                     else
                     {
                         var r = this._GetWindowRect();
-                        left = (int)r.Left;
-                        top = (int)r.Top;
+                        left = (int) r.Left;
+                        top = (int) r.Top;
                     }
 
                     var hMon = NativeMethods.MonitorFromWindow(this.windowHandle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
 
                     var mi = NativeMethods.GetMonitorInfo(hMon);
                     rcMax = this.IgnoreTaskbarOnMaximize
-                                ? mi.rcMonitor
-                                : mi.rcWork;
+                        ? mi.rcMonitor
+                        : mi.rcWork;
                     // The location of maximized window takes into account the border that Windows was
                     // going to remove, so we also need to consider it.
                     rcMax.Offset(-left, -top);
@@ -1006,8 +1007,56 @@ namespace ControlzEx.Behaviors
             }
             else
             {
-                this._ClearRegion();
+                //this._ClearRegion();
+
+                Size windowSize;
+
+                // Use the size if it's specified.
+                if (null != wp && !Utility.IsFlagSet((int) wp.Value.flags, (int) SWP.NOSIZE))
+                {
+                    windowSize = new Size((double) wp.Value.cx, (double) wp.Value.cy);
+                }
+                else if (null != wp && (this._lastRegionWindowState == this.AssociatedObject.WindowState))
+                {
+                    return;
+                }
+                else
+                {
+                    windowSize = this._GetWindowRect().Size;
+                }
+
+                var windowStateChanged = this._lastRegionWindowState != this.AssociatedObject.WindowState;
+                this._lastRegionWindowState = this.AssociatedObject.WindowState;
+
+                var hrgn = IntPtr.Zero;
+                try
+                {
+                    if (windowStateChanged)
+                    {
+                        hrgn = _CreateRectRgn(new Rect(windowSize));
+                    }
+
+                    NativeMethods.SetWindowRgn(this.windowHandle, hrgn, NativeMethods.IsWindowVisible(this.windowHandle));
+                }
+                finally
+                {
+                    // Free the memory associated with the HRGN if it wasn't assigned to the HWND.
+                    Utility.SafeDeleteObject(ref hrgn);
+                }
             }
+        }
+
+        /// <SecurityNote>
+        ///   Critical : Calls critical methods
+        /// </SecurityNote>
+        [SecurityCritical]
+        private static IntPtr _CreateRectRgn(Rect region)
+        {
+            return NativeMethods.CreateRectRgn(
+                (int) Math.Floor(region.Left),
+                (int) Math.Floor(region.Top),
+                (int) Math.Ceiling(region.Right),
+                (int) Math.Ceiling(region.Bottom));
         }
 
         /// <summary>
