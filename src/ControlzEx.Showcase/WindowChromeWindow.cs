@@ -62,6 +62,8 @@
             BindingOperations.SetBinding(behavior, WindowChromeBehavior.KeepBorderOnMaximizeProperty, new Binding { Path = new PropertyPath(KeepBorderOnMaximizeProperty), Source = this });
             BindingOperations.SetBinding(behavior, WindowChromeBehavior.TryToBeFlickerFreeProperty, new Binding { Path = new PropertyPath(TryToBeFlickerFreeProperty), Source = this });
 
+            this.SetBinding(IsNCActiveProperty, new Binding { Path = new PropertyPath(WindowChromeBehavior.IsNCActiveProperty), Source = behavior });
+
             Interaction.GetBehaviors(this).Add(behavior);
         }
 
@@ -155,6 +157,44 @@
         {
             get { return (Brush)this.GetValue(NonActiveGlowBrushProperty); }
             set { this.SetValue(NonActiveGlowBrushProperty, value); }
+        }
+
+        /// <summary>
+        /// <see cref="DependencyProperty"/> for <see cref="IsNCActive"/>.
+        /// </summary>
+        public static readonly DependencyProperty IsNCActiveProperty = DependencyProperty.Register(nameof(IsNCActive), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(default(bool)));
+
+        /// <summary>
+        /// Gets whether the non-client area is active or not.
+        /// </summary>
+        public bool IsNCActive
+        {
+            get { return (bool)this.GetValue(IsNCActiveProperty); }
+            private set { this.SetValue(IsNCActiveProperty, value); }
+        }
+
+        public static readonly DependencyProperty NCActiveBrushProperty = DependencyProperty.Register(nameof(NCActiveBrush), typeof(Brush), typeof(WindowChromeWindow), new PropertyMetadata(default(Brush)));
+
+        public Brush NCActiveBrush
+        {
+            get { return (Brush)this.GetValue(NCActiveBrushProperty); }
+            set { this.SetValue(NCActiveBrushProperty, value); }
+        }
+
+        public static readonly DependencyProperty NCNonActiveBrushProperty = DependencyProperty.Register(nameof(NCNonActiveBrush), typeof(Brush), typeof(WindowChromeWindow), new PropertyMetadata(default(Brush)));
+
+        public Brush NCNonActiveBrush
+        {
+            get { return (Brush)this.GetValue(NCNonActiveBrushProperty); }
+            set { this.SetValue(NCNonActiveBrushProperty, value); }
+        }
+
+        public static readonly DependencyProperty NCCurrentBrushProperty = DependencyProperty.Register(nameof(NCCurrentBrush), typeof(Brush), typeof(WindowChromeWindow), new PropertyMetadata(default(Brush)));
+
+        public Brush NCCurrentBrush
+        {
+            get { return (Brush)GetValue(NCCurrentBrushProperty); }
+            set { SetValue(NCCurrentBrushProperty, value); }
         }
     }
 }

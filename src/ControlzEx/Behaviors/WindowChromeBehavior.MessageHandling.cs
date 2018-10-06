@@ -1,4 +1,4 @@
-﻿#pragma warning disable 618
+#pragma warning disable 618
 namespace ControlzEx.Behaviors
 {
     using System;
@@ -246,6 +246,8 @@ namespace ControlzEx.Behaviors
             var lRet = NativeMethods.DefWindowProc(this.windowHandle, WM.NCACTIVATE, wParam, new IntPtr(-1)); 
             // We don't have any non client area, so we can just discard this message by handling it 
             handled = true; 
+
+            this.IsNCActive = wParam.ToInt32() != 0;
  
             return lRet; 
         }

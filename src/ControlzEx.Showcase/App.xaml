@@ -11,10 +11,16 @@
                         Value="8" />
                 <Setter Property="BorderThickness"
                         Value="1" />
+                <Setter Property="NCActiveBrush"
+                        Value="{Binding Background, RelativeSource={RelativeSource Self}}" />
+                <Setter Property="NCNonActiveBrush"
+                        Value="{Binding Source={x:Static SystemColors.WindowFrameBrush}}" />
+                <Setter Property="NCCurrentBrush"
+                        Value="{Binding NCActiveBrush, RelativeSource={RelativeSource Self}}" />
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type local:WindowChromeWindow}">
-                            <Grid>
+                            <Grid Background="{TemplateBinding Background}">
                                 <AdornerDecorator>
                                     <ContentPresenter/>
                                 </AdornerDecorator>
@@ -76,7 +82,12 @@
                              Value="NoResize">
                         <Setter Property="Margin"
                                 Value="0" />
-                    </Trigger>                    
+                    </Trigger>   
+                    <Trigger Property="IsNCActive"
+                             Value="False">
+                        <Setter Property="NCCurrentBrush"
+                                Value="{Binding NCNonActiveBrush, RelativeSource={RelativeSource Self}}" />
+                    </Trigger>
                 </Style.Triggers>
             </Style>
 

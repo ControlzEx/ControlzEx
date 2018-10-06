@@ -1,4 +1,4 @@
-#pragma warning disable 618
+﻿#pragma warning disable 618
 namespace ControlzEx.Behaviors
 {
     using System;
@@ -115,6 +115,22 @@ namespace ControlzEx.Behaviors
         /// <see cref="DependencyProperty"/> for <see cref="TryToBeFlickerFree"/>.
         /// </summary>
         public static readonly DependencyProperty TryToBeFlickerFreeProperty = DependencyProperty.Register(nameof(TryToBeFlickerFree), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(default(bool), OnTryToBeFlickerFreePropertyChanged));
+
+        private static readonly DependencyPropertyKey isNcActivePropertyKey = DependencyProperty.RegisterReadOnly(nameof(IsNCActive), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(default(bool)));
+
+        /// <summary>
+        /// <see cref="DependencyProperty"/> for <see cref="IsNCActive"/>.
+        /// </summary>
+        public static readonly DependencyProperty IsNCActiveProperty = isNcActivePropertyKey.DependencyProperty;
+
+        /// <summary>
+        /// Gets whether the non-client area is active or not.
+        /// </summary>
+        public bool IsNCActive
+        {
+            get { return (bool)this.GetValue(IsNCActiveProperty); }
+            private set { this.SetValue(isNcActivePropertyKey, value); }
+        }
 
         /// <inheritdoc />
         protected override void OnAttached()

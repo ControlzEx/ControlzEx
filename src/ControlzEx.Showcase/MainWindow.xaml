@@ -16,6 +16,7 @@
                           MinHeight="60"
                           WindowState="Normal"
                           WindowStartupLocation="CenterScreen"
+                          Background="{Binding Source={x:Static SystemColors.WindowBrush}}"
                           GlowBrush="Navy" 
                           NonActiveGlowBrush="Crimson">
     <local:WindowChromeWindow.Resources>
@@ -45,7 +46,7 @@
                     <ColumnDefinition Width="150" />
                 </Grid.ColumnDefinitions>
                 <Border Grid.ColumnSpan="2" 
-                        Background="{Binding Source={x:Static SystemColors.WindowBrush}}" />
+                        Background="{Binding ElementName=Window, Path=NCCurrentBrush}" />
 
                 <TextBlock x:Name="TitlebarText"
                            Grid.Column="0"
@@ -61,8 +62,7 @@
                           controlzEx:WindowChrome.IsHitTestVisibleInChrome="True" />
 
             <Grid Grid.Row="2"
-                  Grid.IsSharedSizeScope="True"
-                  Background="{Binding Source={x:Static SystemColors.WindowBrush}}">
+                  Grid.IsSharedSizeScope="True">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
@@ -70,9 +70,8 @@
                 </Grid.RowDefinitions>
 
                 <GroupBox Grid.Row="0"
-                          Padding="10"
                           BorderThickness="0 1 0 0"
-                          Margin="10"
+                          Margin="5"
                           Header="Actions">
                     <StackPanel Orientation="Vertical">
                         <StackPanel Orientation="Horizontal">
@@ -183,9 +182,8 @@
                 </GroupBox>
 
                 <GroupBox Grid.Row="1"
-                          Padding="10"
                           BorderThickness="0 1 0 0"
-                          Margin="10"
+                          Margin="5"
                           Header="Options">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -194,6 +192,8 @@
                         </Grid.ColumnDefinitions>
 
                         <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
@@ -310,13 +310,30 @@
                                   Margin="4"
                                   VerticalAlignment="Center"
                                   IsChecked="{Binding ElementName=Window, Path=TryToBeFlickerFree, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                        <Label Grid.Row="7"
+                               Grid.Column="0">IsActive</Label>
+                        <CheckBox Grid.Row="7"
+                                  Grid.Column="1"
+                                  Margin="4"
+                                  VerticalAlignment="Center"
+                                  IsEnabled="False"
+                                  IsChecked="{Binding ElementName=Window, Path=IsActive, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                        <Label Grid.Row="8"
+                               Grid.Column="0">IsNCActive</Label>
+                        <CheckBox Grid.Row="8"
+                                  Grid.Column="1"
+                                  Margin="4"
+                                  VerticalAlignment="Center"
+                                  IsEnabled="False"
+                                  IsChecked="{Binding ElementName=Window, Path=IsNCActive, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
                     </Grid>
                 </GroupBox>
 
                 <GroupBox Grid.Row="2"
-                          Padding="10"
                           BorderThickness="0 1 0 0"
-                          Margin="10"
+                          Margin="5"
                           Header="Current values">
                     <Grid>
                         <Grid.ColumnDefinitions>
