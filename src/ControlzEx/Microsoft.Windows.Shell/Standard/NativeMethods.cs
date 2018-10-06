@@ -3856,6 +3856,54 @@ namespace ControlzEx.Standard
             return new IntPtr(SetClassLongPtr32(hwnd, nIndex, dwNewLong.ToInt32()));
         }
 
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool FlashWindowEx(ref FLASHWINFO flashInfo);
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct FLASHWINFO
+        {
+            public uint cbSize;
+            public IntPtr hwnd;
+            public FlashWindowFlag dwFlags;
+            public uint uCount;
+            public uint dwTimeout;
+        }
+
+        public enum FlashWindowFlag : uint
+        {
+            /// <summary>
+            /// Stop flashing. The system restores the window to its original state. 
+            /// </summary>    
+            FLASHW_STOP = 0,
+
+            /// <summary>
+            /// Flash the window caption 
+            /// </summary>
+            FLASHW_CAPTION = 1,
+
+            /// <summary>
+            /// Flash the taskbar button. 
+            /// </summary>
+            FLASHW_TRAY = 2,
+
+            /// <summary>
+            /// Flash both the window caption and taskbar button.
+            /// This is equivalent to setting the FLASHW_CAPTION | FLASHW_TRAY flags. 
+            /// </summary>
+            FLASHW_ALL = 3,
+
+            /// <summary>
+            /// Flash continuously, until the FLASHW_STOP flag is set.
+            /// </summary>
+            FLASHW_TIMER = 4,
+
+            /// <summary>
+            /// Flash continuously until the window comes to the foreground. 
+            /// </summary>
+            FLASHW_TIMERNOFG = 12
+        }
+
         [SuppressMessage("Microsoft.Interoperability", "CA1400:PInvokeEntryPointsShouldExist")]
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("user32.dll", EntryPoint = "SetClassLong", SetLastError = true)]

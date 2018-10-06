@@ -1,4 +1,4 @@
-#pragma warning disable 618
+﻿#pragma warning disable 618
 namespace ControlzEx.Controls
 {
     using System;
@@ -439,6 +439,8 @@ namespace ControlzEx.Controls
                         handled = true;
                         // We have to activate the owner async. Otherwise the active window on the taskbar is wrong.
                         this.Dispatcher.BeginInvoke(DispatcherPriority.Send, new Action(() => NativeMethods.SetActiveWindow(this.ownerWindowHandle)));
+                        // Flash window to mimic behavior of dialog activation for modal dialogs
+                        FlashWindowEx(this.ownerWindowHandle);
                     }
                     break;
 
@@ -516,6 +518,7 @@ namespace ControlzEx.Controls
 
             return IntPtr.Zero;
 
+            // this fixes #58
             void FixWindowZOrder()
             {
                 if (this.CanUpdateCore() == false)
@@ -525,7 +528,21 @@ namespace ControlzEx.Controls
 
                 NativeMethods.SetWindowPos(this.windowHandle, this.ownerWindowHandle, 0, 0, 0, 0, SWP.NOMOVE | SWP.NOSIZE | SWP.NOACTIVATE);
             }
-        }
+
+            // The values used should be exactly the same as those being used by windows itself when flashing a modal dialog
+            bool FlashWindowEx(IntPtr hWnd)
+            {
+                var fInfo = new NativeMethods.FLASHWINFO();
+
+                fInfo.cbSize = Convert.ToUInt32(Marshal.SizeOf(fInfo));
+                fInfo.hwnd = hWnd;
+                fInfo.dwFlags = NativeMethods.FlashWindowFlag.FLASHW_CAPTION;
+                fInfo.uCount = 8;
+                fInfo.dwTimeout = 50;
+
+                return NativeMethods.FlashWindowEx(ref fInfo);
+            }
+        }        
 
         private void Invoke([NotNull] Action invokeAction)
         {
