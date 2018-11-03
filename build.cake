@@ -34,6 +34,7 @@ if (string.IsNullOrWhiteSpace(configuration))
 // PREPARATION
 ///////////////////////////////////////////////////////////////////////////////
 
+var repoName = "ControlzEx";
 var local = BuildSystem.IsLocalBuild;
 
 // Set build version
@@ -64,10 +65,10 @@ Setup(ctx =>
 {
     if (!IsRunningOnWindows())
     {
-        throw new NotImplementedException("ControlzEx will only build on Windows because it's not possible to target WPF and Windows Forms from UNIX.");
+        throw new NotImplementedException($"{repoName} will only build on Windows because it's not possible to target WPF and Windows Forms from UNIX.");
     }
 
-    Information(Figlet("ControlzEx"));
+    Information(Figlet(repoName));
 
     Information("Informational   Version: {0}", gitVersion.InformationalVersion);
     Information("SemVer          Version: {0}", gitVersion.SemVer);
@@ -87,8 +88,8 @@ Teardown(ctx =>
 // TASKS
 ///////////////////////////////////////////////////////////////////////////////
 
-Task("CleanOutput")
-    //.ContinueOnError()
+Task("Clean")
+    .ContinueOnError()
     .Does(() =>
 {
     var directoriesToDelete = GetDirectories("src/**/obj").Concat(GetDirectories("src/**/bin"));
@@ -100,10 +101,10 @@ Task("Restore")
 {
     PaketRestore();
 
-    var msBuildSettings = new MSBuildSettings { ToolPath = msBuildPath };
+    var msBuildSettings = new MSBuildSettings { ToolPath = msBuildPath, ArgumentCustomization = args => args.Append("/m") };
     MSBuild(solution, msBuildSettings
             .SetConfiguration(configuration)
-            .SetVerbosity(Verbosity.Normal)
+            .SetVerbosity(Verbosity.Minimal)
             .WithTarget("restore")
             );
 });
@@ -112,19 +113,20 @@ Task("Build")
     .IsDependentOn("Restore")
     .Does(() =>
 {
-    var msBuildSettings = new MSBuildSettings { ToolPath = msBuildPath };
+    var msBuildSettings = new MSBuildSettings { ToolPath = msBuildPath, ArgumentCustomization = args => args.Append("/m") };
     MSBuild(solution, msBuildSettings
             .SetMaxCpuCount(0)
             .SetConfiguration(configuration)
             .SetVerbosity(Verbosity.Normal)
             //.WithRestore() only with cake 0.28.x            
+            .WithProperty("Version", isReleaseBranch ? gitVersion.MajorMinorPatch : gitVersion.NuGetVersion)
             .WithProperty("AssemblyVersion", gitVersion.AssemblySemVer)
             .WithProperty("FileVersion", gitVersion.AssemblySemFileVer)
             .WithProperty("InformationalVersion", gitVersion.InformationalVersion)
             );
 });
 
-Task("PaketPack")
+Task("Pack")
     .Does(() =>
 {
     var packDestDir = "src/bin";
@@ -138,10 +140,10 @@ Task("Zip")
     .Does(() =>
 {
     var zipDir = "src/bin/" + configuration + "/ControlzEx.Showcase";
-	if (!DirectoryExists(zipDir))
-	{
-		Information("Could not zip any artifact! Folder doesn't exist: " + zipDir);
-	}
+    if (!DirectoryExists(zipDir))
+    {
+        Information("Could not zip any artifact! Folder doesn't exist: " + zipDir);
+    }
     else
     {
         Zip(zipDir, "src/bin/ControlzEx.Showcase.v" + gitVersion.NuGetVersion + ".zip");
@@ -164,7 +166,7 @@ Task("CreateRelease")
         throw new Exception("The GITHUB_TOKEN environment variable is not defined.");
     }
 
-    GitReleaseManagerCreate(username, token, "ControlzEx", "ControlzEx", new GitReleaseManagerCreateSettings {
+    GitReleaseManagerCreate(username, token, repoName, repoName, new GitReleaseManagerCreateSettings {
         Milestone         = gitVersion.MajorMinorPatch,
         Name              = gitVersion.AssemblySemFileVer,
         Prerelease        = isDevelopBranch,
@@ -188,19 +190,19 @@ Task("ExportReleaseNotes")
         throw new Exception("The GITHUB_TOKEN environment variable is not defined.");
     }
 
-    GitReleaseManagerExport(username, token, "ControlzEx", "ControlzEx", "releasenotes.md", new GitReleaseManagerExportSettings {
+    GitReleaseManagerExport(username, token, repoName, repoName, "releasenotes.md", new GitReleaseManagerExportSettings {
         TagName         = gitVersion.SemVer
     });
 });
 
 Task("Default")
-    //.IsDependentOn("CleanOutput")
+    .IsDependentOn("Clean")
     .IsDependentOn("Restore")
     .IsDependentOn("Build");
 
 Task("appveyor")
     .IsDependentOn("Default")
-    .IsDependentOn("PaketPack")
+    .IsDependentOn("Pack")
     .IsDependentOn("Zip");
 
 ///////////////////////////////////////////////////////////////////////////////
