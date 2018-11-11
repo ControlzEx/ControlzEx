@@ -307,15 +307,15 @@ namespace ControlzEx.Behaviors
                 Invoke(this.AssociatedObject, () =>
                                               {
                                                   this.AssociatedObject.InvalidateMeasure();
-                                                  if (UnsafeNativeMethods.GetWindowRect(this.windowHandle, out var rect))
-                                                  {
-                                                      var flags = SWP.SHOWWINDOW;
-                                                      if (!this.AssociatedObject.ShowActivated)
-                                                      {
-                                                          flags |= SWP.NOACTIVATE;
-                                                      }
-                                                      NativeMethods.SetWindowPos(this.windowHandle, Constants.HWND_NOTOPMOST, rect.Left, rect.Top, rect.Width, rect.Height, flags);
-                                                  }
+//                                                  if (UnsafeNativeMethods.GetWindowRect(this.windowHandle, out var rect))
+//                                                  {
+//                                                      var flags = SWP.SHOWWINDOW;
+//                                                      if (!this.AssociatedObject.ShowActivated)
+//                                                      {
+//                                                          flags |= SWP.NOACTIVATE;
+//                                                      }
+//                                                      NativeMethods.SetWindowPos(this.windowHandle, Constants.HWND_NOTOPMOST, rect.Left, rect.Top, rect.Width, rect.Height, flags);
+//                                                  }
                                               });
             }
 
