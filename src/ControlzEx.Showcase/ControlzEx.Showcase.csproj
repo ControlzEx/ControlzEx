@@ -17,11 +17,7 @@
         <ProjectReference Include="..\ControlzEx\ControlzEx.csproj"/>
     </ItemGroup>
     <ItemGroup>
-        <Reference Include="System.Management"/>
-        <Reference Condition=" '$(TargetFramework)' == 'net40' " Include="System.Windows.Interactivity">
-            <HintPath>..\ExtLibs\NET40\System.Windows.Interactivity.dll</HintPath>
-        </Reference>
-        <Reference Condition=" '$(TargetFramework)' != 'net40' " Include="System.Windows.Interactivity">
+        <Reference Include="System.Windows.Interactivity">
             <HintPath>..\ExtLibs\NET45\System.Windows.Interactivity.dll</HintPath>
         </Reference>
         <None Include="app.manifest"/>
