@@ -10,8 +10,6 @@
         <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\ControlzEx.ruleset</CodeAnalysisRuleSet>
     </PropertyGroup>
     <ItemGroup>
-        <!--None Include="paket.references" /-->
-
         <None Remove="**\*.png;**\*.jpg;**\*.ico"/>
         <Resource Include="**\*.png;**\*.jpg;**\*.ico"/>
     </ItemGroup>

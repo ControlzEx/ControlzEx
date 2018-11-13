@@ -8,6 +8,19 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <Description>ControlzEx is a library with some shared Controls for WPF.</Description>
     </PropertyGroup>
+    <!-- NuGet -->
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <Authors>Jan Karger, Bastian Schmidt, James Willock</Authors>
+        <PackageLicenseUrl>https://github.com/ControlzEx/ControlzEx/blob/develop/LICENSE</PackageLicenseUrl>
+        <PackageProjectUrl>https://github.com/ControlzEx/ControlzEx</PackageProjectUrl>
+        <PackageIconUrl>https://raw.githubusercontent.com/ControlzEx/ControlzEx/develop/logo-mini.png</PackageIconUrl>
+        <PackageTags>WPF;UI;Metro;Modern;Material;XAML;Toolkit;Library;.NET;OSS;OpenSource;WindowChrome</PackageTags>
+        <PackageReleaseNotes>https://github.com/ControlzEx/ControlzEx/releases</PackageReleaseNotes>
+        <RepositoryUrl>https://github.com/ControlzEx/ControlzEx.git</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <GenerateLibraryLayout>true</GenerateLibraryLayout>
+    </PropertyGroup>
+
     <!-- Sign assembly -->
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
         <SignAssembly>True</SignAssembly>
@@ -17,6 +30,7 @@
     </PropertyGroup>
     <!-- Items include -->
     <ItemGroup>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-63127-02" PrivateAssets="All"/>
         <Reference Include="System.Windows.Interactivity">
             <HintPath>..\ExtLibs\NET45\System.Windows.Interactivity.dll</HintPath>
         </Reference>
@@ -24,5 +38,4 @@
     <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
         <FrameworkReference Include="Microsoft.DesktopUI" />
     </ItemGroup>
-    <!--Import Project="..\..\.paket\Paket.Restore.targets"/-->
 </Project>
