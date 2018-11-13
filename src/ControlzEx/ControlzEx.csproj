@@ -1,7 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="MSBuild.Sdk.Extras">
+<Project Sdk="Microsoft.NET.Sdk.Wpf">
     <!-- Project properties -->
     <PropertyGroup>
+        <TargetFrameworks>net45;net462;netcoreapp3.0</TargetFrameworks>
         <AssemblyName>ControlzEx</AssemblyName>
         <RootNamespace>ControlzEx</RootNamespace>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -15,10 +16,17 @@
         <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
     </PropertyGroup>
     <!-- Items include -->
+	<ItemGroup Condition="'$(TargetFramework)' != 'netcoreapp3.0'">
+        <Reference Include="System.Management" />
+    </ItemGroup>
     <ItemGroup>
         <Reference Include="System.Windows.Interactivity">
             <HintPath>..\ExtLibs\NET45\System.Windows.Interactivity.dll</HintPath>
         </Reference>
     </ItemGroup>
-    <Import Project="..\..\.paket\Paket.Restore.targets"/>
+    <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
+        <FrameworkReference Include="Microsoft.DesktopUI" />
+        <PackageReference Include="System.Management" Version="4.5.0" />
+    </ItemGroup>
+    <!--Import Project="..\..\.paket\Paket.Restore.targets"/-->
 </Project>

@@ -1,9 +1,6 @@
 <Project>
     <!-- Project properties -->
     <PropertyGroup>
-        <TargetFrameworks>net45;net462</TargetFrameworks>
-        <ExtrasEnableWpfProjectSetup>true</ExtrasEnableWpfProjectSetup>
-        <ExtrasDefaultResourceIncludes>Resources\*.xaml</ExtrasDefaultResourceIncludes>
         <OutputPath>$(MSBuildThisFileDirectory)\bin\$(Configuration)\$(MSBuildProjectName)</OutputPath>
         <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
         <GenerateDocumentationFile>false</GenerateDocumentationFile>
@@ -13,7 +10,7 @@
         <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\ControlzEx.ruleset</CodeAnalysisRuleSet>
     </PropertyGroup>
     <ItemGroup>
-        <None Include="paket.references" />
+        <!--None Include="paket.references" /-->
 
         <None Remove="**\*.png;**\*.jpg;**\*.ico"/>
         <Resource Include="**\*.png;**\*.jpg;**\*.ico"/>
@@ -34,4 +31,30 @@
         <!-- https://github.com/dotnet/sourcelink/blob/master/docs/README.md#embedallsources -->
         <EmbedAllSources>true</EmbedAllSources>
     </PropertyGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
+        <Page Include="**\*.xaml" SubType="Designer" Generator="MSBuild:Compile" Exclude="App.xaml" />
+        <Compile Update="**\*.xaml.cs" SubType="Designer" DependentUpon="%(Filename)" />
+    </ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' != 'netcoreapp3.0'">
+        <Page Include="**\*.xaml" SubType="Designer" Generator="MSBuild:Compile" Exclude="App.xaml" />
+        <Compile Update="**\*.xaml.cs" SubType="Designer" DependentUpon="%(Filename)" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="JetBrains.Annotations" Version="2018.*" />
+    </ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' != 'netcoreapp3.0'">
+        <Reference Include="Microsoft.CSharp" />
+        <Reference Include="PresentationCore" />
+        <Reference Include="PresentationFramework" />
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+        <Reference Include="System.Data" />
+        <Reference Include="System.Data.DataSetExtensions" />
+        <Reference Include="System.Net.Http" />
+        <Reference Include="System.Xaml" />
+        <Reference Include="System.Xml" />
+        <Reference Include="System.Xml.Linq" />
+        <Reference Include="WindowsBase" />
+        <Reference Include="System.Windows.Forms" />
+    </ItemGroup>
 </Project>
