@@ -3,8 +3,6 @@ namespace ControlzEx.Behaviors
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Management;
     using System.Security;
     using System.Security.Permissions;
     using System.Windows;

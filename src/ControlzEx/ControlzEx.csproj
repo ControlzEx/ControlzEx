@@ -16,9 +16,6 @@
         <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
     </PropertyGroup>
     <!-- Items include -->
-	<ItemGroup Condition="'$(TargetFramework)' != 'netcoreapp3.0'">
-        <Reference Include="System.Management" />
-    </ItemGroup>
     <ItemGroup>
         <Reference Include="System.Windows.Interactivity">
             <HintPath>..\ExtLibs\NET45\System.Windows.Interactivity.dll</HintPath>
@@ -26,7 +23,6 @@
     </ItemGroup>
     <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
         <FrameworkReference Include="Microsoft.DesktopUI" />
-        <PackageReference Include="System.Management" Version="4.5.0" />
     </ItemGroup>
     <!--Import Project="..\..\.paket\Paket.Restore.targets"/-->
 </Project>

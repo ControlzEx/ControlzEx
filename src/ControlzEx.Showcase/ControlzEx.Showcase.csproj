@@ -23,7 +23,6 @@
     </ItemGroup>
     <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
         <FrameworkReference Include="Microsoft.DesktopUI" />
-        <PackageReference Include="System.Management" Version="4.5.0" />
     </ItemGroup>
     <ItemGroup>
         <None Include="app.manifest" />

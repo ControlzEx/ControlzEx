@@ -99,7 +99,7 @@ Task("Clean")
 Task("Restore")
     .Does(() =>
 {
-    PaketRestore();
+    // PaketRestore();
 
     var msBuildSettings = new MSBuildSettings { ToolPath = msBuildPath, ArgumentCustomization = args => args.Append("/m") };
     MSBuild(solution, msBuildSettings
@@ -202,7 +202,7 @@ Task("Default")
 
 Task("appveyor")
     .IsDependentOn("Default")
-    .IsDependentOn("Pack")
+    //.IsDependentOn("Pack")
     .IsDependentOn("Zip");
 
 ///////////////////////////////////////////////////////////////////////////////
