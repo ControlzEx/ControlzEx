@@ -2,11 +2,9 @@
 // TOOLS / ADDINS
 ///////////////////////////////////////////////////////////////////////////////
 
-#tool paket:?package=GitVersion.CommandLine
-#tool paket:?package=gitreleasemanager
-#tool paket:?package=vswhere
-#addin paket:?package=Cake.Figlet
-#addin paket:?package=Cake.Paket
+#tool "GitVersion.CommandLine"
+#tool "gitreleasemanager"
+#addin "Cake.Figlet"
 
 ///////////////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -44,9 +42,6 @@ if (local == false
     GitVersion(new GitVersionSettings { OutputType = GitVersionOutput.BuildServer });
 }
 GitVersion gitVersion = GitVersion(new GitVersionSettings { OutputType = GitVersionOutput.Json });
-
-var latestInstallationPath = VSWhereProducts("*", new VSWhereProductSettings { Version = "[\"15.0\",\"16.0\"]" }).FirstOrDefault();
-var msBuildPath = latestInstallationPath.CombineWithFilePath("./MSBuild/15.0/Bin/MSBuild.exe");
 
 var isPullRequest = AppVeyor.Environment.PullRequest.IsPullRequest;
 var branchName = gitVersion.BranchName;
@@ -99,26 +94,32 @@ Task("Clean")
 Task("Restore")
     .Does(() =>
 {
-    PaketRestore();
+    var msBuildSettings = new MSBuildSettings {
+        Verbosity = Verbosity.Minimal,
+        ToolVersion = MSBuildToolVersion.VS2017,
+        Configuration = configuration,
+        PlatformTarget = PlatformTarget.MSIL,
+        // Restore = true, // only with cake 0.28.x
+        ArgumentCustomization = args => args.Append("/m")
+    };
 
-    var msBuildSettings = new MSBuildSettings { ToolPath = msBuildPath, ArgumentCustomization = args => args.Append("/m") };
-    MSBuild(solution, msBuildSettings
-            .SetConfiguration(configuration)
-            .SetVerbosity(Verbosity.Minimal)
-            .WithTarget("restore")
-            );
+    MSBuild(solution, msBuildSettings.WithTarget("restore"));
 });
 
 Task("Build")
     .IsDependentOn("Restore")
     .Does(() =>
 {
-    var msBuildSettings = new MSBuildSettings { ToolPath = msBuildPath, ArgumentCustomization = args => args.Append("/m") };
+    var msBuildSettings = new MSBuildSettings {
+        Verbosity = Verbosity.Normal,
+        ToolVersion = MSBuildToolVersion.VS2017,
+        Configuration = configuration,
+        PlatformTarget = PlatformTarget.MSIL,
+        // Restore = true, // only with cake 0.28.x     
+        ArgumentCustomization = args => args.Append("/m")
+    };
     MSBuild(solution, msBuildSettings
             .SetMaxCpuCount(0)
-            .SetConfiguration(configuration)
-            .SetVerbosity(Verbosity.Normal)
-            //.WithRestore() only with cake 0.28.x            
             .WithProperty("Version", isReleaseBranch ? gitVersion.MajorMinorPatch : gitVersion.NuGetVersion)
             .WithProperty("AssemblyVersion", gitVersion.AssemblySemVer)
             .WithProperty("FileVersion", gitVersion.AssemblySemFileVer)
@@ -129,11 +130,25 @@ Task("Build")
 Task("Pack")
     .Does(() =>
 {
-    var packDestDir = "src/bin";
-    PaketPack(packDestDir, new PaketPackSettings {
-        Version = isReleaseBranch ? gitVersion.MajorMinorPatch : gitVersion.NuGetVersion,
-        BuildConfig = configuration
-        });
+    var msBuildSettings = new MSBuildSettings {
+        Verbosity = Verbosity.Normal,
+        ToolVersion = MSBuildToolVersion.VS2017,
+        Configuration = configuration,
+        PlatformTarget = PlatformTarget.MSIL
+    };
+    var project = "./src/ControlzEx/ControlzEx.csproj";
+
+    MSBuild(project, msBuildSettings
+      .WithTarget("pack")
+      .WithProperty("PackageOutputPath", "../bin")
+      .WithProperty("RepositoryBranch", branchName)
+      .WithProperty("RepositoryCommit", gitVersion.Sha)
+      .WithProperty("Description", "ControlzEx is a library with some shared Controls for WPF.")
+      .WithProperty("Version", isReleaseBranch ? gitVersion.MajorMinorPatch : gitVersion.NuGetVersion)
+      .WithProperty("AssemblyVersion", gitVersion.AssemblySemVer)
+      .WithProperty("FileVersion", gitVersion.AssemblySemFileVer)
+      .WithProperty("InformationalVersion", gitVersion.InformationalVersion)
+    );
 });
 
 Task("Zip")

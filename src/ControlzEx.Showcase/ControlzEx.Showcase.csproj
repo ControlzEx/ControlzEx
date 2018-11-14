@@ -1,26 +1,29 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="MSBuild.Sdk.Extras">
+<Project Sdk="Microsoft.NET.Sdk.Wpf">
     <!-- Project properties -->
     <PropertyGroup>
+        <TargetFrameworks>net45;net462;netcoreapp3.0</TargetFrameworks>
         <AssemblyName>ControlzEx.Showcase</AssemblyName>
         <RootNamespace>ControlzEx.Showcase</RootNamespace>
         <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     </PropertyGroup>
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
-        <StartupObject/>
         <NoWarn>SA1652</NoWarn>
         <ApplicationManifest>app.manifest</ApplicationManifest>
     </PropertyGroup>
     <!-- Items include -->
     <ItemGroup>
-        <ProjectReference Include="..\ControlzEx\ControlzEx.csproj"/>
+        <ProjectReference Include="..\ControlzEx\ControlzEx.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <Reference Include="System.Windows.Interactivity">
-            <HintPath>..\ExtLibs\NET45\System.Windows.Interactivity.dll</HintPath>
-        </Reference>
-        <None Include="app.manifest"/>
+        <None Include="app.manifest" />
     </ItemGroup>
-    <Import Project="..\..\.paket\Paket.Restore.targets"/>
+    <ItemGroup>
+        <ApplicationDefinition Include="App.xaml">
+            <Generator>MSBuild:Compile</Generator>
+            <SubType>Designer</SubType>
+        </ApplicationDefinition>
+    </ItemGroup>
+    <!--Import Project="..\..\.paket\Paket.Restore.targets"/-->
 </Project>
