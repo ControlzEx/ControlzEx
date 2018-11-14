@@ -19,6 +19,7 @@
             <Link>Properties\GlobalAssemblyInfo.cs</Link>
         </Compile>
     </ItemGroup>
+
     <!-- SourceLink -->
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
         <!-- Optional: Declare that the Repository URL can be published to NuSpec -->
@@ -30,19 +31,26 @@
         <!-- https://github.com/dotnet/sourcelink/blob/master/docs/README.md#embedallsources -->
         <EmbedAllSources>true</EmbedAllSources>
     </PropertyGroup>
-    <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
-        <Page Include="**\*.xaml" SubType="Designer" Generator="MSBuild:Compile" Exclude="App.xaml" />
-        <Compile Update="**\*.xaml.cs" SubType="Designer" DependentUpon="%(Filename)" />
-    </ItemGroup>
-    <ItemGroup Condition="'$(TargetFramework)' != 'netcoreapp3.0'">
-        <Page Include="**\*.xaml" SubType="Designer" Generator="MSBuild:Compile" Exclude="App.xaml" />
-        <Compile Update="**\*.xaml.cs" SubType="Designer" DependentUpon="%(Filename)" />
-    </ItemGroup>
+
+	<!-- Enable xaml compilation, which seems to be disabled due to using Microsoft.NET.Sdk.Wpf as the SDK -->
     <ItemGroup>
-        <PackageReference Include="JetBrains.Annotations" Version="2018.*" >
-            <PrivateAssets>all</PrivateAssets>
-        </PackageReference>
+        <Page Include="**\*.xaml" SubType="Designer" Generator="MSBuild:Compile" Exclude="App.xaml" />
+        <Compile Update="**\*.xaml.cs" SubType="Designer" DependentUpon="%(Filename)" />
     </ItemGroup>
+
+	<!-- Add the references for all projects and targets-->
+    <ItemGroup>
+        <PackageReference Include="JetBrains.Annotations" Version="2018.*" PrivateAssets="All" />
+		<Reference Include="System.Windows.Interactivity">
+            <HintPath>..\ExtLibs\NET45\System.Windows.Interactivity.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+	
+	<!-- Set the reference for netcoreapp3.0 -->
+	<ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
+        <FrameworkReference Include="Microsoft.DesktopUI" />
+    </ItemGroup>
+	<!-- Set the reference for the other targets -->
     <ItemGroup Condition="'$(TargetFramework)' != 'netcoreapp3.0'">
         <Reference Include="Microsoft.CSharp" />
         <Reference Include="PresentationCore" />

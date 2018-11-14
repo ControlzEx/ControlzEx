@@ -17,14 +17,6 @@
         <ProjectReference Include="..\ControlzEx\ControlzEx.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <Reference Include="System.Windows.Interactivity">
-            <HintPath>..\ExtLibs\NET45\System.Windows.Interactivity.dll</HintPath>
-        </Reference>
-    </ItemGroup>
-    <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
-        <FrameworkReference Include="Microsoft.DesktopUI" />
-    </ItemGroup>
-    <ItemGroup>
         <None Include="app.manifest" />
     </ItemGroup>
     <ItemGroup>

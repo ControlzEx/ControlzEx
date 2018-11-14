@@ -128,7 +128,6 @@ Task("Build")
 });
 
 Task("Pack")
-    .WithCriteria(() => !isPullRequest)
     .Does(() =>
 {
     var msBuildSettings = new MSBuildSettings {

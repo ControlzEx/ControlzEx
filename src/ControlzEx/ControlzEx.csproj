@@ -28,14 +28,8 @@
         <DelaySign>false</DelaySign>
         <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
     </PropertyGroup>
-    <!-- Items include -->
+    <!-- reference includes -->
     <ItemGroup>
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-63127-02" PrivateAssets="All"/>
-        <Reference Include="System.Windows.Interactivity">
-            <HintPath>..\ExtLibs\NET45\System.Windows.Interactivity.dll</HintPath>
-        </Reference>
-    </ItemGroup>
-    <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
-        <FrameworkReference Include="Microsoft.DesktopUI" />
     </ItemGroup>
 </Project>
