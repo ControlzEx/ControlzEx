@@ -140,7 +140,7 @@ Task("Pack")
 
     MSBuild(project, msBuildSettings
       .WithTarget("pack")
-      .WithProperty("PackageOutputPath", "bin")
+      .WithProperty("PackageOutputPath", "../bin")
       .WithProperty("RepositoryBranch", branchName)
       .WithProperty("RepositoryCommit", gitVersion.Sha)
       .WithProperty("Description", "ControlzEx is a library with some shared Controls for WPF.")
