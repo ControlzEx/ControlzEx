@@ -96,9 +96,7 @@ Task("Restore")
 {
     var msBuildSettings = new MSBuildSettings {
         Verbosity = Verbosity.Minimal,
-        ToolVersion = MSBuildToolVersion.VS2017,
         Configuration = configuration,
-        PlatformTarget = PlatformTarget.MSIL,
         // Restore = true, // only with cake 0.28.x
         ArgumentCustomization = args => args.Append("/m")
     };
@@ -112,14 +110,12 @@ Task("Build")
 {
     var msBuildSettings = new MSBuildSettings {
         Verbosity = Verbosity.Normal,
-        ToolVersion = MSBuildToolVersion.VS2017,
         Configuration = configuration,
-        PlatformTarget = PlatformTarget.MSIL,
         // Restore = true, // only with cake 0.28.x     
         ArgumentCustomization = args => args.Append("/m")
     };
     MSBuild(solution, msBuildSettings
-            .SetMaxCpuCount(0)
+            .SetMaxCpuCount(0)            
             .WithProperty("Version", isReleaseBranch ? gitVersion.MajorMinorPatch : gitVersion.NuGetVersion)
             .WithProperty("AssemblyVersion", gitVersion.AssemblySemVer)
             .WithProperty("FileVersion", gitVersion.AssemblySemFileVer)
@@ -132,9 +128,7 @@ Task("Pack")
 {
     var msBuildSettings = new MSBuildSettings {
         Verbosity = Verbosity.Normal,
-        ToolVersion = MSBuildToolVersion.VS2017,
-        Configuration = configuration,
-        PlatformTarget = PlatformTarget.MSIL
+        Configuration = configuration
     };
     var project = "./src/ControlzEx/ControlzEx.csproj";
 
