@@ -6,6 +6,7 @@
         <GenerateDocumentationFile>false</GenerateDocumentationFile>
         <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 		<DisableImplicitFrameworkReferences Condition="'$(TargetFramework)' != 'netcoreapp3.0'">true</DisableImplicitFrameworkReferences>
+		<UseWpf>true</UseWpf>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">
         <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\ControlzEx.ruleset</CodeAnalysisRuleSet>
@@ -32,12 +33,6 @@
         <EmbedAllSources>true</EmbedAllSources>
     </PropertyGroup>
 
-	<!-- Enable xaml compilation, which seems to be disabled due to using Microsoft.NET.Sdk.Wpf as the SDK -->
-    <ItemGroup>
-        <Page Include="**\*.xaml" SubType="Designer" Generator="MSBuild:Compile" Exclude="App.xaml" />
-        <Compile Update="**\*.xaml.cs" SubType="Designer" DependentUpon="%(Filename)" />
-    </ItemGroup>
-
 	<!-- Add the references for all projects and targets-->
     <ItemGroup>
         <PackageReference Include="JetBrains.Annotations" Version="2018.*" PrivateAssets="All" />
@@ -49,11 +44,7 @@
         <None Include="$(MSBuildThisFileDirectory)\ExtLibs\NET45\System.Windows.Interactivity.dll" PackagePath="lib\net462" Pack="true" Visible="false" />
         <None Include="$(MSBuildThisFileDirectory)\ExtLibs\NET45\System.Windows.Interactivity.dll" PackagePath="lib\netcoreapp3.0" Pack="true" Visible="false" />
     </ItemGroup>
-	
-	<!-- Set the reference for netcoreapp3.0 -->
-	<ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
-        <FrameworkReference Include="Microsoft.DesktopUI" />
-    </ItemGroup>
+
 	<!-- Set the reference for the other targets -->
     <ItemGroup Condition="'$(TargetFramework)' != 'netcoreapp3.0'">
         <Reference Include="Microsoft.CSharp" />
