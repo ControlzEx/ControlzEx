@@ -20,7 +20,6 @@
         <RepositoryType>git</RepositoryType>
         <GenerateLibraryLayout>true</GenerateLibraryLayout>
     </PropertyGroup>
-
     <!-- Sign assembly -->
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
         <SignAssembly>True</SignAssembly>
