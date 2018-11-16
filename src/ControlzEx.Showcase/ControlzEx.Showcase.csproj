@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk.Wpf">
+<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
     <!-- Project properties -->
     <PropertyGroup>
         <TargetFrameworks>net45;net462;netcoreapp3.0</TargetFrameworks>
@@ -18,12 +18,6 @@
     </ItemGroup>
     <ItemGroup>
         <None Include="app.manifest" />
-    </ItemGroup>
-    <ItemGroup>
-        <ApplicationDefinition Include="App.xaml">
-            <Generator>MSBuild:Compile</Generator>
-            <SubType>Designer</SubType>
-        </ApplicationDefinition>
     </ItemGroup>
     <!--Import Project="..\..\.paket\Paket.Restore.targets"/-->
 </Project>
