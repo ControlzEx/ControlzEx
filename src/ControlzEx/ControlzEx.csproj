@@ -27,8 +27,12 @@
         <DelaySign>false</DelaySign>
         <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
     </PropertyGroup>
+    <ItemGroup>
+        <Compile DependentUpon="%(Filename)" SubType="Code" Update="**\obj\**\*.g$(DefaultLanguageSourceExtension)" />
+        <Compile DependentUpon="%(Filename)" SubType="Designer" Update="**\*.xaml$(DefaultLanguageSourceExtension)" />
+    </ItemGroup>
     <!-- reference includes -->
     <ItemGroup>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-63127-02" PrivateAssets="All"/>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta*" PrivateAssets="All" />
     </ItemGroup>
 </Project>

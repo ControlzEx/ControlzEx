@@ -19,5 +19,8 @@
     <ItemGroup>
         <None Include="app.manifest" />
     </ItemGroup>
-    <!--Import Project="..\..\.paket\Paket.Restore.targets"/-->
+    <ItemGroup>
+        <Compile DependentUpon="%(Filename)" SubType="Code" Update="**\obj\**\*.g$(DefaultLanguageSourceExtension)" />
+        <Compile DependentUpon="%(Filename)" SubType="Designer" Update="**\*.xaml$(DefaultLanguageSourceExtension)" />
+    </ItemGroup>
 </Project>

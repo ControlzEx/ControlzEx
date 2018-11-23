@@ -6,15 +6,21 @@
         <GenerateDocumentationFile>false</GenerateDocumentationFile>
         <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 		<DisableImplicitFrameworkReferences Condition="'$(TargetFramework)' != 'netcoreapp3.0'">true</DisableImplicitFrameworkReferences>
-		<UseWpf>true</UseWpf>
+
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>embedded</DebugType>
+        <NoWarn>1591</NoWarn>
+
+        <UseWPF>true</UseWPF>
+
+        <CodeAnalysisRuleSet Condition="'$(Configuration)' == 'Release'">$(MSBuildThisFileDirectory)\ControlzEx.ruleset</CodeAnalysisRuleSet>
     </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-        <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\ControlzEx.ruleset</CodeAnalysisRuleSet>
-    </PropertyGroup>
+
     <ItemGroup>
         <None Remove="**\*.png;**\*.jpg;**\*.ico"/>
         <Resource Include="**\*.png;**\*.jpg;**\*.ico"/>
     </ItemGroup>
+
     <ItemGroup>
         <Compile Include="$(MSBuildThisFileDirectory)\GlobalAssemblyInfo.cs">
             <Link>Properties\GlobalAssemblyInfo.cs</Link>
