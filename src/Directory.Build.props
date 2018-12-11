@@ -42,7 +42,7 @@
 	<!-- Add the references for all projects and targets-->
     <ItemGroup>
         <PackageReference Include="JetBrains.Annotations" Version="2018.*" PrivateAssets="All" />
-        <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.0.*" />
+        <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.*" />
     </ItemGroup>
 
 	<!-- Set the reference for the other targets -->
