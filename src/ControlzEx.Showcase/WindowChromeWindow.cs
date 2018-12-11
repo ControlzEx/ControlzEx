@@ -3,10 +3,10 @@
     using System;
     using System.Windows;
     using System.Windows.Data;
-    using System.Windows.Interactivity;
     using System.Windows.Media;
     using System.Windows.Threading;
     using ControlzEx.Behaviors;
+    using Microsoft.Xaml.Behaviors;
 
     public class WindowChromeWindow : Window
     {

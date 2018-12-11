@@ -42,13 +42,7 @@
 	<!-- Add the references for all projects and targets-->
     <ItemGroup>
         <PackageReference Include="JetBrains.Annotations" Version="2018.*" PrivateAssets="All" />
-		<Reference Include="System.Windows.Interactivity">
-            <HintPath>$(MSBuildThisFileDirectory)\ExtLibs\NET45\System.Windows.Interactivity.dll</HintPath>
-        </Reference>
-        <!-- <None Include="$(MSBuildThisFileDirectory)\ExtLibs\NET45\System.Windows.Interactivity.dll" PackagePath="lib\$(TargetFramework)" Pack="true" Visible="false" /> -->
-        <None Include="$(MSBuildThisFileDirectory)\ExtLibs\NET45\System.Windows.Interactivity.dll" PackagePath="lib\net45" Pack="true" Visible="false" />
-        <None Include="$(MSBuildThisFileDirectory)\ExtLibs\NET45\System.Windows.Interactivity.dll" PackagePath="lib\net462" Pack="true" Visible="false" />
-        <None Include="$(MSBuildThisFileDirectory)\ExtLibs\NET45\System.Windows.Interactivity.dll" PackagePath="lib\netcoreapp3.0" Pack="true" Visible="false" />
+        <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.*" />
     </ItemGroup>
 
 	<!-- Set the reference for the other targets -->

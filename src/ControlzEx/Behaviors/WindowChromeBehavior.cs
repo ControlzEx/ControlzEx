@@ -7,13 +7,13 @@ namespace ControlzEx.Behaviors
     using System.Security.Permissions;
     using System.Windows;
     using System.Windows.Controls;
-    using System.Windows.Interactivity;
     using System.Windows.Interop;
     using System.Windows.Threading;
     using ControlzEx;
     using ControlzEx.Native;
     using ControlzEx.Standard;
-    using JetBrains.Annotations;    
+    using JetBrains.Annotations;
+    using Microsoft.Xaml.Behaviors;
 
     /// <summary>
     /// With this class we can make custom window styles.

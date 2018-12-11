@@ -5,13 +5,13 @@
     using System.Linq;
     using System.Runtime.InteropServices;
     using System.Windows;
-    using System.Windows.Interactivity;
     using System.Windows.Interop;
     using System.Windows.Media;
     using System.Windows.Threading;
     using ControlzEx.Controls;
     using ControlzEx.Native;
     using ControlzEx.Standard;
+    using Microsoft.Xaml.Behaviors;
 
     public class GlowWindowBehavior : Behavior<Window>
     {
