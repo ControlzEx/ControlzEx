@@ -4,6 +4,7 @@
 
 #tool "GitVersion.CommandLine"
 #tool "gitreleasemanager"
+#tool vswhere
 #addin "Cake.Figlet"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -11,22 +12,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 var target = Argument("target", "Default");
-if (string.IsNullOrWhiteSpace(target))
-{
-    target = "Default";
-}
-
 var configuration = Argument("configuration", "Release");
-if (string.IsNullOrWhiteSpace(configuration))
-{
-    configuration = "Release";
-}
-
 var verbosity = Argument("verbosity", Verbosity.Normal);
-if (string.IsNullOrWhiteSpace(configuration))
-{
-    verbosity = Verbosity.Normal;
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 // PREPARATION
@@ -48,6 +35,18 @@ var branchName = gitVersion.BranchName;
 var isDevelopBranch = StringComparer.OrdinalIgnoreCase.Equals("develop", branchName);
 var isReleaseBranch = StringComparer.OrdinalIgnoreCase.Equals("master", branchName);
 var isTagged = AppVeyor.Environment.Repository.Tag.IsTag;
+
+var VSWhereLatestSettings = new VSWhereLatestSettings
+{
+    IncludePrerelease = true
+};
+var latestInstallationPath = VSWhereLatest(VSWhereLatestSettings);
+var msBuildPath = latestInstallationPath.CombineWithFilePath("./MSBuild/15.0/Bin/MSBuild.exe");
+
+if (FileExists(msBuildPath) == false)
+{
+    msBuildPath = latestInstallationPath.CombineWithFilePath("./MSBuild/Current/Bin/MSBuild.exe");
+}
 
 // Directories and Paths
 var solution = "src/ControlzEx.sln";
@@ -73,6 +72,7 @@ Setup(ctx =>
     Information("IsLocalBuild           : {0}", local);
     Information("Branch                 : {0}", branchName);
     Information("Configuration          : {0}", configuration);
+    Information("MSBuildPath            : {0}", msBuildPath);
 });
 
 Teardown(ctx =>
@@ -96,8 +96,9 @@ Task("Restore")
 {
     var msBuildSettings = new MSBuildSettings {
         Verbosity = Verbosity.Minimal,
+        ToolPath = msBuildPath,
+        ToolVersion = MSBuildToolVersion.Default,
         Configuration = configuration,
-        // Restore = true, // only with cake 0.28.x
         ArgumentCustomization = args => args.Append("/m")
     };
 
@@ -110,12 +111,13 @@ Task("Build")
 {
     var msBuildSettings = new MSBuildSettings {
         Verbosity = Verbosity.Normal,
+        ToolPath = msBuildPath,
+        ToolVersion = MSBuildToolVersion.Default,
         Configuration = configuration,
-        // Restore = true, // only with cake 0.28.x     
-        ArgumentCustomization = args => args.Append("/m")
+        Restore = true
     };
     MSBuild(solution, msBuildSettings
-            .SetMaxCpuCount(0)            
+            .SetMaxCpuCount(0)
             .WithProperty("Version", isReleaseBranch ? gitVersion.MajorMinorPatch : gitVersion.NuGetVersion)
             .WithProperty("AssemblyVersion", gitVersion.AssemblySemVer)
             .WithProperty("FileVersion", gitVersion.AssemblySemFileVer)
@@ -128,6 +130,8 @@ Task("Pack")
 {
     var msBuildSettings = new MSBuildSettings {
         Verbosity = Verbosity.Normal,
+        ToolPath = msBuildPath,
+        ToolVersion = MSBuildToolVersion.Default,
         Configuration = configuration
     };
     var project = "./src/ControlzEx/ControlzEx.csproj";
