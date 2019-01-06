@@ -41,11 +41,11 @@ var VSWhereLatestSettings = new VSWhereLatestSettings
     IncludePrerelease = true
 };
 var latestInstallationPath = VSWhereLatest(VSWhereLatestSettings);
-var msBuildPath = latestInstallationPath.CombineWithFilePath("./MSBuild/15.0/Bin/MSBuild.exe");
+var msBuildPath = latestInstallationPath.CombineWithFilePath("./MSBuild/Current/Bin/MSBuild.exe");
 
 if (FileExists(msBuildPath) == false)
 {
-    msBuildPath = latestInstallationPath.CombineWithFilePath("./MSBuild/Current/Bin/MSBuild.exe");
+    throw new NotImplementedException("You need at least Visual Studio 2019 to build this project.");
 }
 
 // Directories and Paths
