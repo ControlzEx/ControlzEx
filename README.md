@@ -11,11 +11,21 @@
 
 Shared Controlz for WPF and...
 
-Made by...
+Made by [![Twitter Jan](https://img.shields.io/badge/twitter-%40punker76-55acee.svg?style=flat-square)](https://twitter.com/punker76) [![Twitter James](https://img.shields.io/badge/twitter-%40James_Willock-55acee.svg?style=flat-square)](https://twitter.com/James_Willock) [![Twitter Bastian](https://img.shields.io/badge/twitter-%40batzendev-55acee.svg?style=flat-square)](https://twitter.com/batzendev)
 
-[![Twitter Jan](https://img.shields.io/badge/twitter-%40punker76-55acee.svg?style=flat-square)](https://twitter.com/punker76)
-[![Twitter James](https://img.shields.io/badge/twitter-%40James_Willock-55acee.svg?style=flat-square)](https://twitter.com/James_Willock)
-[![Twitter Bastian](https://img.shields.io/badge/twitter-%40batzendev-55acee.svg?style=flat-square)](https://twitter.com/batzendev)
+# Quick started for developers
+
+* Download the latest (!!!) dotnet core 3.0.x SDK from here: [https://github.com/dotnet/core-sdk](https://github.com/dotnet/core-sdk) ([quick-link to download](https://dotnetcli.blob.core.windows.net/dotnet/Sdk/master/dotnet-sdk-latest-win-x64.exe))
+  * Make sure you only have the latest dotnet core 3.0 installed!
+* Make sure you have [Visual Studio 2019 Preview (Community Edition)](https://visualstudio.microsoft.com/de/vs/preview/), since dotnet core 3.0 sdk 009831 it no longer works with [Visual Studio 2017](https://visualstudio.microsoft.com)
+* Clone the [ControlzEx repository](https://github.com/ControlzEx/ControlzEx.git)
+* Open the solution from the src directory in Visual Studio
+* Rebuild and start... (you might need to rebuild 2x, because we use the very fresh hot dotnet core stuff)
+
+# What's in the box
+
+* dotnet core 3.0 (preview) support (why, read here: https://blogs.msdn.microsoft.com/dotnet/2018/10/04/update-on-net-core-3-0-and-net-framework-4-8/ )
+* targeting also .Net 4.5 and 4.6.2
 
 ## KeyboardNavigationEx
 
