@@ -915,7 +915,10 @@ namespace ControlzEx.Behaviors
                     this._ModifyStyle(WS.CAPTION, 0);
                 }
 
-                NativeMethods.SetWindowPos(this.windowHandle, IntPtr.Zero, 0, 0, 0, 0, SwpFlags);
+                if (this.AssociatedObject.IsLoaded)
+                {
+                    NativeMethods.SetWindowPos(this.windowHandle, IntPtr.Zero, 0, 0, 0, 0, SwpFlags);
+                }
             }
         }
 
