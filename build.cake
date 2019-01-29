@@ -98,6 +98,7 @@ Task("Restore")
     StartProcess("nuget", new ProcessSettings {
         Arguments = new ProcessArgumentBuilder()
             .Append("restore")
+            .Append(solution)
             .Append("-msbuildpath")
             .AppendQuoted(msBuildPath.ToString())
         }
