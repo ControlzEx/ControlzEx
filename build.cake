@@ -41,9 +41,10 @@ var VSWhereLatestSettings = new VSWhereLatestSettings
     IncludePrerelease = true
 };
 var latestInstallationPath = VSWhereLatest(VSWhereLatestSettings);
-var msBuildPath = latestInstallationPath.CombineWithFilePath("./MSBuild/Current/Bin/MSBuild.exe");
+var msBuildPath = latestInstallationPath.Combine("./MSBuild/Current/Bin");
+var msBuildPathExe = msBuildPath.CombineWithFilePath("./MSBuild.exe");
 
-if (FileExists(msBuildPath) == false)
+if (FileExists(msBuildPathExe) == false)
 {
     throw new NotImplementedException("You need at least Visual Studio 2019 to build this project.");
 }
@@ -94,15 +95,13 @@ Task("Clean")
 Task("Restore")
     .Does(() =>
 {
-    var msBuildSettings = new MSBuildSettings {
-        Verbosity = Verbosity.Minimal,
-        ToolPath = msBuildPath,
-        ToolVersion = MSBuildToolVersion.Default,
-        Configuration = configuration,
-        ArgumentCustomization = args => args.Append("/m")
-    };
-
-    MSBuild(solution, msBuildSettings.WithTarget("restore"));
+    StartProcess("nuget", new ProcessSettings {
+        Arguments = new ProcessArgumentBuilder()
+            .Append("restore")
+            .Append("-msbuildpath")
+            .AppendQuoted(msBuildPath.ToString())
+        }
+    );
 });
 
 Task("Build")
@@ -111,13 +110,13 @@ Task("Build")
 {
     var msBuildSettings = new MSBuildSettings {
         Verbosity = Verbosity.Normal,
-        ToolPath = msBuildPath,
+        ToolPath = msBuildPathExe,
         ToolVersion = MSBuildToolVersion.Default,
         Configuration = configuration,
-        Restore = true
     };
     MSBuild(solution, msBuildSettings
             .SetMaxCpuCount(0)
+            //.WithRestore()
             .WithProperty("Version", isReleaseBranch ? gitVersion.MajorMinorPatch : gitVersion.NuGetVersion)
             .WithProperty("AssemblyVersion", gitVersion.AssemblySemVer)
             .WithProperty("FileVersion", gitVersion.AssemblySemFileVer)
@@ -130,7 +129,7 @@ Task("Pack")
 {
     var msBuildSettings = new MSBuildSettings {
         Verbosity = Verbosity.Normal,
-        ToolPath = msBuildPath,
+        ToolPath = msBuildPathExe,
         ToolVersion = MSBuildToolVersion.Default,
         Configuration = configuration
     };
@@ -210,10 +209,9 @@ Task("ExportReleaseNotes")
 
 Task("Default")
     .IsDependentOn("Clean")
-    .IsDependentOn("Restore")
     .IsDependentOn("Build");
 
-Task("appveyor")
+Task("CI")
     .IsDependentOn("Default")
     .IsDependentOn("Pack")
     .IsDependentOn("Zip");
