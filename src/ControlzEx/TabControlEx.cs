@@ -1,11 +1,15 @@
-﻿using System;
-using System.Collections.Specialized;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-
-namespace ControlzEx
+﻿namespace ControlzEx
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.Specialized;
+    using System.Linq;
+    using System.Windows;
+    using System.Windows.Automation.Peers;
+    using System.Windows.Controls;
+    using System.Windows.Input;
+    using System.Windows.Threading;
+
     /// <summary>
     /// The standard WPF TabControl is quite bad in the fact that it only
     /// even contains the current TabItem in the VisualTree, so if you
@@ -24,14 +28,61 @@ namespace ControlzEx
     ///         http://stackoverflow.com/a/10210889/920384
     ///     http://stackoverflow.com/a/7838955/920384
     /// </summary>
-    [TemplatePart(Name = "PART_ItemsHolder", Type = typeof(Panel))]
+    [TemplatePart(Name = "PART_ItemsHolder", Type = typeof(Panel))]    
     public class TabControlEx : TabControl
     {
+        private Panel itemsHolder;        
+
         public static readonly DependencyProperty ChildContentVisibilityProperty
-            = DependencyProperty.Register(nameof(ChildContentVisibility),
-                                          typeof(Visibility),
-                                          typeof(TabControlEx),
-                                          new PropertyMetadata(Visibility.Collapsed));
+            = DependencyProperty.Register(nameof(ChildContentVisibility), typeof(Visibility), typeof(TabControlEx), new PropertyMetadata(Visibility.Visible));
+
+        public static readonly DependencyProperty TabPanelVisibilityProperty =
+            DependencyProperty.Register(nameof(TabPanelVisibility), typeof(Visibility), typeof(TabControlEx), new PropertyMetadata(Visibility.Visible));
+
+        public static readonly DependencyProperty OwningTabItemProperty = DependencyProperty.RegisterAttached("OwningTabItem", typeof(TabItem), typeof(TabControlEx), new PropertyMetadata(default(TabItem)));
+
+        [AttachedPropertyBrowsableForType(typeof(ContentPresenter))]
+        public static TabItem GetOwningTabItem(DependencyObject element)
+        {
+            return (TabItem)element.GetValue(OwningTabItemProperty);
+        }
+
+        public static void SetOwningTabItem(DependencyObject element, TabItem value)
+        {
+            element.SetValue(OwningTabItemProperty, value);
+        }
+
+        public static readonly DependencyProperty MoveFocusToContentWhenSelectionChangesProperty = DependencyProperty.Register(nameof(MoveFocusToContentWhenSelectionChanges), typeof(bool), typeof(TabControlEx), new PropertyMetadata(default(bool)));
+
+        public bool MoveFocusToContentWhenSelectionChanges
+        {
+            get => (bool)this.GetValue(MoveFocusToContentWhenSelectionChangesProperty);
+            set => this.SetValue(MoveFocusToContentWhenSelectionChangesProperty, value);
+        }
+
+        static TabControlEx()
+        {
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(TabControlEx), new FrameworkPropertyMetadata(typeof(TabControlEx)));
+        }
+
+        /// <summary>
+        /// Initializes a new instance.
+        /// </summary>
+        public TabControlEx()
+        {
+            this.Loaded += this.HandleTabControlExLoaded;
+            this.Unloaded += this.HandleTabControlExUnloaded;
+        }
+
+        /// <summary>
+        /// Defines if the TabPanel (Tab-Header) are visible.
+        /// </summary>
+        public Visibility TabPanelVisibility
+        {
+            get => (Visibility)this.GetValue(TabPanelVisibilityProperty);
+
+            set => this.SetValue(TabPanelVisibilityProperty, value);
+        }
 
         /// <summary>
         /// Gets or sets the child content visibility.
@@ -41,60 +92,44 @@ namespace ControlzEx
         /// </value>
         public Visibility ChildContentVisibility
         {
-            get { return (Visibility)this.GetValue(ChildContentVisibilityProperty); }
-            set { this.SetValue(ChildContentVisibilityProperty, value); }
+            get => (Visibility)this.GetValue(ChildContentVisibilityProperty);
+            set => this.SetValue(ChildContentVisibilityProperty, value);
         }
 
-        public TabControlEx()
-        {
-            // this is necessary so that we get the initial databound selected item
-            this.ItemContainerGenerator.StatusChanged += this.ItemContainerGenerator_StatusChanged;
-            this.Loaded += TabControlEx_Loaded;
-        }
-
-        /// <summary>
-        /// if containers are done, generate the selected item
-        /// </summary>
-        /// <param name = "sender"></param>
-        /// <param name = "e"></param>
-        private void ItemContainerGenerator_StatusChanged(object sender, EventArgs e)
-        {
-            if (this.ItemContainerGenerator.Status == GeneratorStatus.ContainersGenerated)
-            {
-                this.ItemContainerGenerator.StatusChanged -= this.ItemContainerGenerator_StatusChanged;
-                this.UpdateSelectedItem();
-            }
-        }
-
-        /// <summary>
-        /// in some scenarios we need to update when loaded in case the ApplyTemplate happens before the databind.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void TabControlEx_Loaded(object sender, RoutedEventArgs e)
-        {
-            UpdateSelectedItem();
-        }
-
-        /// <summary>
-        /// get the ItemsHolder and generate any children
-        /// </summary>
+        /// <inheritdoc />
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            this._itemsHolder = this.GetTemplateChild("PART_ItemsHolder") as Panel;
-            this.UpdateSelectedItem();
+
+            this.itemsHolder = this.Template.FindName("PART_ItemsHolder", this) as Panel;            
+
+            this.RefreshItemsHolder();
+        }
+
+        /// <inheritdoc />
+        protected override void OnItemContainerStyleChanged(Style oldItemContainerStyle, Style newItemContainerStyle)
+        {
+            base.OnItemContainerStyleChanged(oldItemContainerStyle, newItemContainerStyle);
+
+            this.RefreshItemsHolder();
+        }
+
+        /// <inheritdoc />
+        protected override void OnItemContainerStyleSelectorChanged(StyleSelector oldItemContainerStyleSelector, StyleSelector newItemContainerStyleSelector)
+        {
+            base.OnItemContainerStyleSelectorChanged(oldItemContainerStyleSelector, newItemContainerStyleSelector);
+
+            this.RefreshItemsHolder();
         }
 
         /// <summary>
-        /// when the items change we remove any generated panel children and add any new ones as necessary
+        /// When the items change we remove any generated panel children and add any new ones as necessary.
         /// </summary>
-        /// <param name = "e"></param>
         protected override void OnItemsChanged(NotifyCollectionChangedEventArgs e)
         {
             base.OnItemsChanged(e);
 
-            if (this._itemsHolder == null)
+            if (this.itemsHolder == null)
             {
                 return;
             }
@@ -102,7 +137,7 @@ namespace ControlzEx
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Reset:
-                    this._itemsHolder.Children.Clear();
+                    this.RefreshItemsHolder();
                     break;
 
                 case NotifyCollectionChangedAction.Add:
@@ -111,17 +146,17 @@ namespace ControlzEx
                     {
                         foreach (var item in e.OldItems)
                         {
-                            ContentPresenter cp = this.FindChildContentPresenter(item);
-                            if (cp != null)
+                            var contentPresenter = this.FindChildContentPresenter(item);
+
+                            if (contentPresenter != null)
                             {
-                                this._itemsHolder.Children.Remove(cp);
+                                this.itemsHolder.Children.Remove(contentPresenter);
                             }
                         }
                     }
 
                     // don't do anything with new items because we don't want to
-                    // create visuals that aren't being shown
-
+                    // create visuals that aren't being shown yet
                     this.UpdateSelectedItem();
                     break;
 
@@ -131,123 +166,287 @@ namespace ControlzEx
         }
 
         /// <summary>
-        /// update the visible child in the ItemsHolder
+        /// Update the visible child in the ItemsHolder.
         /// </summary>
-        /// <param name = "e"></param>
         protected override void OnSelectionChanged(SelectionChangedEventArgs e)
         {
             base.OnSelectionChanged(e);
+
             this.UpdateSelectedItem();
         }
 
+        /// <inheritdoc />
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            // We need this to prevent the base class to always accept CTRL + TAB navigation regardless of which keyboard navigation mode is set for this control
+            if (e.Key == Key.Tab
+                && (e.KeyboardDevice.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+            {
+                var controlTabNavigation = KeyboardNavigation.GetControlTabNavigation(this);
+
+                if (controlTabNavigation != KeyboardNavigationMode.Cycle
+                    && controlTabNavigation != KeyboardNavigationMode.Continue)
+                {
+                    return;
+                }
+            }
+
+            base.OnKeyDown(e);
+        }
+
+        /// <inheritdoc />
+        protected override AutomationPeer OnCreateAutomationPeer()
+        {
+            var automationPeer = new TabControlExAutomationPeer(this);
+            return automationPeer;
+        }
+
         /// <summary>
-        /// generate a ContentPresenter for the selected item
+        /// Copied from <see cref="TabControl"/>. wish it were protected in that class instead of private.
+        /// </summary>
+        protected object GetSelectedItem()
+        {
+            var selectedItem = this.SelectedItem;
+
+            if (selectedItem == null)
+            {
+                return null;
+            }
+
+            return selectedItem as TabItem
+                ?? this.ItemContainerGenerator.ContainerFromIndex(this.SelectedIndex) as TabItem;
+        }
+
+        /// <summary>
+        /// Clears all current children and calls <see cref="UpdateSelectedItem"/> afterwards.
+        /// </summary>
+        private void RefreshItemsHolder()
+        {
+            this.itemsHolder?.Children.Clear();
+
+            this.UpdateSelectedItem();
+        }
+
+        private void HandleTabControlExLoaded(object sender, RoutedEventArgs e)
+        {
+            this.RefreshItemsHolder();
+        }
+
+        private void HandleTabControlExUnloaded(object sender, RoutedEventArgs e)
+        {
+            this.itemsHolder?.Children.Clear();
+        }
+
+        /// <summary>
+        /// Generate a ContentPresenter for the selected item.
         /// </summary>
         private void UpdateSelectedItem()
         {
-            if (this._itemsHolder == null)
+            if (this.itemsHolder == null)
             {
                 return;
             }
 
             // generate a ContentPresenter if necessary
-            TabItem item = this.GetSelectedTabItem();
-            if (item != null)
+            var selectedItem = this.GetSelectedItem();
+
+            if (selectedItem != null)
             {
-                this.CreateChildContentPresenter(item);
+                this.CreateChildContentPresenter(selectedItem);
             }
 
             // show the right child
-            foreach (ContentPresenter child in this._itemsHolder.Children)
+            foreach (ContentPresenter contentPresenter in this.itemsHolder.Children)
             {
-                child.Visibility = ((child.Tag as TabItem).IsSelected) ? Visibility.Visible : this.ChildContentVisibility;
+                var tabItem = GetOwningTabItem(contentPresenter);
+                contentPresenter.Visibility = tabItem.IsSelected
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
+
+                if (this.MoveFocusToContentWhenSelectionChanges
+                    && contentPresenter.Visibility == Visibility.Visible
+                    && contentPresenter.IsKeyboardFocusWithin == false)
+                {
+                    var presenter = contentPresenter;
+
+                    this.Dispatcher.BeginInvoke(DispatcherPriority.Input,
+                                                (Action)(() =>
+                                                         {
+                                                             tabItem.BringIntoView();
+                                                             presenter.BringIntoView();
+
+                                                             if (presenter.IsKeyboardFocusWithin == false)
+                                                             {
+                                                                 presenter.MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
+                                                             }
+                                                         }));
+                }
             }
         }
 
         /// <summary>
-        /// create the child ContentPresenter for the given item (could be data or a TabItem)
+        /// Create the child ContentPresenter for the given item (could be data or a TabItem) if none exists.
         /// </summary>
-        /// <param name = "item"></param>
-        /// <returns></returns>
-        private ContentPresenter CreateChildContentPresenter(object item)
+        private void CreateChildContentPresenter(object item)
         {
             if (item == null)
             {
-                return null;
+                return;
             }
 
-            ContentPresenter cp = this.FindChildContentPresenter(item);
-
-            if (cp != null)
+            if (this.FindChildContentPresenter(item) != null)
             {
-                return cp;
+                return;
             }
 
-            // the actual child to be added.  cp.Tag is a reference to the TabItem
-            var tabItem = item as TabItem;
-            cp = new ContentPresenter();
-            cp.Content = tabItem != null ? tabItem.Content : item;
-            cp.ContentTemplate = this.SelectedContentTemplate;
-            cp.ContentTemplateSelector = this.SelectedContentTemplateSelector;
-            cp.ContentStringFormat = this.SelectedContentStringFormat;
-            cp.Visibility = this.ChildContentVisibility;
-            cp.Tag = tabItem ?? this.ItemContainerGenerator.ContainerFromItem(item);
-            this._itemsHolder.Children.Add(cp);
-            return cp;
+            // the actual child to be added.
+            var contentPresenter = new ContentPresenter
+            {
+                Content = item is TabItem tabItem ? tabItem.Content : item,
+                Visibility = Visibility.Collapsed,
+                ContentTemplate = this.ContentTemplate,
+                ContentTemplateSelector = this.ContentTemplateSelector,
+                ContentStringFormat = this.ContentStringFormat
+            };
+
+            var owningTabItem = item as TabItem ?? (TabItem)this.ItemContainerGenerator.ContainerFromItem(item);
+            
+            if (owningTabItem == null)
+            {
+                throw new Exception("No owning TabItem could be found.");
+            }
+
+            SetOwningTabItem(contentPresenter, owningTabItem);
+
+            this.itemsHolder.Children.Add(contentPresenter);
         }
 
         /// <summary>
-        /// Find the CP for the given object.  data could be a TabItem or a piece of data
+        /// Find the <see cref="ContentPresenter"/> for the given object. Data could be a TabItem or a piece of data.
         /// </summary>
-        /// <param name = "data"></param>
-        /// <returns></returns>
-        private ContentPresenter FindChildContentPresenter(object data)
+        public ContentPresenter FindChildContentPresenter(object data)
         {
-            if (data is TabItem)
-            {
-                data = ((TabItem)data).Content;
-            }
-
             if (data == null)
             {
                 return null;
             }
 
-            if (this._itemsHolder == null)
+            if (this.itemsHolder == null)
             {
                 return null;
             }
 
-            foreach (ContentPresenter cp in this._itemsHolder.Children)
+            var tabItem = data as TabItem ?? this.ItemContainerGenerator.ContainerFromItem(data) as TabItem;
+
+            var contentPresenters = this.itemsHolder.Children
+                .OfType<ContentPresenter>();
+
+            if (tabItem != null)
             {
-                if (cp.Content == data)
+                return contentPresenters
+                    .FirstOrDefault(contentPresenter => ReferenceEquals(GetOwningTabItem(contentPresenter), tabItem));
+            }
+
+            return contentPresenters
+                .FirstOrDefault(contentPresenter => ReferenceEquals(contentPresenter.Content, data));
+        }
+    }
+
+    /// <summary>
+    /// Automation-Peer for <see cref="TabControlEx"/>.
+    /// </summary>
+    public class TabControlExAutomationPeer : TabControlAutomationPeer
+    {
+        /// <summary>
+        /// Initializes a new instance.
+        /// </summary>
+        public TabControlExAutomationPeer(TabControl owner)
+            : base(owner)
+        {
+        }
+
+        /// <inheritdoc />
+        protected override ItemAutomationPeer CreateItemAutomationPeer(object item)
+        {
+            return new TabItemExAutomationPeer(item, this);
+        }
+    }
+
+    /// <summary>
+    /// Automation-Peer for <see cref="TabItem"/> in <see cref="TabControlEx"/>.
+    /// </summary>
+    public class TabItemExAutomationPeer : TabItemAutomationPeer
+    {
+        /// <summary>
+        /// Initializes a new instance.
+        /// </summary>
+        public TabItemExAutomationPeer(object owner, TabControlAutomationPeer tabControlAutomationPeer)
+            : base(owner, tabControlAutomationPeer)
+        {
+        }
+
+        /// <inheritdoc />
+        protected override List<AutomationPeer> GetChildrenCore()
+        {
+            // Call the base in case we have children in the header
+            var headerChildren = base.GetChildrenCore();
+
+            // Only if the TabItem is selected we need to add its visual children
+
+            if (!(this.GetWrapper() is TabItem tabItem)
+                || tabItem.IsSelected == false)
+            {
+                return headerChildren;
+            }
+
+            if (!(this.ItemsControlAutomationPeer.Owner is TabControlEx parentTabControl))
+            {
+                return headerChildren;
+            }
+
+            var contentHost = parentTabControl.FindChildContentPresenter(tabItem.Content);
+
+            if (contentHost != null)
+            {
+                var contentHostPeer = new FrameworkElementAutomationPeer(contentHost);
+                var contentChildren = contentHostPeer.GetChildren();
+
+                if (contentChildren != null)
                 {
-                    return cp;
+                    if (headerChildren == null)
+                    {
+                        headerChildren = contentChildren;
+                    }
+                    else
+                    {
+                        headerChildren.AddRange(contentChildren);
+                    }
                 }
             }
 
-            return null;
+            return headerChildren;
         }
 
         /// <summary>
-        /// copied from TabControl; wish it were protected in that class instead of private
+        /// Gets the real tab item.
         /// </summary>
-        /// <returns></returns>
-        protected TabItem GetSelectedTabItem()
+        private UIElement GetWrapper()
         {
-            object selectedItem = base.SelectedItem;
-            if (selectedItem == null)
+            var itemsControlAutomationPeer = this.ItemsControlAutomationPeer;
+
+            var owner = (TabControlEx)itemsControlAutomationPeer?.Owner;
+
+            if (owner == null)
             {
                 return null;
             }
-            TabItem item = selectedItem as TabItem;
-            if (item == null)
-            {
-                item = base.ItemContainerGenerator.ContainerFromIndex(base.SelectedIndex) as TabItem;
-            }
-            return item;
-        }
 
-        private Panel _itemsHolder = null;
+            if (owner.IsItemItsOwnContainer(this.Item))
+            {
+                return this.Item as UIElement;
+            }
+
+            return owner.ItemContainerGenerator.ContainerFromItem(this.Item) as UIElement;
+        }
     }
 }
