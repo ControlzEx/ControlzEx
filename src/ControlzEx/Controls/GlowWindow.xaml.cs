@@ -73,7 +73,6 @@ namespace ControlzEx.Controls
             this.IsGlowing = true;
             this.Closing += (sender, e) => e.Cancel = !this.closing;
 
-
             this.glow.Direction = direction;
 
             {
@@ -317,8 +316,7 @@ namespace ControlzEx.Controls
 
         public void Update()
         {
-            if (this.closing
-                || this.CanUpdateCore() == false)
+            if (this.CanUpdateCore() == false)
             {
                 return;
             }
@@ -327,9 +325,8 @@ namespace ControlzEx.Controls
             if (this.owner.Visibility == Visibility.Hidden)
             {
                 this.Invoke(() => 
-                            { 
-                                this.glow.Visibility = Visibility.Collapsed;
-                                this.Visibility = Visibility.Collapsed;
+                            {
+                                this.SetVisibilityIfPossible(Visibility.Collapsed);
                             });
 
                 if (this.IsGlowing 
@@ -346,8 +343,7 @@ namespace ControlzEx.Controls
 
                 this.Invoke(() =>
                             {
-                                this.glow.Visibility = newVisibility;
-                                this.Visibility = newVisibility;
+                                this.SetVisibilityIfPossible(newVisibility);
                             });
 
                 
@@ -361,10 +357,20 @@ namespace ControlzEx.Controls
             {
                 this.Invoke(() =>
                             {
-                                this.glow.Visibility = Visibility.Collapsed;
-                                this.Visibility = Visibility.Collapsed;
+                                this.SetVisibilityIfPossible(Visibility.Collapsed);
                             });                
             }
+        }
+
+        private void SetVisibilityIfPossible(Visibility newVisibility)
+        {
+            if (this.CanUpdateCore() == false)
+            {
+                return;
+            }
+
+            this.glow.Visibility = newVisibility;
+            this.Visibility = newVisibility;
         }
 
         private bool IsWindowHandleValid()
@@ -381,8 +387,9 @@ namespace ControlzEx.Controls
 
         internal bool CanUpdateCore()
         {
-            return this.IsWindowHandleValid()
-                && this.IsOwnerHandleValid();
+            return this.closing == false
+                   && this.IsWindowHandleValid()
+                   && this.IsOwnerHandleValid();
         }
 
         internal void UpdateCore(RECT rect)
