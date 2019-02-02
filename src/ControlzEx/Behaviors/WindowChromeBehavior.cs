@@ -331,6 +331,7 @@ namespace ControlzEx.Behaviors
         /// </summary>
         protected virtual void AssociatedObject_Loaded(object sender, RoutedEventArgs e)
         {
+            this._UpdateFrameState(true);
         }
 
         private void AssociatedObject_Unloaded(object sender, RoutedEventArgs e)
