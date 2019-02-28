@@ -2,9 +2,6 @@
     <PropertyGroup Condition=" '$(TargetFramework)' == 'net45' ">
         <DefineConstants>$(DefineConstants);OWNDPISCALE</DefineConstants>
     </PropertyGroup>
-    <PropertyGroup Condition=" '$(TargetFramework)' != 'net45' ">
-        <DefineConstants>$(DefineConstants)</DefineConstants>
-    </PropertyGroup>
 
     <!-- AssemblyInfo -->
     <PropertyGroup>
@@ -19,27 +16,8 @@
         <InformationalVersion>4.0.0.0</InformationalVersion>
     </PropertyGroup>
 
-    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-        <Optimize>false</Optimize>
-    </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-        <NoWarn>0067,1591,0168</NoWarn>
-        <Optimize>true</Optimize>
-    </PropertyGroup>
-
     <ItemGroup>
         <Page Update="@(Page)" SubType="Designer" Generator="MSBuild:Compile" />
     </ItemGroup>
-
-    <!--
-    Workaround to fix IntelliSense file generation for XAML projects
-    ISSUE: https://github.com/dotnet/project-system/issues/2488
-  -->
-    <Target Name="_SdkDesignTimeBuildAndIntelliSenseWorkaround" AfterTargets="_CheckCompileDesignTimePrerequisite">
-        <PropertyGroup>
-            <BuildingProject>false</BuildingProject>
-            <DesignTimeBuild>true</DesignTimeBuild>
-        </PropertyGroup>
-    </Target>
 
 </Project>

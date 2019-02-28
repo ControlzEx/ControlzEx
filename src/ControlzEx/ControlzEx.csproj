@@ -33,6 +33,6 @@
     </ItemGroup>
     <!-- reference includes -->
     <ItemGroup>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta*" PrivateAssets="All" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2*" PrivateAssets="All" />
     </ItemGroup>
 </Project>

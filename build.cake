@@ -23,8 +23,7 @@ var repoName = "ControlzEx";
 var local = BuildSystem.IsLocalBuild;
 
 // Set build version
-if (local == false
-    || verbosity == Verbosity.Verbose)
+if (local == false || verbosity == Verbosity.Verbose)
 {
     GitVersion(new GitVersionSettings { OutputType = GitVersionOutput.BuildServer });
 }
@@ -110,14 +109,12 @@ Task("Build")
     .Does(() =>
 {
     var msBuildSettings = new MSBuildSettings {
-        Verbosity = Verbosity.Normal,
-        ToolPath = msBuildPathExe,
-        ToolVersion = MSBuildToolVersion.Default,
-        Configuration = configuration,
+        Verbosity = verbosity
+        , ToolPath = msBuildPathExe
+        , Configuration = configuration
     };
     MSBuild(solution, msBuildSettings
             .SetMaxCpuCount(0)
-            //.WithRestore()
             .WithProperty("Version", isReleaseBranch ? gitVersion.MajorMinorPatch : gitVersion.NuGetVersion)
             .WithProperty("AssemblyVersion", gitVersion.AssemblySemVer)
             .WithProperty("FileVersion", gitVersion.AssemblySemFileVer)
@@ -129,13 +126,11 @@ Task("Pack")
     .Does(() =>
 {
     var msBuildSettings = new MSBuildSettings {
-        Verbosity = Verbosity.Normal,
-        ToolPath = msBuildPathExe,
-        ToolVersion = MSBuildToolVersion.Default,
-        Configuration = configuration
+        Verbosity = verbosity
+        , ToolPath = msBuildPathExe
+        , Configuration = configuration
     };
     var project = "./src/ControlzEx/ControlzEx.csproj";
-
     MSBuild(project, msBuildSettings
       .WithTarget("pack")
       .WithProperty("PackageOutputPath", "../bin")

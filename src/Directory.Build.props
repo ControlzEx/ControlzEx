@@ -13,14 +13,12 @@
         <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
         <GenerateDocumentationFile>false</GenerateDocumentationFile>
         <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-		<DisableImplicitFrameworkReferences Condition="'$(TargetFramework)' != 'netcoreapp3.0'">true</DisableImplicitFrameworkReferences>
-
+        <!-- <DisableImplicitFrameworkReferences Condition="'$(TargetFramework)' != 'netcoreapp3.0'">true</DisableImplicitFrameworkReferences> -->
         <DebugSymbols>true</DebugSymbols>
         <DebugType>embedded</DebugType>
-        <NoWarn>1591</NoWarn>
-
+        <NoWarn>$(NoWarn);CS1591</NoWarn>
+        <NoError>$(NoError);CS1591</NoError>
         <UseWPF>true</UseWPF>
-
         <CodeAnalysisRuleSet Condition="'$(Configuration)' == 'Release'">$(MSBuildThisFileDirectory)\ControlzEx.ruleset</CodeAnalysisRuleSet>
     </PropertyGroup>
 
@@ -47,14 +45,14 @@
         <EmbedAllSources>true</EmbedAllSources>
     </PropertyGroup>
 
-	<!-- Add the references for all projects and targets-->
+    <!-- Add the references for all projects and targets-->
     <ItemGroup>
         <PackageReference Include="JetBrains.Annotations" Version="2018.*" PrivateAssets="All" />
         <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.*" />
     </ItemGroup>
 
-	<!-- Set the reference for the other targets -->
-    <ItemGroup Condition="'$(TargetFramework)' != 'netcoreapp3.0'">
+    <!-- Set the reference for the other targets -->
+    <!-- <ItemGroup Condition="'$(TargetFramework)' != 'netcoreapp3.0'">
         <Reference Include="Microsoft.CSharp" />
         <Reference Include="PresentationCore" />
         <Reference Include="PresentationFramework" />
@@ -62,5 +60,5 @@
         <Reference Include="System.Core" />
         <Reference Include="System.Xaml" />
         <Reference Include="WindowsBase" />
-    </ItemGroup>
+    </ItemGroup> -->
 </Project>
