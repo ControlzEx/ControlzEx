@@ -16,7 +16,7 @@
                           MinHeight="60"
                           WindowState="Normal"
                           WindowStartupLocation="CenterScreen"
-                          SizeToContent="WidthAndHeight"
+                          
                           Background="{Binding Source={x:Static SystemColors.WindowBrush}}"
                           GlowBrush="Navy"
                           NonActiveGlowBrush="Crimson">
@@ -470,9 +470,15 @@
                 </TabItem>
 
                 <TabItem Header="ipsum">
-                    <TextBox Text="Lorem ipsum dolor sit amet, consetetur sadipscing"
-                             HorizontalAlignment="Center"
-                             Margin="5" />
+                    <StackPanel>
+                        <TextBox Text="Lorem ipsum dolor sit amet, consetetur sadipscing"
+                                 HorizontalAlignment="Center"
+                                 Margin="5" />
+                        <TextBlock x:Name="LoadedCountTextBlock"
+                                   Loaded="LoadedCountTextBlock_OnLoaded"
+                                   HorizontalAlignment="Center"
+                                   Margin="5" />
+                    </StackPanel>
                 </TabItem>
             </controlzEx:TabControlEx>
         </Grid>
