@@ -1,7 +1,8 @@
-﻿#pragma warning disable 618
+#pragma warning disable 618
 namespace ControlzEx.Controls
 {
     using System;
+    using System.Diagnostics;
     using System.Runtime.InteropServices;
     using System.Windows;
     using System.Windows.Controls;
@@ -15,6 +16,7 @@ namespace ControlzEx.Controls
     using ControlzEx.Behaviors;
     using JetBrains.Annotations;
 
+    [DebuggerDisplay("{" + nameof(Title) + "}")]
     partial class GlowWindow
     {
         private readonly Func<Point, RECT, HT> getHitTestValue;
@@ -67,7 +69,8 @@ namespace ControlzEx.Controls
             this.Title = $"GlowWindow_{direction}";
             this.Name = this.Title;
 
-            this.Owner = owner;
+            // We must not set the owner of this window. Otherwise things like preventing window activation won't work correctly.
+            //this.Owner = owner;
             this.owner = owner;
 
             this.IsGlowing = true;
@@ -278,11 +281,13 @@ namespace ControlzEx.Controls
             var ws = NativeMethods.GetWindowStyle(this.windowHandle);
             var wsex = NativeMethods.GetWindowStyleEx(this.windowHandle);
 
+            ws &= ~WS.CAPTION; // We don't need a title bar
+            ws &= ~WS.SYSMENU; // We don't need a system context menu
             ws |= WS.POPUP;
 
             wsex &= ~WS_EX.APPWINDOW;
             wsex |= WS_EX.TOOLWINDOW;
-            wsex |= WS_EX.NOACTIVATE;
+            wsex |= WS_EX.NOACTIVATE; // We don't want our this window to be activated
 
             if (this.owner.ResizeMode == ResizeMode.NoResize || this.owner.ResizeMode == ResizeMode.CanMinimize)
             {
@@ -439,17 +444,16 @@ namespace ControlzEx.Controls
                     }
                     break;
 
-                case WM.ACTIVATE:
-                    if (wParam.ToInt32() != 0
-                        && this.IsOwnerHandleValid())
-                    {
-                        handled = true;
-                        // We have to activate the owner async. Otherwise the active window on the taskbar is wrong.
-                        this.InvokeAsyncIfCanUpdateCore(DispatcherPriority.Send, () => NativeMethods.SetActiveWindow(this.ownerWindowHandle));
-                        // Flash window to mimic behavior of dialog activation for modal dialogs
-                        FlashWindowEx(this.ownerWindowHandle);
-                    }
+                case WM.WINDOWPOSCHANGED:
+                case WM.WINDOWPOSCHANGING:
+                    var wp = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
+                    wp.flags |= SWP.NOACTIVATE; // We always have to add SWP.NOACTIVATE to prevent accidental activation of this window
+                    Marshal.StructureToPtr(wp, lParam, true);
                     break;
+
+                case WM.ACTIVATE:
+                    handled = true;
+                    return IntPtr.Zero;
 
                 case WM.MOUSEACTIVATE:
                     handled = true;
@@ -467,6 +471,7 @@ namespace ControlzEx.Controls
                 case WM.NCMBUTTONDBLCLK:
                 case WM.NCXBUTTONDOWN:
                 case WM.NCXBUTTONDBLCLK:
+                    handled = true;
                     if (this.IsOwnerHandleValid())
                     {
                         // WA_CLICKACTIVE = 2
@@ -529,20 +534,6 @@ namespace ControlzEx.Controls
             void FixWindowZOrder()
             {
                 NativeMethods.SetWindowPos(this.windowHandle, this.ownerWindowHandle, 0, 0, 0, 0, SWP.NOMOVE | SWP.NOSIZE | SWP.NOACTIVATE);
-            }
-
-            // The values used should be exactly the same as those being used by windows itself when flashing a modal dialog
-            bool FlashWindowEx(IntPtr hWnd)
-            {
-                var fInfo = new NativeMethods.FLASHWINFO();
-
-                fInfo.cbSize = Convert.ToUInt32(Marshal.SizeOf(fInfo));
-                fInfo.hwnd = hWnd;
-                fInfo.dwFlags = NativeMethods.FlashWindowFlag.FLASHW_CAPTION;
-                fInfo.uCount = 8;
-                fInfo.dwTimeout = 50;
-
-                return NativeMethods.FlashWindowEx(ref fInfo);
             }
         }        
 
