@@ -324,7 +324,7 @@ namespace ControlzEx.Controls
             RECT rect;
             if (this.owner.Visibility == Visibility.Hidden)
             {
-                this.Invoke(() => 
+                this.InvokeIfCanUpdateCore(() => 
                             {
                                 this.SetVisibilityIfPossible(Visibility.Collapsed);
                             });
@@ -341,7 +341,7 @@ namespace ControlzEx.Controls
                                         ? Visibility.Visible
                                         : Visibility.Collapsed;
 
-                this.Invoke(() =>
+                this.InvokeIfCanUpdateCore(() =>
                             {
                                 this.SetVisibilityIfPossible(newVisibility);
                             });
@@ -355,7 +355,7 @@ namespace ControlzEx.Controls
             }
             else
             {
-                this.Invoke(() =>
+                this.InvokeIfCanUpdateCore(() =>
                             {
                                 this.SetVisibilityIfPossible(Visibility.Collapsed);
                             });                
@@ -435,7 +435,7 @@ namespace ControlzEx.Controls
                     else if (this.CanUpdateCore())
                     {
                         // this fixes #58
-                        this.Dispatcher.BeginInvoke(DispatcherPriority.Send, new Action(FixWindowZOrder));
+                        this.InvokeAsyncIfCanUpdateCore(DispatcherPriority.Send, FixWindowZOrder);
                     }
                     break;
 
@@ -445,7 +445,7 @@ namespace ControlzEx.Controls
                     {
                         handled = true;
                         // We have to activate the owner async. Otherwise the active window on the taskbar is wrong.
-                        this.Dispatcher.BeginInvoke(DispatcherPriority.Send, new Action(() => NativeMethods.SetActiveWindow(this.ownerWindowHandle)));
+                        this.InvokeAsyncIfCanUpdateCore(DispatcherPriority.Send, () => NativeMethods.SetActiveWindow(this.ownerWindowHandle));
                         // Flash window to mimic behavior of dialog activation for modal dialogs
                         FlashWindowEx(this.ownerWindowHandle);
                     }
@@ -528,11 +528,6 @@ namespace ControlzEx.Controls
             // this fixes #58
             void FixWindowZOrder()
             {
-                if (this.CanUpdateCore() == false)
-                {
-                    return;
-                }
-
                 NativeMethods.SetWindowPos(this.windowHandle, this.ownerWindowHandle, 0, 0, 0, 0, SWP.NOMOVE | SWP.NOSIZE | SWP.NOACTIVATE);
             }
 
@@ -551,8 +546,13 @@ namespace ControlzEx.Controls
             }
         }        
 
-        private void Invoke([NotNull] Action invokeAction)
+        private void InvokeIfCanUpdateCore([NotNull] Action invokeAction)
         {
+            if (this.CanUpdateCore() == false)
+            {
+                return;
+            }
+
             if (this.Dispatcher.CheckAccess())
             {
                 invokeAction();
@@ -563,9 +563,15 @@ namespace ControlzEx.Controls
             }
         }
 
-        private void InvokeAsync(DispatcherPriority dispatcherPriority, Action invokeAction)
+        private void InvokeAsyncIfCanUpdateCore(DispatcherPriority dispatcherPriority, Action invokeAction)
         {
-            this.Dispatcher.BeginInvoke(dispatcherPriority, invokeAction);
+            this.Dispatcher.BeginInvoke(dispatcherPriority, new Action(() =>
+                                                                       {
+                                                                           if (this.CanUpdateCore())
+                                                                           {
+                                                                               invokeAction();
+                                                                           }
+                                                                       }));
         }
     }
 }
