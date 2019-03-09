@@ -2,10 +2,12 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.Linq;
     using System.Reflection;
     using System.Windows;
     using System.Windows.Input;
+    using System.Windows.Interop;
     using System.Windows.Media;
     using ControlzEx.Native;
     using ControlzEx.Standard;
@@ -107,7 +109,8 @@
         {
             var window = new MainWindow
                          {
-                             Owner = this
+                             Owner = this,
+                             WindowStartupLocation = WindowStartupLocation.Manual
                          };
             window.Show();
         }
@@ -115,10 +118,41 @@
         private void ButtonOpenModalChildWindowOnClick(object sender, RoutedEventArgs e)
         {
             var window = new MainWindow
-            {
-                Owner = this
-            };
+                         {
+                             Owner = this,
+                             WindowStartupLocation = WindowStartupLocation.Manual
+                         };
             window.ShowDialog();
+        }
+
+        private void ButtonOpenPseudoModalChildWindowOnClick(object sender, RoutedEventArgs e)
+        {
+            var window = new MainWindow
+                         {
+                             Owner = this,
+                             WindowStartupLocation = WindowStartupLocation.Manual
+                         };
+
+            // We have to use closing, otherwise the owner window won't be activated.
+            window.Closing += this.PseudoModalWindow_Closing;
+
+            var ownerHandle = new WindowInteropHelper(window.Owner).Handle;
+            var windowStyle = NativeMethods.GetWindowStyle(ownerHandle);
+            NativeMethods.SetWindowStyle(ownerHandle, windowStyle | WS.DISABLED);
+
+            window.Show();
+        }
+
+        private void PseudoModalWindow_Closing(object sender, CancelEventArgs e)
+        {
+            if (e.Cancel)
+            {
+                return;
+            }
+
+            var ownerHandle = new WindowInteropHelper(((Window)sender).Owner).Handle;
+            var windowStyle = NativeMethods.GetWindowStyle(ownerHandle);
+            NativeMethods.SetWindowStyle(ownerHandle, windowStyle & ~WS.DISABLED);
         }
 
         private void ButtonResetMinSizesOnClick(object sender, RoutedEventArgs e)
@@ -129,8 +163,8 @@
 
         private void ButtonResetMaxSizesOnClick(object sender, RoutedEventArgs e)
         {
-            this.MaxWidth = double.NaN;
-            this.MaxHeight = double.NaN;
+            this.MaxWidth = double.PositiveInfinity;
+            this.MaxHeight = double.PositiveInfinity;
         }
 
         private void ButtonHideOnClick(object sender, RoutedEventArgs e)

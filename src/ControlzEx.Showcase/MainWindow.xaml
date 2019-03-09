@@ -125,6 +125,12 @@
                                     </Style>
                                 </Button.Style>
                             </Button>
+
+                            <Button Content="Hide"
+                                    Click="ButtonHideOnClick"
+                                    MinWidth="100"
+                                    Padding="4"
+                                    Margin="4" />
                         </StackPanel>
                         
                         <StackPanel Orientation="Horizontal">
@@ -139,9 +145,9 @@
                                     MinWidth="100"
                                     Padding="4"
                                     Margin="4" />
-                                                       
-                            <Button Content="Hide"
-                                    Click="ButtonHideOnClick"
+
+                            <Button Content="Open pseudo modal child window"
+                                    Click="ButtonOpenPseudoModalChildWindowOnClick"
                                     MinWidth="100"
                                     Padding="4"
                                     Margin="4" />
