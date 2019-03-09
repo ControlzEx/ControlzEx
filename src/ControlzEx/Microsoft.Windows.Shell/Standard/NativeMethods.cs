@@ -1,4 +1,4 @@
-﻿#pragma warning disable 1591, 618
+#pragma warning disable 1591, 618
 namespace ControlzEx.Standard
 {
     using System;
@@ -308,6 +308,20 @@ namespace ControlzEx.Standard
         HICON = -14,
         STYLE = -26,
         HICONSM = -34
+    }
+
+    /// <summary>
+    /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-getwindow
+    /// </summary>
+    public enum GW
+    {
+        HWNDFIRST = 0,
+        HWNDLAST = 1,
+        HWNDNEXT = 2,
+        HWNDPREV = 3,
+        OWNER = 4,
+        CHILD = 5,
+        ENABLEDPOPUP = 6
     }
 
     /// <summary>
@@ -3426,6 +3440,21 @@ namespace ControlzEx.Standard
         [DllImport("user32.dll")]
         public static extern int GetSystemMetrics(SM nIndex);
 
+        [DllImport("kernel32.dll")]
+        public static extern uint GetCurrentThreadId();
+
+        public delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool EnumThreadWindows(uint dwThreadId, EnumWindowsProc lpfn, IntPtr lParam);
+
+        /// <summary>
+        /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-getwindow
+        /// </summary>
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetWindow(IntPtr hwnd, GW nCmd);
+
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("user32.dll", CharSet = CharSet.None, SetLastError = true, EntryPoint = "GetWindowInfo")]
         private static extern bool _GetWindowInfo(IntPtr hWnd, ref WINDOWINFO pwi);
@@ -3651,6 +3680,10 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("gdiplus.dll")]
         public static extern Status GdiplusShutdown(IntPtr token);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool IsIconic(IntPtr hwnd);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("user32.dll")]
