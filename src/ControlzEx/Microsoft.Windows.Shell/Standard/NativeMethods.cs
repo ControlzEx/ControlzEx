@@ -1,4 +1,4 @@
-#pragma warning disable 1591, 618
+﻿#pragma warning disable 1591, 618
 namespace ControlzEx.Standard
 {
     using System;
@@ -3870,7 +3870,8 @@ namespace ControlzEx.Standard
         {
             Verify.IsNotDefault(hwnd, "hwnd");
             IntPtr ret = _SetActiveWindow(hwnd);
-            if (ret == IntPtr.Zero)
+            if (ret == IntPtr.Zero
+                && (HRESULT)Win32Error.GetLastError() != HRESULT.S_OK)
             {
                 HRESULT.ThrowLastError();
             }
