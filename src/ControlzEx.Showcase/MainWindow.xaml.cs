@@ -109,9 +109,14 @@
         {
             var window = new MainWindow
                          {
-                             Owner = this,
                              WindowStartupLocation = WindowStartupLocation.Manual
                          };
+
+            if (this.SetOwner.IsChecked == true)
+            {
+                window.Owner = this;
+            }
+
             window.Show();
         }
 
@@ -119,9 +124,14 @@
         {
             var window = new MainWindow
                          {
-                             Owner = this,
                              WindowStartupLocation = WindowStartupLocation.Manual
                          };
+
+            if (this.SetOwner.IsChecked == true)
+            {
+                window.Owner = this;
+            }
+
             window.ShowDialog();
         }
 
@@ -129,9 +139,10 @@
         {
             var window = new MainWindow
                          {
-                             Owner = this,
-                             WindowStartupLocation = WindowStartupLocation.Manual
+                             WindowStartupLocation = WindowStartupLocation.Manual,
+                             Owner = this // for this to work we always have to set the owner
                          };
+
 
             // We have to use closing, otherwise the owner window won't be activated.
             window.Closing += this.PseudoModalWindow_Closing;
