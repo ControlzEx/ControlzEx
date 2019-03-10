@@ -258,7 +258,11 @@ namespace ControlzEx.Controls
             }
 
             this.windowHandle = this.hwndSource.Handle;
-            this.ownerWindowHandle = new WindowInteropHelper(this.owner).Handle;
+            var ownerWindowInteropHelper = new WindowInteropHelper(this.owner);
+            this.ownerWindowHandle = ownerWindowInteropHelper.Handle;
+
+            // Set parent to the owner of our owner, that way glows on modeless windows shown with an owner work correctly
+            NativeMethods.SetWindowLongPtr(this.windowHandle, GWL.HWNDPARENT, ownerWindowInteropHelper.Owner);
 
             var ws = NativeMethods.GetWindowStyle(this.windowHandle);
             var wsex = NativeMethods.GetWindowStyleEx(this.windowHandle);
