@@ -387,6 +387,7 @@ namespace ControlzEx.Controls
         {
             // we can handle this._owner.WindowState == WindowState.Normal
             // or use NOZORDER too
+            // todo: direct z-order
             NativeMethods.SetWindowPos(this.windowHandle, this.ownerWindowHandle, 
                                        (int)this.getLeft(rect),
                                        (int)this.getTop(rect),
@@ -425,6 +426,7 @@ namespace ControlzEx.Controls
                     }
                     else if (this.CanUpdateCore())
                     {
+                        // todo: direct z-order
                         // this fixes #58
                         this.InvokeAsyncIfCanUpdateCore(DispatcherPriority.Send, FixWindowZOrder);
                     }
@@ -434,6 +436,8 @@ namespace ControlzEx.Controls
                 case WM.WINDOWPOSCHANGING:
                     var wp = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
                     wp.flags |= SWP.NOACTIVATE; // We always have to add SWP.NOACTIVATE to prevent accidental activation of this window
+                    // todo: direct z-order
+                    //wp.hwndInsertAfter = this.ownerWindowHandle;
                     Marshal.StructureToPtr(wp, lParam, true);
                     break;
 
