@@ -166,13 +166,6 @@ namespace ControlzEx.Controls
                     break;
 
                 case GlowDirection.Top:
-                    this.PreviewMouseDoubleClick += (sender, e) =>
-                        {
-                            if (this.IsOwnerHandleValid())
-                            {
-                                NativeMethods.SendMessage(this.ownerWindowHandle, WM.NCLBUTTONDBLCLK, (IntPtr)HT.TOP, IntPtr.Zero);
-                            }
-                        };
                     this.glow.VerticalAlignment = VerticalAlignment.Bottom;
                     this.getLeft = rect => rect.Left - this.ResizeBorderThickness.Left / 2; 
                     this.getTop = rect => rect.Top - this.ResizeBorderThickness.Top + 1;
@@ -186,13 +179,6 @@ namespace ControlzEx.Controls
                     break;
 
                 case GlowDirection.Bottom:
-                    this.PreviewMouseDoubleClick += (sender, e) =>
-                        {
-                            if (this.IsOwnerHandleValid())
-                            {
-                                NativeMethods.SendMessage(this.ownerWindowHandle, WM.NCLBUTTONDBLCLK, (IntPtr)HT.BOTTOM, IntPtr.Zero);
-                            }
-                        };
                     this.glow.VerticalAlignment = VerticalAlignment.Top;
                     this.getLeft = rect => rect.Left - this.ResizeBorderThickness.Left / 2; 
                     this.getTop = rect => rect.Bottom - 1;
