@@ -64,103 +64,96 @@
 
             <controlzEx:TabControlEx Grid.Row="2">
                 <TabItem Header="WindowChrome">
-            <Grid Grid.Row="2"
-                  Grid.IsSharedSizeScope="True">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition />
-                </Grid.RowDefinitions>
+                    <Grid Grid.Row="2"
+                          Grid.IsSharedSizeScope="True">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
 
                         <GroupBox Grid.Row="0"
-                          BorderThickness="0 1 0 0"
-                          Margin="5"
-                          Header="Actions">
-                    <WrapPanel Orientation="Horizontal">
-                        <Button Content="Minimize"
-                                Click="ButtonMinimizeOnClick"
-                                MinWidth="100"
-                                Padding="4"
-                                Margin="4">
-                            <Button.Style>
-                                <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding ElementName=Window, Path=ResizeMode}"
-                                                     Value="{x:Static ResizeMode.NoResize}">
+                                  BorderThickness="0 1 0 0"
+                                  Margin="5"
+                                  Header="Actions">
+                            <WrapPanel Orientation="Horizontal">
+                                <Button Content="Minimize"
+                                        Click="ButtonMinimizeOnClick"
+                                        MinWidth="100"
+                                        Padding="4"
+                                        Margin="4">
+                                    <Button.Style>
+                                        <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ElementName=Window, Path=ResizeMode}"
+                                                             Value="{x:Static ResizeMode.NoResize}">
+                                                    <Setter Property="IsEnabled" Value="False" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                                <Button Content="Maximize"
+                                        Click="ButtonMaximizeOnClick"
+                                        MinWidth="100"
+                                        Padding="4"
+                                        Margin="4">
+                                    <Button.Style>
+                                        <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ElementName=Window, Path=ResizeMode}"
+                                                             Value="{x:Static ResizeMode.NoResize}">
+                                                    <Setter Property="IsEnabled" Value="False" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding ElementName=Window, Path=ResizeMode}"
+                                                             Value="{x:Static ResizeMode.CanMinimize}">
+                                                    <Setter Property="IsEnabled" Value="False" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                                <Button Content="Restore"
+                                        Click="ButtonRestoreOnClick"
+                                        MinWidth="100"
+                                        Padding="4"
+                                        Margin="4">
+                                    <Button.Style>
+                                        <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
                                             <Setter Property="IsEnabled" Value="False" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                        </Button>
-                        <Button Content="Maximize"
-                                Click="ButtonMaximizeOnClick"
-                                MinWidth="100"
-                                Padding="4"
-                                Margin="4">
-                            <Button.Style>
-                                <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding ElementName=Window, Path=ResizeMode}"
-                                                     Value="{x:Static ResizeMode.NoResize}">
-                                            <Setter Property="IsEnabled" Value="False" />
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding ElementName=Window, Path=ResizeMode}"
-                                                     Value="{x:Static ResizeMode.CanMinimize}">
-                                            <Setter Property="IsEnabled" Value="False" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                        </Button>
-                        <Button Content="Restore"
-                                Click="ButtonRestoreOnClick"
-                                MinWidth="100"
-                                Padding="4"
-                                Margin="4">
-                            <Button.Style>
-                                <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
-                                    <Setter Property="IsEnabled" Value="False" />
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding ElementName=Window, Path=WindowState}"
-                                                     Value="{x:Static WindowState.Maximized}">
-                                            <Setter Property="IsEnabled" Value="True" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                        </Button>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ElementName=Window, Path=WindowState}"
+                                                             Value="{x:Static WindowState.Maximized}">
+                                                    <Setter Property="IsEnabled" Value="True" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
 
-                        <Button Content="Hide"
-                                Click="ButtonHideOnClick"
-                                MinWidth="100"
-                                Padding="4"
-                                Margin="4" />
-                    </WrapPanel>
-                </GroupBox>
+                                <Button Content="Hide"
+                                        Click="ButtonHideOnClick"
+                                        MinWidth="100"
+                                        Padding="4"
+                                        Margin="4" />
+                            </WrapPanel>
+                        </GroupBox>
 
-                <GroupBox Grid.Row="1"
-                          BorderThickness="0 1 0 0"
-                          Margin="5"
-                          Header="Window tests (primarily for glows)">
-                    <StackPanel Orientation="Vertical">
-                        <WrapPanel Orientation="Horizontal">
-                            <CheckBox x:Name="SetOwner" 
-                                      Content="Set owner"
-                                      IsChecked="True"
-                                      Margin="4" />
-                        </WrapPanel>
+                        <GroupBox Grid.Row="1"
+                                  BorderThickness="0 1 0 0"
+                                  Margin="5"
+                                  Header="Window tests (primarily for glows)">
+                            <StackPanel Orientation="Vertical">
+                                <WrapPanel Orientation="Horizontal">
+                                    <CheckBox x:Name="SetOwner"
+                                              Content="Set owner"
+                                              IsChecked="True"
+                                              Margin="4" />
+                                </WrapPanel>
 
-                        <WrapPanel Orientation="Horizontal">
-                            <Button Content="Open child window"
-                                    Click="ButtonOpenChildWindowOnClick"
-                                    MinWidth="100"
-                                    Padding="4"
-                                    Margin="4" />
-
-                                <StackPanel Orientation="Horizontal">
+                                <WrapPanel Orientation="Horizontal">
                                     <Button Content="Open child window"
                                             Click="ButtonOpenChildWindowOnClick"
                                             MinWidth="100"
@@ -173,60 +166,60 @@
                                             Padding="4"
                                             Margin="4" />
 
-                            <Button Content="Open pseudo modal child window"
-                                    Click="ButtonOpenPseudoModalChildWindowOnClick"
-                                    MinWidth="100"
-                                    Padding="4"
-                                    Margin="4" />
-                        </WrapPanel>
-                    </StackPanel>
-                </GroupBox>
+                                    <Button Content="Open pseudo modal child window"
+                                            Click="ButtonOpenPseudoModalChildWindowOnClick"
+                                            MinWidth="100"
+                                            Padding="4"
+                                            Margin="4" />
+                                </WrapPanel>
+                            </StackPanel>
+                        </GroupBox>
 
-                <GroupBox Grid.Row="2"
-                          BorderThickness="0 1 0 0"
-                          Margin="5"
-                          Header="Misc">
-                    <WrapPanel Orientation="Horizontal">
-                        <Button Content="ToolTipAssist"
-                                MinWidth="100"
-                                Margin="4">
-                            <Button.ToolTip>
-                                <ToolTip controlzEx:ToolTipAssist.AutoMove="True">
-                                    <ToolTip.Template>
-                                        <ControlTemplate>
-                                            <Grid>
-                                                <Border Background="Gray"
-                                                        BorderBrush="Black"
-                                                        BorderThickness="1"
-                                                        Opacity="0.9"
-                                                        SnapsToDevicePixels="True" />
-                                                <StackPanel Orientation="Vertical">
-                                                    <TextBlock Margin="5"
-                                                               Foreground="WhiteSmoke"
-                                                               FontSize="22"
-                                                               Text="ToolTipHelper AutoMove sample"
-                                                               TextOptions.TextFormattingMode="Display"
-                                                               TextOptions.TextRenderingMode="ClearType" />
-                                                    <Viewbox Width="64" Height="64">
-                                                        <Canvas Width="24" Height="24">
-                                                            <Path Fill="DarkOrange"
-                                                                  Data="M19,10C19,11.38 16.88,12.5 15.5,12.5C14.12,12.5 12.75,11.38 12.75,10H11.25C11.25,11.38 9.88,12.5 8.5,12.5C7.12,12.5 5,11.38 5,10H4.25C4.09,10.64 4,11.31 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12C20,11.31 19.91,10.64 19.75,10H19M12,4C9.04,4 6.45,5.61 5.07,8H18.93C17.55,5.61 14.96,4 12,4M22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2A10,10 0 0,1 22,12M12,17.23C10.25,17.23 8.71,16.5 7.81,15.42L9.23,14C9.68,14.72 10.75,15.23 12,15.23C13.25,15.23 14.32,14.72 14.77,14L16.19,15.42C15.29,16.5 13.75,17.23 12,17.23Z" />
-                                                        </Canvas>
-                                                    </Viewbox>
-                                                </StackPanel>
-                                            </Grid>
-                                        </ControlTemplate>
-                                    </ToolTip.Template>
-                                </ToolTip>
-                            </Button.ToolTip>
-                        </Button>
-                    </WrapPanel>
-                </GroupBox>
+                        <GroupBox Grid.Row="2"
+                                  BorderThickness="0 1 0 0"
+                                  Margin="5"
+                                  Header="Misc">
+                            <WrapPanel Orientation="Horizontal">
+                                <Button Content="ToolTipAssist"
+                                        MinWidth="100"
+                                        Margin="4">
+                                    <Button.ToolTip>
+                                        <ToolTip controlzEx:ToolTipAssist.AutoMove="True">
+                                            <ToolTip.Template>
+                                                <ControlTemplate>
+                                                    <Grid>
+                                                        <Border Background="Gray"
+                                                                BorderBrush="Black"
+                                                                BorderThickness="1"
+                                                                Opacity="0.9"
+                                                                SnapsToDevicePixels="True" />
+                                                        <StackPanel Orientation="Vertical">
+                                                            <TextBlock Margin="5"
+                                                                       Foreground="WhiteSmoke"
+                                                                       FontSize="22"
+                                                                       Text="ToolTipHelper AutoMove sample"
+                                                                       TextOptions.TextFormattingMode="Display"
+                                                                       TextOptions.TextRenderingMode="ClearType" />
+                                                            <Viewbox Width="64" Height="64">
+                                                                <Canvas Width="24" Height="24">
+                                                                    <Path Fill="DarkOrange"
+                                                                          Data="M19,10C19,11.38 16.88,12.5 15.5,12.5C14.12,12.5 12.75,11.38 12.75,10H11.25C11.25,11.38 9.88,12.5 8.5,12.5C7.12,12.5 5,11.38 5,10H4.25C4.09,10.64 4,11.31 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12C20,11.31 19.91,10.64 19.75,10H19M12,4C9.04,4 6.45,5.61 5.07,8H18.93C17.55,5.61 14.96,4 12,4M22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2A10,10 0 0,1 22,12M12,17.23C10.25,17.23 8.71,16.5 7.81,15.42L9.23,14C9.68,14.72 10.75,15.23 12,15.23C13.25,15.23 14.32,14.72 14.77,14L16.19,15.42C15.29,16.5 13.75,17.23 12,17.23Z" />
+                                                                </Canvas>
+                                                            </Viewbox>
+                                                        </StackPanel>
+                                                    </Grid>
+                                                </ControlTemplate>
+                                            </ToolTip.Template>
+                                        </ToolTip>
+                                    </Button.ToolTip>
+                                </Button>
+                            </WrapPanel>
+                        </GroupBox>
 
-                <GroupBox Grid.Row="3"
-                          BorderThickness="0 1 0 0"
-                          Margin="5"
-                          Header="Options">
+                        <GroupBox Grid.Row="3"
+                                  BorderThickness="0 1 0 0"
+                                  Margin="5"
+                                  Header="Options">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" SharedSizeGroup="Labels" />
@@ -247,44 +240,44 @@
                                     <RowDefinition />
                                 </Grid.RowDefinitions>
 
-                        <Label Grid.Row="0"
-                               Grid.Column="0">
-                            Style
-                        </Label>
-                        <ComboBox Grid.Row="0"
-                                  Grid.Column="1"
-                                  Margin="4"
-                                  VerticalAlignment="Center"
-                                  x:Name="StyleComboBox"
-                                  SelectedValue="{StaticResource NoneWindowStyle}"
-                                  SelectedValuePath="Tag">
+                                <Label Grid.Row="0"
+                                       Grid.Column="0">
+                                    Style
+                                </Label>
+                                <ComboBox Grid.Row="0"
+                                          Grid.Column="1"
+                                          Margin="4"
+                                          VerticalAlignment="Center"
+                                          x:Name="StyleComboBox"
+                                          SelectedValue="{StaticResource NoneWindowStyle}"
+                                          SelectedValuePath="Tag">
                                     <TextBlock Tag="{StaticResource NoneWindowStyle}">NoneWindowStyle</TextBlock>
                                 </ComboBox>
 
-                        <Label Grid.Row="1"
-                               Grid.Column="0">
-                            ResizeMode
-                        </Label>
-                        <ComboBox Grid.Row="1"
-                                  Grid.Column="1"
-                                  Margin="4"
-                                  VerticalAlignment="Center"
-                                  x:Name="ResizeModeComboBox"
-                                  ItemsSource="{Binding Source={StaticResource ResizeModeEnumValues}}"
-                                  SelectedItem="{Binding ElementName=Window, Path=ResizeMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                <Label Grid.Row="1"
+                                       Grid.Column="0">
+                                    ResizeMode
+                                </Label>
+                                <ComboBox Grid.Row="1"
+                                          Grid.Column="1"
+                                          Margin="4"
+                                          VerticalAlignment="Center"
+                                          x:Name="ResizeModeComboBox"
+                                          ItemsSource="{Binding Source={StaticResource ResizeModeEnumValues}}"
+                                          SelectedItem="{Binding ElementName=Window, Path=ResizeMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-                        <Label Grid.Row="2"
-                               Grid.Column="0">
-                            GlowBrush
-                        </Label>
-                        <ComboBox Grid.Row="2"
-                                  Grid.Column="1"
-                                  Margin="4"
-                                  VerticalAlignment="Center"
-                                  HorizontalContentAlignment="Stretch"
-                                  ItemsSource="{Binding Brushes, ElementName=Window}"
-                                  SelectedValuePath="Value"
-                                  SelectedValue="{Binding ElementName=Window, Path=GlowBrush, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                <Label Grid.Row="2"
+                                       Grid.Column="0">
+                                    GlowBrush
+                                </Label>
+                                <ComboBox Grid.Row="2"
+                                          Grid.Column="1"
+                                          Margin="4"
+                                          VerticalAlignment="Center"
+                                          HorizontalContentAlignment="Stretch"
+                                          ItemsSource="{Binding Brushes, ElementName=Window}"
+                                          SelectedValuePath="Value"
+                                          SelectedValue="{Binding ElementName=Window, Path=GlowBrush, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                                     <ComboBox.ItemTemplate>
                                         <DataTemplate>
                                             <Grid>
@@ -305,18 +298,18 @@
                                     </ComboBox.ItemTemplate>
                                 </ComboBox>
 
-                        <Label Grid.Row="3"
-                               Grid.Column="0">
-                            NonActiveGlowBrush
-                        </Label>
-                        <ComboBox Grid.Row="3"
-                                  Grid.Column="1"
-                                  Margin="4"
-                                  VerticalAlignment="Center"
-                                  HorizontalContentAlignment="Stretch"
-                                  ItemsSource="{Binding Brushes, ElementName=Window}"
-                                  SelectedValuePath="Value"
-                                  SelectedValue="{Binding ElementName=Window, Path=NonActiveGlowBrush, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                <Label Grid.Row="3"
+                                       Grid.Column="0">
+                                    NonActiveGlowBrush
+                                </Label>
+                                <ComboBox Grid.Row="3"
+                                          Grid.Column="1"
+                                          Margin="4"
+                                          VerticalAlignment="Center"
+                                          HorizontalContentAlignment="Stretch"
+                                          ItemsSource="{Binding Brushes, ElementName=Window}"
+                                          SelectedValuePath="Value"
+                                          SelectedValue="{Binding ElementName=Window, Path=NonActiveGlowBrush, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                                     <ComboBox.ItemTemplate>
                                         <DataTemplate>
                                             <Grid>
@@ -337,64 +330,64 @@
                                     </ComboBox.ItemTemplate>
                                 </ComboBox>
 
-                        <Label Grid.Row="4"
-                               Grid.Column="0">
-                            IgnoreTaskbarOnMaximize
-                        </Label>
-                        <CheckBox Grid.Row="4"
-                                  Grid.Column="1"
-                                  Margin="4"
-                                  VerticalAlignment="Center"
-                                  IsChecked="{Binding ElementName=Window, Path=IgnoreTaskbarOnMaximize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                <Label Grid.Row="4"
+                                       Grid.Column="0">
+                                    IgnoreTaskbarOnMaximize
+                                </Label>
+                                <CheckBox Grid.Row="4"
+                                          Grid.Column="1"
+                                          Margin="4"
+                                          VerticalAlignment="Center"
+                                          IsChecked="{Binding ElementName=Window, Path=IgnoreTaskbarOnMaximize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-                        <Label Grid.Row="5"
-                               Grid.Column="0">
-                            KeepBorderOnMaximize
-                        </Label>
-                        <CheckBox Grid.Row="5"
-                                  Grid.Column="1"
-                                  Margin="4"
-                                  VerticalAlignment="Center"
-                                  IsChecked="{Binding ElementName=Window, Path=KeepBorderOnMaximize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                <Label Grid.Row="5"
+                                       Grid.Column="0">
+                                    KeepBorderOnMaximize
+                                </Label>
+                                <CheckBox Grid.Row="5"
+                                          Grid.Column="1"
+                                          Margin="4"
+                                          VerticalAlignment="Center"
+                                          IsChecked="{Binding ElementName=Window, Path=KeepBorderOnMaximize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-                        <Label Grid.Row="6"
-                               Grid.Column="0">
-                            TryToBeFlickerFree
-                        </Label>
-                        <CheckBox Grid.Row="6"
-                                  Grid.Column="1"
-                                  Margin="4"
-                                  VerticalAlignment="Center"
-                                  IsChecked="{Binding ElementName=Window, Path=TryToBeFlickerFree, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                <Label Grid.Row="6"
+                                       Grid.Column="0">
+                                    TryToBeFlickerFree
+                                </Label>
+                                <CheckBox Grid.Row="6"
+                                          Grid.Column="1"
+                                          Margin="4"
+                                          VerticalAlignment="Center"
+                                          IsChecked="{Binding ElementName=Window, Path=TryToBeFlickerFree, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-                        <Label Grid.Row="7"
-                               Grid.Column="0">
-                            IsActive
-                        </Label>
-                        <CheckBox Grid.Row="7"
-                                  Grid.Column="1"
-                                  Margin="4"
-                                  VerticalAlignment="Center"
-                                  IsEnabled="False"
-                                  IsChecked="{Binding ElementName=Window, Path=IsActive, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+                                <Label Grid.Row="7"
+                                       Grid.Column="0">
+                                    IsActive
+                                </Label>
+                                <CheckBox Grid.Row="7"
+                                          Grid.Column="1"
+                                          Margin="4"
+                                          VerticalAlignment="Center"
+                                          IsEnabled="False"
+                                          IsChecked="{Binding ElementName=Window, Path=IsActive, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
 
-                        <Label Grid.Row="8"
-                               Grid.Column="0">
-                            IsNCActive
-                        </Label>
-                        <CheckBox Grid.Row="8"
-                                  Grid.Column="1"
-                                  Margin="4"
-                                  VerticalAlignment="Center"
-                                  IsEnabled="False"
-                                  IsChecked="{Binding ElementName=Window, Path=IsNCActive, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+                                <Label Grid.Row="8"
+                                       Grid.Column="0">
+                                    IsNCActive
+                                </Label>
+                                <CheckBox Grid.Row="8"
+                                          Grid.Column="1"
+                                          Margin="4"
+                                          VerticalAlignment="Center"
+                                          IsEnabled="False"
+                                          IsChecked="{Binding ElementName=Window, Path=IsNCActive, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
                             </Grid>
                         </GroupBox>
 
-                <GroupBox Grid.Row="4"
-                          BorderThickness="0 1 0 0"
-                          Margin="5"
-                          Header="Current values">
+                        <GroupBox Grid.Row="4"
+                                  BorderThickness="0 1 0 0"
+                                  Margin="5"
+                                  Header="Current values">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" SharedSizeGroup="Labels" />
@@ -409,74 +402,74 @@
                                     <RowDefinition />
                                 </Grid.RowDefinitions>
 
-                        <Label Grid.Row="1"
-                               Grid.Column="0">
-                            MinSize
-                        </Label>
-                        <StackPanel Grid.Row="1"
-                                    Grid.Column="1"
-                                    Margin="4"
-                                    Orientation="Horizontal"
-                                    VerticalAlignment="Center">
-                            <TextBox Width="35"
-                                     Margin="0 0 2 0"
-                                     Padding="2"
-                                     VerticalAlignment="Center"
-                                     Text="{Binding ElementName=Window, Path=MinWidth, Mode=TwoWay}" />
+                                <Label Grid.Row="1"
+                                       Grid.Column="0">
+                                    MinSize
+                                </Label>
+                                <StackPanel Grid.Row="1"
+                                            Grid.Column="1"
+                                            Margin="4"
+                                            Orientation="Horizontal"
+                                            VerticalAlignment="Center">
+                                    <TextBox Width="35"
+                                             Margin="0 0 2 0"
+                                             Padding="2"
+                                             VerticalAlignment="Center"
+                                             Text="{Binding ElementName=Window, Path=MinWidth, Mode=TwoWay}" />
 
-                            <TextBox Width="35"
-                                     Margin="0 0 2 0"
-                                     Padding="2"
-                                     VerticalAlignment="Center"
-                                     Text="{Binding ElementName=Window, Path=MinHeight, Mode=TwoWay}" />
+                                    <TextBox Width="35"
+                                             Margin="0 0 2 0"
+                                             Padding="2"
+                                             VerticalAlignment="Center"
+                                             Text="{Binding ElementName=Window, Path=MinHeight, Mode=TwoWay}" />
 
-                            <Button Padding="4"
-                                    Content="Reset"
-                                    Click="ButtonResetMinSizesOnClick" />
-                        </StackPanel>
+                                    <Button Padding="4"
+                                            Content="Reset"
+                                            Click="ButtonResetMinSizesOnClick" />
+                                </StackPanel>
 
-                        <Label Grid.Row="2"
-                               Grid.Column="0">
-                            MaxSize
-                        </Label>
-                        <StackPanel Grid.Row="2"
-                                    Grid.Column="1"
-                                    Margin="4"
-                                    Orientation="Horizontal"
-                                    VerticalAlignment="Center">
-                            <TextBox Width="35"
-                                     Margin="0 0 2 0"
-                                     Padding="2"
-                                     VerticalAlignment="Center"
-                                     Text="{Binding ElementName=Window, Path=MaxWidth, Mode=TwoWay}" />
+                                <Label Grid.Row="2"
+                                       Grid.Column="0">
+                                    MaxSize
+                                </Label>
+                                <StackPanel Grid.Row="2"
+                                            Grid.Column="1"
+                                            Margin="4"
+                                            Orientation="Horizontal"
+                                            VerticalAlignment="Center">
+                                    <TextBox Width="35"
+                                             Margin="0 0 2 0"
+                                             Padding="2"
+                                             VerticalAlignment="Center"
+                                             Text="{Binding ElementName=Window, Path=MaxWidth, Mode=TwoWay}" />
 
-                            <TextBox Width="35"
-                                     Margin="0 0 2 0"
-                                     Padding="2"
-                                     VerticalAlignment="Center"
-                                     Text="{Binding ElementName=Window, Path=MaxHeight, Mode=TwoWay}" />
+                                    <TextBox Width="35"
+                                             Margin="0 0 2 0"
+                                             Padding="2"
+                                             VerticalAlignment="Center"
+                                             Text="{Binding ElementName=Window, Path=MaxHeight, Mode=TwoWay}" />
 
-                            <Button Padding="4"
-                                    Content="Reset"
-                                    Click="ButtonResetMaxSizesOnClick" />
-                        </StackPanel>
+                                    <Button Padding="4"
+                                            Content="Reset"
+                                            Click="ButtonResetMaxSizesOnClick" />
+                                </StackPanel>
 
-                        <Label Grid.Row="3"
-                               Grid.Column="0">
-                            ResizeBorderThickness
-                        </Label>
-                        <TextBox Grid.Row="3"
-                                 Grid.Column="1"
-                                 Margin="4"
-                                 Padding="2"
-                                 VerticalAlignment="Center"
-                                 Text="{Binding ElementName=Window, Path=ResizeBorderThickness, Mode=TwoWay}" />
+                                <Label Grid.Row="3"
+                                       Grid.Column="0">
+                                    ResizeBorderThickness
+                                </Label>
+                                <TextBox Grid.Row="3"
+                                         Grid.Column="1"
+                                         Margin="4"
+                                         Padding="2"
+                                         VerticalAlignment="Center"
+                                         Text="{Binding ElementName=Window, Path=ResizeBorderThickness, Mode=TwoWay}" />
                             </Grid>
                         </GroupBox>
                     </Grid>
                 </TabItem>
 
-                <TabItem Header="ipsum">
+                <TabItem Header="TabControlEx">
                     <StackPanel>
                         <TextBox Text="Lorem ipsum dolor sit amet, consetetur sadipscing"
                                  HorizontalAlignment="Center"
