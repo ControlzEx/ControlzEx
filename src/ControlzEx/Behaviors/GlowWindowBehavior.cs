@@ -208,6 +208,14 @@
             this.top = new GlowWindow(this.AssociatedObject, this, GlowDirection.Top);
             this.bottom = new GlowWindow(this.AssociatedObject, this, GlowDirection.Bottom);
 
+            this.loadedGlowWindows = new[]
+                                     {
+                                         this.left,
+                                         this.top,
+                                         this.right,
+                                         this.bottom
+                                     };
+
             this.Show();
             this.Update();
 
@@ -237,6 +245,8 @@
 
 #pragma warning disable 618
         private WINDOWPOS prevWindowPos;
+        private GlowWindow[] loadedGlowWindows;
+        private bool updatingZOrder;        
 
         private IntPtr AssociatedObjectWindowProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
@@ -247,15 +257,39 @@
 
             switch ((WM)msg)
             {
-                case WM.WINDOWPOSCHANGED:
+                // Z-Index must NOT be updated when WINDOWPOSCHANGING
                 case WM.WINDOWPOSCHANGING:
-                    Assert.IsNotDefault(lParam);
-                    var wp = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));                    
-                    if (wp.Equals(this.prevWindowPos) == false)
-                    {                        
-                        this.UpdateCore();
-                        this.prevWindowPos = wp;
-                    }                    
+                    {
+                        Assert.IsNotDefault(lParam);
+                        var wp = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
+                        if (wp.Equals(this.prevWindowPos) == false)
+                        {
+                            this.UpdateCore();
+                            this.prevWindowPos = wp;
+                        }
+                    }
+                    break;
+
+                // Z-Index must be updated when WINDOWPOSCHANGED
+                case WM.WINDOWPOSCHANGED:
+                    {
+                        Assert.IsNotDefault(lParam);
+                        var wp = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
+                        if (wp.Equals(this.prevWindowPos) == false)
+                        {
+                            this.UpdateCore();
+                            this.prevWindowPos = wp;
+                        }
+
+                        // todo: direct z-order
+                        //foreach (GlowWindow loadedGlowWindow in this.loadedGlowWindows)
+                        //{
+                        //    var glowWindowHandle = new WindowInteropHelper(loadedGlowWindow).Handle;
+                        //    NativeMethods.SetWindowPos(glowWindowHandle, this.windowHandle, 0, 0, 0, 0, SWP.NOSIZE | SWP.NOMOVE | SWP.NOACTIVATE);
+                        //}
+
+                        this.UpdateZOrderOfThisAndOwner();
+                    }
                     break;
 
                 case WM.SIZE:
@@ -266,6 +300,61 @@
             return IntPtr.Zero;
         }
 #pragma warning restore 618
+
+        #region Z-Order
+
+        private void UpdateZOrderOfThisAndOwner()
+        {
+            if (!updatingZOrder)
+            {
+                try
+                {
+                    updatingZOrder = true;
+                    var windowInteropHelper = new WindowInteropHelper(this.AssociatedObject);
+                    var handle = windowInteropHelper.Handle;
+                    foreach (GlowWindow loadedGlowWindow in this.loadedGlowWindows)
+                    {
+                        var glowWindowHandle = new WindowInteropHelper(loadedGlowWindow).Handle;
+                        var window = NativeMethods.GetWindow(glowWindowHandle, GW.HWNDPREV);
+                        if (window != handle)
+                        {
+                            NativeMethods.SetWindowPos(glowWindowHandle, handle, 0, 0, 0, 0, SWP.NOSIZE | SWP.NOMOVE | SWP.NOACTIVATE);
+                        }
+                        handle = glowWindowHandle;
+                    }
+                    IntPtr owner = windowInteropHelper.Owner;
+                    if (owner != IntPtr.Zero)
+                    {
+                        UpdateZOrderOfOwner(owner);
+                    }
+                }
+                finally
+                {
+                    updatingZOrder = false;
+                }
+            }
+        }
+
+        private void UpdateZOrderOfOwner(IntPtr hwndOwner)
+        {
+            IntPtr lastOwnedWindow = IntPtr.Zero;
+            NativeMethods.EnumThreadWindows(NativeMethods.GetCurrentThreadId(), delegate(IntPtr hwnd, IntPtr lParam)
+                                                                                {
+                                                                                    if (NativeMethods.GetWindow(hwnd, GW.OWNER) == hwndOwner)
+                                                                                    {
+                                                                                        lastOwnedWindow = hwnd;
+                                                                                    }
+
+                                                                                    return true;
+                                                                                }, IntPtr.Zero);
+            if (lastOwnedWindow != IntPtr.Zero
+                && NativeMethods.GetWindow(hwndOwner, GW.HWNDPREV) != lastOwnedWindow)
+            {
+                NativeMethods.SetWindowPos(hwndOwner, lastOwnedWindow, 0, 0, 0, 0, SWP.NOSIZE | SWP.NOMOVE | SWP.NOACTIVATE);
+            }
+        }
+
+        #endregion
 
         private void AssociatedObjectIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
