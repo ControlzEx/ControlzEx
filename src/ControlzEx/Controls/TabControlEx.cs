@@ -1,7 +1,6 @@
-﻿namespace ControlzEx
+﻿namespace ControlzEx.Controls
 {
     using System;
-    using System.Collections.Generic;
     using System.Collections.Specialized;
     using System.Linq;
     using System.Windows;
@@ -9,6 +8,7 @@
     using System.Windows.Controls;
     using System.Windows.Input;
     using System.Windows.Threading;
+    using ControlzEx.Automation.Peers;
 
     /// <summary>
     /// The standard WPF TabControl is quite bad in the fact that it only
@@ -349,104 +349,6 @@
 
             return contentPresenters
                 .FirstOrDefault(contentPresenter => ReferenceEquals(contentPresenter.Content, data));
-        }
-    }
-
-    /// <summary>
-    /// Automation-Peer for <see cref="TabControlEx"/>.
-    /// </summary>
-    public class TabControlExAutomationPeer : TabControlAutomationPeer
-    {
-        /// <summary>
-        /// Initializes a new instance.
-        /// </summary>
-        public TabControlExAutomationPeer(TabControl owner)
-            : base(owner)
-        {
-        }
-
-        /// <inheritdoc />
-        protected override ItemAutomationPeer CreateItemAutomationPeer(object item)
-        {
-            return new TabItemExAutomationPeer(item, this);
-        }
-    }
-
-    /// <summary>
-    /// Automation-Peer for <see cref="TabItem"/> in <see cref="TabControlEx"/>.
-    /// </summary>
-    public class TabItemExAutomationPeer : TabItemAutomationPeer
-    {
-        /// <summary>
-        /// Initializes a new instance.
-        /// </summary>
-        public TabItemExAutomationPeer(object owner, TabControlAutomationPeer tabControlAutomationPeer)
-            : base(owner, tabControlAutomationPeer)
-        {
-        }
-
-        /// <inheritdoc />
-        protected override List<AutomationPeer> GetChildrenCore()
-        {
-            // Call the base in case we have children in the header
-            var headerChildren = base.GetChildrenCore();
-
-            // Only if the TabItem is selected we need to add its visual children
-
-            if (!(this.GetWrapper() is TabItem tabItem)
-                || tabItem.IsSelected == false)
-            {
-                return headerChildren;
-            }
-
-            if (!(this.ItemsControlAutomationPeer.Owner is TabControlEx parentTabControl))
-            {
-                return headerChildren;
-            }
-
-            var contentHost = parentTabControl.FindChildContentPresenter(tabItem.Content);
-
-            if (contentHost != null)
-            {
-                var contentHostPeer = new FrameworkElementAutomationPeer(contentHost);
-                var contentChildren = contentHostPeer.GetChildren();
-
-                if (contentChildren != null)
-                {
-                    if (headerChildren == null)
-                    {
-                        headerChildren = contentChildren;
-                    }
-                    else
-                    {
-                        headerChildren.AddRange(contentChildren);
-                    }
-                }
-            }
-
-            return headerChildren;
-        }
-
-        /// <summary>
-        /// Gets the real tab item.
-        /// </summary>
-        private UIElement GetWrapper()
-        {
-            var itemsControlAutomationPeer = this.ItemsControlAutomationPeer;
-
-            var owner = (TabControlEx)itemsControlAutomationPeer?.Owner;
-
-            if (owner == null)
-            {
-                return null;
-            }
-
-            if (owner.IsItemItsOwnContainer(this.Item))
-            {
-                return this.Item as UIElement;
-            }
-
-            return owner.ItemContainerGenerator.ContainerFromItem(this.Item) as UIElement;
         }
     }
 }
