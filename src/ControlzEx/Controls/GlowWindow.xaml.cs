@@ -140,7 +140,6 @@ namespace ControlzEx.Controls
             switch (direction)
             {
                 case GlowDirection.Left:
-                    this.glow.Orientation = Orientation.Vertical;
                     this.glow.HorizontalAlignment = HorizontalAlignment.Right;
                     this.getLeft = rect => rect.Left - this.ResizeBorderThickness.Left + 1;
                     this.getTop = rect => rect.Top - this.ResizeBorderThickness.Top / 2; 
@@ -154,7 +153,6 @@ namespace ControlzEx.Controls
                     break;
 
                 case GlowDirection.Right:
-                    this.glow.Orientation = Orientation.Vertical;
                     this.glow.HorizontalAlignment = HorizontalAlignment.Left;
                     this.getLeft = rect => rect.Right - 1;
                     this.getTop = rect => rect.Top - this.ResizeBorderThickness.Top / 2; 
@@ -175,7 +173,6 @@ namespace ControlzEx.Controls
                                 NativeMethods.SendMessage(this.ownerWindowHandle, WM.NCLBUTTONDBLCLK, (IntPtr)HT.TOP, IntPtr.Zero);
                             }
                         };
-                    this.glow.Orientation = Orientation.Horizontal;
                     this.glow.VerticalAlignment = VerticalAlignment.Bottom;
                     this.getLeft = rect => rect.Left - this.ResizeBorderThickness.Left / 2; 
                     this.getTop = rect => rect.Top - this.ResizeBorderThickness.Top + 1;
@@ -196,7 +193,6 @@ namespace ControlzEx.Controls
                                 NativeMethods.SendMessage(this.ownerWindowHandle, WM.NCLBUTTONDBLCLK, (IntPtr)HT.BOTTOM, IntPtr.Zero);
                             }
                         };
-                    this.glow.Orientation = Orientation.Horizontal;
                     this.glow.VerticalAlignment = VerticalAlignment.Top;
                     this.getLeft = rect => rect.Left - this.ResizeBorderThickness.Left / 2; 
                     this.getTop = rect => rect.Bottom - 1;

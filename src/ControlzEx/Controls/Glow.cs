@@ -9,7 +9,6 @@
         public static readonly DependencyProperty GlowBrushProperty = DependencyProperty.Register(nameof(GlowBrush), typeof(Brush), typeof(Glow), new UIPropertyMetadata(Brushes.Transparent));
         public static readonly DependencyProperty NonActiveGlowBrushProperty = DependencyProperty.Register(nameof(NonActiveGlowBrush), typeof(Brush), typeof(Glow), new UIPropertyMetadata(Brushes.Transparent));
         public static readonly DependencyProperty IsGlowProperty = DependencyProperty.Register(nameof(IsGlow), typeof(bool), typeof(Glow), new UIPropertyMetadata(true));
-        public static readonly DependencyProperty OrientationProperty = DependencyProperty.Register(nameof(Orientation), typeof(Orientation), typeof(Glow), new UIPropertyMetadata(Orientation.Vertical));
         public static readonly DependencyProperty DirectionProperty = DependencyProperty.Register(nameof(Direction), typeof(GlowDirection), typeof(Glow), new UIPropertyMetadata(GlowDirection.Top));
 
         static Glow()
@@ -33,12 +32,6 @@
         {
             get => (bool)this.GetValue(IsGlowProperty);
             set => this.SetValue(IsGlowProperty, value);
-        }
-
-        public Orientation Orientation
-        {
-            get => (Orientation)this.GetValue(OrientationProperty);
-            set => this.SetValue(OrientationProperty, value);
         }
 
         public GlowDirection Direction
