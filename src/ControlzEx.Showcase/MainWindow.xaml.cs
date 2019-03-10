@@ -148,8 +148,10 @@
             window.Closing += this.PseudoModalWindow_Closing;
 
             var ownerHandle = new WindowInteropHelper(window.Owner).Handle;
+#pragma warning disable 618
             var windowStyle = NativeMethods.GetWindowStyle(ownerHandle);
             NativeMethods.SetWindowStyle(ownerHandle, windowStyle | WS.DISABLED);
+#pragma warning restore 618
 
             window.Show();
         }
@@ -162,8 +164,10 @@
             }
 
             var ownerHandle = new WindowInteropHelper(((Window)sender).Owner).Handle;
+#pragma warning disable 618
             var windowStyle = NativeMethods.GetWindowStyle(ownerHandle);
             NativeMethods.SetWindowStyle(ownerHandle, windowStyle & ~WS.DISABLED);
+#pragma warning restore 618
         }
 
         private void ButtonResetMinSizesOnClick(object sender, RoutedEventArgs e)

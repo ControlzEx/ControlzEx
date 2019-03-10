@@ -299,7 +299,6 @@
             }
             return IntPtr.Zero;
         }
-#pragma warning restore 618
 
         #region Z-Order
 
@@ -353,6 +352,7 @@
                 NativeMethods.SetWindowPos(hwndOwner, lastOwnedWindow, 0, 0, 0, 0, SWP.NOSIZE | SWP.NOMOVE | SWP.NOACTIVATE);
             }
         }
+#pragma warning restore 618
 
         #endregion
 
