@@ -3,10 +3,10 @@
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                     xmlns:options="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
-                    xmlns:controlz="clr-namespace:ControlzEx"
+                    xmlns:controls="clr-namespace:ControlzEx.Controls"
                     mc:Ignorable="options">
-    <Style x:Key="{x:Type controlz:TabControlEx}"
-           TargetType="{x:Type controlz:TabControlEx}"
+    <Style x:Key="{x:Type controls:TabControlEx}"
+           TargetType="{x:Type controls:TabControlEx}"
            BasedOn="{StaticResource {x:Type TabControl}}">
         <Setter Property="Focusable" 
                 Value="False" />
@@ -20,7 +20,7 @@
     </Style>
 
     <ControlTemplate x:Key="ControlzEx.ControlTemplate.TabControlEx" 
-                     TargetType="{x:Type controlz:TabControlEx}">
+                     TargetType="{x:Type controls:TabControlEx}">
         <Grid ClipToBounds="true" 
                           SnapsToDevicePixels="true" 
                           KeyboardNavigation.TabNavigation="Local">
