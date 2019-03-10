@@ -3505,9 +3505,10 @@ namespace ControlzEx.Standard
             {
                 ret = GetWindowLongPtr32(hwnd, nIndex);
             }
+
             if (IntPtr.Zero == ret)
             {
-                throw new Win32Exception();
+                HRESULT.ThrowLastError();
             }
             return ret;
         }
