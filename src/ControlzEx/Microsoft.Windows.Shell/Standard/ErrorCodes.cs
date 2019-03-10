@@ -627,8 +627,6 @@ namespace ControlzEx.Standard
         public static void ThrowLastError()
         {
             ((HRESULT)Win32Error.GetLastError()).ThrowIfFailed();
-            // Only expecting to call this when we're expecting a failed GetLastError()
-            Assert.Fail();
         }
     }
 }
