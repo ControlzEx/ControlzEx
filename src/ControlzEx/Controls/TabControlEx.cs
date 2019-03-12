@@ -204,7 +204,7 @@
         /// <summary>
         /// Copied from <see cref="TabControl"/>. wish it were protected in that class instead of private.
         /// </summary>
-        protected object GetSelectedItem()
+        public object GetSelectedItem()
         {
             var selectedItem = this.SelectedItem;
 
