@@ -204,7 +204,7 @@
         /// <summary>
         /// Copied from <see cref="TabControl"/>. wish it were protected in that class instead of private.
         /// </summary>
-        public object GetSelectedItem()
+        public TabItem GetSelectedTabItem()
         {
             var selectedItem = this.SelectedItem;
 
@@ -248,7 +248,7 @@
             }
 
             // generate a ContentPresenter if necessary
-            var selectedItem = this.GetSelectedItem();
+            var selectedItem = this.GetSelectedTabItem();
 
             if (selectedItem != null)
             {
