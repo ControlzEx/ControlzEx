@@ -64,9 +64,15 @@
                 UnsafeNativeMethods.ReleaseCapture();
 
                 var criticalHandle = (IntPtr)criticalHandlePropertyInfo.GetValue(this, emptyObjectArray);
-                // DragMove works too, but not on maximized windows
-                NativeMethods.SendMessage(criticalHandle, WM.SYSCOMMAND, (IntPtr)SC.MOUSEMOVE, IntPtr.Zero);
-                NativeMethods.SendMessage(criticalHandle, WM.LBUTTONUP, IntPtr.Zero, IntPtr.Zero);
+
+                // these lines are from DragMove
+                // NativeMethods.SendMessage(criticalHandle, WM.SYSCOMMAND, (IntPtr)SC.MOUSEMOVE, IntPtr.Zero);
+                // NativeMethods.SendMessage(criticalHandle, WM.LBUTTONUP, IntPtr.Zero, IntPtr.Zero);
+
+                var wpfPoint = this.PointToScreen(Mouse.GetPosition(this));
+                var x = (int)wpfPoint.X;
+                var y = (int)wpfPoint.Y;
+                NativeMethods.SendMessage(criticalHandle, WM.NCLBUTTONDOWN, (IntPtr)HT.CAPTION, new IntPtr(x | (y << 16)));
             }
             else if (e.ClickCount == 2 && this.ResizeMode != ResizeMode.NoResize)
             {
