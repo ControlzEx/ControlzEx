@@ -1,4 +1,4 @@
-﻿namespace ControlzEx.Behaviors
+namespace ControlzEx.Behaviors
 {
     using System;
     using System.ComponentModel;
@@ -245,7 +245,7 @@
 
 #pragma warning disable 618
         private WINDOWPOS prevWindowPos;
-        private GlowWindow[] loadedGlowWindows;
+        private GlowWindow[] loadedGlowWindows = new GlowWindow[0];
         private bool updatingZOrder;        
 
         private IntPtr AssociatedObjectWindowProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
