@@ -1,4 +1,4 @@
-namespace ControlzEx.Behaviors
+﻿namespace ControlzEx.Behaviors
 {
     using System;
     using System.ComponentModel;
@@ -304,14 +304,14 @@ namespace ControlzEx.Behaviors
 
         private void UpdateZOrderOfThisAndOwner()
         {
-            if (!updatingZOrder)
+            if (!this.updatingZOrder)
             {
                 try
                 {
-                    updatingZOrder = true;
+                    this.updatingZOrder = true;
                     var windowInteropHelper = new WindowInteropHelper(this.AssociatedObject);
                     var handle = windowInteropHelper.Handle;
-                    foreach (GlowWindow loadedGlowWindow in this.loadedGlowWindows)
+                    foreach (var loadedGlowWindow in this.loadedGlowWindows)
                     {
                         var glowWindowHandle = new WindowInteropHelper(loadedGlowWindow).Handle;
                         var window = NativeMethods.GetWindow(glowWindowHandle, GW.HWNDPREV);
@@ -321,22 +321,22 @@ namespace ControlzEx.Behaviors
                         }
                         handle = glowWindowHandle;
                     }
-                    IntPtr owner = windowInteropHelper.Owner;
+                    var owner = windowInteropHelper.Owner;
                     if (owner != IntPtr.Zero)
                     {
-                        UpdateZOrderOfOwner(owner);
+                        this.UpdateZOrderOfOwner(owner);
                     }
                 }
                 finally
                 {
-                    updatingZOrder = false;
+                    this.updatingZOrder = false;
                 }
             }
         }
 
         private void UpdateZOrderOfOwner(IntPtr hwndOwner)
         {
-            IntPtr lastOwnedWindow = IntPtr.Zero;
+            var lastOwnedWindow = IntPtr.Zero;
             NativeMethods.EnumThreadWindows(NativeMethods.GetCurrentThreadId(), delegate(IntPtr hwnd, IntPtr lParam)
                                                                                 {
                                                                                     if (NativeMethods.GetWindow(hwnd, GW.OWNER) == hwndOwner)
