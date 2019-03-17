@@ -425,6 +425,9 @@ namespace ControlzEx.Behaviors
         [SecurityCritical]
         private IntPtr _HandleNCHITTEST(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
+            // We always want to handle hit-testing
+            handled = true;
+
             var dpi = this.AssociatedObject.GetDpi();
 
             // Let the system know if we consider the mouse to be in our effective non-client area.
@@ -435,30 +438,31 @@ namespace ControlzEx.Behaviors
             mousePosWindow.Offset(-windowPosition.X, -windowPosition.Y);
             mousePosWindow = DpiHelper.DevicePixelsToLogical(mousePosWindow, dpi.DpiScaleX, dpi.DpiScaleY);
 
-            // If the app is asking for content to be treated as client then that takes precedence over _everything_, even DWM caption buttons.
-            // This allows apps to set the glass frame to be non-empty, still cover it with WPF content to hide all the glass,
-            // yet still get DWM to draw a drop shadow.
-            var inputElement = this.AssociatedObject.InputHitTest(mousePosWindow);
-            if (inputElement != null)
-            {
-                if (WindowChrome.GetIsHitTestVisibleInChrome(inputElement))
-                {
-                    handled = true;
-                    return new IntPtr((int)HT.CLIENT);
-                }
-
-                var direction = WindowChrome.GetResizeGripDirection(inputElement);
-                if (direction != ResizeGripDirection.None)
-                {
-                    handled = true;
-                    return new IntPtr((int)this._GetHTFromResizeGripDirection(direction));
-                }
-            }
-
             var ht = this._HitTestNca(DpiHelper.DeviceRectToLogical(windowPosition, dpi.DpiScaleX, dpi.DpiScaleY),
                                       DpiHelper.DevicePixelsToLogical(mousePosScreen, dpi.DpiScaleX, dpi.DpiScaleY));
 
-            handled = true;
+            if (ht != HT.CLIENT
+                || this.AssociatedObject.ResizeMode == ResizeMode.CanResizeWithGrip)
+            {
+                // If the app is asking for content to be treated as client then that takes precedence over _everything_, even DWM caption buttons.
+                // This allows apps to set the glass frame to be non-empty, still cover it with WPF content to hide all the glass,
+                // yet still get DWM to draw a drop shadow.
+                var inputElement = this.AssociatedObject.InputHitTest(mousePosWindow);
+                if (inputElement != null)
+                {
+                    if (WindowChrome.GetIsHitTestVisibleInChrome(inputElement))
+                    {
+                        return new IntPtr((int)HT.CLIENT);
+                    }
+
+                    var direction = WindowChrome.GetResizeGripDirection(inputElement);
+                    if (direction != ResizeGripDirection.None)
+                    {
+                        return new IntPtr((int)this._GetHTFromResizeGripDirection(direction));
+                    }
+                }
+            }
+
             return new IntPtr((int)ht);
         }
 
@@ -1085,27 +1089,30 @@ namespace ControlzEx.Behaviors
             var uCol = 1;
             var onResizeBorder = false;
 
+            // Only get this once from the property to improve performance
+            var resizeBorderThickness = this.ResizeBorderThickness;
+
             // Determine if the point is at the top or bottom of the window.
             if (mousePosition.Y >= windowPosition.Top 
-                && mousePosition.Y < windowPosition.Top + this.ResizeBorderThickness.Top)
+                && mousePosition.Y < windowPosition.Top + resizeBorderThickness.Top)
             {
-                onResizeBorder = (mousePosition.Y < (windowPosition.Top + this.ResizeBorderThickness.Top));
+                onResizeBorder = (mousePosition.Y < (windowPosition.Top + resizeBorderThickness.Top));
                 uRow = 0; // top (caption or resize border)
             }
             else if (mousePosition.Y < windowPosition.Bottom 
-                     && mousePosition.Y >= windowPosition.Bottom - (int)this.ResizeBorderThickness.Bottom)
+                     && mousePosition.Y >= windowPosition.Bottom - (int)resizeBorderThickness.Bottom)
             {
                 uRow = 2; // bottom
             }
 
             // Determine if the point is at the left or right of the window.
             if (mousePosition.X >= windowPosition.Left 
-                && mousePosition.X < windowPosition.Left + (int)this.ResizeBorderThickness.Left)
+                && mousePosition.X < windowPosition.Left + (int)resizeBorderThickness.Left)
             {
                 uCol = 0; // left side
             }
             else if (mousePosition.X < windowPosition.Right 
-                     && mousePosition.X >= windowPosition.Right - this.ResizeBorderThickness.Right)
+                     && mousePosition.X >= windowPosition.Right - resizeBorderThickness.Right)
             {
                 uCol = 2; // right side
             }
