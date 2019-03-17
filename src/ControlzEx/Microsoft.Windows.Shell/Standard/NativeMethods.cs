@@ -3449,6 +3449,9 @@ namespace ControlzEx.Standard
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool EnumThreadWindows(uint dwThreadId, EnumWindowsProc lpfn, IntPtr lParam);
 
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
+
         /// <summary>
         /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-getwindow
         /// </summary>
