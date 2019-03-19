@@ -211,14 +211,25 @@ namespace ControlzEx.Controls
         public TabItem GetSelectedTabItem()
         {
             var selectedItem = this.SelectedItem;
-
             if (selectedItem is null)
             {
                 return null;
             }
 
-            return selectedItem as TabItem
-                ?? (TabItem)this.ItemContainerGenerator.ContainerFromIndex(this.SelectedIndex);
+            var tabItem = selectedItem as TabItem;
+            if (tabItem is null)
+            {
+                tabItem = this.ItemContainerGenerator.ContainerFromIndex(this.SelectedIndex) as TabItem;
+
+                if (tabItem is null
+                    // is this really the container we wanted?
+                    || ReferenceEquals(selectedItem, this.ItemContainerGenerator.ItemFromContainer(tabItem)) == false)
+                {
+                    tabItem = this.ItemContainerGenerator.ContainerFromItem(selectedItem) as TabItem;
+                }
+            }
+
+            return tabItem;
         }
 
         private void ClearItemsHolder()
