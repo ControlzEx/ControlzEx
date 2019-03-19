@@ -1,4 +1,4 @@
-﻿namespace ControlzEx.Controls
+namespace ControlzEx.Controls
 {
     using System;
     using System.Collections.Specialized;
@@ -129,7 +129,7 @@
         {
             base.OnItemsChanged(e);
 
-            if (this.itemsHolder == null)
+            if (this.itemsHolder is null)
             {
                 return;
             }
@@ -208,7 +208,7 @@
         {
             var selectedItem = this.SelectedItem;
 
-            if (selectedItem == null)
+            if (selectedItem is null)
             {
                 return null;
             }
@@ -242,7 +242,7 @@
         /// </summary>
         private void UpdateSelectedItem()
         {
-            if (this.itemsHolder == null)
+            if (this.itemsHolder is null)
             {
                 return;
             }
@@ -289,7 +289,7 @@
         /// </summary>
         private void CreateChildContentPresenter(object item)
         {
-            if (item == null)
+            if (item is null)
             {
                 return;
             }
@@ -311,7 +311,7 @@
 
             var owningTabItem = item as TabItem ?? (TabItem)this.ItemContainerGenerator.ContainerFromItem(item);
             
-            if (owningTabItem == null)
+            if (owningTabItem is null)
             {
                 throw new Exception("No owning TabItem could be found.");
             }
@@ -326,12 +326,12 @@
         /// </summary>
         public ContentPresenter FindChildContentPresenter(object data)
         {
-            if (data == null)
+            if (data is null)
             {
                 return null;
             }
 
-            if (this.itemsHolder == null)
+            if (this.itemsHolder is null)
             {
                 return null;
             }
