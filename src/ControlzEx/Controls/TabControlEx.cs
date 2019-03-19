@@ -163,7 +163,9 @@ namespace ControlzEx.Controls
                     break;
 
                 case NotifyCollectionChangedAction.Replace:
-                    throw new NotImplementedException("Replace not implemented yet");
+                    // Replace is not really implemented yet
+                    this.RefreshItemsHolder();
+                    break;
             }
         }
 
