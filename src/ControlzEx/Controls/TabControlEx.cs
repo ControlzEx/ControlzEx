@@ -250,11 +250,11 @@ namespace ControlzEx.Controls
         }
 
         /// <summary>
-        /// Clears all current children and calls <see cref="UpdateSelectedItem"/> afterwards.
+        /// Clears all current children by calling <see cref="ClearItemsHolder"/> and calls <see cref="UpdateSelectedItem"/> afterwards.
         /// </summary>
         private void RefreshItemsHolder()
         {
-            this.itemsHolder?.Children.Clear();
+            this.ClearItemsHolder();
 
             this.UpdateSelectedItem();
         }
@@ -266,7 +266,7 @@ namespace ControlzEx.Controls
 
         private void HandleTabControlExUnloaded(object sender, RoutedEventArgs e)
         {
-            this.itemsHolder?.Children.Clear();
+            this.ClearItemsHolder();
         }
 
         /// <summary>
