@@ -4,8 +4,8 @@
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/ControlzEx;component/Themes/Glow.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/ControlzEx;component/Themes/TabControlEx.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <!-- set up default styles for custom Controlz controls -->
-
 </ResourceDictionary>

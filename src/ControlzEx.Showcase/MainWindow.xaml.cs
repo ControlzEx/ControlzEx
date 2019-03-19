@@ -14,6 +14,9 @@
 
     public partial class MainWindow : WindowChromeWindow
     {
+        private static readonly PropertyInfo criticalHandlePropertyInfo = typeof(Window).GetProperty("CriticalHandle", BindingFlags.NonPublic | BindingFlags.Instance);
+        private static readonly object[] emptyObjectArray = new object[0];
+
         public MainWindow()
         {
             this.InitializeComponent();
@@ -47,8 +50,7 @@
             return new[] { new KeyValuePair<string, Brush>("None", null) }.Concat(brushes);
         }
 
-        private static readonly PropertyInfo criticalHandlePropertyInfo = typeof(Window).GetProperty("CriticalHandle", BindingFlags.NonPublic | BindingFlags.Instance);
-        private static readonly object[] emptyObjectArray = new object[0];
+        public int LoadedCount { get; set; }
 
 #pragma warning disable 618
         private void TitleBarGrid_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -192,5 +194,10 @@
         {
             this.Hide();
         }
+
+        private void LoadedCountTextBlock_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            this.LoadedCountTextBlock.Text = $"Load-Count: {++this.LoadedCount}";
+        }        
     }
 }

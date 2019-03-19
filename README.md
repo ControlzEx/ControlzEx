@@ -126,9 +126,9 @@ Custom `TabControl` that keeps the `TabItem` content in the VisualTree after uns
 Usage:
 
 ```xaml
-<controlz:TabControlEx Style="{StaticResource {x:Type TabControl}}">
+<controlz:TabControlEx>
     <TabItem Header="Lorem">
-        <TextBlock Text="Modern UI with MahApps.Metro"
+        <TextBlock Text="Lorem ipsum dolor sit amet, consetetur sadipscing"
                    HorizontalAlignment="Center"
                    FontSize="30" />
     </TabItem>
