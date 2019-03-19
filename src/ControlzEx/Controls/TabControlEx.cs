@@ -218,7 +218,7 @@ namespace ControlzEx.Controls
             }
 
             return selectedItem as TabItem
-                ?? this.ItemContainerGenerator.ContainerFromIndex(this.SelectedIndex) as TabItem;
+                ?? (TabItem)this.ItemContainerGenerator.ContainerFromIndex(this.SelectedIndex);
         }
 
         private void ClearItemsHolder()
@@ -357,7 +357,7 @@ namespace ControlzEx.Controls
                 return null;
             }
 
-            var tabItem = data as TabItem ?? this.ItemContainerGenerator.ContainerFromItem(data) as TabItem;
+            var tabItem = item as TabItem ?? (TabItem)this.ItemContainerGenerator.ContainerFromItem(item);
 
             var contentPresenters = this.itemsHolder.Children
                 .OfType<ContentPresenter>();
