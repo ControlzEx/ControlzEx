@@ -345,9 +345,9 @@ namespace ControlzEx.Controls
         /// <summary>
         /// Find the <see cref="ContentPresenter"/> for the given object. Data could be a TabItem or a piece of data.
         /// </summary>
-        public ContentPresenter FindChildContentPresenter(object data)
+        public ContentPresenter FindChildContentPresenter(object item)
         {
-            if (data is null)
+            if (item is null)
             {
                 return null;
             }
@@ -369,7 +369,7 @@ namespace ControlzEx.Controls
             }
 
             return contentPresenters
-                .FirstOrDefault(contentPresenter => ReferenceEquals(contentPresenter.Content, data));
+                .FirstOrDefault(contentPresenter => ReferenceEquals(contentPresenter.Content, item));
         }
     }
 }
