@@ -1,4 +1,4 @@
-namespace ControlzEx.Controls
+﻿namespace ControlzEx.Controls
 {
     using System;
     using System.Collections.Specialized;
@@ -279,11 +279,11 @@ namespace ControlzEx.Controls
                 return;
             }
 
-            // generate a ContentPresenter if necessary
             var selectedItem = this.GetSelectedTabItem();
 
             if (selectedItem is null == false)
             {
+                // generate a ContentPresenter if necessary
                 this.CreateChildContentPresenter(selectedItem);
             }
 
@@ -291,6 +291,8 @@ namespace ControlzEx.Controls
             foreach (ContentPresenter contentPresenter in this.itemsHolder.Children)
             {
                 var tabItem = GetOwningTabItem(contentPresenter);
+
+                // Hide all non selected items and show the selected item
                 contentPresenter.Visibility = tabItem.IsSelected
                     ? Visibility.Visible
                     : Visibility.Collapsed;
@@ -312,13 +314,13 @@ namespace ControlzEx.Controls
                 return;
             }
 
-            if (this.FindChildContentPresenter(item) != null)
+            // Jump out if we already created a ContentPresenter for this item
             if (this.FindChildContentPresenter(item) is null == false)
             {
                 return;
             }
 
-            // the actual child to be added.
+            // the actual child to be added
             var contentPresenter = new ContentPresenter
             {
                 Content = item is TabItem tabItem ? tabItem.Content : item,
