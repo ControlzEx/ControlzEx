@@ -284,23 +284,9 @@ namespace ControlzEx.Controls
                     ? Visibility.Visible
                     : Visibility.Collapsed;
 
-                if (this.MoveFocusToContentWhenSelectionChanges
-                    && contentPresenter.Visibility == Visibility.Visible
-                    && contentPresenter.IsKeyboardFocusWithin == false)
+                if (this.MoveFocusToContentWhenSelectionChanges)
                 {
-                    var presenter = contentPresenter;
-
-                    this.Dispatcher.BeginInvoke(DispatcherPriority.Input,
-                                                (Action)(() =>
-                                                         {
-                                                             tabItem.BringIntoView();
-                                                             presenter.BringIntoView();
-
-                                                             if (presenter.IsKeyboardFocusWithin == false)
-                                                             {
-                                                                 presenter.MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
-                                                             }
-                                                         }));
+                    this.MoveFocusToContent(contentPresenter, tabItem);
                 }
             }
         }
@@ -370,6 +356,29 @@ namespace ControlzEx.Controls
 
             return contentPresenters
                 .FirstOrDefault(contentPresenter => ReferenceEquals(contentPresenter.Content, item));
+        }
+
+        private void MoveFocusToContent(ContentPresenter contentPresenter, TabItem tabItem)
+        {
+            // Do nothing if the item is not visible or already has keyboard focus
+            if (contentPresenter.Visibility != Visibility.Visible
+                || contentPresenter.IsKeyboardFocusWithin)
+            {
+                return;
+            }
+
+            var presenter = contentPresenter;
+
+            this.Dispatcher.BeginInvoke(DispatcherPriority.Input, (Action)(() =>
+                                                                           {
+                                                                               tabItem.BringIntoView();
+                                                                               presenter.BringIntoView();
+
+                                                                               if (presenter.IsKeyboardFocusWithin == false)
+                                                                               {
+                                                                                   presenter.MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
+                                                                               }
+                                                                           }));
         }
     }
 }
