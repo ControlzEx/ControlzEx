@@ -101,6 +101,8 @@ namespace ControlzEx.Controls
         {
             base.OnApplyTemplate();
 
+            this.ClearItemsHolder();
+
             this.itemsHolder = this.Template.FindName("PART_ItemsHolder", this) as Panel;            
 
             this.RefreshItemsHolder();
@@ -215,6 +217,23 @@ namespace ControlzEx.Controls
 
             return selectedItem as TabItem
                 ?? this.ItemContainerGenerator.ContainerFromIndex(this.SelectedIndex) as TabItem;
+        }
+
+        private void ClearItemsHolder()
+        {
+            if (this.itemsHolder is null)
+            {
+                return;
+            }
+
+            foreach (var itemsHolderChild in this.itemsHolder.Children)
+            {
+                var contentPresenter = itemsHolderChild as ContentPresenter;
+
+                contentPresenter?.ClearValue(OwningTabItemProperty);
+            }
+
+            this.itemsHolder.Children.Clear();
         }
 
         /// <summary>
