@@ -9,7 +9,7 @@
         <Description>ControlzEx is a library with some shared Controls for WPF.</Description>
     </PropertyGroup>
     <!-- NuGet -->
-    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <PropertyGroup>
         <Authors>Jan Karger, Bastian Schmidt, James Willock</Authors>
         <PackageLicenseUrl>https://github.com/ControlzEx/ControlzEx/blob/develop/LICENSE</PackageLicenseUrl>
         <PackageProjectUrl>https://github.com/ControlzEx/ControlzEx</PackageProjectUrl>
@@ -21,7 +21,7 @@
         <GenerateLibraryLayout>true</GenerateLibraryLayout>
     </PropertyGroup>
     <!-- Sign assembly -->
-    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <PropertyGroup>
         <SignAssembly>True</SignAssembly>
         <AssemblyOriginatorKeyFile>$(MSBuildProjectDirectory)\..\SharedKey.snk</AssemblyOriginatorKeyFile>
         <DelaySign>false</DelaySign>
