@@ -19,7 +19,7 @@
         <NoWarn>$(NoWarn);CS1591</NoWarn>
         <NoError>$(NoError);CS1591</NoError>
         <UseWPF>true</UseWPF>
-        <CodeAnalysisRuleSet Condition="'$(Configuration)' == 'Release'">$(MSBuildThisFileDirectory)\ControlzEx.ruleset</CodeAnalysisRuleSet>
+        <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\ControlzEx.ruleset</CodeAnalysisRuleSet>
     </PropertyGroup>
 
     <ItemGroup>
