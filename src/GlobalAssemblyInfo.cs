@@ -11,4 +11,3 @@ using System.Windows;
 [assembly: CLSCompliant(false)]
 
 [assembly: NeutralResourcesLanguage("en-US")]
-[assembly: ThemeInfo(ResourceDictionaryLocation.None, ResourceDictionaryLocation.SourceAssembly)]
