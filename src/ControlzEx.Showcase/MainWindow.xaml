@@ -476,6 +476,7 @@
                                  Margin="5" />
                         <TextBlock x:Name="LoadedCountTextBlock"
                                    Loaded="LoadedCountTextBlock_OnLoaded"
+                                   Unloaded="LoadedCountTextBlock_OnUnloaded"
                                    HorizontalAlignment="Center"
                                    Margin="5" />
                     </StackPanel>

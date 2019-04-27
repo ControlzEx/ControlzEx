@@ -198,6 +198,11 @@
         private void LoadedCountTextBlock_OnLoaded(object sender, RoutedEventArgs e)
         {
             this.LoadedCountTextBlock.Text = $"Load-Count: {++this.LoadedCount}";
-        }        
+        }
+
+        private void LoadedCountTextBlock_OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            //this.LoadedCountTextBlock.Text = $"Load-Count: {--this.LoadedCount}";
+        }
     }
 }
