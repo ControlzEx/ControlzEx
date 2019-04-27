@@ -1,14 +1,17 @@
-﻿namespace ControlzEx.Controls
+namespace ControlzEx.Controls
 {
     using System;
     using System.Collections.Specialized;
     using System.Linq;
+    using System.Reflection;
     using System.Windows;
     using System.Windows.Automation.Peers;
     using System.Windows.Controls;
+    using System.Windows.Controls.Primitives;
     using System.Windows.Input;
     using System.Windows.Threading;
     using ControlzEx.Automation.Peers;
+    using ControlzEx.Internal;
 
     /// <summary>
     /// The standard WPF TabControl is quite bad in the fact that it only
@@ -31,7 +34,9 @@
     [TemplatePart(Name = "PART_ItemsHolder", Type = typeof(Panel))]    
     public class TabControlEx : TabControl
     {
-        private Panel itemsHolder;        
+        private static readonly MethodInfo updateSelectedContentMethodInfo = typeof(TabControl).GetMethod("UpdateSelectedContent", BindingFlags.NonPublic | BindingFlags.Instance);
+
+        private Panel itemsHolder;
 
         public static readonly DependencyProperty ChildContentVisibilityProperty
             = DependencyProperty.Register(nameof(ChildContentVisibility), typeof(Visibility), typeof(TabControlEx), new PropertyMetadata(Visibility.Visible));
@@ -124,6 +129,15 @@
             this.RefreshItemsHolder();
         }
 
+        /// <inheritdoc />
+        protected override void OnInitialized(EventArgs e)
+        {
+            base.OnInitialized(e);
+
+            this.ItemContainerGenerator.StatusChanged += this.OnGeneratorStatusChanged;
+        }
+
+        /// <inheritdoc />
         /// <summary>
         /// When the items change we remove any generated panel children and add any new ones as necessary.
         /// </summary>
@@ -159,7 +173,7 @@
 
                     // don't do anything with new items because we don't want to
                     // create visuals that aren't being shown yet
-                    this.UpdateSelectedItem();
+                    this.UpdateSelectedContent();
                     break;
 
                 case NotifyCollectionChangedAction.Replace:
@@ -169,14 +183,55 @@
             }
         }
 
-        /// <summary>
-        /// Update the visible child in the ItemsHolder.
-        /// </summary>
+        /// <inheritdoc />
         protected override void OnSelectionChanged(SelectionChangedEventArgs e)
         {
-            base.OnSelectionChanged(e);
+            // If we don't have an items holder we can safely forward the call to base
+            if (this.itemsHolder is null)
+            {
+                base.OnSelectionChanged(e);
+                return;
+            }
 
-            this.UpdateSelectedItem();
+            // We must NOT call base.OnSelectionChanged because that would interfere with our ability to update the selected content before the automation events are fired etc.
+
+            if (FrameworkAppContextSwitches.SelectionPropertiesCanLagBehindSelectionChangedEvent)
+            {
+                this.RaiseSelectionChangedEvent(e);
+
+                if (this.IsKeyboardFocusWithin)
+                {
+                    this.GetSelectedTabItem()?.SetFocus();
+                }
+
+                this.UpdateSelectedContent();
+            }
+            else
+            {
+                var keyboardFocusWithin = this.IsKeyboardFocusWithin;
+                this.UpdateSelectedContent();
+
+                if (keyboardFocusWithin)
+                {
+                    this.GetSelectedTabItem()?.SetFocus();
+                }
+
+                this.RaiseSelectionChangedEvent(e);
+            }
+
+            if (!AutomationPeer.ListenerExists(AutomationEvents.SelectionPatternOnInvalidated)
+                && !AutomationPeer.ListenerExists(AutomationEvents.SelectionItemPatternOnElementSelected)
+                && (!AutomationPeer.ListenerExists(AutomationEvents.SelectionItemPatternOnElementAddedToSelection) && !AutomationPeer.ListenerExists(AutomationEvents.SelectionItemPatternOnElementRemovedFromSelection)))
+            {
+                return;
+            }
+
+            (UIElementAutomationPeer.CreatePeerForElement(this) as TabControlAutomationPeer)?.RaiseSelectionEvents(e);
+        }
+
+        private void RaiseSelectionChangedEvent(SelectionChangedEventArgs e)
+        {
+            this.RaiseEvent(e);
         }
 
         /// <inheritdoc />
@@ -250,13 +305,13 @@
         }
 
         /// <summary>
-        /// Clears all current children by calling <see cref="ClearItemsHolder"/> and calls <see cref="UpdateSelectedItem"/> afterwards.
+        /// Clears all current children by calling <see cref="ClearItemsHolder"/> and calls <see cref="UpdateSelectedContent"/> afterwards.
         /// </summary>
         private void RefreshItemsHolder()
         {
             this.ClearItemsHolder();
 
-            this.UpdateSelectedItem();
+            this.UpdateSelectedContent();
         }
 
         private void HandleTabControlExLoaded(object sender, RoutedEventArgs e)
@@ -269,22 +324,34 @@
             this.ClearItemsHolder();
         }
 
+        private void OnGeneratorStatusChanged(object sender, EventArgs e)
+        {
+            if (this.ItemContainerGenerator.Status != GeneratorStatus.ContainersGenerated)
+            {
+                return;
+            }
+
+            this.UpdateSelectedContent();
+        }
+
         /// <summary>
-        /// Generate a ContentPresenter for the selected item.
+        /// Generate a ContentPresenter for the selected item and control the visibility of already created presenters.
         /// </summary>
-        private void UpdateSelectedItem()
+        private void UpdateSelectedContent()
         {
             if (this.itemsHolder is null)
             {
                 return;
             }
 
+            updateSelectedContentMethodInfo.Invoke(this, null);
+
             var selectedItem = this.GetSelectedTabItem();
 
             if (selectedItem is null == false)
             {
                 // generate a ContentPresenter if necessary
-                this.CreateChildContentPresenter(selectedItem);
+                this.CreateChildContentPresenterIfRequired(selectedItem);
             }
 
             // show the right child
@@ -293,9 +360,32 @@
                 var tabItem = GetOwningTabItem(contentPresenter);
 
                 // Hide all non selected items and show the selected item
-                contentPresenter.Visibility = tabItem.IsSelected
-                    ? Visibility.Visible
-                    : Visibility.Collapsed;
+                if (tabItem.IsSelected)
+                {
+                    contentPresenter.Visibility = Visibility.Visible;
+
+                    contentPresenter.HorizontalAlignment = tabItem.HorizontalContentAlignment;
+                    contentPresenter.VerticalAlignment = tabItem.VerticalContentAlignment;
+
+                    if (tabItem.ContentTemplate is null
+                        && tabItem.ContentTemplateSelector is null
+                        && tabItem.ContentStringFormat is null)
+                    {
+                        contentPresenter.ContentTemplate = this.ContentTemplate;
+                        contentPresenter.ContentTemplateSelector = this.ContentTemplateSelector;
+                        contentPresenter.ContentStringFormat = this.ContentStringFormat;
+                    }
+                    else
+                    {
+                        contentPresenter.ContentTemplate = tabItem.ContentTemplate;
+                        contentPresenter.ContentTemplateSelector = tabItem.ContentTemplateSelector;
+                        contentPresenter.ContentStringFormat = tabItem.ContentStringFormat;
+                    }
+                }
+                else
+                {
+                    contentPresenter.Visibility = Visibility.Collapsed;
+                }
 
                 if (this.MoveFocusToContentWhenSelectionChanges)
                 {
@@ -307,7 +397,7 @@
         /// <summary>
         /// Create the child ContentPresenter for the given item (could be data or a TabItem) if none exists.
         /// </summary>
-        private void CreateChildContentPresenter(object item)
+        private void CreateChildContentPresenterIfRequired(object item)
         {
             if (item is null)
             {
@@ -324,10 +414,7 @@
             var contentPresenter = new ContentPresenter
             {
                 Content = item is TabItem tabItem ? tabItem.Content : item,
-                Visibility = Visibility.Collapsed,
-                ContentTemplate = this.ContentTemplate,
-                ContentTemplateSelector = this.ContentTemplateSelector,
-                ContentStringFormat = this.ContentStringFormat
+                Visibility = Visibility.Collapsed
             };
 
             var owningTabItem = item as TabItem ?? (TabItem)this.ItemContainerGenerator.ContainerFromItem(item);

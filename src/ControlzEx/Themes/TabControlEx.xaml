@@ -4,26 +4,15 @@
                     xmlns:options="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:controls="clr-namespace:ControlzEx.Controls"
+                    xmlns:local="clr-namespace:ControlzEx"
                     mc:Ignorable="options">
-    <Style x:Key="{x:Type controls:TabControlEx}"
-           TargetType="{x:Type controls:TabControlEx}"
-           BasedOn="{StaticResource {x:Type TabControl}}">
-        <Setter Property="Focusable" 
-                Value="False" />
-        <Setter Property="Template"
-                Value="{DynamicResource ControlzEx.ControlTemplate.TabControlEx}" />
-        <Style.Triggers>
-            <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="TextElement.Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
-            </Trigger>
-        </Style.Triggers>
-    </Style>
+    <Style TargetType="{x:Type Rectangle}" />
 
-    <ControlTemplate x:Key="ControlzEx.ControlTemplate.TabControlEx" 
+    <ControlTemplate x:Key="ControlzEx.Templates.TabControlEx"
                      TargetType="{x:Type controls:TabControlEx}">
         <Grid ClipToBounds="true" 
-                          SnapsToDevicePixels="true" 
-                          KeyboardNavigation.TabNavigation="Local">
+              SnapsToDevicePixels="true" 
+              KeyboardNavigation.TabNavigation="Local">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition x:Name="ColumnDefinition0"/>
                 <ColumnDefinition x:Name="ColumnDefinition1" Width="0"/>
@@ -33,26 +22,26 @@
                 <RowDefinition x:Name="RowDefinition1" Height="*"/>
             </Grid.RowDefinitions>
             <TabPanel x:Name="PART_HeaderPanel"
-                                  Background="Transparent"
-                                  Grid.Column="0" 
-                                  Grid.Row="0"
-                                  IsItemsHost="true" 
-                                  Margin="2,2,2,0" 
-                                  KeyboardNavigation.TabIndex="1" 
-                                  Panel.ZIndex="1" />
+                      Background="Transparent"
+                      Grid.Column="0" 
+                      Grid.Row="0"
+                      IsItemsHost="true" 
+                      Margin="2,2,2,0" 
+                      KeyboardNavigation.TabIndex="1" 
+                      Panel.ZIndex="1" />
 
             <Border x:Name="contentPanel" 
-                                Grid.Column="0" 
-                                Grid.Row="1" 
-                                KeyboardNavigation.DirectionalNavigation="Contained"
-                                KeyboardNavigation.TabNavigation="Local" 
-                                KeyboardNavigation.TabIndex="2" 
-                                BorderThickness="{TemplateBinding BorderThickness}" 
-                                Background="{TemplateBinding Background}" 
-                                BorderBrush="{TemplateBinding BorderBrush}">
+                    Grid.Column="0" 
+                    Grid.Row="1" 
+                    KeyboardNavigation.DirectionalNavigation="Contained"
+                    KeyboardNavigation.TabNavigation="Local" 
+                    KeyboardNavigation.TabIndex="2" 
+                    BorderThickness="{TemplateBinding BorderThickness}" 
+                    Background="{TemplateBinding Background}" 
+                    BorderBrush="{TemplateBinding BorderBrush}">
                 <Grid x:Name="PART_ItemsHolder"
-                                  Margin="{TemplateBinding Padding}"
-                                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                      Margin="{TemplateBinding Padding}"
+                      SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
             </Border>
         </Grid>
         <ControlTemplate.Triggers>
@@ -87,4 +76,20 @@
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
+
+    <Style x:Key="ControlzEx.Styles.TabControlEx"
+           TargetType="{x:Type controls:TabControlEx}">
+        <Setter Property="Focusable" 
+                Value="False" />
+        <Setter Property="Template"
+                Value="{StaticResource ControlzEx.Templates.TabControlEx}" />
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="TextElement.Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style TargetType="{x:Type controls:TabControlEx}"
+           BasedOn="{StaticResource ControlzEx.Styles.TabControlEx}" />
 </ResourceDictionary>
