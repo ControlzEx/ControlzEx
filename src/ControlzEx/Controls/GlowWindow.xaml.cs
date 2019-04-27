@@ -14,6 +14,7 @@ namespace ControlzEx.Controls
     using ControlzEx.Standard;
     using ControlzEx.Native;
     using ControlzEx.Behaviors;
+    using ControlzEx.Internal;
     using JetBrains.Annotations;
 
     [DebuggerDisplay("{" + nameof(Title) + "}")]
@@ -366,14 +367,12 @@ namespace ControlzEx.Controls
 
         private bool IsWindowHandleValid()
         {
-            return this.windowHandle != IntPtr.Zero
-                   && NativeMethods.IsWindow(this.windowHandle);
+            return WindowHelper.IsWindowHandleValid(this.windowHandle);
         }
 
         private bool IsOwnerHandleValid()
         {
-            return this.ownerWindowHandle != IntPtr.Zero 
-                   && NativeMethods.IsWindow(this.ownerWindowHandle);
+            return WindowHelper.IsWindowHandleValid(this.ownerWindowHandle);
         }
 
         internal bool CanUpdateCore()

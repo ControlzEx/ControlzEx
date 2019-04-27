@@ -9,6 +9,7 @@
     using System.Windows.Media;
     using System.Windows.Threading;
     using ControlzEx.Controls;
+    using ControlzEx.Internal;
     using ControlzEx.Native;
     using ControlzEx.Standard;
     using Microsoft.Xaml.Behaviors;
@@ -314,10 +315,15 @@
                     foreach (var loadedGlowWindow in this.loadedGlowWindows)
                     {
                         var glowWindowHandle = new WindowInteropHelper(loadedGlowWindow).Handle;
+
                         var window = NativeMethods.GetWindow(glowWindowHandle, GW.HWNDPREV);
                         if (window != handle)
                         {
-                            NativeMethods.SetWindowPos(glowWindowHandle, handle, 0, 0, 0, 0, SWP.NOSIZE | SWP.NOMOVE | SWP.NOACTIVATE);
+                            if (WindowHelper.IsWindowHandleValid(glowWindowHandle)
+                                && WindowHelper.IsWindowHandleValid(handle))
+                            {
+                                NativeMethods.SetWindowPos(glowWindowHandle, handle, 0, 0, 0, 0, SWP.NOSIZE | SWP.NOMOVE | SWP.NOACTIVATE);
+                            }
                         }
                         handle = glowWindowHandle;
                     }
@@ -336,6 +342,11 @@
 
         private void UpdateZOrderOfOwner(IntPtr hwndOwner)
         {
+            if (WindowHelper.IsWindowHandleValid(hwndOwner) == false)
+            {
+                return;
+            }
+
             var lastOwnedWindow = IntPtr.Zero;
             NativeMethods.EnumThreadWindows(NativeMethods.GetCurrentThreadId(), delegate(IntPtr hwnd, IntPtr lParam)
                                                                                 {
