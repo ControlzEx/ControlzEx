@@ -305,38 +305,40 @@
 
         private void UpdateZOrderOfThisAndOwner()
         {
-            if (!this.updatingZOrder)
+            if (this.updatingZOrder)
             {
-                try
-                {
-                    this.updatingZOrder = true;
-                    var windowInteropHelper = new WindowInteropHelper(this.AssociatedObject);
-                    var handle = windowInteropHelper.Handle;
-                    foreach (var loadedGlowWindow in this.loadedGlowWindows)
-                    {
-                        var glowWindowHandle = new WindowInteropHelper(loadedGlowWindow).Handle;
+                return;
+            }
 
-                        var window = NativeMethods.GetWindow(glowWindowHandle, GW.HWNDPREV);
-                        if (window != handle)
-                        {
-                            if (WindowHelper.IsWindowHandleValid(glowWindowHandle)
-                                && WindowHelper.IsWindowHandleValid(handle))
-                            {
-                                NativeMethods.SetWindowPos(glowWindowHandle, handle, 0, 0, 0, 0, SWP.NOSIZE | SWP.NOMOVE | SWP.NOACTIVATE);
-                            }
-                        }
-                        handle = glowWindowHandle;
-                    }
-                    var owner = windowInteropHelper.Owner;
-                    if (owner != IntPtr.Zero)
-                    {
-                        this.UpdateZOrderOfOwner(owner);
-                    }
-                }
-                finally
+            try
+            {
+                this.updatingZOrder = true;
+                var windowInteropHelper = new WindowInteropHelper(this.AssociatedObject);
+                var handle = windowInteropHelper.Handle;
+                foreach (var loadedGlowWindow in this.loadedGlowWindows)
                 {
-                    this.updatingZOrder = false;
+                    var glowWindowHandle = new WindowInteropHelper(loadedGlowWindow).Handle;
+
+                    var window = NativeMethods.GetWindow(glowWindowHandle, GW.HWNDPREV);
+                    if (window != handle)
+                    {
+                        if (WindowHelper.IsWindowHandleValid(glowWindowHandle)
+                            && WindowHelper.IsWindowHandleValid(handle))
+                        {
+                            NativeMethods.SetWindowPos(glowWindowHandle, handle, 0, 0, 0, 0, SWP.NOSIZE | SWP.NOMOVE | SWP.NOACTIVATE);
+                        }
+                    }
+                    handle = glowWindowHandle;
                 }
+                var owner = windowInteropHelper.Owner;
+                if (owner != IntPtr.Zero)
+                {
+                    this.UpdateZOrderOfOwner(owner);
+                }
+            }
+            finally
+            {
+                this.updatingZOrder = false;
             }
         }
 
