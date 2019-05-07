@@ -16,7 +16,6 @@
                           MinHeight="60"
                           WindowState="Normal"
                           WindowStartupLocation="CenterScreen"
-                          SizeToContent="WidthAndHeight"
                           Background="{Binding Source={x:Static SystemColors.WindowBrush}}"
                           GlowBrush="Navy"
                           NonActiveGlowBrush="Crimson">
