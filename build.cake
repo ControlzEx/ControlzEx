@@ -151,15 +151,8 @@ Task("Pack")
     );
 });
 
-Task("SignFiles")
-    .ContinueOnError()
-    .Does(() =>
+void SignFiles(IEnumerable<FilePath> files, string description)
 {
-    if (!DirectoryExists(Directory(publishDir)))
-    {
-        return;
-    }
-
     var vurl = EnvironmentVariable("azure-key-vault-url");
     if(string.IsNullOrWhiteSpace(vurl)) {
         Error("Could not resolve signing url.");
@@ -184,8 +177,6 @@ Task("SignFiles")
         return;
     }
 
-    var files = GetFiles(publishDir + "/**/ControlzEx.dll")
-        .Concat(GetFiles(publishDir + "/**/ControlzEx.Showcase.exe"));
     foreach(var file in files)
     {
         Information($"Sign file: {file}");
@@ -196,7 +187,7 @@ Task("SignFiles")
                 .Append("sign")
                 .Append(MakeAbsolute(file).FullPath)
                 .AppendSwitchQuoted("--file-digest", "sha256")
-                .AppendSwitchQuoted("--description", "ControlzEx is a library with some shared Controls for WPF.")
+                .AppendSwitchQuoted("--description", description)
                 .AppendSwitchQuoted("--description-url", "https://github.com/ControlzEx/ControlzEx")
                 .Append("--no-page-hashing")
                 .AppendSwitchQuoted("--timestamp-rfc3161", "http://timestamp.digicert.com")
@@ -225,6 +216,17 @@ Task("SignFiles")
             Information("Exit code: {0}", process.GetExitCode());
         }
     }
+}
+
+Task("Sign")
+    .ContinueOnError()
+    .Does(() =>
+{
+    var files = GetFiles(publishDir + "/**/ControlzEx.dll");
+    SignFiles(files, "ControlzEx is a library with some shared Controls for WPF.");
+
+    files = GetFiles(publishDir + "/**/ControlzEx.Showcase.exe");
+    SignFiles(files, "Demo application of ControlzEx, a library with some shared Controls for WPF.");
 });
 
 Task("SignNuGet")
@@ -365,7 +367,7 @@ Task("Default")
 
 Task("CI")
     .IsDependentOn("Default")
-    .IsDependentOn("SignFiles")
+    .IsDependentOn("Sign")
     .IsDependentOn("Pack")
     .IsDependentOn("SignNuGet")
     .IsDependentOn("Zip");

@@ -15,17 +15,17 @@ Made by [![Twitter Jan](https://img.shields.io/badge/twitter-%40punker76-55acee.
 
 # Quick started for developers
 
-* Download the latest (!!!) dotnet core 3.0.x SDK from here: [https://github.com/dotnet/core-sdk](https://github.com/dotnet/core-sdk) ([quick-link to download](https://dotnetcli.blob.core.windows.net/dotnet/Sdk/master/dotnet-sdk-latest-win-x64.exe))
-  * Make sure you only have the latest dotnet core 3.0 installed!
-* Make sure you have [Visual Studio 2019 Preview (Community Edition)](https://visualstudio.microsoft.com/de/vs/preview/), since dotnet core 3.0 sdk 009831 it no longer works with [Visual Studio 2017](https://visualstudio.microsoft.com)
+* Download the `.NET Core 3.0.0 Preview 5` SDK and Runtime from [here](https://github.com/dotnet/core/blob/master/release-notes/3.0/preview/3.0.0-preview5.md)
+  * Make sure you only have this dotnet core 3.0 installed!
+* Make sure you have [Visual Studio 2019](https://visualstudio.microsoft.com) installed (this could also be the Community Edition)
 * Clone the [ControlzEx repository](https://github.com/ControlzEx/ControlzEx.git)
-* Open the solution from the src directory in Visual Studio
-* Rebuild and start... (you might need to rebuild 2x, because we use the very fresh hot dotnet core stuff)
+* Open the solution from the `src` folder in Visual Studio 2019
+* Rebuild and you're done... (you might need to rebuild 2x, because we use the very fresh hot dotnet core stuff)
 
 # What's in the box
 
-* dotnet core 3.0 (preview) support (why, read here: https://blogs.msdn.microsoft.com/dotnet/2018/10/04/update-on-net-core-3-0-and-net-framework-4-8/ )
-* targeting also .Net 4.5 and 4.6.2
+* `.NET Core 3.0.0 Preview 5` support (why, read [here](https://blogs.msdn.microsoft.com/dotnet/2018/10/04/update-on-net-core-3-0-and-net-framework-4-8/) )
+* Also still targeting .Net 4.5 and 4.6.2
 
 ## KeyboardNavigationEx
 
@@ -217,7 +217,7 @@ Your users should now have a simple way to use your icon pack in their applicati
 
 The MIT License (MIT)
 
-Copyright (c) 2015-16 Jan Karger, Bastian Schmidt, James Willock
+Copyright (c) 2015-2019 Jan Karger, Bastian Schmidt, James Willock
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
