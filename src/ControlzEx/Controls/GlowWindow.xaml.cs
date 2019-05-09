@@ -193,17 +193,9 @@ namespace ControlzEx.Controls
                     break;
             }
 
-            owner.Activated += (sender, e) =>
-                {
-                    this.Update();
-
-                    this.glow.IsGlow = true;
-                };
-            owner.Deactivated += (sender, e) =>
-                {
-                    this.glow.IsGlow = false;
-                };
-            owner.IsVisibleChanged += (sender, e) => this.Update();
+            owner.Activated += OnOwnerActivated;
+            owner.Deactivated += OnOwnerDeactivated;
+            owner.IsVisibleChanged += OnOwnerIsVisibleChanged;
             owner.Closed += (sender, e) => this.InternalClose();
         }
 
@@ -361,8 +353,18 @@ namespace ControlzEx.Controls
                 return;
             }
 
-            this.glow.Visibility = newVisibility;
-            this.Visibility = newVisibility;
+            try
+            {
+                this.glow.Visibility = newVisibility;
+                this.Visibility = newVisibility;
+            }
+            catch (Exception e)
+            {
+                Trace.TraceWarning($"Could not set Visibility: {e}");
+#if DEBUG
+                throw;
+#endif
+            }
         }
 
         private bool IsWindowHandleValid()
@@ -395,9 +397,30 @@ namespace ControlzEx.Controls
                                        SWP.NOACTIVATE | SWP.NOZORDER);
         }
 
+        private void OnOwnerActivated(object sender, EventArgs e)
+        {
+            this.Update();
+
+            this.glow.IsGlow = true;
+        }
+
+        private void OnOwnerDeactivated(object sender, EventArgs e)
+        {
+            this.glow.IsGlow = false;
+        }
+
+        private void OnOwnerIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            this.Update();
+        }
+
         internal void InternalClose()
         {
             this.closing = true;
+
+            owner.Activated -= OnOwnerActivated;
+            owner.Deactivated -= OnOwnerDeactivated;
+            owner.IsVisibleChanged -= OnOwnerIsVisibleChanged;
 
             if (this.resizeModeChangeNotifier != null)
             {
