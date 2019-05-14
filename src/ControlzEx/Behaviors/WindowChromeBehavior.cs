@@ -130,6 +130,84 @@ namespace ControlzEx.Behaviors
             private set { this.SetValue(isNcActivePropertyKey, value); }
         }
 
+        public static readonly DependencyProperty EnableMinimizeProperty = DependencyProperty.Register(nameof(EnableMinimize), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(true, OnEnableMinimizePropertyChanged));
+
+        private static void OnEnableMinimizePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (e.NewValue != e.OldValue && e.NewValue is bool showMinButton)
+            {
+                var behavior = (WindowChromeBehavior)d;
+
+                behavior._UpdateMinimizeSystemMenu(showMinButton);
+            }
+        }
+
+        private void _UpdateMinimizeSystemMenu(bool isVisible)
+        {
+            if (this.windowHandle != IntPtr.Zero)
+            {
+
+                if (isVisible)
+                {
+                    this._ModifyStyle(0, WS.MINIMIZEBOX);
+                }
+                else
+                {
+                    this._ModifyStyle(WS.MINIMIZEBOX, 0);
+                }
+
+                this._UpdateSystemMenu(this.AssociatedObject?.WindowState);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets whether if the minimize button is visible and the minimize system menu is enabled.
+        /// </summary>
+        public bool EnableMinimize
+        {
+            get { return (bool)GetValue(EnableMinimizeProperty); }
+            set { SetValue(EnableMinimizeProperty, value); }
+        }
+
+        public static readonly DependencyProperty EnableMaxRestoreProperty = DependencyProperty.Register(nameof(EnableMaxRestore), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(true, OnEnableMaxRestorePropertyChanged));
+
+        private static void OnEnableMaxRestorePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (e.NewValue != e.OldValue && e.NewValue is bool showMaxRestoreButton)
+            {
+                var behavior = (WindowChromeBehavior)d;
+
+                behavior._UpdateMaxRestoreSystemMenu(showMaxRestoreButton);
+            }
+        }
+
+        private void _UpdateMaxRestoreSystemMenu(bool isVisible)
+        {
+            if (this.windowHandle != IntPtr.Zero)
+            {
+
+                if (isVisible)
+                {
+                    this._ModifyStyle(0, WS.MAXIMIZEBOX);
+                }
+                else
+                {
+                    this._ModifyStyle(WS.MAXIMIZEBOX, 0);
+                }
+
+                this._UpdateSystemMenu(this.AssociatedObject?.WindowState);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets whether if the maximize/restore button is visible and the maximize/restore system menu is enabled.
+        /// </summary>
+        public bool EnableMaxRestore
+        {
+            get { return (bool)GetValue(EnableMaxRestoreProperty); }
+            set { SetValue(EnableMaxRestoreProperty, value); }
+        }
+
         /// <inheritdoc />
         protected override void OnAttached()
         {
@@ -331,6 +409,9 @@ namespace ControlzEx.Behaviors
             this.hwndSource?.AddHook(this.WindowProc);
 
             this._ApplyNewCustomChrome();
+
+            this._UpdateMinimizeSystemMenu(this.EnableMinimize);
+            this._UpdateMaxRestoreSystemMenu(this.EnableMaxRestore);
 
             // handle the maximized state here too (to handle the border in a correct way)
             this.HandleMaximize();
