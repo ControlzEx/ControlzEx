@@ -773,7 +773,7 @@ namespace ControlzEx.Behaviors
         ///   Critical : Calls critical methods
         /// </SecurityNote>
         [SecurityCritical]
-        private bool _ModifyStyle(WS removeStyle, WS addStyle)
+        protected bool _ModifyStyle(WS removeStyle, WS addStyle)
         {
             Assert.IsNotDefault(this.windowHandle);
             var dwStyle = NativeMethods.GetWindowStyle(this.windowHandle);

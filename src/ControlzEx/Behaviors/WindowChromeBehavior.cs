@@ -266,6 +266,8 @@ namespace ControlzEx.Behaviors
 
             this.isCleanedUp = true;
 
+            this.OnCleanup();
+
             // clean up events
             this.AssociatedObject.SourceInitialized -= this.AssociatedObject_SourceInitialized;
             this.AssociatedObject.Loaded -= this.AssociatedObject_Loaded;
@@ -278,6 +280,14 @@ namespace ControlzEx.Behaviors
             this.hwndSource?.RemoveHook(this.WindowProc);
 
             this._RestoreStandardChromeState(isClosing);
+        }
+
+        /// <summary>
+        /// Occurs during the cleanup of this behavior.
+        /// </summary>
+        protected virtual void OnCleanup()
+        {
+            // nothing here
         }
 
         /// <inheritdoc />
