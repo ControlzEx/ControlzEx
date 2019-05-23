@@ -146,6 +146,10 @@ namespace ControlzEx.Behaviors
         {
             if (this.windowHandle != IntPtr.Zero)
             {
+                if (this.hwndSource?.IsDisposed == true || this.hwndSource?.RootVisual is null)
+                {
+                    return;
+                }
 
                 if (isVisible)
                 {
@@ -185,6 +189,11 @@ namespace ControlzEx.Behaviors
         {
             if (this.windowHandle != IntPtr.Zero)
             {
+
+                if (this.hwndSource?.IsDisposed == true || this.hwndSource?.RootVisual is null)
+                {
+                    return;
+                }
 
                 if (isVisible)
                 {
