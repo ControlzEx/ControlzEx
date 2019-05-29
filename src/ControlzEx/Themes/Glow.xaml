@@ -3,7 +3,7 @@
                     xmlns:controls="clr-namespace:ControlzEx.Controls"
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                     xmlns:options="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
-                    xmlns:system="clr-namespace:System;assembly=mscorlib"                    
+                    xmlns:system="clr-namespace:System;assembly=mscorlib"
                     mc:Ignorable="options">
 
     <system:Double x:Key="ControlzEx.Glow.GlowOpacity">0.3</system:Double>
@@ -12,12 +12,11 @@
                 Radius="3"
                 options:Freeze="True" />
 
-    <ControlTemplate x:Key="ControlzEx.Glow.TopGlowTemplate"
-                     TargetType="{x:Type controls:Glow}">
+    <ControlTemplate x:Key="ControlzEx.Glow.TopGlowTemplate" TargetType="{x:Type controls:Glow}">
         <Border x:Name="GlowBorder"
+                Margin="{TemplateBinding Padding}"
                 Background="{TemplateBinding Background}"
                 CornerRadius="6 6 6 6"
-                Margin="{TemplateBinding Padding}"
                 Effect="{StaticResource ControlzEx.Glow.GlowBlurEffect}"
                 Opacity="{StaticResource ControlzEx.Glow.GlowOpacity}"
                 SnapsToDevicePixels="True">
@@ -35,12 +34,11 @@
         </ControlTemplate.Triggers>
     </ControlTemplate>
 
-    <ControlTemplate x:Key="ControlzEx.Glow.BottomGlowTemplate"
-                     TargetType="{x:Type controls:Glow}">
+    <ControlTemplate x:Key="ControlzEx.Glow.BottomGlowTemplate" TargetType="{x:Type controls:Glow}">
         <Border x:Name="GlowBorder"
+                Margin="{TemplateBinding Padding}"
                 Background="{TemplateBinding Background}"
                 CornerRadius="6 6 6 6"
-                Margin="{TemplateBinding Padding}"
                 Effect="{StaticResource ControlzEx.Glow.GlowBlurEffect}"
                 Opacity="{StaticResource ControlzEx.Glow.GlowOpacity}"
                 SnapsToDevicePixels="True">
@@ -58,12 +56,11 @@
         </ControlTemplate.Triggers>
     </ControlTemplate>
 
-    <ControlTemplate x:Key="ControlzEx.Glow.LeftGlowTemplate"
-                     TargetType="{x:Type controls:Glow}">
+    <ControlTemplate x:Key="ControlzEx.Glow.LeftGlowTemplate" TargetType="{x:Type controls:Glow}">
         <Border x:Name="GlowBorder"
+                Margin="{TemplateBinding Padding}"
                 Background="{TemplateBinding Background}"
                 CornerRadius="6 6 6 6"
-                Margin="{TemplateBinding Padding}"
                 Effect="{StaticResource ControlzEx.Glow.GlowBlurEffect}"
                 Opacity="{StaticResource ControlzEx.Glow.GlowOpacity}"
                 SnapsToDevicePixels="True">
@@ -81,12 +78,11 @@
         </ControlTemplate.Triggers>
     </ControlTemplate>
 
-    <ControlTemplate x:Key="ControlzEx.Glow.RightGlowTemplate"
-                     TargetType="{x:Type controls:Glow}">
+    <ControlTemplate x:Key="ControlzEx.Glow.RightGlowTemplate" TargetType="{x:Type controls:Glow}">
         <Border x:Name="GlowBorder"
+                Margin="{TemplateBinding Padding}"
                 Background="{TemplateBinding Background}"
                 CornerRadius="6 6 6 6"
-                Margin="{TemplateBinding Padding}"
                 Effect="{StaticResource ControlzEx.Glow.GlowBlurEffect}"
                 Opacity="{StaticResource ControlzEx.Glow.GlowOpacity}"
                 SnapsToDevicePixels="True">

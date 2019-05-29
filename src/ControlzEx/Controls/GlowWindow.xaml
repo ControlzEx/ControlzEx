@@ -24,6 +24,5 @@
         </ControlTemplate>
     </Window.Template>
 
-    <controlzEx:Glow x:Name="glow"  
-                     x:FieldModifier="private" />
+    <controlzEx:Glow x:Name="glow" x:FieldModifier="private" />
 </Window>

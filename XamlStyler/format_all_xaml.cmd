@@ -1,0 +1,1 @@
+xstyler.exe -r -d ..\src\ -c .\Options\ControlzEx.XAMLStyler.json
