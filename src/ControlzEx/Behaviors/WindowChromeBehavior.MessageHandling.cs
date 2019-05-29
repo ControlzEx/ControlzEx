@@ -107,6 +107,8 @@ namespace ControlzEx.Behaviors
 
             // Force this the first time.
             this._UpdateSystemMenu(this.AssociatedObject.WindowState);
+            this._UpdateMinimizeSystemMenu(this.EnableMinimize);
+            this._UpdateMaxRestoreSystemMenu(this.EnableMaxRestore);
             this._UpdateFrameState(true);
 
             if (this.hwndSource.IsDisposed)

@@ -419,9 +419,6 @@ namespace ControlzEx.Behaviors
 
             this._ApplyNewCustomChrome();
 
-            this._UpdateMinimizeSystemMenu(this.EnableMinimize);
-            this._UpdateMaxRestoreSystemMenu(this.EnableMaxRestore);
-
             // handle the maximized state here too (to handle the border in a correct way)
             this.HandleMaximize();
         }
