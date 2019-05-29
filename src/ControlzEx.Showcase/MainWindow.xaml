@@ -5,6 +5,8 @@
                           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                           xmlns:local="clr-namespace:ControlzEx.Showcase"
                           xmlns:controlzEx="urn:controlzex"
+                          xmlns:system="clr-namespace:System;assembly=mscorlib"
+                          xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
                           x:Name="Window"
                           mc:Ignorable="d"
                           Title="ControlzEx.Showcase"
@@ -502,6 +504,61 @@
                                    HorizontalAlignment="Center"
                                    Margin="5" />
                     </StackPanel>
+                </TabItem>
+
+                <TabItem Header="TabCTextBoxInputMaskBehaviorontrolEx">
+                    <TabItem.Resources>
+                        <system:String x:Key="InputMaskIban">>LLaa aaaa aaaa aaaa aaaa aaaa aaaa aaaa aaaa</system:String>
+                    </TabItem.Resources>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0"
+                                   Grid.Column="0"
+                                   Margin="4"
+                                   Text="Datetime" />
+                        <TextBox Grid.Row="0"
+                                 Grid.Column="1"
+                                 Margin="4">
+                            <behaviors:Interaction.Behaviors>
+                                <controlzEx:TextBoxInputMaskBehavior InputMask="00/00/0000" />
+                            </behaviors:Interaction.Behaviors>
+                        </TextBox>
+
+                        <TextBlock Grid.Row="1"
+                                   Grid.Column="0"
+                                   Margin="4"
+                                   Text="Phone Number" />
+                        <TextBox Grid.Row="1"
+                                 Grid.Column="1"
+                                 Margin="4">
+                            <behaviors:Interaction.Behaviors>
+                                <controlzEx:TextBoxInputMaskBehavior InputMask="( 999 ) 000 000 - 00" PromptChar="_" />
+                            </behaviors:Interaction.Behaviors>
+                        </TextBox>
+
+                        <TextBlock Grid.Row="2"
+                                   Grid.Column="0"
+                                   Margin="4"
+                                   Text="Sepa - IBAN" />
+                        <TextBox Grid.Row="2"
+                                 Grid.Column="1"
+                                 Margin="4">
+                            <behaviors:Interaction.Behaviors>
+                                <controlzEx:TextBoxInputMaskBehavior InputMask="{StaticResource InputMaskIban}" PromptChar="X" />
+                            </behaviors:Interaction.Behaviors>
+                        </TextBox>
+
+                    </Grid>
                 </TabItem>
             </controlzEx:TabControlEx>
         </Grid>
