@@ -114,12 +114,12 @@ namespace ControlzEx.Behaviors
         /// </summary>
         public static readonly DependencyProperty TryToBeFlickerFreeProperty = DependencyProperty.Register(nameof(TryToBeFlickerFree), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(default(bool), OnTryToBeFlickerFreePropertyChanged));
 
-        private static readonly DependencyPropertyKey isNcActivePropertyKey = DependencyProperty.RegisterReadOnly(nameof(IsNCActive), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(default(bool)));
+        private static readonly DependencyPropertyKey IsNCActivePropertyKey = DependencyProperty.RegisterReadOnly(nameof(IsNCActive), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(default(bool)));
 
         /// <summary>
         /// <see cref="DependencyProperty"/> for <see cref="IsNCActive"/>.
         /// </summary>
-        public static readonly DependencyProperty IsNCActiveProperty = isNcActivePropertyKey.DependencyProperty;
+        public static readonly DependencyProperty IsNCActiveProperty = IsNCActivePropertyKey.DependencyProperty;
 
         /// <summary>
         /// Gets whether the non-client area is active or not.
@@ -127,7 +127,7 @@ namespace ControlzEx.Behaviors
         public bool IsNCActive
         {
             get { return (bool)this.GetValue(IsNCActiveProperty); }
-            private set { this.SetValue(isNcActivePropertyKey, value); }
+            private set { this.SetValue(IsNCActivePropertyKey, value); }
         }
 
         public static readonly DependencyProperty EnableMinimizeProperty = DependencyProperty.Register(nameof(EnableMinimize), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(true, OnEnableMinimizePropertyChanged));
