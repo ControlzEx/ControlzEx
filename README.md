@@ -27,6 +27,42 @@ Made by [![Twitter Jan](https://img.shields.io/badge/twitter-%40punker76-55acee.
 * `.NET Core 3.0.0 Preview 5` support (why, read [here](https://blogs.msdn.microsoft.com/dotnet/2018/10/04/update-on-net-core-3-0-and-net-framework-4-8/) )
 * Also still targeting .Net 4.5 and 4.6.2
 
+## TextBoxInputMaskBehavior
+
+The `TextBoxInputMaskBehavior` can be used to show a mask inside a `TextBox`. Note: It's only a mask and doesn't validates your text!
+
+```xml
+<TextBlock Grid.Row="0"
+           Grid.Column="0"
+           Margin="4"
+           Text="Datetime" />
+<TextBox Grid.Row="0"
+         Grid.Column="1"
+         Margin="4">
+    <behaviors:Interaction.Behaviors>
+        <controlzEx:TextBoxInputMaskBehavior InputMask="00/00/0000" />
+    </behaviors:Interaction.Behaviors>
+</TextBox>
+
+<TextBlock Grid.Row="1"
+           Grid.Column="0"
+           Margin="4"
+           Text="Phone Number" />
+<TextBox Grid.Row="1"
+         Grid.Column="1"
+         Margin="4">
+    <behaviors:Interaction.Behaviors>
+        <controlzEx:TextBoxInputMaskBehavior InputMask="( 999 ) 000 000 - 00" PromptChar="_" />
+    </behaviors:Interaction.Behaviors>
+</TextBox>
+```
+
+The original TextBoxInputMaskBehavior was taken from from Blindmeis's Blog.
+- https://blindmeis.wordpress.com/2015/01/20/wpf-textbox-input-behavior/
+- https://blindmeis.wordpress.com/2010/06/01/wpf-masked-textbox-behavior/
+
+![InputMaskScreenshot](https://user-images.githubusercontent.com/658431/31741772-c3fdd41c-b455-11e7-8110-7b54d636ede8.png)
+
 ## KeyboardNavigationEx
 
 KeyboardNavigationEx is a helper class for a common focusing problem. The focus of an UI element itself isn't the problem. But if we use the common focusing methods, the control get the focus, but it doesn't get the focus visual style.
@@ -217,7 +253,7 @@ Your users should now have a simple way to use your icon pack in their applicati
 
 The MIT License (MIT)
 
-Copyright (c) 2015-2019 Jan Karger, Bastian Schmidt, James Willock
+Copyright (c) since 2015 Jan Karger, Bastian Schmidt, James Willock
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
