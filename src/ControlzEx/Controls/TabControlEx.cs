@@ -256,6 +256,12 @@ namespace ControlzEx.Controls
         /// <inheritdoc />
         protected override AutomationPeer OnCreateAutomationPeer()
         {
+            // If we don't have an items holder we can safely forward the call to base
+            if (this.itemsHolder is null)
+            {
+                return base.OnCreateAutomationPeer();
+            }
+
             var automationPeer = new TabControlExAutomationPeer(this);
             return automationPeer;
         }
