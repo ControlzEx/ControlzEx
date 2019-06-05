@@ -486,7 +486,7 @@
                     </StackPanel>
                 </TabItem>
 
-                <TabItem Header="TabCTextBoxInputMaskBehaviorontrolEx">
+                <TabItem Header="TextBoxInputMaskBehavior">
                     <TabItem.Resources>
                         <system:String x:Key="InputMaskIban">&gt;LLaa aaaa aaaa aaaa aaaa aaaa aaaa aaaa aaaa</system:String>
                     </TabItem.Resources>
