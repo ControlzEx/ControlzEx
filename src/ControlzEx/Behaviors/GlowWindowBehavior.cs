@@ -330,6 +330,7 @@
                     }
                     handle = glowWindowHandle;
                 }
+
                 var owner = windowInteropHelper.Owner;
                 if (owner != IntPtr.Zero)
                 {
@@ -362,7 +363,11 @@
             if (lastOwnedWindow != IntPtr.Zero
                 && NativeMethods.GetWindow(hwndOwner, GW.HWNDPREV) != lastOwnedWindow)
             {
-                NativeMethods.SetWindowPos(hwndOwner, lastOwnedWindow, 0, 0, 0, 0, SWP.NOSIZE | SWP.NOMOVE | SWP.NOACTIVATE);
+                if (WindowHelper.IsWindowHandleValid(hwndOwner)
+                    && WindowHelper.IsWindowHandleValid(lastOwnedWindow))
+                {
+                    NativeMethods.SetWindowPos(hwndOwner, lastOwnedWindow, 0, 0, 0, 0, SWP.NOSIZE | SWP.NOMOVE | SWP.NOACTIVATE);
+                }
             }
         }
 #pragma warning restore 618
