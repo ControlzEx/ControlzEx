@@ -120,7 +120,9 @@ namespace ControlzEx.Behaviors
         }
 
         // A borderless window lost his animation, with this we bring it back.
-        private bool MinimizeAnimation => SystemParameters.MinimizeAnimation && this.IgnoreTaskbarOnMaximize == false;
+        private bool MinimizeAnimation => SystemParameters.MinimizeAnimation 
+                                          && this.IgnoreTaskbarOnMaximize == false
+                                          && NativeMethods.DwmIsCompositionEnabled();
 
         #region WindowProc and Message Handlers
 
