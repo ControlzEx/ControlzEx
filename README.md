@@ -15,7 +15,7 @@ Made by [![Twitter Jan](https://img.shields.io/badge/twitter-%40punker76-55acee.
 
 # Quick started for developers
 
-* Download the `.NET Core 3.0.0 Preview 5` SDK and Runtime from [here](https://github.com/dotnet/core/blob/master/release-notes/3.0/preview/3.0.0-preview5.md)
+* Download the `.NET Core 3.0.0 Preview 6` SDK and Runtime from [here](https://github.com/dotnet/core/blob/master/release-notes/3.0/preview/3.0.0-preview6.md)
   * Make sure you only have this dotnet core 3.0 installed!
 * Make sure you have [Visual Studio 2019](https://visualstudio.microsoft.com) installed (this could also be the Community Edition)
 * Clone the [ControlzEx repository](https://github.com/ControlzEx/ControlzEx.git)
@@ -24,7 +24,7 @@ Made by [![Twitter Jan](https://img.shields.io/badge/twitter-%40punker76-55acee.
 
 # What's in the box
 
-* `.NET Core 3.0.0 Preview 5` support (why, read [here](https://blogs.msdn.microsoft.com/dotnet/2018/10/04/update-on-net-core-3-0-and-net-framework-4-8/) )
+* `.NET Core 3.0.0 Preview 6` support (why, read [here](https://blogs.msdn.microsoft.com/dotnet/2018/10/04/update-on-net-core-3-0-and-net-framework-4-8/) )
 * Also still targeting .Net 4.5 and 4.6.2
 
 ## TextBoxInputMaskBehavior
