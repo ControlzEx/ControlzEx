@@ -1,4 +1,4 @@
-﻿namespace ControlzEx.Showcase
+namespace ControlzEx.Showcase
 {
     using System;
     using System.Collections.Generic;
@@ -92,6 +92,7 @@
         }
 
         private void TitleBarGrid_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        private void TitleBarGrid_OnMouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
             ControlzEx.Windows.Shell.SystemCommands.ShowSystemMenu(this, e);
         }
