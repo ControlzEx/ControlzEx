@@ -2,9 +2,12 @@
 namespace ControlzEx.Windows.Shell
 {
     using System;
+    using System.Security;
+    using System.Security.Permissions;
     using System.Windows;
     using System.Windows.Input;
     using System.Windows.Interop;
+    using System.Windows.Media;
     using ControlzEx.Native;
     using ControlzEx.Standard;
 
@@ -26,6 +29,7 @@ namespace ControlzEx.Windows.Shell
             ShowSystemMenuCommand = new RoutedCommand("ShowSystemMenu", typeof(SystemCommands));                 
         }
 
+        [SecurityCritical]
         private static void _PostSystemCommand(Window window, SC command)
         {
             var hwnd = new WindowInteropHelper(window).Handle;
@@ -37,24 +41,32 @@ namespace ControlzEx.Windows.Shell
             NativeMethods.PostMessage(hwnd, WM.SYSCOMMAND, new IntPtr((int)command), IntPtr.Zero);
         }
 
+        [SecuritySafeCritical]
+        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         public static void CloseWindow(Window window)
         {
             Verify.IsNotNull(window, "window");
             _PostSystemCommand(window, SC.CLOSE);
         }
 
+        [SecuritySafeCritical]
+        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         public static void MaximizeWindow(Window window)
         {
             Verify.IsNotNull(window, "window");
             _PostSystemCommand(window, SC.MAXIMIZE);
         }
 
+        [SecuritySafeCritical]
+        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         public static void MinimizeWindow(Window window)
         {
             Verify.IsNotNull(window, "window");
             _PostSystemCommand(window, SC.MINIMIZE);
         }
 
+        [SecuritySafeCritical]
+        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         public static void RestoreWindow(Window window)
         {
             Verify.IsNotNull(window, "window");
@@ -66,30 +78,80 @@ namespace ControlzEx.Windows.Shell
         /// </summary>
         /// <param name="window">The window for which the system menu should be shown.</param>
         /// <param name="e">The mouse event args.</param>
+        [SecuritySafeCritical]
+        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         public static void ShowSystemMenu(Window window, MouseButtonEventArgs e)
         {
             var mousePosition = e.GetPosition(window);
-            var physicalScreenLocation = window.PointToScreen(mousePosition);
+            var screenLocation = window.PointToScreen(mousePosition);
+            e.Handled = true;
 
-            ShowSystemMenu(window, physicalScreenLocation);
+            ShowSystemMenu(window, screenLocation);
         }
 
         /// <summary>Display the system menu at a specified location.</summary>
-        /// <param name="window">The MetroWindow</param>
+        /// <param name="visual">The visual for which the system menu should be displayed.</param>
+        /// <param name="elementPoint">The location to display the system menu, in logical screen coordinates.</param>
+        /// <remarks>
+        /// The dpi of <paramref name="visual"/> is used to calculate the final position.
+        /// </remarks>
+        [SecuritySafeCritical]
+        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
+        public static void ShowSystemMenu(Visual visual, Point elementPoint)
+        {
+            Verify.IsNotNull(visual, "visual");
+
+            var screenLocation = visual.PointToScreen(elementPoint);
+            var dpi = visual.GetDpi();
+
+            ShowSystemMenuPhysicalCoordinates(visual, DpiHelper.LogicalPixelsToDevice(screenLocation, dpi.DpiScaleX, dpi.DpiScaleY));
+        }
+
+        /// <summary>Display the system menu at a specified location.</summary>
+        /// <param name="window">The window for which the system menu should be displayed.</param>
         /// <param name="screenLocation">The location to display the system menu, in logical screen coordinates.</param>
+        /// <remarks>
+        /// The dpi of <paramref name="window"/> is used to calculate the final position.
+        /// </remarks>
+        [SecuritySafeCritical]
+        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         public static void ShowSystemMenu(Window window, Point screenLocation)
         {
             Verify.IsNotNull(window, "window");
 
-            // Using fixed dpi scaling here because the menu gets placed way off otherwise
-            ShowSystemMenuPhysicalCoordinates(window, DpiHelper.LogicalPixelsToDevice(screenLocation, 1, 1));
+            var dpi = window.GetDpi();
+
+            ShowSystemMenuPhysicalCoordinates(window, DpiHelper.LogicalPixelsToDevice(screenLocation, dpi.DpiScaleX, dpi.DpiScaleY));
         }
 
-        internal static void ShowSystemMenuPhysicalCoordinates(Window window, Point physicalScreenLocation)
+        /// <summary>Display the system menu at a specified location.</summary>
+        /// <param name="visual">The visual for which the system menu should be displayed.</param>
+        /// <param name="physicalScreenLocation">The location to display the system menu, in physical screen coordinates.</param>
+        /// <remarks>
+        /// The dpi of <paramref name="visual"/> is NOT used to calculate the final coordinates.
+        /// So you have to pass the final coordinates.
+        /// </remarks>
+        [SecuritySafeCritical]
+        public static void ShowSystemMenuPhysicalCoordinates(Visual visual, Point physicalScreenLocation)
         {
-            Verify.IsNotNull(window, "window");
+            var hwndSource = (HwndSource)PresentationSource.FromVisual(visual);
 
-            var hwnd = new WindowInteropHelper(window).Handle;
+            ShowSystemMenuPhysicalCoordinates(hwndSource, physicalScreenLocation);
+        }
+
+        /// <summary>Display the system menu at a specified location.</summary>
+        /// <param name="source">The source/hwnd for which the system menu should be displayed.</param>
+        /// <param name="physicalScreenLocation">The location to display the system menu, in physical screen coordinates.</param>
+        /// <remarks>
+        /// The dpi of <paramref name="source"/> is NOT used to calculate the final coordinates.
+        /// So you have to pass the final coordinates.
+        /// </remarks>
+        [SecuritySafeCritical]
+        public static void ShowSystemMenuPhysicalCoordinates(HwndSource source, Point physicalScreenLocation)
+        {
+            Verify.IsNotNull(source, "source");
+
+            var hwnd = source.Handle;
 
             if (hwnd == IntPtr.Zero || !NativeMethods.IsWindow(hwnd))
             {
@@ -97,8 +159,8 @@ namespace ControlzEx.Windows.Shell
             }
 
             var hmenu = NativeMethods.GetSystemMenu(hwnd, false);
-
-            var cmd = NativeMethods.TrackPopupMenuEx(hmenu, Constants.TPM_LEFTBUTTON | Constants.TPM_RETURNCMD, (int)physicalScreenLocation.X, (int)physicalScreenLocation.Y, hwnd, IntPtr.Zero);
+            var flags = NativeMethods.GetSystemMetrics(SM.MENUDROPALIGNMENT);
+            var cmd = NativeMethods.TrackPopupMenuEx(hmenu, Constants.TPM_LEFTBUTTON | Constants.TPM_RETURNCMD | (uint)flags, (int)physicalScreenLocation.X, (int)physicalScreenLocation.Y, hwnd, IntPtr.Zero);
             if (0 != cmd)
             {
                 NativeMethods.PostMessage(hwnd, WM.SYSCOMMAND, new IntPtr(cmd), IntPtr.Zero);
