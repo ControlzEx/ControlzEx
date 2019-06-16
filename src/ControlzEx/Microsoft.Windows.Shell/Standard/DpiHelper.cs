@@ -111,7 +111,7 @@ namespace ControlzEx.Standard
 
         #region Per monitor dpi support
 
-        public static DpiScale GetDpi(Visual visual)
+        public static DpiScale GetDpi(this Visual visual)
         {
 #if OWNDPISCALE
             return new DpiScale(1, 1);
