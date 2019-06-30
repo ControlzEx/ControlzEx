@@ -44,3 +44,7 @@ artifacts:
 
 nuget:
   disable_publish_on_pr: true
+
+skip_commits:
+  files:
+    - '**/*.md'
