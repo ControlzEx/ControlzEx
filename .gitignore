@@ -257,3 +257,6 @@ paket-files/
 
 # cake
 tools/
+
+# XamlStyler
+!XamlStyler/
