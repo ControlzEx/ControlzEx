@@ -80,7 +80,7 @@ namespace ControlzEx.Behaviors
         /// <see cref="DependencyProperty"/> for <see cref="IgnoreTaskbarOnMaximize"/>.
         /// </summary>
         public static readonly DependencyProperty IgnoreTaskbarOnMaximizeProperty =
-            DependencyProperty.Register(nameof(IgnoreTaskbarOnMaximize), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(false, OnIgnoreTaskbarOnMaximizePropertyChanged));
+            DependencyProperty.Register(nameof(IgnoreTaskbarOnMaximize), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(false, OnIgnoreTaskbarOnMaximizeChanged));
 
         /// <summary>
         /// Gets/sets if the border thickness value should be kept on maximize
@@ -112,7 +112,7 @@ namespace ControlzEx.Behaviors
         /// <summary>
         /// <see cref="DependencyProperty"/> for <see cref="TryToBeFlickerFree"/>.
         /// </summary>
-        public static readonly DependencyProperty TryToBeFlickerFreeProperty = DependencyProperty.Register(nameof(TryToBeFlickerFree), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(default(bool), OnTryToBeFlickerFreePropertyChanged));
+        public static readonly DependencyProperty TryToBeFlickerFreeProperty = DependencyProperty.Register(nameof(TryToBeFlickerFree), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(default(bool), OnTryToBeFlickerFreeChanged));
 
         private static readonly DependencyPropertyKey IsNCActivePropertyKey = DependencyProperty.RegisterReadOnly(nameof(IsNCActive), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(default(bool)));
 
@@ -130,9 +130,9 @@ namespace ControlzEx.Behaviors
             private set { this.SetValue(IsNCActivePropertyKey, value); }
         }
 
-        public static readonly DependencyProperty EnableMinimizeProperty = DependencyProperty.Register(nameof(EnableMinimize), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(true, OnEnableMinimizePropertyChanged));
+        public static readonly DependencyProperty EnableMinimizeProperty = DependencyProperty.Register(nameof(EnableMinimize), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(true, OnEnableMinimizeChanged));
 
-        private static void OnEnableMinimizePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnEnableMinimizeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (e.NewValue != e.OldValue && e.NewValue is bool showMinButton)
             {
@@ -173,9 +173,9 @@ namespace ControlzEx.Behaviors
             set { SetValue(EnableMinimizeProperty, value); }
         }
 
-        public static readonly DependencyProperty EnableMaxRestoreProperty = DependencyProperty.Register(nameof(EnableMaxRestore), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(true, OnEnableMaxRestorePropertyChanged));
+        public static readonly DependencyProperty EnableMaxRestoreProperty = DependencyProperty.Register(nameof(EnableMaxRestore), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(true, OnEnableMaxRestoreChanged));
 
-        private static void OnEnableMaxRestorePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnEnableMaxRestoreChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (e.NewValue != e.OldValue && e.NewValue is bool showMaxRestoreButton)
             {
@@ -308,7 +308,7 @@ namespace ControlzEx.Behaviors
             }
         }
 
-        private static void OnIgnoreTaskbarOnMaximizePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnIgnoreTaskbarOnMaximizeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var behavior = (WindowChromeBehavior)d;
             behavior._OnChromePropertyChangedThatRequiresRepaint();
@@ -335,7 +335,7 @@ namespace ControlzEx.Behaviors
             behavior.HandleMaximize();
         }
 
-        private static void OnTryToBeFlickerFreePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnTryToBeFlickerFreeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var behavior = (WindowChromeBehavior)d;
 

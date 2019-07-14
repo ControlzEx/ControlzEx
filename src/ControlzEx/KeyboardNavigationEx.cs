@@ -16,10 +16,8 @@ namespace ControlzEx
     public sealed class KeyboardNavigationEx
     {
         private static KeyboardNavigationEx _instance;
-        //internal static bool AlwaysShowFocusVisual
-        private readonly PropertyInfo _alwaysShowFocusVisual;
-        //internal static void ShowFocusVisual()
-        private readonly MethodInfo _showFocusVisual;
+        private readonly PropertyInfo _alwaysShowFocusVisual; // internal static bool AlwaysShowFocusVisual
+        private readonly MethodInfo _showFocusVisual; // internal static void ShowFocusVisual()
 
         // Explicit static constructor to tell C# compiler
         // not to mark type as beforefieldinit
@@ -30,8 +28,8 @@ namespace ControlzEx
         private KeyboardNavigationEx()
         {
             var type = typeof(KeyboardNavigation);
-            _alwaysShowFocusVisual = type.GetProperty("AlwaysShowFocusVisual", BindingFlags.NonPublic | BindingFlags.Static);
-            _showFocusVisual = type.GetMethod("ShowFocusVisual", BindingFlags.NonPublic | BindingFlags.Static);
+            this._alwaysShowFocusVisual = type.GetProperty("AlwaysShowFocusVisual", BindingFlags.NonPublic | BindingFlags.Static);
+            this._showFocusVisual = type.GetMethod("ShowFocusVisual", BindingFlags.NonPublic | BindingFlags.Static);
         }
 
         /// <summary>
@@ -45,13 +43,13 @@ namespace ControlzEx
         /// </summary>
         internal void ShowFocusVisualInternal()
         {
-            _showFocusVisual.Invoke(null, null);
+            this._showFocusVisual.Invoke(null, null);
         }
 
         internal bool AlwaysShowFocusVisualInternal
         {
-            get { return (bool) _alwaysShowFocusVisual.GetValue(null, null); }
-            set { _alwaysShowFocusVisual.SetValue(null, value, null); }
+            get { return (bool)this._alwaysShowFocusVisual.GetValue(null, null); }
+            set { this._alwaysShowFocusVisual.SetValue(null, value, null); }
         }
 
         /// <summary>
@@ -62,7 +60,7 @@ namespace ControlzEx
         {
             element?.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
             {
-                var keybHack = KeyboardNavigationEx.Instance;
+                var keybHack = Instance;
                 var alwaysShowFocusVisual = keybHack.AlwaysShowFocusVisualInternal;
                 keybHack.AlwaysShowFocusVisualInternal = true;
                 try
@@ -82,26 +80,25 @@ namespace ControlzEx
         /// </summary>
         public static readonly DependencyProperty AlwaysShowFocusVisualProperty
             = DependencyProperty.RegisterAttached("AlwaysShowFocusVisual",
-                typeof(bool),
-                typeof(KeyboardNavigationEx),
-                new FrameworkPropertyMetadata(default(bool), AlwaysShowFocusVisualPropertyChangedCallback));
+                                                  typeof(bool),
+                                                  typeof(KeyboardNavigationEx),
+                                                  new FrameworkPropertyMetadata(default(bool), OnAlwaysShowFocusVisualChanged));
 
-        private static void AlwaysShowFocusVisualPropertyChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
+        private static void OnAlwaysShowFocusVisualChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
         {
-            var fe = dependencyObject as UIElement;
-            if (fe != null && args.NewValue != args.OldValue)
+            if (dependencyObject is UIElement element && args.NewValue != args.OldValue)
             {
-                fe.GotFocus -= FrameworkElementGotFocus;
+                element.GotFocus -= FrameworkElementGotFocus;
                 if ((bool)args.NewValue)
                 {
-                    fe.GotFocus += FrameworkElementGotFocus;
+                    element.GotFocus += FrameworkElementGotFocus;
                 }
             }
         }
 
         private static void FrameworkElementGotFocus(object sender, RoutedEventArgs e)
         {
-            KeyboardNavigationEx.Focus(sender as UIElement);
+            Focus(sender as UIElement);
         }
 
         /// <summary>
@@ -116,6 +113,7 @@ namespace ControlzEx
         /// <summary>
         /// Sets a the value which indicates if the UI element always show the focus visual style.
         /// </summary>
+        [AttachedPropertyBrowsableForType(typeof(UIElement))]
         public static void SetAlwaysShowFocusVisual(UIElement element, bool value)
         {
             element.SetValue(AlwaysShowFocusVisualProperty, value);
