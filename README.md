@@ -138,6 +138,10 @@ An auto moving ToolTip. More [Info](https://jkarger.de/2014/11/02/how-to-make-th
 
 ![automove_tooltip](https://cloud.githubusercontent.com/assets/658431/13509772/7ff7406a-e18d-11e5-9238-e48c6e4fa2fa.gif)
 
+## GlowWindowBehavior
+
+The `GlowWindowBehavior` adds a Glow around your target window.
+
 ## WindowChromeBehavior
 
 ControlzEx provides a custom chrome for WPF windows and some other deeper fixes for it.
