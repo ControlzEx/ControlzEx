@@ -19,6 +19,7 @@ namespace ControlzEx
     /// </summary>
     public class PopupEx : Popup
     {
+        /// <summary>Identifies the <see cref="CloseOnMouseLeftButtonDown"/> dependency property.</summary>
         public static readonly DependencyProperty CloseOnMouseLeftButtonDownProperty
             = DependencyProperty.Register(nameof(CloseOnMouseLeftButtonDown),
                                           typeof(bool),
@@ -26,12 +27,28 @@ namespace ControlzEx
                                           new PropertyMetadata(false));
 
         /// <summary>
-        /// Gets/sets if the popup can be closed by left mouse button down.
+        /// Gets or sets if the popup can be closed by left mouse button down.
         /// </summary>
         public bool CloseOnMouseLeftButtonDown
         {
-            get { return (bool)GetValue(CloseOnMouseLeftButtonDownProperty); }
-            set { SetValue(CloseOnMouseLeftButtonDownProperty, value); }
+            get { return (bool)this.GetValue(CloseOnMouseLeftButtonDownProperty); }
+            set { this.SetValue(CloseOnMouseLeftButtonDownProperty, value); }
+        }
+
+        /// <summary>Identifies the <see cref="AllowTopMost"/> dependency property.</summary>
+        public static readonly DependencyProperty AllowTopMostProperty
+            = DependencyProperty.Register(nameof(AllowTopMost),
+                                          typeof(bool),
+                                          typeof(PopupEx),
+                                          new PropertyMetadata(true));
+
+        /// <summary>
+        /// Gets or sets whether if the Popup should be always on top.
+        /// </summary>
+        public bool AllowTopMost
+        {
+            get { return (bool)this.GetValue(AllowTopMostProperty); }
+            set { this.SetValue(AllowTopMostProperty, value); }
         }
 
         public PopupEx()
@@ -47,8 +64,8 @@ namespace ControlzEx
         {
             var offset = this.HorizontalOffset;
             // "bump" the offset to cause the popup to reposition itself on its own
-            SetCurrentValue(HorizontalOffsetProperty, offset + 1);
-            SetCurrentValue(HorizontalOffsetProperty, offset);
+            this.SetCurrentValue(HorizontalOffsetProperty, offset + 1);
+            this.SetCurrentValue(HorizontalOffsetProperty, offset);
         }
 
         private void PopupEx_Loaded(object sender, RoutedEventArgs e)
@@ -84,7 +101,7 @@ namespace ControlzEx
 
         private void PopupEx_Opened(object sender, EventArgs e)
         {
-            this.SetTopmostState(true);
+            this.SetTopmostState(this.hostWindow?.IsActive ?? true);
         }
 
         private void hostWindow_Activated(object sender, EventArgs e)
@@ -104,6 +121,7 @@ namespace ControlzEx
             {
                 target.SizeChanged -= this.hostWindow_SizeOrLocationChanged;
             }
+
             if (this.hostWindow != null)
             {
                 this.hostWindow.LocationChanged -= this.hostWindow_SizeOrLocationChanged;
@@ -112,6 +130,7 @@ namespace ControlzEx
                 this.hostWindow.Activated -= this.hostWindow_Activated;
                 this.hostWindow.Deactivated -= this.hostWindow_Deactivated;
             }
+
             this.Unloaded -= this.PopupEx_Unloaded;
             this.Opened -= this.PopupEx_Opened;
             this.hostWindow = null;
@@ -122,26 +141,28 @@ namespace ControlzEx
             if (this.hostWindow != null && this.hostWindow.WindowState != WindowState.Minimized)
             {
                 // special handling for validation popup
-                var target = this.PlacementTarget as FrameworkElement;
-                var holder = target != null ? target.DataContext as AdornedElementPlaceholder : null;
-                if (holder != null && holder.AdornedElement != null)
+                var holder = this.PlacementTarget is FrameworkElement target ? target.DataContext as AdornedElementPlaceholder : null;
+                var adornedElement = holder?.AdornedElement;
+                if (adornedElement != null)
                 {
-                    this.PopupAnimation = PopupAnimation.None;
-                    this.IsOpen = false;
-                    var errorTemplate = holder.AdornedElement.GetValue(Validation.ErrorTemplateProperty);
-                    holder.AdornedElement.SetValue(Validation.ErrorTemplateProperty, null);
-                    holder.AdornedElement.SetValue(Validation.ErrorTemplateProperty, errorTemplate);
+                    this.SetCurrentValue(PopupAnimationProperty, PopupAnimation.None);
+                    this.SetCurrentValue(IsOpenProperty, false);
+                    var errorTemplate = adornedElement.GetValue(Validation.ErrorTemplateProperty);
+                    adornedElement.SetCurrentValue(Validation.ErrorTemplateProperty, null);
+                    adornedElement.SetCurrentValue(Validation.ErrorTemplateProperty, errorTemplate);
                 }
             }
         }
 
         private void hostWindow_SizeOrLocationChanged(object sender, EventArgs e)
         {
-            RefreshPosition();
+            this.RefreshPosition();
         }
 
         private void SetTopmostState(bool isTop)
         {
+            isTop &= this.AllowTopMost;
+
             // Don’t apply state if it’s the same as incoming state
             if (this.appliedTopMost.HasValue && this.appliedTopMost == isTop)
             {
@@ -158,6 +179,7 @@ namespace ControlzEx
             {
                 return;
             }
+
             var hwnd = hwndSource.Handle;
 
             RECT rect;
@@ -191,9 +213,9 @@ namespace ControlzEx
 
         protected override void OnPreviewMouseLeftButtonDown(MouseButtonEventArgs e)
         {
-            if (CloseOnMouseLeftButtonDown)
+            if (this.CloseOnMouseLeftButtonDown)
             {
-                this.IsOpen = false;
+                this.SetCurrentValue(IsOpenProperty, false);
             }
         }
 
@@ -225,7 +247,7 @@ namespace ControlzEx
             NOSIZE = 0x0001,
             NOZORDER = 0x0004,
             SHOWWINDOW = 0x0040,
-            TOPMOST = SWP.NOACTIVATE | SWP.NOOWNERZORDER | SWP.NOSIZE | SWP.NOMOVE | SWP.NOREDRAW | SWP.NOSENDCHANGING,
+            TOPMOST = NOACTIVATE | NOOWNERZORDER | NOSIZE | NOMOVE | NOREDRAW | NOSENDCHANGING,
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
@@ -259,67 +281,68 @@ namespace ControlzEx
             [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
             public void Offset(int dx, int dy)
             {
-                _left += dx;
-                _top += dy;
-                _right += dx;
-                _bottom += dy;
+                this._left += dx;
+                this._top += dy;
+                this._right += dx;
+                this._bottom += dy;
             }
 
             [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
             public int Left
             {
-                get { return _left; }
-                set { _left = value; }
+                get { return this._left; }
+                set { this._left = value; }
             }
 
             [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
             public int Right
             {
-                get { return _right; }
-                set { _right = value; }
+                get { return this._right; }
+                set { this._right = value; }
             }
 
             [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
             public int Top
             {
-                get { return _top; }
-                set { _top = value; }
+                get { return this._top; }
+                set { this._top = value; }
             }
 
             [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
             public int Bottom
             {
-                get { return _bottom; }
-                set { _bottom = value; }
+                get { return this._bottom; }
+                set { this._bottom = value; }
             }
 
             [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
             public int Width
             {
-                get { return _right - _left; }
+                get { return this._right - this._left; }
             }
 
             [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
             public int Height
             {
-                get { return _bottom - _top; }
+                get { return this._bottom - this._top; }
             }
 
             [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
             public POINT Position
             {
-                get { return new POINT { x = _left, y = _top }; }
+                get { return new POINT { x = this._left, y = this._top }; }
             }
 
             [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
             public SIZE Size
             {
-                get { return new SIZE { cx = Width, cy = Height }; }
+                get { return new SIZE { cx = this.Width, cy = this.Height }; }
             }
 
             public static RECT Union(RECT rect1, RECT rect2)
             {
-                return new RECT {
+                return new RECT
+                {
                     Left = Math.Min(rect1.Left, rect2.Left),
                     Top = Math.Min(rect1.Top, rect2.Top),
                     Right = Math.Max(rect1.Right, rect2.Right),
@@ -332,10 +355,10 @@ namespace ControlzEx
                 try
                 {
                     var rc = (RECT)obj;
-                    return rc._bottom == _bottom
-                        && rc._left == _left
-                        && rc._right == _right
-                        && rc._top == _top;
+                    return rc._bottom == this._bottom
+                           && rc._left == this._left
+                           && rc._right == this._right
+                           && rc._top == this._top;
                 }
                 catch (InvalidCastException)
                 {
@@ -345,7 +368,7 @@ namespace ControlzEx
 
             public override int GetHashCode()
             {
-                return (_left << 16 | LOWORD(_right)) ^ (_top << 16 | LOWORD(_bottom));
+                return (this._left << 16 | LOWORD(this._right)) ^ (this._top << 16 | LOWORD(this._bottom));
             }
         }
 

@@ -1,27 +1,81 @@
-![automove_tooltip2](./logo.jpg)  
+<div align="center">
+  <h1>ControlzEx</h1>
+  <p>
+    Shared Controlz for WPF
+  </p>
+  <a href="https://github.com/ControlzEx/ControlzEx">
+    <img alt="ControlzEx" with="200" height="200" src="logo-mini.png">
+  </a>
 
 [![Join the chat at https://gitter.im/ControlzEx/ControlzEx](https://img.shields.io/badge/GITTER-join%20chat-green.svg?style=flat-square)](https://gitter.im/ControlzEx/ControlzEx?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 [![Build status](https://img.shields.io/appveyor/ci/punker76/controlzex.svg?style=flat-square)](https://ci.appveyor.com/project/punker76/controlzex)
 [![Release](https://img.shields.io/github/release/ControlzEx/ControlzEx.svg?style=flat-square)](https://github.com/ControlzEx/ControlzEx/releases/latest)
-[![Issues](https://img.shields.io/github/issues/ControlzEx/ControlzEx.svg?style=flat-square)](https://github.com/ControlzEx/ControlzEx/issues)
 [![Downloads](https://img.shields.io/nuget/dt/ControlzEx.svg?style=flat-square)](http://www.nuget.org/packages/ControlzEx/)
+[![Issues](https://img.shields.io/github/issues/ControlzEx/ControlzEx.svg?style=flat-square)](https://github.com/ControlzEx/ControlzEx/issues)
 [![Nuget](https://img.shields.io/nuget/vpre/ControlzEx.svg?style=flat-square)](http://nuget.org/packages/ControlzEx)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/ControlzEx/ControlzEx/blob/master/License.txt)
 
-Shared Controlz for WPF and...
+[![Twitter Jan](https://img.shields.io/badge/twitter-%40punker76-55acee.svg?style=flat-square)](https://twitter.com/punker76) [![Twitter Bastian](https://img.shields.io/badge/twitter-%40batzendev-55acee.svg?style=flat-square)](https://twitter.com/batzendev) [![Twitter James](https://img.shields.io/badge/twitter-%40James_Willock-55acee.svg?style=flat-square)](https://twitter.com/James_Willock)
 
-Made by...
+</div>
 
-[![Twitter Jan](https://img.shields.io/badge/twitter-%40punker76-55acee.svg?style=flat-square)](https://twitter.com/punker76)
-[![Twitter James](https://img.shields.io/badge/twitter-%40James_Willock-55acee.svg?style=flat-square)](https://twitter.com/James_Willock)
-[![Twitter Bastian](https://img.shields.io/badge/twitter-%40batzendev-55acee.svg?style=flat-square)](https://twitter.com/batzendev)
+# Quick started for developers
+
+* Download the `.NET Core 3.0.0 Preview 6` SDK and Runtime from [here](https://github.com/dotnet/core/blob/master/release-notes/3.0/preview/3.0.0-preview6.md)
+  * Make sure you only have this dotnet core 3.0 installed!
+* Make sure you have [Visual Studio 2019](https://visualstudio.microsoft.com) installed (this could also be the Community Edition)
+* Clone the [ControlzEx repository](https://github.com/ControlzEx/ControlzEx.git)
+* Open the solution from the `src` folder in Visual Studio 2019
+* Rebuild and you're done... (you might need to rebuild 2x, because we use the very fresh hot dotnet core stuff)
+
+# What's in the box
+
+* `.NET Core 3.0.0 Preview 6` support (why, read [here](https://blogs.msdn.microsoft.com/dotnet/2018/10/04/update-on-net-core-3-0-and-net-framework-4-8/) )
+* Also still targeting .Net 4.5 and 4.6.2
+
+## TextBoxInputMaskBehavior
+
+The `TextBoxInputMaskBehavior` can be used to show a mask inside a `TextBox`. Note: It's only a mask and doesn't validates your text!
+
+```xml
+<TextBlock Grid.Row="0"
+           Grid.Column="0"
+           Margin="4"
+           Text="Datetime" />
+<TextBox Grid.Row="0"
+         Grid.Column="1"
+         Margin="4">
+    <behaviors:Interaction.Behaviors>
+        <controlzEx:TextBoxInputMaskBehavior InputMask="00/00/0000" />
+    </behaviors:Interaction.Behaviors>
+</TextBox>
+
+<TextBlock Grid.Row="1"
+           Grid.Column="0"
+           Margin="4"
+           Text="Phone Number" />
+<TextBox Grid.Row="1"
+         Grid.Column="1"
+         Margin="4">
+    <behaviors:Interaction.Behaviors>
+        <controlzEx:TextBoxInputMaskBehavior InputMask="( 999 ) 000 000 - 00" PromptChar="_" />
+    </behaviors:Interaction.Behaviors>
+</TextBox>
+```
+
+The original TextBoxInputMaskBehavior was taken from from Blindmeis's Blog.
+
+- [https://blindmeis.wordpress.com/2015/01/20/wpf-textbox-input-behavior/](https://blindmeis.wordpress.com/2015/01/20/wpf-textbox-input-behavior/)
+- [https://blindmeis.wordpress.com/2010/06/01/wpf-masked-textbox-behavior/](https://blindmeis.wordpress.com/2010/06/01/wpf-masked-textbox-behavior/)
+
+![InputMaskScreenshot](https://user-images.githubusercontent.com/658431/31741772-c3fdd41c-b455-11e7-8110-7b54d636ede8.png)
 
 ## KeyboardNavigationEx
 
-KeyboardNavigationEx is a helper class for a common focusing problem. The focus of an UI element itself isn't the problem. But if we use the common focusing methods, the control get the focus, but it doesn't get the focus visual style.
+The `KeyboardNavigationEx` is a helper class for a common focusing problem. The focus of an UI element itself isn't the problem. But if we use the common focusing methods, the control get the focus, but it doesn't get the focus visual style.
 
-The KeyboardNavigation class handles the visual style only if the control get the focus from a keyboard device or if the SystemParameters.KeyboardCues is true.
+The KeyboardNavigationEx class handles the visual style only if the control get the focus from a keyboard device or if the SystemParameters.KeyboardCues is true.
 
 With the KeyboardNavigationEx you can fix this in two simple ways.
 
@@ -49,7 +103,7 @@ Or in XAML code:
 
 ## AutoMove ToolTip
 
-An auto moving ToolTip. More [Info](http://jkarger.de/archive/2014/11/02/how-to-make-the-tooltip-follow-the-mouse/).
+An auto moving ToolTip. More [Info](https://jkarger.de/2014/11/02/how-to-make-the-tooltip-follow-the-mouse/).
 
 ```xaml
 <Button Margin="5"
@@ -84,28 +138,34 @@ An auto moving ToolTip. More [Info](http://jkarger.de/archive/2014/11/02/how-to-
 
 ![automove_tooltip](https://cloud.githubusercontent.com/assets/658431/13509772/7ff7406a-e18d-11e5-9238-e48c6e4fa2fa.gif)
 
+## GlowWindowBehavior
+
+The `GlowWindowBehavior` adds a Glow around your target window.
+
 ## WindowChromeBehavior
 
 ControlzEx provides a custom chrome for WPF windows and some other deeper fixes for it.
 
-Most fixes comes from [MahApps.Metro](https://github.com/MahApps/MahApps.Metro) and [Fluent.Ribbon](https://github.com/fluentribbon/Fluent.Ribbon).
+Most of the fixes and improvements are from [MahApps.Metro](https://github.com/MahApps/MahApps.Metro) and [Fluent.Ribbon](https://github.com/fluentribbon/Fluent.Ribbon).
 
 Concrete implementation of techniques described here:
 
 http://blogs.msdn.com/b/wpfsdk/archive/2008/09/08/custom-window-chrome-in-wpf.aspx
 
-It's a fork of the original Microsoft WPF Shell Integration Library. Current Microsofts implementation can be found at:
+It's a fork of the original Microsoft WPF Shell Integration Library. Current Microsofts implementation can be found:
 
-http://referencesource.microsoft.com/
+- [https://github.com/dotnet/wpf](https://github.com/dotnet/wpf)
+- [http://referencesource.microsoft.com](http://referencesource.microsoft.com)
 
 ## PopupEx
 
 Custom `Popup` that can be used in validation error templates or something else like in [MaterialDesignInXamlToolkit](https://github.com/ButchersBoy/MaterialDesignInXamlToolkit) or [MahApps.Metro](https://github.com/MahApps/MahApps.Metro).  
 
-It provides some additional nice features:
-  + repositioning if host-window size or location changed
-  + repositioning if host-window gets maximized and vice versa
-  + it's only topmost if the host-window is activated  
+`PopupEx` provides some additional nice features:
+
++ repositioning if host-window size or location changed
++ repositioning if host-window gets maximized and vice versa
++ it's only topmost if the host-window is activated  
 
 ![2015-10-11_01h03_05](https://cloud.githubusercontent.com/assets/658431/10413784/ea365626-6fb6-11e5-9abc-c174159dcbf8.png)
 
@@ -116,9 +176,9 @@ Custom `TabControl` that keeps the `TabItem` content in the VisualTree after uns
 Usage:
 
 ```xaml
-<controlz:TabControlEx Style="{StaticResource {x:Type TabControl}}">
+<controlz:TabControlEx>
     <TabItem Header="Lorem">
-        <TextBlock Text="Modern UI with MahApps.Metro"
+        <TextBlock Text="Lorem ipsum dolor sit amet, consetetur sadipscing"
                    HorizontalAlignment="Center"
                    FontSize="30" />
     </TabItem>
@@ -207,7 +267,7 @@ Your users should now have a simple way to use your icon pack in their applicati
 
 The MIT License (MIT)
 
-Copyright (c) 2015-16 Jan Karger, Bastian Schmidt, James Willock
+Copyright (c) since 2015 Jan Karger, Bastian Schmidt, James Willock
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

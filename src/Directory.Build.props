@@ -1,0 +1,54 @@
+<Project>
+    <PropertyGroup>
+        <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
+        <!-- <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile> -->
+        <!-- <RestoreLockedMode>true</RestoreLockedMode> -->
+        <IsBuildingWpfTempProj Condition="$(MSBuildProjectName.Contains('_wpftmp')) != 'true'">false</IsBuildingWpfTempProj>
+        <IsBuildingWpfTempProj Condition="$(MSBuildProjectName.Contains('_wpftmp')) == 'true'">true</IsBuildingWpfTempProj>
+    </PropertyGroup>
+
+    <!-- Project properties -->
+    <PropertyGroup>
+        <OutputPath Condition="$(IsBuildingWpfTempProj) != 'true'">$(MSBuildThisFileDirectory)\bin\$(Configuration)\$(MSBuildProjectName)</OutputPath>
+        <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
+        <GenerateDocumentationFile>false</GenerateDocumentationFile>
+        <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+        <LangVersion>7.3</LangVersion>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <NoWarn>$(NoWarn);CS1591</NoWarn>
+        <NoError>$(NoError);CS1591</NoError>
+        <UseWPF>true</UseWPF>
+        <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\ControlzEx.ruleset</CodeAnalysisRuleSet>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Remove="**\*.png;**\*.jpg;**\*.ico"/>
+        <Resource Include="**\*.png;**\*.jpg;**\*.ico"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Include="$(MSBuildThisFileDirectory)\GlobalAssemblyInfo.cs">
+            <Link>Properties\GlobalAssemblyInfo.cs</Link>
+        </Compile>
+    </ItemGroup>
+
+    <!-- SourceLink -->
+    <PropertyGroup>
+        <!-- Optional: Declare that the Repository URL can be published to NuSpec -->
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <!-- Optional: Embed source files that are not tracked by the source control manager to the PDB -->
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <!-- Optional: Include PDB in the built .nupkg -->
+        <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+        <!-- https://github.com/dotnet/sourcelink/blob/master/docs/README.md#embedallsources -->
+        <EmbedAllSources>true</EmbedAllSources>
+    </PropertyGroup>
+
+    <!-- Add the references for all projects and targets-->
+    <ItemGroup>
+        <PackageReference Include="JetBrains.Annotations" Version="2019.*" PrivateAssets="All" />
+        <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.*" />
+        <PackageReference Include="WpfAnalyzers" Version="2.2.*" PrivateAssets="All" />
+    </ItemGroup>
+</Project>

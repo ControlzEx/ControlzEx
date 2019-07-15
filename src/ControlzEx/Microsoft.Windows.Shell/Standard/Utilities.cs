@@ -161,6 +161,12 @@ namespace ControlzEx.Standard
             return (short)(i & 0xFFFF);
         }
 
+        public static IntPtr MakeLParam(int LoWord, int HiWord) 
+        { 
+            int i = (HiWord << 16) | (LoWord & 0xffff); 
+            return new IntPtr(i); 
+        } 
+
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
         public static bool AreStreamsEqual(Stream left, Stream right)

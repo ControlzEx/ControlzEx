@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+    <!-- Project properties -->
+    <PropertyGroup>
+        <TargetFrameworks>net45;net462;netcoreapp3.0</TargetFrameworks>
+        <AssemblyName>ControlzEx</AssemblyName>
+        <RootNamespace>ControlzEx</RootNamespace>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <Description>ControlzEx is a library with some shared Controls for WPF.</Description>
+    </PropertyGroup>
+    <!-- NuGet -->
+    <PropertyGroup>
+        <Authors>Jan Karger, Bastian Schmidt, James Willock</Authors>
+        <PackageLicenseUrl>https://github.com/ControlzEx/ControlzEx/blob/develop/LICENSE</PackageLicenseUrl>
+        <PackageProjectUrl>https://github.com/ControlzEx/ControlzEx</PackageProjectUrl>
+        <PackageIconUrl>https://raw.githubusercontent.com/ControlzEx/ControlzEx/develop/logo-mini.png</PackageIconUrl>
+        <PackageTags>WPF;UI;Metro;Modern;Material;XAML;Toolkit;Library;.NET;OSS;OpenSource;WindowChrome</PackageTags>
+        <PackageReleaseNotes>https://github.com/ControlzEx/ControlzEx/releases</PackageReleaseNotes>
+        <RepositoryUrl>https://github.com/ControlzEx/ControlzEx.git</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <GenerateLibraryLayout>true</GenerateLibraryLayout>
+    </PropertyGroup>
+    <!-- Sign assembly -->
+    <PropertyGroup>
+        <SignAssembly>True</SignAssembly>
+        <AssemblyOriginatorKeyFile>$(MSBuildProjectDirectory)\..\SharedKey.snk</AssemblyOriginatorKeyFile>
+        <DelaySign>false</DelaySign>
+        <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
+    </PropertyGroup>
+    <ItemGroup>
+        <Compile DependentUpon="%(Filename)" SubType="Code" Update="**\obj\**\*.g$(DefaultLanguageSourceExtension)" />
+        <Compile DependentUpon="%(Filename)" SubType="Designer" Update="**\*.xaml$(DefaultLanguageSourceExtension)" />
+    </ItemGroup>
+    <!-- reference includes -->
+    <ItemGroup>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2*" PrivateAssets="All" />
+    </ItemGroup>
+</Project>

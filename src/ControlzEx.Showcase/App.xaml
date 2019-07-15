@@ -5,79 +5,82 @@
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
-            <Style TargetType="{x:Type local:WindowChromeWindow}"
-                   x:Key="{x:Type local:WindowChromeWindow}">
-                <Setter Property="ResizeBorderThickness"
-                        Value="8" />
-                <Setter Property="BorderThickness"
-                        Value="1" />
+            <Style x:Key="{x:Type local:WindowChromeWindow}" TargetType="{x:Type local:WindowChromeWindow}">
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="NCActiveBrush" Value="{Binding Background, RelativeSource={RelativeSource Self}}" />
+                <Setter Property="NCCurrentBrush" Value="{Binding NCActiveBrush, RelativeSource={RelativeSource Self}}" />
+                <Setter Property="NCNonActiveBrush" Value="{Binding Source={x:Static SystemColors.WindowFrameBrush}}" />
+                <Setter Property="ResizeBorderThickness" Value="8" />
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type local:WindowChromeWindow}">
-                            <Border Background="{TemplateBinding Background}"
-                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                    BorderThickness="{TemplateBinding BorderThickness}">
-                                <Grid>
-                                    <AdornerDecorator>
-                                        <ContentPresenter/>
-                                    </AdornerDecorator>
+                            <Grid Background="{TemplateBinding Background}">
+                                <AdornerDecorator>
+                                    <ContentPresenter />
+                                </AdornerDecorator>
 
-                                    <ResizeGrip x:Name="WindowResizeGrip"
-                                                HorizontalAlignment="Right"
-                                                VerticalAlignment="Bottom"
-                                                Visibility="Collapsed"
-                                                IsTabStop="false"/>
-                                </Grid>
-                            </Border>
+                                <Border x:Name="PART_Border2"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch"
+                                        Background="{x:Null}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        UseLayoutRounding="True" />
+
+                                <Border x:Name="PART_Border"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch"
+                                        Background="{x:Null}"
+                                        BorderBrush="{TemplateBinding GlowBrush}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        UseLayoutRounding="True" />
+
+                                <ResizeGrip x:Name="WindowResizeGrip"
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Bottom"
+                                            IsTabStop="false"
+                                            Visibility="Collapsed" />
+                            </Grid>
                             <ControlTemplate.Triggers>
+                                <!--  handle active/inactive state  -->
+                                <Trigger Property="IsActive" Value="False">
+                                    <Setter TargetName="PART_Border" Property="BorderBrush" Value="{Binding Path=NonActiveGlowBrush, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" />
+                                </Trigger>
+                                <Trigger SourceName="PART_Border" Property="BorderBrush" Value="{x:Null}">
+                                    <Setter TargetName="PART_Border2" Property="BorderBrush" Value="Black" />
+                                </Trigger>
                                 <MultiTrigger>
                                     <MultiTrigger.Conditions>
-                                        <Condition Property="Window.ResizeMode"
-                                                   Value="CanResizeWithGrip"/>
-                                        <Condition Property="Window.WindowState"
-                                                   Value="Normal"/>
+                                        <Condition Property="Window.ResizeMode" Value="CanResizeWithGrip" />
+                                        <Condition Property="Window.WindowState" Value="Normal" />
                                     </MultiTrigger.Conditions>
-                                    <Setter TargetName="WindowResizeGrip"
-                                            Property="Visibility"
-                                            Value="Visible"/>
+                                    <Setter TargetName="WindowResizeGrip" Property="Visibility" Value="Visible" />
                                 </MultiTrigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
                 <Style.Triggers>
-                    <Trigger Property="WindowState"
-                             Value="Maximized">
-                        <Setter Property="Margin"
-                                Value="0" />
+                    <Trigger Property="WindowState" Value="Maximized">
+                        <Setter Property="Margin" Value="0" />
                     </Trigger>
-                    <!-- #1823 try to fix another nasty issue
-                         WindowState = Maximized
-                         ResizeMode = NoResize-->
-                    <Trigger Property="ResizeMode"
-                             Value="NoResize">
-                        <Setter Property="Margin"
-                                Value="0" />
-                    </Trigger>                    
+                    <!--
+                        #1823 try to fix another nasty issue
+                        WindowState = Maximized
+                        ResizeMode = NoResize
+                    -->
+                    <Trigger Property="ResizeMode" Value="NoResize">
+                        <Setter Property="Margin" Value="0" />
+                    </Trigger>
+                    <Trigger Property="IsNCActive" Value="False">
+                        <Setter Property="NCCurrentBrush" Value="{Binding NCNonActiveBrush, RelativeSource={RelativeSource Self}}" />
+                    </Trigger>
                 </Style.Triggers>
             </Style>
 
-            <Style TargetType="{x:Type local:WindowChromeWindow}"
-                   x:Key="NoneWindowStyle"
-                   BasedOn="{StaticResource {x:Type local:WindowChromeWindow}}">
-                <Setter Property="WindowStyle"
-                        Value="None" />
-                <Setter Property="GlassFrameThickness"
-                        Value="0" />
-            </Style>
-
-            <Style TargetType="{x:Type local:WindowChromeWindow}"
-                   x:Key="NoneWindowStyleWithGlassFrame"
-                   BasedOn="{StaticResource {x:Type local:WindowChromeWindow}}">
-                <Setter Property="WindowStyle"
-                        Value="None" />
-                <Setter Property="GlassFrameThickness"
-                        Value="1" />
+            <Style x:Key="NoneWindowStyle"
+                   BasedOn="{StaticResource {x:Type local:WindowChromeWindow}}"
+                   TargetType="{x:Type local:WindowChromeWindow}">
+                <Setter Property="WindowStyle" Value="None" />
             </Style>
         </ResourceDictionary>
     </Application.Resources>

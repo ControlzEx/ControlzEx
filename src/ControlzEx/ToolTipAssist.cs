@@ -11,27 +11,14 @@ namespace ControlzEx
 
     public static class ToolTipAssist
     {
-        public static readonly DependencyProperty AutoMoveProperty =
-            DependencyProperty.RegisterAttached("AutoMove",
-                                                typeof(bool),
-                                                typeof(ToolTipAssist),
-                                                new FrameworkPropertyMetadata(false, AutoMovePropertyChangedCallback));
-
-        public static readonly DependencyProperty AutoMoveHorizontalOffsetProperty =
-            DependencyProperty.RegisterAttached("AutoMoveHorizontalOffset",
-                                                typeof(double),
-                                                typeof(ToolTipAssist),
-                                                new FrameworkPropertyMetadata(16d));
-
-        public static readonly DependencyProperty AutoMoveVerticalOffsetProperty =
-            DependencyProperty.RegisterAttached("AutoMoveVerticalOffset",
-                                                typeof(double),
-                                                typeof(ToolTipAssist),
-                                                new FrameworkPropertyMetadata(16d));
+        public static readonly DependencyProperty AutoMoveProperty
+            = DependencyProperty.RegisterAttached("AutoMove",
+                                                  typeof(bool),
+                                                  typeof(ToolTipAssist),
+                                                  new FrameworkPropertyMetadata(false, OnAutoMoveChanged));
 
         /// <summary>
-        /// Enables a ToolTip to follow the mouse cursor.
-        /// When set to <c>true</c>, the tool tip follows the mouse cursor.
+        /// Indicates whether a tooltip should follow the mouse cursor.
         /// </summary>
         [AttachedPropertyBrowsableForType(typeof(ToolTip))]
         public static bool GetAutoMove(ToolTip element)
@@ -39,13 +26,23 @@ namespace ControlzEx
             return (bool)element.GetValue(AutoMoveProperty);
         }
 
+        /// <summary>
+        /// Sets whether a tooltip should follow the mouse cursor.
+        /// </summary>
+        [AttachedPropertyBrowsableForType(typeof(ToolTip))]
         public static void SetAutoMove(ToolTip element, bool value)
         {
             element.SetValue(AutoMoveProperty, value);
         }
 
+        public static readonly DependencyProperty AutoMoveHorizontalOffsetProperty
+            = DependencyProperty.RegisterAttached("AutoMoveHorizontalOffset",
+                                                  typeof(double),
+                                                  typeof(ToolTipAssist),
+                                                  new FrameworkPropertyMetadata(16d));
+
         /// <summary>
-        /// Gets the horizontal offset for the relative placement.
+        /// Gets the horizontal offset for the relative placement of the Tooltip.
         /// </summary>
         [AttachedPropertyBrowsableForType(typeof(ToolTip))]
         public static double GetAutoMoveHorizontalOffset(ToolTip element)
@@ -54,15 +51,22 @@ namespace ControlzEx
         }
 
         /// <summary>
-        /// Sets the horizontal offset for the relative placement.
+        /// Sets the horizontal offset for the relative placement of the Tooltip.
         /// </summary>
+        [AttachedPropertyBrowsableForType(typeof(ToolTip))]
         public static void SetAutoMoveHorizontalOffset(ToolTip element, double value)
         {
             element.SetValue(AutoMoveHorizontalOffsetProperty, value);
         }
 
+        public static readonly DependencyProperty AutoMoveVerticalOffsetProperty
+            = DependencyProperty.RegisterAttached("AutoMoveVerticalOffset",
+                                                  typeof(double),
+                                                  typeof(ToolTipAssist),
+                                                  new FrameworkPropertyMetadata(16d));
+
         /// <summary>
-        /// Gets the vertical offset for the relative placement.
+        /// Gets the vertical offset for the relative placement of the Tooltip.
         /// </summary>
         [AttachedPropertyBrowsableForType(typeof(ToolTip))]
         public static double GetAutoMoveVerticalOffset(ToolTip element)
@@ -71,14 +75,15 @@ namespace ControlzEx
         }
 
         /// <summary>
-        /// Sets the vertical offset for the relative placement.
+        /// Sets the vertical offset for the relative placement of the Tooltip.
         /// </summary>
+        [AttachedPropertyBrowsableForType(typeof(ToolTip))]
         public static void SetAutoMoveVerticalOffset(ToolTip element, double value)
         {
             element.SetValue(AutoMoveVerticalOffsetProperty, value);
         }
 
-        private static void AutoMovePropertyChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
+        private static void OnAutoMoveChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
         {
             var toolTip = (ToolTip)dependencyObject;
             if (eventArgs.OldValue != eventArgs.NewValue && eventArgs.NewValue != null)
@@ -100,33 +105,28 @@ namespace ControlzEx
         private static void ToolTip_Opened(object sender, RoutedEventArgs e)
         {
             var toolTip = (ToolTip)sender;
-            var target = toolTip.PlacementTarget as FrameworkElement;
-            if (target == null)
+            if (toolTip.PlacementTarget is FrameworkElement target)
             {
-                return;
+                // move the tooltip on opening to the correct position
+                MoveToolTip(target, toolTip);
+                target.MouseMove += ToolTipTargetPreviewMouseMove;
+                Debug.WriteLine(">>tool tip opened");
             }
-            // move the tooltip on openeing to the correct position
-            MoveToolTip(target, toolTip);
-            target.MouseMove += ToolTipTargetPreviewMouseMove;
-            Debug.WriteLine(">>tool tip opened");
         }
 
         private static void ToolTip_Closed(object sender, RoutedEventArgs e)
         {
             var toolTip = (ToolTip)sender;
-            var target = toolTip.PlacementTarget as FrameworkElement;
-            if (target == null)
+            if (toolTip.PlacementTarget is FrameworkElement target)
             {
-                return;
+                target.MouseMove -= ToolTipTargetPreviewMouseMove;
+                Debug.WriteLine(">>tool tip closed");
             }
-            target.MouseMove -= ToolTipTargetPreviewMouseMove;
-            Debug.WriteLine(">>tool tip closed");
         }
 
         private static void ToolTipTargetPreviewMouseMove(object sender, MouseEventArgs e)
         {
-            var target = sender as FrameworkElement;
-            var toolTip = (target != null ? target.ToolTip : null) as ToolTip;
+            var toolTip = (sender is FrameworkElement target ? target.ToolTip : null) as ToolTip;
             MoveToolTip(sender as IInputElement, toolTip);
         }
 
@@ -137,12 +137,14 @@ namespace ControlzEx
                 return;
             }
 
-            toolTip.Placement = PlacementMode.Relative;
+            toolTip.SetCurrentValue(ToolTip.PlacementProperty, PlacementMode.Relative);
 
             var hOffsetFromToolTip = GetAutoMoveHorizontalOffset(toolTip);
             var vOffsetFromToolTip = GetAutoMoveVerticalOffset(toolTip);
 
             var dpi = DpiHelper.GetDpi(toolTip);
+
+            Debug.WriteLine(">>dpi       >> x: {0} \t y: {1}", dpi.DpiScaleX, dpi.DpiScaleY);
 
             var hDPIOffset = DpiHelper.TransformToDeviceX(toolTip.PlacementTarget, hOffsetFromToolTip, dpi.DpiScaleX);
             var vDPIOffset = DpiHelper.TransformToDeviceY(toolTip.PlacementTarget, vOffsetFromToolTip, dpi.DpiScaleY);
@@ -153,7 +155,9 @@ namespace ControlzEx
 
             var topLeftFromScreen = toolTip.PlacementTarget.PointToScreen(new Point(0, 0));
 
+#pragma warning disable 618
             MONITORINFO monitorINFO = null;
+#pragma warning restore 618
 
             try
             {
@@ -166,44 +170,38 @@ namespace ControlzEx
 
             if (monitorINFO != null)
             {
-                Debug.WriteLine(">>rcWork    >> w: {0}     h: {1}", monitorINFO.rcWork.Width, monitorINFO.rcWork.Height);
-                Debug.WriteLine(">>rcMonitor >> w: {0}     h: {1}", monitorINFO.rcMonitor.Width, monitorINFO.rcMonitor.Height);
+                Debug.WriteLine(">>rcWork    >> w: {0} \t h: {1}", monitorINFO.rcWork.Width, monitorINFO.rcWork.Height);
+                Debug.WriteLine(">>rcMonitor >> w: {0} \t h: {1}", monitorINFO.rcMonitor.Width, monitorINFO.rcMonitor.Height);
 
-                var monitorWorkWidth = Math.Abs(monitorINFO.rcWork.Width); // (int)DpiHelper.TransformToDeviceX(toolTip.PlacementTarget, SystemParameters.PrimaryScreenWidth);
-                var monitorWorkHeight = Math.Abs(monitorINFO.rcWork.Height); // (int)DpiHelper.TransformToDeviceY(toolTip.PlacementTarget, SystemParameters.PrimaryScreenHeight);
+                var monitorWorkWidth = Math.Abs(monitorINFO.rcWork.Width);
+                var monitorWorkHeight = Math.Abs(monitorINFO.rcWork.Height);
 
-                if (topLeftFromScreen.X < 0)
-                {
-                    topLeftFromScreen.X = -monitorINFO.rcWork.Left + topLeftFromScreen.X;
-                }
-                if (topLeftFromScreen.Y < 0)
-                {
-                    topLeftFromScreen.Y = -monitorINFO.rcWork.Top + topLeftFromScreen.Y;
-                }
+                topLeftFromScreen.X = -monitorINFO.rcWork.Left + topLeftFromScreen.X;
+                topLeftFromScreen.Y = -monitorINFO.rcWork.Top + topLeftFromScreen.Y;
 
                 var locationX = (int)topLeftFromScreen.X % monitorWorkWidth;
                 var locationY = (int)topLeftFromScreen.Y % monitorWorkHeight;
 
-                var renderDPIWidth = DpiHelper.TransformToDeviceX(toolTip.RenderSize.Width, dpi.DpiScaleX);
-                var rightX = locationX + newHorizontalOffset + renderDPIWidth;
+                var renderDpiWidth = DpiHelper.TransformToDeviceX(toolTip.PlacementTarget, toolTip.RenderSize.Width, dpi.DpiScaleX);
+                var rightX = locationX + newHorizontalOffset + renderDpiWidth;
                 if (rightX > monitorWorkWidth)
                 {
                     newHorizontalOffset = position.X - toolTip.RenderSize.Width - 0.5 * hDPIOffset;
                 }
 
-                var renderDPIHeight = DpiHelper.TransformToDeviceY(toolTip.RenderSize.Height, dpi.DpiScaleY);
+                var renderDPIHeight = DpiHelper.TransformToDeviceY(toolTip.PlacementTarget, toolTip.RenderSize.Height, dpi.DpiScaleY);
                 var bottomY = locationY + newVerticalOffset + renderDPIHeight;
                 if (bottomY > monitorWorkHeight)
                 {
                     newVerticalOffset = position.Y - toolTip.RenderSize.Height - 0.5 * vDPIOffset;
                 }
 
-                Debug.WriteLine(">>tooltip   >> bottomY: {0:F}    rightX: {1:F}", bottomY, rightX);
+                Debug.WriteLine(">>tooltip   >> bY: {0:F} \t rX: {1:F}", bottomY, rightX);
 
                 toolTip.HorizontalOffset = newHorizontalOffset;
                 toolTip.VerticalOffset = newVerticalOffset;
 
-                Debug.WriteLine(">>offset    >> ho: {0:F}         vo: {1:F}", toolTip.HorizontalOffset, toolTip.VerticalOffset);
+                Debug.WriteLine(">>offset    >> ho: {0:F} \t vo: {1:F}", toolTip.HorizontalOffset, toolTip.VerticalOffset);
             }
         }
     }

@@ -5,6 +5,8 @@ using System.Windows.Data;
 
 namespace ControlzEx
 {
+    using JetBrains.Annotations;
+
     /// <summary>
     /// AddValueChanged of dependency property descriptor results in memory leak as you already know.
     /// So, as described here, you can create custom class PropertyChangeNotifier to listen
@@ -20,7 +22,7 @@ namespace ControlzEx
     /// </summary>
     public sealed class PropertyChangeNotifier : DependencyObject, IDisposable
     {
-        private WeakReference _propertySource;
+        private readonly WeakReference propertySource;
 
         public PropertyChangeNotifier(DependencyObject propertySource, string path)
             : this(propertySource, new PropertyPath(path))
@@ -32,21 +34,20 @@ namespace ControlzEx
         {
         }
 
-        public PropertyChangeNotifier(DependencyObject propertySource, PropertyPath property)
+        public PropertyChangeNotifier([NotNull] DependencyObject propertySource, [NotNull] PropertyPath property)
         {
             if (null == propertySource)
             {
                 throw new ArgumentNullException(nameof(propertySource));
             }
+
             if (null == property)
             {
                 throw new ArgumentNullException(nameof(property));
             }
-            this._propertySource = new WeakReference(propertySource);
-            var binding = new Binding();
-            binding.Path = property;
-            binding.Mode = BindingMode.OneWay;
-            binding.Source = propertySource;
+
+            this.propertySource = new WeakReference(propertySource);
+            var binding = new Binding { Path = property, Mode = BindingMode.OneWay, Source = propertySource };
             BindingOperations.SetBinding(this, ValueProperty, binding);
         }
 
@@ -59,9 +60,7 @@ namespace ControlzEx
                     // note, it is possible that accessing the target property
                     // will result in an exception so i’ve wrapped this check
                     // in a try catch
-                    return this._propertySource.IsAlive
-                        ? this._propertySource.Target as DependencyObject
-                        : null;
+                    return this.propertySource.IsAlive ? this.propertySource.Target as DependencyObject : null;
                 }
                 catch
                 {
@@ -70,18 +69,18 @@ namespace ControlzEx
             }
         }
 
-        /// <summary>
-        /// Identifies the <see cref="Value"/> dependency property
-        /// </summary>
+        /// <summary>Identifies the <see cref="Value"/> dependency property.</summary>
         public static readonly DependencyProperty ValueProperty
-            = DependencyProperty.Register("Value", typeof(object), typeof(PropertyChangeNotifier),
-                                          new FrameworkPropertyMetadata(null, new PropertyChangedCallback(OnPropertyChanged)));
+            = DependencyProperty.Register(nameof(Value),
+                                          typeof(object),
+                                          typeof(PropertyChangeNotifier),
+                                          new FrameworkPropertyMetadata(null, OnValueChanged));
 
         /// <summary>
-        /// Returns/sets the value of the property
+        /// Gets or sets the value of the watched property.
         /// </summary>
         /// <seealso cref="ValueProperty"/>
-        [Description("Returns/sets the value of the property")]
+        [Description("Gets or sets the value of the watched property.")]
         [Category("Behavior")]
         [Bindable(true)]
         public object Value
@@ -90,7 +89,7 @@ namespace ControlzEx
             set { this.SetValue(ValueProperty, value); }
         }
 
-        private static void OnPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var notifier = (PropertyChangeNotifier)d;
             if (notifier.RaiseValueChanged)

@@ -1,14 +1,9 @@
 using System;
 using System.Collections.Generic;
-#if NETFX_CORE
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-#else
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-#endif
 
 namespace ControlzEx
 {
@@ -27,7 +22,7 @@ namespace ControlzEx
 
         /// <param name="dataIndexFactory">
         /// Inheritors should provide a factory for setting up the path data index (per icon kind).
-        /// The factory will only be utilised once, across all closed instances (first instantiation wins).
+        /// The factory will only be utilized once, across all closed instances (first instantiation wins).
         /// </param>
         protected PackIconBase(Func<IDictionary<TKind, string>> dataIndexFactory)
         {
@@ -37,12 +32,16 @@ namespace ControlzEx
                 _dataIndex = new Lazy<IDictionary<TKind, string>>(dataIndexFactory);
         }
 
+        /// <summary>Identifies the <see cref="Kind"/> dependency property.</summary>
         public static readonly DependencyProperty KindProperty
-            = DependencyProperty.Register(nameof(Kind), typeof(TKind), typeof(PackIconBase<TKind>), new PropertyMetadata(default(TKind), KindPropertyChangedCallback));
+            = DependencyProperty.Register(nameof(Kind),
+                                          typeof(TKind),
+                                          typeof(PackIconBase<TKind>),
+                                          new PropertyMetadata(default(TKind), OnKindChanged));
 
-        private static void KindPropertyChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+        private static void OnKindChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
         {
-            ((PackIconBase)dependencyObject).UpdateData();
+            ((PackIconBase<TKind>)dependencyObject).UpdateData();
         }
 
         /// <summary>
@@ -50,27 +49,18 @@ namespace ControlzEx
         /// </summary>
         public TKind Kind
         {
-            get { return (TKind)GetValue(KindProperty); }
-            set { SetValue(KindProperty, value); }
+            get { return (TKind)this.GetValue(KindProperty); }
+            set { this.SetValue(KindProperty, value); }
         }
 
-#if NETFX_CORE
-        private static readonly DependencyProperty DataProperty
-            = DependencyProperty.Register(nameof(Data), typeof(string), typeof(PackIconBase<TKind>), new PropertyMetadata(""));
-
-        /// <summary>
-        /// Gets the icon path data for the current <see cref="Kind"/>.
-        /// </summary>
-        public string Data
-        {
-            get { return (string)GetValue(DataProperty); }
-            private set { SetValue(DataProperty, value); }
-        }
-#else
         private static readonly DependencyPropertyKey DataPropertyKey
-            = DependencyProperty.RegisterReadOnly(nameof(Data), typeof(string), typeof(PackIconBase<TKind>), new PropertyMetadata(""));
+            = DependencyProperty.RegisterReadOnly(nameof(Data),
+                                                  typeof(string),
+                                                  typeof(PackIconBase<TKind>),
+                                                  new PropertyMetadata(""));
 
         // ReSharper disable once StaticMemberInGenericType
+        /// <summary>Identifies the <see cref="Data"/> dependency property.</summary>
         public static readonly DependencyProperty DataProperty = DataPropertyKey.DependencyProperty;
 
         /// <summary>
@@ -79,28 +69,22 @@ namespace ControlzEx
         [TypeConverter(typeof(GeometryConverter))]
         public string Data
         {
-            get { return (string)GetValue(DataProperty); }
-            private set { SetValue(DataPropertyKey, value); }
+            get { return (string)this.GetValue(DataProperty); }
+            private set { this.SetValue(DataPropertyKey, value); }
         }
-#endif
 
-#if NETFX_CORE
-        protected override void OnApplyTemplate()
-#else
         public override void OnApplyTemplate()
-#endif
         {
             base.OnApplyTemplate();
 
-            UpdateData();
+            this.UpdateData();
         }
 
         internal override void UpdateData()
         {
             string data = null;
-            if (_dataIndex.Value != null)
-                _dataIndex.Value.TryGetValue(Kind, out data);
-            Data = data;
+            _dataIndex.Value?.TryGetValue(this.Kind, out data);
+            this.Data = data;
         }
     }
 }

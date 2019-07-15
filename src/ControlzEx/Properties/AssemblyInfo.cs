@@ -1,10 +1,11 @@
 ﻿using System.Reflection;
+using System.Windows;
 using System.Windows.Markup;
-
-[assembly: AssemblyTitle("ControlzEx")]
-[assembly: AssemblyDescription("Shared Controlz for WPF and...")]
 
 [assembly: XmlnsPrefix("urn:controlzex", "controlzex")]
 [assembly: XmlnsDefinition("urn:controlzex", "ControlzEx")]
+[assembly: XmlnsDefinition("urn:controlzex", "ControlzEx.Controls")]
 [assembly: XmlnsDefinition("urn:controlzex", "ControlzEx.Behaviors")]
 [assembly: XmlnsDefinition("urn:controlzex", "ControlzEx.Windows.Shell")]
+
+[assembly: ThemeInfo(ResourceDictionaryLocation.None, ResourceDictionaryLocation.SourceAssembly)]

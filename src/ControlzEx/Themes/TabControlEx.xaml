@@ -1,0 +1,85 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="clr-namespace:ControlzEx.Controls">
+    <Style TargetType="{x:Type Rectangle}" />
+
+    <ControlTemplate x:Key="ControlzEx.Templates.TabControlEx" TargetType="{x:Type controls:TabControlEx}">
+        <Grid ClipToBounds="true"
+              KeyboardNavigation.TabNavigation="Local"
+              SnapsToDevicePixels="true">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition x:Name="ColumnDefinition0" />
+                <ColumnDefinition x:Name="ColumnDefinition1" Width="0" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition x:Name="RowDefinition0" Height="Auto" />
+                <RowDefinition x:Name="RowDefinition1" Height="*" />
+            </Grid.RowDefinitions>
+            <TabPanel x:Name="PART_HeaderPanel"
+                      Grid.Row="0"
+                      Grid.Column="0"
+                      Margin="2 2 2 0"
+                      Panel.ZIndex="1"
+                      Background="Transparent"
+                      IsItemsHost="true"
+                      KeyboardNavigation.TabIndex="1" />
+
+            <Border x:Name="contentPanel"
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    KeyboardNavigation.DirectionalNavigation="Contained"
+                    KeyboardNavigation.TabIndex="2"
+                    KeyboardNavigation.TabNavigation="Local">
+                <Grid x:Name="PART_ItemsHolder"
+                      Margin="{TemplateBinding Padding}"
+                      SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+            </Border>
+        </Grid>
+        <ControlTemplate.Triggers>
+            <Trigger Property="TabStripPlacement" Value="Bottom">
+                <Setter TargetName="PART_HeaderPanel" Property="Grid.Row" Value="1" />
+                <Setter TargetName="PART_ItemsHolder" Property="Grid.Row" Value="0" />
+                <Setter TargetName="PART_ItemsHolder" Property="Margin" Value="2 0 2 2" />
+                <Setter TargetName="RowDefinition0" Property="Height" Value="*" />
+                <Setter TargetName="RowDefinition1" Property="Height" Value="Auto" />
+            </Trigger>
+            <Trigger Property="TabStripPlacement" Value="Left">
+                <Setter TargetName="ColumnDefinition0" Property="Width" Value="Auto" />
+                <Setter TargetName="ColumnDefinition1" Property="Width" Value="*" />
+                <Setter TargetName="PART_HeaderPanel" Property="Grid.Column" Value="0" />
+                <Setter TargetName="PART_HeaderPanel" Property="Grid.Row" Value="0" />
+                <Setter TargetName="PART_HeaderPanel" Property="Grid.Row" Value="0" />
+                <Setter TargetName="PART_HeaderPanel" Property="Margin" Value="2 2 0 2" />
+                <Setter TargetName="PART_ItemsHolder" Property="Grid.Column" Value="1" />
+                <Setter TargetName="RowDefinition0" Property="Height" Value="*" />
+                <Setter TargetName="RowDefinition1" Property="Height" Value="0" />
+            </Trigger>
+            <Trigger Property="TabStripPlacement" Value="Right">
+                <Setter TargetName="ColumnDefinition0" Property="Width" Value="*" />
+                <Setter TargetName="ColumnDefinition1" Property="Width" Value="Auto" />
+                <Setter TargetName="PART_HeaderPanel" Property="Grid.Column" Value="1" />
+                <Setter TargetName="PART_HeaderPanel" Property="Grid.Row" Value="0" />
+                <Setter TargetName="PART_HeaderPanel" Property="Margin" Value="0 2 2 2" />
+                <Setter TargetName="PART_ItemsHolder" Property="Grid.Column" Value="0" />
+                <Setter TargetName="PART_ItemsHolder" Property="Grid.Row" Value="0" />
+                <Setter TargetName="RowDefinition0" Property="Height" Value="*" />
+                <Setter TargetName="RowDefinition1" Property="Height" Value="0" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <Style x:Key="ControlzEx.Styles.TabControlEx" TargetType="{x:Type controls:TabControlEx}">
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="Template" Value="{StaticResource ControlzEx.Templates.TabControlEx}" />
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="TextElement.Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style BasedOn="{StaticResource ControlzEx.Styles.TabControlEx}" TargetType="{x:Type controls:TabControlEx}" />
+</ResourceDictionary>

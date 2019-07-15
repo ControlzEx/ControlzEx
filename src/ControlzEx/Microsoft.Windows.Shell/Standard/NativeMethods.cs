@@ -10,7 +10,6 @@ namespace ControlzEx.Standard
     using System.Runtime.InteropServices.ComTypes;
     using System.Security;
     using System.Text;
-    using ControlzEx.Native;
     using Microsoft.Win32.SafeHandles;
 
     // Some COM interfaces and Win32 structures are already declared in the framework.
@@ -306,6 +305,23 @@ namespace ControlzEx.Standard
     public enum GCLP
     {
         HBRBACKGROUND = -10,
+        HICON = -14,
+        STYLE = -26,
+        HICONSM = -34
+    }
+
+    /// <summary>
+    /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-getwindow
+    /// </summary>
+    public enum GW
+    {
+        HWNDFIRST = 0,
+        HWNDLAST = 1,
+        HWNDNEXT = 2,
+        HWNDPREV = 3,
+        OWNER = 4,
+        CHILD = 5,
+        ENABLEDPOPUP = 6
     }
 
     /// <summary>
@@ -846,6 +862,8 @@ namespace ControlzEx.Standard
         NCMBUTTONDOWN = 0x00A7,
         NCMBUTTONUP = 0x00A8,
         NCMBUTTONDBLCLK = 0x00A9,
+        NCXBUTTONDOWN = 0x00ab,
+        NCXBUTTONDBLCLK = 0x00ad,
 
         SYSKEYDOWN = 0x0104,
         SYSKEYUP = 0x0105,
@@ -902,6 +920,7 @@ namespace ControlzEx.Standard
         IME_KEYUP = 0x0291,
 
         NCMOUSELEAVE = 0x02A2,
+        MOUSELEAVE = 0x02A3,
 
         TABLET_DEFBASE = 0x02C0,
         //WM_TABLET_MAXOFFSET = 0x20,
@@ -910,6 +929,8 @@ namespace ControlzEx.Standard
         TABLET_DELETED = TABLET_DEFBASE + 9,
         TABLET_FLICK = TABLET_DEFBASE + 11,
         TABLET_QUERYSYSTEMGESTURESTATUS = TABLET_DEFBASE + 12,
+
+        DPICHANGED = 0x02E0,
 
         CUT = 0x0300,
         COPY = 0x0301,
@@ -2486,6 +2507,22 @@ namespace ControlzEx.Standard
         {
             return $"x: {this.x}; y: {this.y}; cx: {this.cx}; cy: {this.cy}; flags: {this.flags}";
         }
+
+        public bool SizeAndPositionEquals(WINDOWPOS other)
+        {
+            return this.x == other.x 
+                   && this.y == other.y 
+                   && this.cx == other.cx 
+                   && this.cy == other.cy;
+        }
+
+        public bool IsEmpty()
+        {
+            return this.x == 0 
+                   && this.y == 0 
+                   && this.cx == 0 
+                   && this.cy == 0;
+        }
     }
 
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
@@ -3204,6 +3241,27 @@ namespace ControlzEx.Standard
             return pt;
         }
 
+        /// <summary>
+        /// Try to get the relative mouse position to the given handle in client coordinates.
+        /// </summary>
+        /// <param name="hWnd">The handle for this method.</param>
+        /// <param name="point">The relative mouse position to the given handle.</param>
+        public static bool TryGetRelativeMousePosition(IntPtr hWnd, out System.Windows.Point point)
+        {
+            POINT pt = new POINT();
+            var returnValue = hWnd != IntPtr.Zero && TryGetPhysicalCursorPos(out pt);
+            if (returnValue)
+            {
+                ScreenToClient(hWnd, ref pt);
+                point = new System.Windows.Point(pt.X, pt.Y);
+            }
+            else
+            {
+                point = new System.Windows.Point();
+            }
+            return returnValue;
+        }
+
         [SecurityCritical]
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static bool TryGetPhysicalCursorPos(out POINT pt)
@@ -3382,6 +3440,24 @@ namespace ControlzEx.Standard
         [DllImport("user32.dll")]
         public static extern int GetSystemMetrics(SM nIndex);
 
+        [DllImport("kernel32.dll")]
+        public static extern uint GetCurrentThreadId();
+
+        public delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool EnumThreadWindows(uint dwThreadId, EnumWindowsProc lpfn, IntPtr lParam);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
+
+        /// <summary>
+        /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-getwindow
+        /// </summary>
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetWindow(IntPtr hwnd, GW nCmd);
+
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("user32.dll", CharSet = CharSet.None, SetLastError = true, EntryPoint = "GetWindowInfo")]
         private static extern bool _GetWindowInfo(IntPtr hWnd, ref WINDOWINFO pwi);
@@ -3432,14 +3508,15 @@ namespace ControlzEx.Standard
             {
                 ret = GetWindowLongPtr32(hwnd, nIndex);
             }
+
             if (IntPtr.Zero == ret)
             {
-                throw new Win32Exception();
+                HRESULT.ThrowLastError();
             }
             return ret;
         }
 
-        public static IntPtr GetClassLong(IntPtr hWnd, int nIndex)
+        public static IntPtr GetClassLong(IntPtr hWnd, GCLP nIndex)
         {
             if (IntPtr.Size == 4)
             {
@@ -3450,11 +3527,28 @@ namespace ControlzEx.Standard
         }
 
         [DllImport("user32.dll", EntryPoint = "GetClassLong")]
-        private static extern uint GetClassLong32(IntPtr hWnd, int nIndex);
+        private static extern uint GetClassLong32(IntPtr hWnd, GCLP nIndex);
 
         [DllImport("user32.dll", EntryPoint = "GetClassLongPtr")]
         [SuppressMessage("Microsoft.Interoperability", "CA1400:PInvokeEntryPointsShouldExist")]
-        private static extern IntPtr GetClassLong64(IntPtr hWnd, int nIndex);
+        private static extern IntPtr GetClassLong64(IntPtr hWnd, GCLP nIndex);
+
+        public static IntPtr SetClassLong(IntPtr hWnd, GCLP nIndex, IntPtr value)
+        {
+            if (IntPtr.Size == 4)
+            {
+                return new IntPtr(SetClassLong32(hWnd, nIndex, value));
+            }
+
+            return SetClassLong64(hWnd, nIndex, value);
+        }
+
+        [DllImport("user32.dll", EntryPoint = "SetClassLong")]
+        private static extern uint SetClassLong32(IntPtr hWnd, GCLP nIndex, IntPtr value);
+
+        [DllImport("user32.dll", EntryPoint = "SetClassLongPtr")]
+        [SuppressMessage("Microsoft.Interoperability", "CA1400:PInvokeEntryPointsShouldExist")]
+        private static extern IntPtr SetClassLong64(IntPtr hWnd, GCLP nIndex, IntPtr value);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("user32.dll", EntryPoint="SetProp", CharSet=CharSet.Unicode, SetLastError=true)]
@@ -3469,6 +3563,9 @@ namespace ControlzEx.Standard
                 HRESULT.ThrowLastError();
             }
         }
+
+        [DllImport("uxtheme.dll", ExactSpelling=true, CharSet=CharSet.Unicode)] 
+        public static extern int SetWindowTheme(IntPtr hWnd, string pszSubAppName, string pszSubIdList);
 
         /// <summary>
         /// Sets attributes to control how visual styles are applied to a specified window.
@@ -3587,6 +3684,10 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("gdiplus.dll")]
         public static extern Status GdiplusShutdown(IntPtr token);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool IsIconic(IntPtr hwnd);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("user32.dll")]
@@ -3773,7 +3874,8 @@ namespace ControlzEx.Standard
         {
             Verify.IsNotDefault(hwnd, "hwnd");
             IntPtr ret = _SetActiveWindow(hwnd);
-            if (ret == IntPtr.Zero)
+            if (ret == IntPtr.Zero
+                && (HRESULT)Win32Error.GetLastError() != HRESULT.S_OK)
             {
                 HRESULT.ThrowLastError();
             }
@@ -3790,6 +3892,54 @@ namespace ControlzEx.Standard
                 return SetClassLongPtr64(hwnd, nIndex, dwNewLong);
             }
             return new IntPtr(SetClassLongPtr32(hwnd, nIndex, dwNewLong.ToInt32()));
+        }
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool FlashWindowEx(ref FLASHWINFO flashInfo);
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct FLASHWINFO
+        {
+            public uint cbSize;
+            public IntPtr hwnd;
+            public FlashWindowFlag dwFlags;
+            public uint uCount;
+            public uint dwTimeout;
+        }
+
+        public enum FlashWindowFlag : uint
+        {
+            /// <summary>
+            /// Stop flashing. The system restores the window to its original state. 
+            /// </summary>    
+            FLASHW_STOP = 0,
+
+            /// <summary>
+            /// Flash the window caption 
+            /// </summary>
+            FLASHW_CAPTION = 1,
+
+            /// <summary>
+            /// Flash the taskbar button. 
+            /// </summary>
+            FLASHW_TRAY = 2,
+
+            /// <summary>
+            /// Flash both the window caption and taskbar button.
+            /// This is equivalent to setting the FLASHW_CAPTION | FLASHW_TRAY flags. 
+            /// </summary>
+            FLASHW_ALL = 3,
+
+            /// <summary>
+            /// Flash continuously, until the FLASHW_STOP flag is set.
+            /// </summary>
+            FLASHW_TIMER = 4,
+
+            /// <summary>
+            /// Flash continuously until the window comes to the foreground. 
+            /// </summary>
+            FLASHW_TIMERNOFG = 12
         }
 
         [SuppressMessage("Microsoft.Interoperability", "CA1400:PInvokeEntryPointsShouldExist")]

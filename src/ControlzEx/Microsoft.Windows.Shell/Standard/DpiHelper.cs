@@ -1,4 +1,4 @@
-﻿#pragma warning disable 1591, 618
+﻿#pragma warning disable 1591, 1573, 618
 namespace ControlzEx.Standard
 {
     using System;
@@ -28,7 +28,7 @@ namespace ControlzEx.Standard
         /// <summary>
         /// Convert a point in system coordinates to a point in device independent pixels (1/96").
         /// </summary>
-        /// <param name="logicalPoint">A point in the physical coordinate system.</param>
+        /// <param name="devicePoint">A point in the physical coordinate system.</param>
         /// <returns>Returns the parameter converted to the device independent coordinate system.</returns>
         public static Point DevicePixelsToLogical(Point devicePoint, double dpiScaleX, double dpiScaleY)
         {
@@ -111,12 +111,12 @@ namespace ControlzEx.Standard
 
         #region Per monitor dpi support
 
-        public static DpiScale GetDpi(Visual visual)
+        public static DpiScale GetDpi(this Visual visual)
         {
-#if NET462
-            return VisualTreeHelper.GetDpi(visual);
-#else
+#if OWNDPISCALE
             return new DpiScale(1, 1);
+#else
+            return VisualTreeHelper.GetDpi(visual);
 #endif
         }
 
@@ -128,7 +128,7 @@ namespace ControlzEx.Standard
         #endregion Per monitor dpi support
     }
 
-#if NET4 || NET45
+#if OWNDPISCALE
     /// <summary>Stores DPI information from which a <see cref="T:System.Windows.Media.Visual" /> or <see cref="T:System.Windows.UIElement" /> is rendered.</summary>
     public struct DpiScale
     {
