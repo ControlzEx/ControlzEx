@@ -1,7 +1,7 @@
 <div align="center">
   <h1>ControlzEx</h1>
   <p>
-    Shared Controlz for WPF
+    Shared Controlz for WPF (inkl. .Net Core 3 Prev)
   </p>
   <a href="https://github.com/ControlzEx/ControlzEx">
     <img alt="ControlzEx" with="200" height="200" src="logo-mini.png">
@@ -20,19 +20,10 @@
 
 </div>
 
-# Quick started for developers
+## Let's get started
 
-* Download the `.NET Core 3.0.0 Preview 6` SDK and Runtime from [here](https://github.com/dotnet/core/blob/master/release-notes/3.0/preview/3.0.0-preview6.md)
-  * Make sure you only have this dotnet core 3.0 installed!
-* Make sure you have [Visual Studio 2019](https://visualstudio.microsoft.com) installed (this could also be the Community Edition)
-* Clone the [ControlzEx repository](https://github.com/ControlzEx/ControlzEx.git)
-* Open the solution from the `src` folder in Visual Studio 2019
-* Rebuild and you're done... (you might need to rebuild 2x, because we use the very fresh hot dotnet core stuff)
-
-# What's in the box
-
-* `.NET Core 3.0.0 Preview 6` support (why, read [here](https://blogs.msdn.microsoft.com/dotnet/2018/10/04/update-on-net-core-3-0-and-net-framework-4-8/) )
-* Also still targeting .Net 4.5 and 4.6.2
+- [Releases and Release Notes](../../releases)
+- [Building](../../wiki/Home) the ControlzEx solution
 
 ## TextBoxInputMaskBehavior
 
