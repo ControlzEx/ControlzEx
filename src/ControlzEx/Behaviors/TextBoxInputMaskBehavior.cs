@@ -44,13 +44,13 @@
             set { SetValue(ResetOnSpaceProperty, value); }
         }
 
-        /// <summary>Identifies the <see cref="IgnorSpace"/> dependency property.</summary>
-        public static readonly DependencyProperty IgnorSpaceProperty = DependencyProperty.Register(nameof(IgnorSpace), typeof(bool), typeof(TextBoxInputMaskBehavior), new PropertyMetadata(true));
+        /// <summary>Identifies the <see cref="IgnoreSpace"/> dependency property.</summary>
+        public static readonly DependencyProperty IgnoreSpaceProperty = DependencyProperty.Register(nameof(IgnoreSpace), typeof(bool), typeof(TextBoxInputMaskBehavior), new PropertyMetadata(true));
 
-        public bool IgnorSpace
+        public bool IgnoreSpace
         {
-            get { return (bool) GetValue(IgnorSpaceProperty); }
-            set { SetValue(IgnorSpaceProperty, value); }
+            get { return (bool) GetValue(IgnoreSpaceProperty); }
+            set { SetValue(IgnoreSpaceProperty, value); }
         }
 
         #endregion
@@ -178,7 +178,7 @@
             {
                 e.Handled = true;
 
-                if (this.IgnorSpace)
+                if (this.IgnoreSpace)
                 {
                     System.Media.SystemSounds.Beep.Play();
                     return;
