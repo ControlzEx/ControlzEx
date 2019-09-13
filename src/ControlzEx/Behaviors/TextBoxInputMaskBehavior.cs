@@ -76,6 +76,8 @@
 
             DataObject.RemovePastingHandler(AssociatedObject, Pasting);
 
+            textPropertyNotifier?.Dispose();
+
             base.OnDetaching();
         }
 
