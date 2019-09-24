@@ -1,14 +1,13 @@
 <Project>
     <PropertyGroup>
         <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
-        <!-- <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile> -->
-        <!-- <RestoreLockedMode>true</RestoreLockedMode> -->
         <IsBuildingWpfTempProj Condition="$(MSBuildProjectName.Contains('_wpftmp')) != 'true'">false</IsBuildingWpfTempProj>
         <IsBuildingWpfTempProj Condition="$(MSBuildProjectName.Contains('_wpftmp')) == 'true'">true</IsBuildingWpfTempProj>
     </PropertyGroup>
 
     <!-- Project properties -->
     <PropertyGroup>
+        <TargetFrameworks>net45;net462;netcoreapp3.0</TargetFrameworks>
         <OutputPath Condition="$(IsBuildingWpfTempProj) != 'true'">$(MSBuildThisFileDirectory)\bin\$(Configuration)\$(MSBuildProjectName)</OutputPath>
         <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
         <GenerateDocumentationFile>false</GenerateDocumentationFile>

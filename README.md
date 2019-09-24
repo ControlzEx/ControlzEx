@@ -1,7 +1,7 @@
 <div align="center">
   <h1>ControlzEx</h1>
   <p>
-    Shared Controlz for WPF (incl. .Net Core 3 Prev)
+    Shared Controlz for WPF (supporting .NET Framework 4.5, 4.6.2 and .NET Core 3)
   </p>
   <a href="https://github.com/ControlzEx/ControlzEx">
     <img alt="ControlzEx" with="200" height="200" src="logo-mini.png">

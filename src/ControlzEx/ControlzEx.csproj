@@ -2,7 +2,6 @@
 <Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
     <!-- Project properties -->
     <PropertyGroup>
-        <TargetFrameworks>net45;net462;netcoreapp3.0</TargetFrameworks>
         <AssemblyName>ControlzEx</AssemblyName>
         <RootNamespace>ControlzEx</RootNamespace>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
