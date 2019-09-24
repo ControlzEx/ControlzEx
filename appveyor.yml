@@ -22,7 +22,7 @@ image: Visual Studio 2019 Preview
 test: off
 
 install:
-  - cinst dotnetcore-sdk --pre
+  - cinst dotnetcore-sdk
 
 pull_requests:
   do_not_increment_build_number: false

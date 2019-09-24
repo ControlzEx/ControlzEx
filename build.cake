@@ -99,14 +99,7 @@ Task("Clean")
 Task("Restore")
     .Does(() =>
 {
-    StartProcess("nuget", new ProcessSettings {
-        Arguments = new ProcessArgumentBuilder()
-            .Append("restore")
-            .Append(solution)
-            .Append("-msbuildpath")
-            .AppendQuoted(msBuildPath.ToString())
-        }
-    );
+    NuGetRestore(solution, new NuGetRestoreSettings { MSBuildPath = msBuildPath.ToString() });
 });
 
 Task("Build")
@@ -117,6 +110,7 @@ Task("Build")
         Verbosity = verbosity
         , ToolPath = msBuildPathExe
         , Configuration = configuration
+        , ArgumentCustomization = args => args.Append("/m").Append("/nr:false") // The /nr switch tells msbuild to quite once it’s done
     };
     MSBuild(solution, msBuildSettings
             .SetMaxCpuCount(0)
