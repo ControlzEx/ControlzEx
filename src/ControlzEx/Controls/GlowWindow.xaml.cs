@@ -459,6 +459,8 @@ namespace ControlzEx.Controls
                     Marshal.StructureToPtr(wp, lParam, true);
                     break;
 
+                // When the window is shown as a modal window and we try to activate the owner of said window the window has to receive a series of NCACTIVATE messages.
+                // But because we set the owner of the glow window we have to forward those messages to our owner.
                 case WM.NCACTIVATE:
                     handled = true;
                     if (this.IsOwnerHandleValid())
