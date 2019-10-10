@@ -459,6 +459,14 @@ namespace ControlzEx.Controls
                     Marshal.StructureToPtr(wp, lParam, true);
                     break;
 
+                case WM.NCACTIVATE:
+                    handled = true;
+                    if (this.IsOwnerHandleValid())
+                    {
+                        NativeMethods.SendMessage(this.ownerWindowHandle, WM.NCACTIVATE, wParam, lParam);
+                    }
+                    return IntPtr.Zero;
+
                 case WM.ACTIVATE:
                     handled = true;
                     return IntPtr.Zero;
