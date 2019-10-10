@@ -71,7 +71,7 @@ namespace ControlzEx.Controls
             this.Name = this.Title;
 
             // We must not set the owner of this window. Otherwise things like preventing window activation won't work correctly.
-            //this.Owner = owner;
+            this.Owner = owner;
             this.owner = owner;
 
             this.IsGlowing = true;
@@ -254,9 +254,6 @@ namespace ControlzEx.Controls
             var ownerWindowInteropHelper = new WindowInteropHelper(this.owner);
             this.ownerWindowHandle = ownerWindowInteropHelper.Handle;
 
-            // Set parent to the owner of our owner, that way glows on modeless windows shown with an owner work correctly
-            NativeMethods.SetWindowLongPtr(this.windowHandle, GWL.HWNDPARENT, ownerWindowInteropHelper.Owner);
-
             var ws = NativeMethods.GetWindowStyle(this.windowHandle);
             var wsex = NativeMethods.GetWindowStyleEx(this.windowHandle);
 
@@ -265,7 +262,6 @@ namespace ControlzEx.Controls
             ws |= WS.POPUP;
 
             wsex &= ~WS_EX.APPWINDOW;
-            wsex |= WS_EX.TOOLWINDOW;
             wsex |= WS_EX.NOACTIVATE; // We don't want our this window to be activated
 
             if (this.owner.ResizeMode == ResizeMode.NoResize || this.owner.ResizeMode == ResizeMode.CanMinimize)
