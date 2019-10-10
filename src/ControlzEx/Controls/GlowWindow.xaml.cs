@@ -70,7 +70,7 @@ namespace ControlzEx.Controls
             this.Title = $"GlowWindow_{direction}";
             this.Name = this.Title;
 
-            // We must not set the owner of this window. Otherwise things like preventing window activation won't work correctly.
+            // We have to set the owner to fix #92
             this.Owner = owner;
             this.owner = owner;
 
