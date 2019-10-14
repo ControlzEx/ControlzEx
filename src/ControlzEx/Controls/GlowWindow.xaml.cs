@@ -475,7 +475,9 @@ namespace ControlzEx.Controls
                     {
                         NativeMethods.SendMessage(this.ownerWindowHandle, WM.NCACTIVATE, wParam, lParam);
                     }
-                    return IntPtr.Zero;
+                    // We have to return true according to https://docs.microsoft.com/en-us/windows/win32/winmsg/wm-ncactivate
+                    // If we don't do that here the owner window can't be activated.
+                    return new IntPtr(1);
 
                 case WM.ACTIVATE:
                     handled = true;
