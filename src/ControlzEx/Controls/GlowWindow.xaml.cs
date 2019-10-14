@@ -268,8 +268,8 @@ namespace ControlzEx.Controls
             ws &= ~WS.SYSMENU; // We don't need a system context menu
             ws |= WS.POPUP;
 
-            wsex &= ~WS_EX.APPWINDOW;
-            wsex |= WS_EX.TOOLWINDOW;
+            wsex &= ~WS_EX.APPWINDOW; // We don't want our window to be visible on the taskbar
+            wsex |= WS_EX.TOOLWINDOW; // We don't want our window to be visible on the taskbar
             wsex |= WS_EX.NOACTIVATE; // We don't want our this window to be activated
 
             if (this.owner.ResizeMode == ResizeMode.NoResize || this.owner.ResizeMode == ResizeMode.CanMinimize)
