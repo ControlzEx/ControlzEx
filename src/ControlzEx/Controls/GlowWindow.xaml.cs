@@ -70,8 +70,8 @@ namespace ControlzEx.Controls
             this.Title = $"GlowWindow_{direction}";
             this.Name = this.Title;
 
-            // We must not set the owner of this window. Otherwise things like preventing window activation won't work correctly.
-            //this.Owner = owner;
+            // We have to set the owner to fix #92
+            this.Owner = owner;
             this.owner = owner;
 
             this.IsGlowing = true;
@@ -254,8 +254,12 @@ namespace ControlzEx.Controls
             var ownerWindowInteropHelper = new WindowInteropHelper(this.owner);
             this.ownerWindowHandle = ownerWindowInteropHelper.Handle;
 
-            // Set parent to the owner of our owner, that way glows on modeless windows shown with an owner work correctly
-            NativeMethods.SetWindowLongPtr(this.windowHandle, GWL.HWNDPARENT, ownerWindowInteropHelper.Owner);
+            // Set parent to the owner of our owner, that way glows on modeless windows shown with an owner work correctly.
+            // We must do that only in case our owner has an owner.
+            if (ownerWindowInteropHelper.Owner != IntPtr.Zero)
+            {
+                NativeMethods.SetWindowLongPtr(this.windowHandle, GWL.HWNDPARENT, ownerWindowInteropHelper.Owner);
+            }
 
             var ws = NativeMethods.GetWindowStyle(this.windowHandle);
             var wsex = NativeMethods.GetWindowStyleEx(this.windowHandle);
@@ -264,8 +268,8 @@ namespace ControlzEx.Controls
             ws &= ~WS.SYSMENU; // We don't need a system context menu
             ws |= WS.POPUP;
 
-            wsex &= ~WS_EX.APPWINDOW;
-            wsex |= WS_EX.TOOLWINDOW;
+            wsex &= ~WS_EX.APPWINDOW; // We don't want our window to be visible on the taskbar
+            wsex |= WS_EX.TOOLWINDOW; // We don't want our window to be visible on the taskbar
             wsex |= WS_EX.NOACTIVATE; // We don't want our this window to be activated
 
             if (this.owner.ResizeMode == ResizeMode.NoResize || this.owner.ResizeMode == ResizeMode.CanMinimize)
@@ -462,6 +466,18 @@ namespace ControlzEx.Controls
                     //wp.hwndInsertAfter = this.ownerWindowHandle;
                     Marshal.StructureToPtr(wp, lParam, true);
                     break;
+
+                // When the window is shown as a modal window and we try to activate the owner of said window the window has to receive a series of NCACTIVATE messages.
+                // But because we set the owner of the glow window we have to forward those messages to our owner.
+                case WM.NCACTIVATE:
+                    handled = true;
+                    if (this.IsOwnerHandleValid())
+                    {
+                        NativeMethods.SendMessage(this.ownerWindowHandle, WM.NCACTIVATE, wParam, lParam);
+                    }
+                    // We have to return true according to https://docs.microsoft.com/en-us/windows/win32/winmsg/wm-ncactivate
+                    // If we don't do that here the owner window can't be activated.
+                    return new IntPtr(1);
 
                 case WM.ACTIVATE:
                     handled = true;
