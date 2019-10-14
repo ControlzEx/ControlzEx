@@ -10,15 +10,21 @@
     <!-- NuGet -->
     <PropertyGroup>
         <Authors>Jan Karger, Bastian Schmidt, James Willock</Authors>
-        <PackageLicenseUrl>https://github.com/ControlzEx/ControlzEx/blob/develop/LICENSE</PackageLicenseUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageProjectUrl>https://github.com/ControlzEx/ControlzEx</PackageProjectUrl>
-        <PackageIconUrl>https://raw.githubusercontent.com/ControlzEx/ControlzEx/develop/logo-mini.png</PackageIconUrl>
+        <PackageIcon>logo-mini.png</PackageIcon>
         <PackageTags>WPF;UI;Metro;Modern;Material;XAML;Toolkit;Library;.NET;OSS;OpenSource;WindowChrome</PackageTags>
         <PackageReleaseNotes>https://github.com/ControlzEx/ControlzEx/releases</PackageReleaseNotes>
         <RepositoryUrl>https://github.com/ControlzEx/ControlzEx.git</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <GenerateLibraryLayout>true</GenerateLibraryLayout>
     </PropertyGroup>
+    <ItemGroup>
+      <None Include="..\..\logo-mini.png">
+        <Pack>True</Pack>
+        <PackagePath></PackagePath>
+      </None>
+    </ItemGroup>
     <!-- Sign assembly -->
     <PropertyGroup>
         <SignAssembly>True</SignAssembly>
