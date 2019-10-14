@@ -269,6 +269,7 @@ namespace ControlzEx.Controls
             ws |= WS.POPUP;
 
             wsex &= ~WS_EX.APPWINDOW;
+            wsex |= WS_EX.TOOLWINDOW;
             wsex |= WS_EX.NOACTIVATE; // We don't want our this window to be activated
 
             if (this.owner.ResizeMode == ResizeMode.NoResize || this.owner.ResizeMode == ResizeMode.CanMinimize)
