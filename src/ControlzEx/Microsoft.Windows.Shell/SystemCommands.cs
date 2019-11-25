@@ -86,7 +86,8 @@ namespace ControlzEx.Windows.Shell
             var screenLocation = window.PointToScreen(mousePosition);
             e.Handled = true;
 
-            ShowSystemMenu(window, screenLocation);
+            // Location contains already DPI aware coordinates, so we don't need to do this twice
+            ShowSystemMenuPhysicalCoordinates(window, screenLocation);
         }
 
         /// <summary>Display the system menu at a specified location.</summary>
