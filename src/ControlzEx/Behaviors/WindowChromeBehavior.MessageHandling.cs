@@ -1025,7 +1025,7 @@ namespace ControlzEx.Behaviors
                 Size windowSize;
 
                 // Use the size if it's specified.
-                if (null != wp && !Utility.IsFlagSet((int)wp.Value.flags, (int)SWP.NOSIZE))
+                if (null != wp && !Utility.IsFlagSet((int)wp.Value.flags, (int)SWP.NOSIZE) && wp.Value.cx >= 0 && wp.Value.cy >= 0)
                 {
                     windowSize = new Size(wp.Value.cx, wp.Value.cy);
                 }
