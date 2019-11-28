@@ -6,7 +6,7 @@
 #tool "dotnet:?package=NuGetKeyVaultSignTool&version=1.2.18"
 #tool "dotnet:?package=AzureSignTool&version=2.0.17"
 
-#tool GitVersion.CommandLine
+#tool GitVersion.CommandLine&version=5.0.1
 #tool gitreleasemanager
 #tool vswhere
 #addin Cake.Figlet
@@ -24,10 +24,10 @@ var verbosity = Argument("verbosity", Verbosity.Minimal);
 ///////////////////////////////////////////////////////////////////////////////
 
 var repoName = "ControlzEx";
-var local = BuildSystem.IsLocalBuild;
+var isLocal = BuildSystem.IsLocalBuild;
 
 // Set build version
-if (local == false || verbosity == Verbosity.Verbose)
+if (isLocal == false || verbosity == Verbosity.Verbose)
 {
     GitVersion(new GitVersionSettings { OutputType = GitVersionOutput.BuildServer });
 }
@@ -39,11 +39,7 @@ var isDevelopBranch = StringComparer.OrdinalIgnoreCase.Equals("develop", branchN
 var isReleaseBranch = StringComparer.OrdinalIgnoreCase.Equals("master", branchName);
 var isTagged = AppVeyor.Environment.Repository.Tag.IsTag;
 
-var VSWhereLatestSettings = new VSWhereLatestSettings
-{
-    IncludePrerelease = true
-};
-var latestInstallationPath = VSWhereLatest(VSWhereLatestSettings);
+var latestInstallationPath = VSWhereLatest(new VSWhereLatestSettings { IncludePrerelease = true });
 var msBuildPath = latestInstallationPath.Combine("./MSBuild/Current/Bin");
 var msBuildPathExe = msBuildPath.CombineWithFilePath("./MSBuild.exe");
 
@@ -74,7 +70,7 @@ Setup(ctx =>
     Information("AssemblySemVer  Version: {0}", gitVersion.AssemblySemVer);
     Information("MajorMinorPatch Version: {0}", gitVersion.MajorMinorPatch);
     Information("NuGet           Version: {0}", gitVersion.NuGetVersion);
-    Information("IsLocalBuild           : {0}", local);
+    Information("IsLocalBuild           : {0}", isLocal);
     Information("Branch                 : {0}", branchName);
     Information("Configuration          : {0}", configuration);
     Information("MSBuildPath            : {0}", msBuildPath);
@@ -110,7 +106,7 @@ Task("Build")
         Verbosity = verbosity
         , ToolPath = msBuildPathExe
         , Configuration = configuration
-        , ArgumentCustomization = args => args.Append("/m").Append("/nr:false") // The /nr switch tells msbuild to quite once itâ€™s done
+        , ArgumentCustomization = args => args.Append("/m").Append("/nr:false") // The /nr switch tells msbuild to quite once it’s done
     };
     MSBuild(solution, msBuildSettings
             .SetMaxCpuCount(0)
@@ -355,6 +351,10 @@ Task("ExportReleaseNotes")
     });
 });
 
+///////////////////////////////////////////////////////////////////////////////
+// TASK TARGETS
+///////////////////////////////////////////////////////////////////////////////
+
 Task("Default")
     .IsDependentOn("Clean")
     .IsDependentOn("Build");
@@ -364,7 +364,8 @@ Task("CI")
     .IsDependentOn("Sign")
     .IsDependentOn("Pack")
     .IsDependentOn("SignNuGet")
-    .IsDependentOn("Zip");
+    .IsDependentOn("Zip")
+    ;
 
 ///////////////////////////////////////////////////////////////////////////////
 // EXECUTION
