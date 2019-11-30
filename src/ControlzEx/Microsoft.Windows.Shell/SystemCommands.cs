@@ -93,9 +93,6 @@ namespace ControlzEx.Windows.Shell
         /// <summary>Display the system menu at a specified location.</summary>
         /// <param name="visual">The visual for which the system menu should be displayed.</param>
         /// <param name="elementPoint">The location to display the system menu, in logical screen coordinates.</param>
-        /// <remarks>
-        /// The dpi of <paramref name="visual"/> is used to calculate the final position.
-        /// </remarks>
         [SecuritySafeCritical]
         [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         public static void ShowSystemMenu(Visual visual, Point elementPoint)
@@ -103,16 +100,16 @@ namespace ControlzEx.Windows.Shell
             Verify.IsNotNull(visual, "visual");
 
             var screenLocation = visual.PointToScreen(elementPoint);
-            var dpi = visual.GetDpi();
 
-            ShowSystemMenuPhysicalCoordinates(visual, DpiHelper.LogicalPixelsToDevice(screenLocation, dpi.DpiScaleX, dpi.DpiScaleY));
+            ShowSystemMenuPhysicalCoordinates(visual, screenLocation);
         }
 
         /// <summary>Display the system menu at a specified location.</summary>
         /// <param name="window">The window for which the system menu should be displayed.</param>
-        /// <param name="screenLocation">The location to display the system menu, in logical screen coordinates.</param>
+        /// <param name="screenLocation">The location to display the system menu, in physical screen coordinates.</param>
         /// <remarks>
-        /// The dpi of <paramref name="window"/> is used to calculate the final position.
+        /// The dpi of <paramref name="window"/> is NOT used to calculate the final coordinates.
+        /// So you have to pass the final coordinates.
         /// </remarks>
         [SecuritySafeCritical]
         [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
@@ -120,9 +117,7 @@ namespace ControlzEx.Windows.Shell
         {
             Verify.IsNotNull(window, "window");
 
-            var dpi = window.GetDpi();
-
-            ShowSystemMenuPhysicalCoordinates(window, DpiHelper.LogicalPixelsToDevice(screenLocation, dpi.DpiScaleX, dpi.DpiScaleY));
+            ShowSystemMenuPhysicalCoordinates(window, screenLocation);
         }
 
         /// <summary>Display the system menu at a specified location.</summary>
