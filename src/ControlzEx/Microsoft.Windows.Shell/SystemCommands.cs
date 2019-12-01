@@ -105,22 +105,6 @@ namespace ControlzEx.Windows.Shell
         }
 
         /// <summary>Display the system menu at a specified location.</summary>
-        /// <param name="window">The window for which the system menu should be displayed.</param>
-        /// <param name="screenLocation">The location to display the system menu, in physical screen coordinates.</param>
-        /// <remarks>
-        /// The dpi of <paramref name="window"/> is NOT used to calculate the final coordinates.
-        /// So you have to pass the final coordinates.
-        /// </remarks>
-        [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
-        public static void ShowSystemMenu(Window window, Point screenLocation)
-        {
-            Verify.IsNotNull(window, "window");
-
-            ShowSystemMenuPhysicalCoordinates(window, screenLocation);
-        }
-
-        /// <summary>Display the system menu at a specified location.</summary>
         /// <param name="visual">The visual for which the system menu should be displayed.</param>
         /// <param name="physicalScreenLocation">The location to display the system menu, in physical screen coordinates.</param>
         /// <remarks>
