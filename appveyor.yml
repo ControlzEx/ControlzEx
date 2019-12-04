@@ -27,7 +27,7 @@ install:
 cache:
   - C:\ProgramData\chocolatey\bin -> appveyor.yml
   - C:\ProgramData\chocolatey\lib -> appveyor.yml
-  - C:\Program Files\dotnet\sdk -> appveyor.yml
+  - C:\Program Files\dotnet\sdk\3.1.100 -> appveyor.yml
 
 pull_requests:
   do_not_increment_build_number: false
