@@ -38,7 +38,7 @@ namespace ControlzEx
         public static readonly DependencyProperty AutoMoveHorizontalOffsetProperty
             = DependencyProperty.RegisterAttached("AutoMoveHorizontalOffset",
                                                   typeof(double),
-                                                  typeof(Popup),
+                                                  typeof(PopupAssist),
                                                   new FrameworkPropertyMetadata(16d));
 
         /// <summary>
@@ -119,13 +119,11 @@ namespace ControlzEx
                 {
                     popup.Opened += Popup_Opened;
                     popup.Closed += Popup_Closed;
-                    popup.PlacementTarget?.SetCurrentValue(AutoMovingPopupProperty, popup);
                 }
                 else
                 {
                     popup.Opened -= Popup_Opened;
                     popup.Closed -= Popup_Closed;
-                    popup.PlacementTarget?.SetCurrentValue(AutoMovingPopupProperty, null);
                 }
             }
         }
@@ -135,6 +133,9 @@ namespace ControlzEx
             var popup = (Popup)sender;
             if (popup.PlacementTarget is FrameworkElement target)
             {
+                // Register the popup with the placementtarget
+                target.SetCurrentValue(AutoMovingPopupProperty, popup);
+
                 // move the Popup on opening to the correct position
                 MovePopup(target, popup);
                 target.MouseMove += PopupTargetPreviewMouseMove;
@@ -147,6 +148,9 @@ namespace ControlzEx
             var popup = (Popup)sender;
             if (popup.PlacementTarget is FrameworkElement target)
             {
+                // Unegister the popup with the placementtarget
+                target.SetCurrentValue(AutoMovingPopupProperty, popup);
+
                 target.MouseMove -= PopupTargetPreviewMouseMove;
                 Debug.WriteLine(">>popup closed");
             }
