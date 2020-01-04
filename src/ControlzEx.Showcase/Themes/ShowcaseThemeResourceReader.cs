@@ -8,7 +8,7 @@
     {
         public static readonly ShowcaseThemeResourceReader DefaultInstance = new ShowcaseThemeResourceReader();
 
-        private ShowcaseThemeResourceReader()
+        public ShowcaseThemeResourceReader()
             : base(true)
         {
         }
