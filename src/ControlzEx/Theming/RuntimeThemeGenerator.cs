@@ -1,9 +1,7 @@
 ﻿namespace ControlzEx.Theming
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
     using System.Windows;
     using System.Windows.Markup;
@@ -67,13 +65,15 @@
                 var themeFileContent = ThemeGenerator.GenerateColorSchemeFileContent(generatorParameters, baseColorScheme, colorScheme, themeResourceReader.GetThemeTemplateContent(), $"{baseColor}.Runtime_{accentColor}", $"Runtime {accentColor} ({baseColor})");
                 var resourceDictionary = (ResourceDictionary)XamlReader.Parse(themeFileContent);
 
+                var libraryTheme = new LibraryTheme(resourceDictionary, true);
+
                 if (theme == null)
                 {
-                    theme = new Theme(resourceDictionary, true);
+                    theme = new Theme(libraryTheme);
                 }
                 else
                 {
-                    theme.AddResource(resourceDictionary);
+                    theme.AddLibraryTheme(libraryTheme);
                 }
             }
 

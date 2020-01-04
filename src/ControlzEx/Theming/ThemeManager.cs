@@ -11,6 +11,7 @@
     using System.Security;
     using System.Windows;
     using System.Windows.Data;
+    using System.Windows.Threading;
     using ControlzEx.Internal;
     using JetBrains.Annotations;
     using Microsoft.Win32;
@@ -126,9 +127,9 @@
 
                 foreach (var themeResourceReader in themeResourceReaders)
                 {
-                    foreach (var theme in themeResourceReader.GetThemes())
+                    foreach (var theme in themeResourceReader.GetLibraryThemes())
                     {
-                        AddTheme(theme);
+                        AddLibraryTheme(theme);
                     }
                 }
             }
@@ -234,12 +235,26 @@
         //    return AddTheme(theme);
         //}
 
+        public static Theme AddLibraryTheme([NotNull] LibraryTheme libraryTheme)
+        {
+            var theme = GetTheme(libraryTheme.Name);
+            if (theme.IsNotNull())
+            {
+                theme.AddLibraryTheme(libraryTheme);
+                return theme;
+            }
+
+            theme = new Theme(libraryTheme);
+
+            themesInternal.Add(theme);
+            return theme;
+        }
+
         public static Theme AddTheme([NotNull] Theme theme)
         {
             var existingTheme = GetTheme(theme.Name);
             if (existingTheme.IsNotNull())
             {
-                existingTheme.AddResource(theme.Resources);
                 return existingTheme;
             }
 
@@ -301,7 +316,7 @@
             // support dynamically created runtime resource dictionaries
             if (IsThemeDictionary(resources))
             {
-                return new Theme(resources, true);
+                return new Theme(new LibraryTheme(resources, true));
             }
 
             return null;
@@ -480,7 +495,7 @@
                 }
 
                 {
-                    foreach (var themeResource in newTheme.Resources)
+                    foreach (var themeResource in newTheme.GetAllResources().Reverse())
                     {
                         resources.MergedDictionaries.Insert(0, themeResource);
                     }
@@ -709,7 +724,7 @@
                 throw new ArgumentNullException(nameof(newTheme));
             }
 
-            foreach (var themeResources in newTheme.Resources)
+            foreach (var themeResources in newTheme.GetAllResources())
             {
                 ApplyResourceDictionary(resources, themeResources);   
             }
@@ -813,7 +828,7 @@
                 throw new ArgumentNullException(nameof(resourceDictionary));
             }
 
-            if (DetectThemeFromResources(out var currentTheme, resourceDictionary))
+            if (DetectThemeFromResources(resourceDictionary, out var currentTheme))
             {
                 return currentTheme;
             }
@@ -821,7 +836,7 @@
             return null;
         }
 
-        private static bool DetectThemeFromResources(out Theme detectedTheme, ResourceDictionary dict)
+        private static bool DetectThemeFromResources(ResourceDictionary dict, out Theme detectedTheme)
         {
             using (var enumerator = dict.MergedDictionaries.Reverse().GetEnumerator())
             {
@@ -841,7 +856,7 @@
                         return true;
                     }
 
-                    if (DetectThemeFromResources(out detectedTheme, currentRd))
+                    if (DetectThemeFromResources(currentRd, out detectedTheme))
                     {
                         return true;
                     }
@@ -922,7 +937,7 @@
 
             var baseColor = WindowsThemeHelper.GetWindowsBaseColor();
 
-            if (IsAutomaticWindowsAccentColorSyncEnabled)
+            if (ThemeSyncMode.HasFlag(ThemeSyncMode.SyncWithAccent))
             {
                 SyncThemeColorSchemeWithWindowsAccentColor(baseColor);
             }
@@ -949,7 +964,7 @@
             var detectedTheme = DetectTheme();
 
             if (baseColor == null
-                && IsAutomaticWindowsAppModeSettingSyncEnabled)
+                && ThemeSyncMode.HasFlag(ThemeSyncMode.SyncWithAppMode))
             {
                 baseColor = WindowsThemeHelper.GetWindowsBaseColor();
             }
@@ -972,89 +987,92 @@
             if (theme.IsNotNull()
                 && theme != detectedTheme)
             {
-                themesInternal.Add(theme);
                 ChangeTheme(Application.Current, theme);
             }
         }
 
-        private static bool isAutomaticWindowsAppModeSettingSyncEnabled;
+        private static ThemeSyncMode themeSyncMode;
 
-        /// <summary>
-        /// Gets or sets whether changes to the "app mode" setting from windows should be detected at runtime and the current <see cref="Theme"/> be changed accordingly.
-        /// </summary>
-        public static bool IsAutomaticWindowsAppModeSettingSyncEnabled
+        public static ThemeSyncMode ThemeSyncMode
         {
-            get => isAutomaticWindowsAppModeSettingSyncEnabled;
+            get => themeSyncMode;
 
             set
             {
-                if (value == isAutomaticWindowsAppModeSettingSyncEnabled)
+                if (value == themeSyncMode)
                 {
                     return;
                 }
 
-                isAutomaticWindowsAppModeSettingSyncEnabled = value;
+                themeSyncMode = value;
 
-                if (isAutomaticWindowsAppModeSettingSyncEnabled)
+                // Always remove handler first.
+                // That way we prevent double registrations.
+                SystemEvents.UserPreferenceChanged -= HandleUserPreferenceChanged;
+
+                if (themeSyncMode != ThemeSyncMode.DoNotSync)
                 {
                     SystemEvents.UserPreferenceChanged += HandleUserPreferenceChanged;
-                }
-                else
-                {
-                    SystemEvents.UserPreferenceChanged -= HandleUserPreferenceChanged;
-                }
-            }
-        }
-
-        private static bool isAutomaticWindowsAccentColorSyncEnabled;
-
-        /// <summary>
-        /// Gets or sets whether changes to the "app mode" setting from windows should be detected at runtime and the current <see cref="Theme"/> be changed accordingly.
-        /// </summary>
-        public static bool IsAutomaticWindowsAccentColorSyncEnabled
-        {
-            get => isAutomaticWindowsAccentColorSyncEnabled;
-
-            set
-            {
-                if (value == isAutomaticWindowsAccentColorSyncEnabled)
-                {
-                    return;
-                }
-
-                isAutomaticWindowsAccentColorSyncEnabled = value;
-
-                if (isAutomaticWindowsAccentColorSyncEnabled)
-                {
-                    SystemEvents.UserPreferenceChanged += HandleUserPreferenceChanged;
-                }
-                else
-                {
-                    SystemEvents.UserPreferenceChanged -= HandleUserPreferenceChanged;
                 }
             }
         }
 
         private static void HandleUserPreferenceChanged(object sender, UserPreferenceChangedEventArgs e)
         {
-            if (e.Category == UserPreferenceCategory.General)
+            if (e.Category == UserPreferenceCategory.General
+                && isSyncScheduled == false)
             {
-                if (IsAutomaticWindowsAppModeSettingSyncEnabled
-                    && IsAutomaticWindowsAccentColorSyncEnabled)
+                isSyncScheduled = true;
+
+                Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => ScheduledThemeSync(ThemeSyncMode)));
+            }
+        }
+
+        private static bool isSyncScheduled;
+
+        private static void ScheduledThemeSync(ThemeSyncMode themeSyncMode)
+        {
+            try
+            {
+                switch (themeSyncMode)
                 {
-                    SyncThemeColorSchemeWithWindowsAccentColor(WindowsThemeHelper.GetWindowsBaseColor());
+                    case ThemeSyncMode.SyncWithAppMode:
+                        SyncThemeBaseColorWithWindowsAppModeSetting();
+                        break;
+
+                    case ThemeSyncMode.SyncWithAccent:
+                        SyncThemeColorSchemeWithWindowsAccentColor();
+                        break;
+
+                    case ThemeSyncMode.SyncAll:
+                        SyncThemeColorSchemeWithWindowsAccentColor(WindowsThemeHelper.GetWindowsBaseColor());
+                        break;
                 }
-                else if (IsAutomaticWindowsAppModeSettingSyncEnabled)
-                {
-                    SyncThemeBaseColorWithWindowsAppModeSetting();
-                }
-                else if (IsAutomaticWindowsAccentColorSyncEnabled)
-                {
-                    SyncThemeColorSchemeWithWindowsAccentColor();
-                }
+            }
+            finally
+            {
+                isSyncScheduled = false;
             }
         }
 
         #endregion WindowsAppModeSetting
+    }
+
+    [Flags]
+    public enum ThemeSyncMode
+    {
+        DoNotSync = 1 << 0,
+
+        /// <summary>
+        /// Gets or sets whether changes to the "app mode" setting from windows should be detected at runtime and the current <see cref="Theme"/> be changed accordingly.
+        /// </summary>
+        SyncWithAppMode = 1 << 2,
+
+        /// <summary>
+        /// Gets or sets whether changes to the "app mode" setting from windows should be detected at runtime and the current <see cref="Theme"/> be changed accordingly.
+        /// </summary>
+        SyncWithAccent = 1 << 3,
+
+        SyncAll = SyncWithAppMode | SyncWithAccent
     }
 }

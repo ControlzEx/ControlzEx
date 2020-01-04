@@ -14,8 +14,7 @@ namespace ControlzEx.Showcase
         {
             base.OnStartup(e);
 
-            ThemeManager.IsAutomaticWindowsAccentColorSyncEnabled = true;
-            ThemeManager.IsAutomaticWindowsAppModeSettingSyncEnabled = true;
+            ThemeManager.ThemeSyncMode = ThemeSyncMode.SyncAll;
 
             ThemeManager.SyncThemeColorSchemeWithWindowsAccentColor();
         }

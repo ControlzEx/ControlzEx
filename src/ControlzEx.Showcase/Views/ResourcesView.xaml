@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:ControlzEx.Showcase.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <DataGrid ItemsSource="{Binding Path=ThemeAnalyzers, RelativeSource={RelativeSource AncestorType=local:ResourcesView}}"
+    <DataGrid ItemsSource="{Binding Path=ThemeResources, RelativeSource={RelativeSource AncestorType=local:ResourcesView}}"
               AutoGenerateColumns="False">
         <DataGrid.Columns>
             <DataGridTextColumn Header="Key" 

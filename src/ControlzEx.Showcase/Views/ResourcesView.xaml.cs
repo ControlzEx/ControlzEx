@@ -15,9 +15,9 @@
         {
             this.InitializeComponent();
 
-            this.ThemeAnalyzers = new ObservableCollection<ThemeResource>();
+            this.ThemeResources = new ObservableCollection<ThemeResource>();
 
-            var view = CollectionViewSource.GetDefaultView(this.ThemeAnalyzers);
+            var view = CollectionViewSource.GetDefaultView(this.ThemeResources);
             view.SortDescriptions.Add(new SortDescription(nameof(ThemeResource.Key), ListSortDirection.Ascending));
 
             this.UpdateThemeAnalyzers(ThemeManager.DetectTheme());
@@ -25,13 +25,13 @@
             ThemeManager.ThemeChanged += this.ThemeManager_ThemeChanged;
         }
 
-        public static readonly DependencyProperty ThemeAnalyzersProperty = DependencyProperty.Register(
-            nameof(ThemeAnalyzers), typeof(ObservableCollection<ThemeResource>), typeof(ResourcesView), new PropertyMetadata(default(ObservableCollection<ThemeResource>)));
+        public static readonly DependencyProperty ThemeResourcesProperty = DependencyProperty.Register(
+            nameof(ThemeResources), typeof(ObservableCollection<ThemeResource>), typeof(ResourcesView), new PropertyMetadata(default(ObservableCollection<ThemeResource>)));
 
-        public ObservableCollection<ThemeResource> ThemeAnalyzers
+        public ObservableCollection<ThemeResource> ThemeResources
         {
-            get { return (ObservableCollection<ThemeResource>)this.GetValue(ThemeAnalyzersProperty); }
-            set { this.SetValue(ThemeAnalyzersProperty, value); }
+            get { return (ObservableCollection<ThemeResource>)this.GetValue(ThemeResourcesProperty); }
+            set { this.SetValue(ThemeResourcesProperty, value); }
         }
 
         public class ThemeResource
@@ -72,18 +72,18 @@
 
         private void UpdateThemeAnalyzers(Theme theme)
         {
-            this.ThemeAnalyzers.Clear();
+            this.ThemeResources.Clear();
 
             if (theme is null)
             {
                 return;
             }
 
-            foreach (var resourceDictionary in theme.Resources)
+            foreach (var resourceDictionary in theme.GetAllResources())
             {
                 foreach (DictionaryEntry dictionaryEntry in resourceDictionary)
                 {
-                    this.ThemeAnalyzers.Add(new ThemeResource(resourceDictionary, dictionaryEntry));
+                    this.ThemeResources.Add(new ThemeResource(resourceDictionary, dictionaryEntry));
                 }
             }
         }

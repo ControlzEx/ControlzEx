@@ -1,17 +1,19 @@
 ﻿namespace ControlzEx.Theming
 {
     using System;
+    using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Diagnostics;
     using System.Linq;
     using System.Windows;
     using System.Windows.Media;
+    using ControlzEx.Internal;
     using JetBrains.Annotations;
 
     /// <summary>
-    /// Represents the background theme of the application.
+    /// Represents a theme.
     /// </summary>
-    [DebuggerDisplay("DisplayName={" + nameof(DisplayName) + "}, Name={" + nameof(Name) + "}, Sources={" + nameof(Sources) + "}")]
+    [DebuggerDisplay("DisplayName={" + nameof(DisplayName) + "}, Name={" + nameof(Name) + "}")]
     public class Theme
     {
         /// <summary>
@@ -47,39 +49,29 @@
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        /// <param name="resourceAddress">The URI of the theme ResourceDictionary.</param>
-        public Theme([NotNull] Uri resourceAddress, bool isRuntimeGenerated)
-            : this(new ResourceDictionary { Source = resourceAddress }, isRuntimeGenerated)
+        /// <param name="libraryTheme">The first <see cref="LibraryTheme"/> of the theme.</param>
+        public Theme([NotNull] LibraryTheme libraryTheme)
+            : this(libraryTheme.Name, libraryTheme.DisplayName, libraryTheme.BaseColorScheme, libraryTheme.ColorScheme, libraryTheme.ShowcaseBrush, libraryTheme.IsRuntimeGenerated)
         {
-            if (resourceAddress == null)
+            if (libraryTheme is null)
             {
-                throw new ArgumentNullException(nameof(resourceAddress));
+                throw new ArgumentNullException(nameof(libraryTheme));
             }
+
+            this.AddLibraryTheme(libraryTheme);
         }
 
-        /// <summary>
-        /// Initializes a new instance.
-        /// </summary>
-        /// <param name="resourceDictionary">The ResourceDictionary of the theme.</param>
-        public Theme([NotNull] ResourceDictionary resourceDictionary, bool isRuntimeGenerated)
+        public Theme(string name, string displayName, string baseColorScheme, string colorScheme, SolidColorBrush showcaseBrush, bool isRuntimeGenerated)
         {
-            if (resourceDictionary is null)
-            {
-                throw new ArgumentNullException(nameof(resourceDictionary));
-            }
-
             this.IsRuntimeGenerated = isRuntimeGenerated;
 
-            this.Name = (string)resourceDictionary[ThemeNameKey];
-            this.Origin = (string)resourceDictionary[ThemeOriginKey];
-            this.DisplayName = (string)resourceDictionary[ThemeDisplayNameKey];
-            this.BaseColorScheme = (string)resourceDictionary[ThemeBaseColorSchemeKey];
-            this.ColorScheme = (string)resourceDictionary[ThemeColorSchemeKey];
-            this.ShowcaseBrush = (SolidColorBrush)resourceDictionary[ThemeShowcaseBrushKey];
+            this.Name = name;
+            this.DisplayName = displayName;
+            this.BaseColorScheme = baseColorScheme;
+            this.ColorScheme = colorScheme;
+            this.ShowcaseBrush = showcaseBrush;
 
-            this.AddResource(resourceDictionary);
-
-            this.Resources = new ReadOnlyObservableCollection<ResourceDictionary>(this.ResourcesInternal);
+            this.LibraryThemes = new ReadOnlyObservableCollection<LibraryTheme>(this.LibraryThemesInternal);
         }
 
         public bool IsRuntimeGenerated { get; }
@@ -87,22 +79,17 @@
         /// <summary>
         /// The ResourceDictionaries that represent this theme.
         /// </summary>
-        public ReadOnlyObservableCollection<ResourceDictionary> Resources { get; }
+        public ReadOnlyObservableCollection<LibraryTheme> LibraryThemes { get; }
 
         /// <summary>
         /// The ResourceDictionaries that represent this theme.
         /// </summary>
-        private ObservableCollection<ResourceDictionary> ResourcesInternal { get; } = new ObservableCollection<ResourceDictionary>();
+        private ObservableCollection<LibraryTheme> LibraryThemesInternal { get; } = new ObservableCollection<LibraryTheme>();
 
         /// <summary>
         /// Gets the name of the theme.
         /// </summary>
         public string Name { get; }
-
-        /// <summary>
-        /// Get the origin of the theme.
-        /// </summary>
-        public string Origin { get; }
 
         /// <summary>
         /// Gets the display name of the theme.
@@ -119,12 +106,35 @@
         /// </summary>
         public string ColorScheme { get; }
 
-        public string Sources { get; private set; }
-
         /// <summary>
         /// Gets a brush which can be used to showcase this theme.
         /// </summary>
         public SolidColorBrush ShowcaseBrush { get; }
+
+        public IEnumerable<ResourceDictionary> GetAllResources() => this.LibraryThemes.SelectMany(x => x.Resources);
+
+        public Theme AddLibraryTheme([NotNull] LibraryTheme libraryTheme)
+        {
+            if (libraryTheme is null)
+            {
+                throw new ArgumentNullException(nameof(libraryTheme));
+            }
+
+            if (libraryTheme.Name != this.Name)
+            {
+                throw new ArgumentException("The theme key does not match the current theme key.");
+            }
+
+            if (libraryTheme.ParentTheme.IsNotNull())
+            {
+                throw new ArgumentException("The theme already has a parent.");
+            }
+
+            this.LibraryThemesInternal.Add(libraryTheme);
+            libraryTheme.ParentTheme = this;
+
+            return this;
+        }
 
         public static string GetThemeName([NotNull] ResourceDictionary resourceDictionary)
         {
@@ -138,36 +148,7 @@
             return key;
         }
 
-        public Theme AddResource([NotNull] ResourceDictionary resourceDictionary)
-        {
-            if (resourceDictionary is null)
-            {
-                throw new ArgumentNullException(nameof(resourceDictionary));
-            }
-
-            var themeName = GetThemeName(resourceDictionary);
-
-            if (themeName != this.Name)
-            {
-                throw new ArgumentException("The theme key does not match the current theme key.");
-            }
-
-            this.ResourcesInternal.Add(resourceDictionary);
-
-            this.Sources = string.Join("; ", this.ResourcesInternal.Select(x => x.Source));
-
-            return this;
-        }
-
-        public void AddResource(ReadOnlyObservableCollection<ResourceDictionary> resourceDictionaries)
-        {
-            foreach (var resourceDictionary in resourceDictionaries)
-            {
-                this.AddResource(resourceDictionary);
-            }
-        }
-
-        public static bool IsThemeDictionary(ResourceDictionary resources)
+        public static bool IsThemeDictionary([NotNull] ResourceDictionary resources)
         {
             return string.IsNullOrEmpty(GetThemeName(resources)) == false;
         }

@@ -112,7 +112,7 @@
             return true;
         }
 
-        public virtual Theme GetTheme(DictionaryEntry dictionaryEntry)
+        public virtual LibraryTheme GetLibraryTheme(DictionaryEntry dictionaryEntry)
         {
             if (this.IsPotentialThemeResourceDictionary(dictionaryEntry) == false)
             {
@@ -134,13 +134,13 @@
             if (resourceDictionary.MergedDictionaries.Count == 0
                 && ThemeManager.IsThemeDictionary(resourceDictionary))
             {
-                return new Theme(resourceDictionary, false);
+                return new LibraryTheme(resourceDictionary, false);
             }
 
             return null;
         }
 
-        public virtual IEnumerable<Theme> GetThemes()
+        public virtual IEnumerable<LibraryTheme> GetLibraryThemes()
         {
             foreach (var resourceName in this.resourceNames)
             {
@@ -167,7 +167,7 @@
                 {
                     foreach (DictionaryEntry dictionaryEntry in reader)
                     {
-                        var theme = this.GetTheme(dictionaryEntry);
+                        var theme = this.GetLibraryTheme(dictionaryEntry);
 
                         if (theme.IsNotNull())
                         {

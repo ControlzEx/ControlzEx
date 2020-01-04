@@ -7,6 +7,15 @@
              xmlns:theming="clr-namespace:ControlzEx.Theming;assembly=ControlzEx"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ObjectDataProvider MethodName="GetValues"
+                            ObjectType="{x:Type theming:ThemeSyncMode}"
+                            x:Key="SyncModePreferenceEnumValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="theming:ThemeSyncMode" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -15,9 +24,8 @@
         </Grid.RowDefinitions>
 
         <WrapPanel Grid.Row="0">
-            <CheckBox Content="IsAutomaticWindowsAppModeSettingSyncEnabled" IsChecked="{Binding Path=(theming:ThemeManager.IsAutomaticWindowsAppModeSettingSyncEnabled)}" />
-
-            <CheckBox Content="IsAutomaticWindowsAccentColorSyncEnabled" IsChecked="{Binding Path=(theming:ThemeManager.IsAutomaticWindowsAccentColorSyncEnabled)}" />
+            <ComboBox ItemsSource="{Binding Source={StaticResource SyncModePreferenceEnumValues}}"
+                      SelectedItem="{Binding Path=(theming:ThemeManager.ThemeSyncMode)}" />
         </WrapPanel>
         
         <StackPanel Grid.Row="1"
