@@ -1,4 +1,4 @@
-﻿namespace ControlzEx.Theming
+namespace ControlzEx.Theming
 {
     using System;
     using System.Collections;
@@ -143,8 +143,18 @@
             }
         }
 
-        public static void RegisterThemeResourceReader(ThemeResourceReader themeResourceReader)
+        public static void RegisterThemeResourceReader([NotNull] ThemeResourceReader themeResourceReader)
         {
+            if (themeResourceReader.IsNull())
+            {
+                throw new ArgumentNullException(nameof(themeResourceReader));
+            }
+
+            if (themeResourceReaders.Any(x => x.GetType() == themeResourceReader.GetType()))
+            {
+                return;
+            }
+
             themeResourceReaders.Add(themeResourceReader);
 
             themesInternal.Clear();
