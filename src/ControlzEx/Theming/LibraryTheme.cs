@@ -15,6 +15,7 @@
         /// Initializes a new instance.
         /// </summary>
         /// <param name="resourceAddress">The URI of the theme ResourceDictionary.</param>
+        /// <param name="isRuntimeGenerated">Defines if the library theme was generated at runtime.</param>
         public LibraryTheme([NotNull] Uri resourceAddress, bool isRuntimeGenerated)
             : this(new ResourceDictionary { Source = resourceAddress }, isRuntimeGenerated)
         {
@@ -28,6 +29,7 @@
         /// Initializes a new instance.
         /// </summary>
         /// <param name="resourceDictionary">The ResourceDictionary of the theme.</param>
+        /// <param name="isRuntimeGenerated">Defines if the library theme was generated at runtime.</param>
         public LibraryTheme([NotNull] ResourceDictionary resourceDictionary, bool isRuntimeGenerated)
         {
             if (resourceDictionary is null)
