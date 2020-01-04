@@ -1,4 +1,4 @@
-namespace ControlzEx.Theming
+﻿namespace ControlzEx.Theming
 {
     using System;
     using System.Collections;
@@ -308,25 +308,25 @@ namespace ControlzEx.Theming
         /// <summary>
         /// Gets the <see cref="Theme"/> with the given resource dictionary.
         /// </summary>
-        /// <param name="resources"><see cref="ResourceDictionary"/> from which the theme should be retrieved.</param>
+        /// <param name="resourceDictionary"><see cref="ResourceDictionary"/> from which the theme should be retrieved.</param>
         /// <returns>The <see cref="Theme"/> or <c>null</c>, if the theme wasn't found.</returns>
-        public static Theme GetTheme([NotNull] ResourceDictionary resources)
+        public static Theme GetTheme([NotNull] ResourceDictionary resourceDictionary)
         {
-            if (resources.IsNull())
+            if (resourceDictionary.IsNull())
             {
-                throw new ArgumentNullException(nameof(resources));
+                throw new ArgumentNullException(nameof(resourceDictionary));
             }
 
-            var builtInTheme = Themes.FirstOrDefault(x => x.Name == Theme.GetThemeName(resources));
+            var builtInTheme = Themes.FirstOrDefault(x => x.Name == Theme.GetThemeName(resourceDictionary));
             if (builtInTheme.IsNotNull())
             {
                 return builtInTheme;
             }
 
             // support dynamically created runtime resource dictionaries
-            if (IsThemeDictionary(resources))
+            if (IsThemeDictionary(resourceDictionary))
             {
-                return new Theme(new LibraryTheme(resources, true));
+                return new Theme(new LibraryTheme(resourceDictionary, true));
             }
 
             return null;
@@ -367,17 +367,17 @@ namespace ControlzEx.Theming
         /// <para />
         /// This might include runtime themes which do not have a resource uri.
         /// </summary>
-        /// <param name="resources">The resources.</param>
+        /// <param name="resourceDictionary">The resources.</param>
         /// <returns><c>true</c> if the resource dictionary is an <see cref="Theme"/>; otherwise, <c>false</c>.</returns>
         /// <exception cref="System.ArgumentNullException">resources</exception>
-        public static bool IsThemeDictionary([NotNull] ResourceDictionary resources)
+        public static bool IsThemeDictionary([NotNull] ResourceDictionary resourceDictionary)
         {
-            if (resources.IsNull())
+            if (resourceDictionary.IsNull())
             {
-                throw new ArgumentNullException(nameof(resources));
+                throw new ArgumentNullException(nameof(resourceDictionary));
             }
 
-            return Theme.IsThemeDictionary(resources);
+            return Theme.IsThemeDictionary(resourceDictionary);
         }
 
         /// <summary>
@@ -391,7 +391,7 @@ namespace ControlzEx.Theming
                 throw new ArgumentNullException(nameof(app));
             }
 
-            if (themeName.IsNull())
+            if (string.IsNullOrEmpty(themeName))
             {
                 throw new ArgumentNullException(nameof(themeName));
             }
@@ -410,7 +410,7 @@ namespace ControlzEx.Theming
                 throw new ArgumentNullException(nameof(frameworkElement));
             }
 
-            if (themeName.IsNull())
+            if (string.IsNullOrEmpty(themeName))
             {
                 throw new ArgumentNullException(nameof(themeName));
             }
@@ -484,30 +484,35 @@ namespace ControlzEx.Theming
         }
 
         [SecurityCritical]
-        private static Theme ChangeTheme(ResourceDictionary resources, Theme oldTheme, Theme newTheme)
+        private static Theme ChangeTheme([NotNull] ResourceDictionary resourceDictionary, Theme oldTheme, [NotNull] Theme newTheme)
         {
-            var themeChanged = false;
-
-            if (newTheme == null)
+            if (resourceDictionary.IsNull())
             {
-                return oldTheme;
+                throw new ArgumentNullException(nameof(resourceDictionary));
             }
+
+            if (newTheme.IsNull())
+            {
+                throw new ArgumentNullException(nameof(newTheme));
+            }
+
+            var themeChanged = false;
 
             if (oldTheme != newTheme)
             {
-                resources.BeginInit();
+                resourceDictionary.BeginInit();
 
                 List<ResourceDictionary> oldThemeResources = null;
                 if (oldTheme.IsNotNull())
                 {
-                    oldThemeResources = resources.MergedDictionaries.Where(d => Theme.GetThemeName(d) == oldTheme.Name)
+                    oldThemeResources = resourceDictionary.MergedDictionaries.Where(d => Theme.GetThemeName(d) == oldTheme.Name)
                                                  .ToList();
                 }
 
                 {
                     foreach (var themeResource in newTheme.GetAllResources().Reverse())
                     {
-                        resources.MergedDictionaries.Insert(0, themeResource);
+                        resourceDictionary.MergedDictionaries.Insert(0, themeResource);
                     }
                 }
 
@@ -515,12 +520,12 @@ namespace ControlzEx.Theming
                 {
                     foreach (var themeResource in oldThemeResources)
                     {
-                        resources.MergedDictionaries.Remove(themeResource);   
+                        resourceDictionary.MergedDictionaries.Remove(themeResource);   
                     }
                 }
 
                 themeChanged = true;
-                resources.EndInit();
+                resourceDictionary.EndInit();
             }
 
             if (themeChanged)
@@ -540,6 +545,21 @@ namespace ControlzEx.Theming
         [SecurityCritical]
         public static Theme ChangeTheme([NotNull] Application app, [NotNull] string baseColor, [NotNull] string colorScheme)
         {
+            if (app.IsNull())
+            {
+                throw new ArgumentNullException(nameof(app));
+            }
+
+            if (string.IsNullOrEmpty(baseColor))
+            {
+                throw new ArgumentNullException(nameof(baseColor));
+            }
+
+            if (string.IsNullOrEmpty(colorScheme))
+            {
+                throw new ArgumentNullException(nameof(colorScheme));
+            }
+
             var currentTheme = DetectTheme(app);
 
             if (currentTheme.IsNull())
@@ -567,6 +587,21 @@ namespace ControlzEx.Theming
         [SecurityCritical]
         public static Theme ChangeTheme([NotNull] FrameworkElement frameworkElement, [NotNull] string baseColor, [NotNull] string colorScheme)
         {
+            if (frameworkElement.IsNull())
+            {
+                throw new ArgumentNullException(nameof(frameworkElement));
+            }
+
+            if (string.IsNullOrEmpty(baseColor))
+            {
+                throw new ArgumentNullException(nameof(baseColor));
+            }
+
+            if (string.IsNullOrEmpty(colorScheme))
+            {
+                throw new ArgumentNullException(nameof(colorScheme));
+            }
+
             var currentTheme = DetectTheme(frameworkElement);
 
             if (currentTheme.IsNull())
@@ -588,13 +623,28 @@ namespace ControlzEx.Theming
         /// <summary>
         /// Change base color and color scheme of for the given ResourceDictionary.
         /// </summary>
-        /// <param name="resources">The ResourceDictionary to modify.</param>
+        /// <param name="resourceDictionary">The ResourceDictionary to modify.</param>
         /// <param name="oldTheme">The old/current theme.</param>
         /// <param name="baseColor">The base color to apply to the ResourceDictionary.</param>
         /// <param name="colorScheme">The color scheme to apply to the ResourceDictionary.</param>
         [SecurityCritical]
-        public static Theme ChangeTheme([NotNull] ResourceDictionary resources, Theme oldTheme, [NotNull] string baseColor, [NotNull] string colorScheme)
+        public static Theme ChangeTheme([NotNull] ResourceDictionary resourceDictionary, Theme oldTheme, [NotNull] string baseColor, [NotNull] string colorScheme)
         {
+            if (resourceDictionary.IsNull())
+            {
+                throw new ArgumentNullException(nameof(resourceDictionary));
+            }
+
+            if (string.IsNullOrEmpty(baseColor))
+            {
+                throw new ArgumentNullException(nameof(baseColor));
+            }
+
+            if (string.IsNullOrEmpty(colorScheme))
+            {
+                throw new ArgumentNullException(nameof(colorScheme));
+            }
+
             var newTheme = Themes.FirstOrDefault(x => x.BaseColorScheme == baseColor && x.ColorScheme == colorScheme);
 
             if (newTheme.IsNull())
@@ -603,7 +653,7 @@ namespace ControlzEx.Theming
                 return null;
             }
 
-            return ChangeTheme(resources, oldTheme, newTheme);
+            return ChangeTheme(resourceDictionary, oldTheme, newTheme);
         }
 
         /// <summary>
@@ -614,6 +664,16 @@ namespace ControlzEx.Theming
         [SecurityCritical]
         public static Theme ChangeThemeBaseColor([NotNull] Application app, [NotNull] string baseColor)
         {
+            if (app.IsNull())
+            {
+                throw new ArgumentNullException(nameof(app));
+            }
+
+            if (string.IsNullOrEmpty(baseColor))
+            {
+                throw new ArgumentNullException(nameof(baseColor));
+            }
+
             var currentTheme = DetectTheme(app);
 
             if (currentTheme.IsNull())
@@ -632,6 +692,16 @@ namespace ControlzEx.Theming
         [SecurityCritical]
         public static Theme ChangeThemeBaseColor([NotNull] FrameworkElement frameworkElement, [NotNull] string baseColor)
         {
+            if (frameworkElement.IsNull())
+            {
+                throw new ArgumentNullException(nameof(frameworkElement));
+            }
+
+            if (string.IsNullOrEmpty(baseColor))
+            {
+                throw new ArgumentNullException(nameof(baseColor));
+            }
+
             var currentTheme = DetectTheme(frameworkElement);
 
             if (currentTheme.IsNull())
@@ -645,20 +715,30 @@ namespace ControlzEx.Theming
         /// <summary>
         /// Change base color of for the given ResourceDictionary.
         /// </summary>
-        /// <param name="resources">The ResourceDictionary to modify.</param>
+        /// <param name="resourceDictionary">The ResourceDictionary to modify.</param>
         /// <param name="oldTheme">The old/current theme.</param>
         /// <param name="baseColor">The base color to apply to the ResourceDictionary.</param>
         [SecurityCritical]
-        public static Theme ChangeThemeBaseColor([NotNull] ResourceDictionary resources, [CanBeNull] Theme oldTheme, [NotNull] string baseColor)
+        public static Theme ChangeThemeBaseColor([NotNull] ResourceDictionary resourceDictionary, [CanBeNull] Theme oldTheme, [NotNull] string baseColor)
         {
-            var currentTheme = oldTheme ?? DetectTheme(resources);
+            if (resourceDictionary.IsNull())
+            {
+                throw new ArgumentNullException(nameof(resourceDictionary));
+            }
+
+            if (string.IsNullOrEmpty(baseColor))
+            {
+                throw new ArgumentNullException(nameof(baseColor));
+            }
+
+            var currentTheme = oldTheme ?? DetectTheme(resourceDictionary);
 
             if (currentTheme.IsNull())
             {
                 return null;
             }
 
-            return ChangeTheme(resources, currentTheme, baseColor, currentTheme.ColorScheme);
+            return ChangeTheme(resourceDictionary, currentTheme, baseColor, currentTheme.ColorScheme);
         }
 
         /// <summary>
@@ -669,6 +749,16 @@ namespace ControlzEx.Theming
         [SecurityCritical]
         public static Theme ChangeThemeColorScheme([NotNull] Application app, [NotNull] string colorScheme)
         {
+            if (app.IsNull())
+            {
+                throw new ArgumentNullException(nameof(app));
+            }
+
+            if (string.IsNullOrEmpty(colorScheme))
+            {
+                throw new ArgumentNullException(nameof(colorScheme));
+            }
+
             var currentTheme = DetectTheme(app);
 
             if (currentTheme.IsNull())
@@ -687,6 +777,16 @@ namespace ControlzEx.Theming
         [SecurityCritical]
         public static Theme ChangeThemeColorScheme([NotNull] FrameworkElement frameworkElement, [NotNull] string colorScheme)
         {
+            if (frameworkElement.IsNull())
+            {
+                throw new ArgumentNullException(nameof(frameworkElement));
+            }
+
+            if (string.IsNullOrEmpty(colorScheme))
+            {
+                throw new ArgumentNullException(nameof(colorScheme));
+            }
+
             var currentTheme = DetectTheme(frameworkElement);
 
             if (currentTheme.IsNull())
@@ -700,33 +800,43 @@ namespace ControlzEx.Theming
         /// <summary>
         /// Change color scheme for the given ResourceDictionary.
         /// </summary>
-        /// <param name="resources">The ResourceDictionary to modify.</param>
+        /// <param name="resourceDictionary">The ResourceDictionary to modify.</param>
         /// <param name="oldTheme">The old/current theme.</param>
         /// <param name="colorScheme">The color scheme to apply to the ResourceDictionary.</param>
         [SecurityCritical]
-        public static Theme ChangeThemeColorScheme([NotNull] ResourceDictionary resources, [CanBeNull] Theme oldTheme, [NotNull] string colorScheme)
+        public static Theme ChangeThemeColorScheme([NotNull] ResourceDictionary resourceDictionary, [CanBeNull] Theme oldTheme, [NotNull] string colorScheme)
         {
-            var currentTheme = oldTheme ?? DetectTheme(resources);
+            if (resourceDictionary.IsNull())
+            {
+                throw new ArgumentNullException(nameof(resourceDictionary));
+            }
+
+            if (string.IsNullOrEmpty(colorScheme))
+            {
+                throw new ArgumentNullException(nameof(colorScheme));
+            }
+
+            var currentTheme = oldTheme ?? DetectTheme(resourceDictionary);
 
             if (currentTheme.IsNull())
             {
                 return null;
             }
 
-            return ChangeTheme(resources, currentTheme, currentTheme.BaseColorScheme, colorScheme);
+            return ChangeTheme(resourceDictionary, currentTheme, currentTheme.BaseColorScheme, colorScheme);
         }
 
         /// <summary>
         /// Changes the theme of a ResourceDictionary directly.
         /// </summary>
-        /// <param name="resources">The ResourceDictionary to modify.</param>
+        /// <param name="resourceDictionary">The ResourceDictionary to modify.</param>
         /// <param name="newTheme">The theme to apply to the ResourceDictionary.</param>
         [SecurityCritical]
-        public static void ApplyThemeResourcesFromTheme([NotNull] ResourceDictionary resources, [NotNull] Theme newTheme)
+        public static void ApplyThemeResourcesFromTheme([NotNull] ResourceDictionary resourceDictionary, [NotNull] Theme newTheme)
         {
-            if (resources.IsNull())
+            if (resourceDictionary.IsNull())
             {
-                throw new ArgumentNullException(nameof(resources));
+                throw new ArgumentNullException(nameof(resourceDictionary));
             }
 
             if (newTheme.IsNull())
@@ -736,14 +846,24 @@ namespace ControlzEx.Theming
 
             foreach (var themeResources in newTheme.GetAllResources())
             {
-                ApplyResourceDictionary(resources, themeResources);   
+                ApplyResourceDictionary(resourceDictionary, themeResources);   
             }
         }
 
         [SecurityCritical]
         // ReSharper disable once SuggestBaseTypeForParameter
-        private static void ApplyResourceDictionary(ResourceDictionary oldRd, ResourceDictionary newRd)
+        private static void ApplyResourceDictionary([NotNull] ResourceDictionary oldRd, [NotNull] ResourceDictionary newRd)
         {
+            if (oldRd.IsNull())
+            {
+                throw new ArgumentNullException(nameof(oldRd));
+            }
+
+            if (newRd.IsNull())
+            {
+                throw new ArgumentNullException(nameof(newRd));
+            }
+
             oldRd.BeginInit();
 
             foreach (DictionaryEntry r in newRd)
