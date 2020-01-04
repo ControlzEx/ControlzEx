@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.ObjectModel;
-    using System.Diagnostics;
     using System.Windows;
     using System.Windows.Media;
     using JetBrains.Annotations;
@@ -10,7 +9,6 @@
     /// <summary>
     /// Represents a theme.
     /// </summary>
-    [DebuggerDisplay("DisplayName={" + nameof(DisplayName) + "}, Name={" + nameof(Name) + "}, Origin={" + nameof(Origin) + "}")]
     public class LibraryTheme
     {
         /// <summary>
@@ -113,6 +111,11 @@
             {
                 this.AddResource(resourceDictionary);
             }
+        }
+
+        public override string ToString()
+        {
+            return $"DisplayName={this.DisplayName}, Name={this.Name}, Origin={this.Origin}";
         }
 
         public static string GetThemeName([NotNull] ResourceDictionary resourceDictionary)

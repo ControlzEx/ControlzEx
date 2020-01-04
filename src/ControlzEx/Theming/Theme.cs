@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using System.Diagnostics;
     using System.Linq;
     using System.Windows;
     using System.Windows.Media;
@@ -13,7 +12,6 @@
     /// <summary>
     /// Represents a theme.
     /// </summary>
-    [DebuggerDisplay("DisplayName={" + nameof(DisplayName) + "}, Name={" + nameof(Name) + "}")]
     public class Theme
     {
         /// <summary>
@@ -134,6 +132,11 @@
             libraryTheme.ParentTheme = this;
 
             return this;
+        }
+
+        public override string ToString()
+        {
+            return $"DisplayName={this.DisplayName}, Name={this.Name}";
         }
 
         public static string GetThemeName([NotNull] ResourceDictionary resourceDictionary)
