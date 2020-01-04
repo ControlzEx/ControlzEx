@@ -19,7 +19,11 @@
 
             set
             {
-                ThemeManager.ChangeTheme(Window.GetWindow(this), value);
+                if (value is null == false)
+                {
+                    ThemeManager.ChangeTheme(Window.GetWindow(this), value);
+                }
+
                 this.OnPropertyChanged();
                 this.OnPropertyChanged(nameof(this.CurrentBaseColor));
             }
@@ -31,7 +35,11 @@
 
             set
             {
-                ThemeManager.ChangeThemeBaseColor(Window.GetWindow(this), value);
+                if (string.IsNullOrEmpty(value) == false)
+                {
+                    ThemeManager.ChangeThemeBaseColor(Window.GetWindow(this), value);
+                }
+
                 this.OnPropertyChanged();
                 this.OnPropertyChanged(nameof(this.CurrentTheme));
             }
@@ -43,7 +51,11 @@
 
             set
             {
-                ThemeManager.ChangeThemeColorScheme(Window.GetWindow(this), value);
+                if (string.IsNullOrEmpty(value) == false)
+                {
+                    ThemeManager.ChangeThemeColorScheme(Window.GetWindow(this), value);
+                }
+
                 this.OnPropertyChanged();
                 this.OnPropertyChanged(nameof(this.CurrentTheme));
             }
