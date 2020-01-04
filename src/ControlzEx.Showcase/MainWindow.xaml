@@ -61,7 +61,7 @@
                           Height="8"
                           HorizontalAlignment="Stretch"
                           controlzEx:WindowChrome.IsHitTestVisibleInChrome="True"
-                          Background="Green" />
+                          Background="{DynamicResource ControlzEx.Brushes.AccentBaseColorBrush}" />
 
             <controlzEx:TabControlEx Grid.Row="2">
                 <TabItem Header="WindowChrome">
