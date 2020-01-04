@@ -18,7 +18,11 @@
             this.ThemeResources = new ObservableCollection<ThemeResource>();
 
             var view = CollectionViewSource.GetDefaultView(this.ThemeResources);
+
             view.SortDescriptions.Add(new SortDescription(nameof(ThemeResource.Key), ListSortDirection.Ascending));
+
+            view.GroupDescriptions.Add(new PropertyGroupDescription(nameof(ThemeResource.Theme)));
+            view.GroupDescriptions.Add(new PropertyGroupDescription(nameof(ThemeResource.LibraryTheme)));
 
             this.UpdateThemeAnalyzers(ThemeManager.DetectTheme());
 
@@ -36,13 +40,16 @@
 
         public class ThemeResource
         {
-            public ThemeResource(ResourceDictionary resourceDictionary, DictionaryEntry dictionaryEntry)
-                : this(resourceDictionary, dictionaryEntry.Key.ToString(), dictionaryEntry.Value)
+            public ThemeResource(Theme theme, LibraryTheme libraryTheme, ResourceDictionary resourceDictionary, DictionaryEntry dictionaryEntry)
+                : this(theme, libraryTheme, resourceDictionary, dictionaryEntry.Key.ToString(), dictionaryEntry.Value)
             {
             }
 
-            public ThemeResource(ResourceDictionary resourceDictionary, string key, object value)
+            public ThemeResource(Theme theme, LibraryTheme libraryTheme, ResourceDictionary resourceDictionary, string key, object value)
             {
+                this.Theme = theme;
+                this.LibraryTheme = libraryTheme;
+
                 this.Source = resourceDictionary.Source?.ToString() ?? "Runtime";
                 this.Key = key;
 
@@ -55,6 +62,10 @@
 
                 this.StringValue = value.ToString();
             }
+
+            public Theme Theme { get; }
+
+            public LibraryTheme LibraryTheme { get; }
 
             public string Source { get; }
 
@@ -79,11 +90,14 @@
                 return;
             }
 
-            foreach (var resourceDictionary in theme.GetAllResources())
+            foreach (var libraryTheme in theme.LibraryThemes)
             {
-                foreach (DictionaryEntry dictionaryEntry in resourceDictionary)
+                foreach (var resourceDictionary in libraryTheme.Resources)
                 {
-                    this.ThemeResources.Add(new ThemeResource(resourceDictionary, dictionaryEntry));
+                    foreach (DictionaryEntry dictionaryEntry in resourceDictionary)
+                    {
+                        this.ThemeResources.Add(new ThemeResource(theme, libraryTheme, resourceDictionary, dictionaryEntry));
+                    }
                 }
             }
         }
