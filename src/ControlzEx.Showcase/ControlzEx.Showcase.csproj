@@ -11,6 +11,14 @@
         <NoWarn>SA1652</NoWarn>
         <ApplicationManifest>app.manifest</ApplicationManifest>
     </PropertyGroup>
+    <PropertyGroup>
+      <DefaultItemExcludes>$(DefaultItemExcludes);**/*.Template.xaml</DefaultItemExcludes>
+    </PropertyGroup>
+    <ItemGroup>
+      <EmbeddedResource Include="**/*.Template.xaml" />
+      <EmbeddedResource Include="**/GeneratorParameters.json" />
+      <UpToDateCheckInput Include="**/*.xaml" />
+    </ItemGroup>
     <!-- Items include -->
     <ItemGroup>
         <ProjectReference Include="..\ControlzEx\ControlzEx.csproj" />
@@ -22,4 +30,27 @@
         <Compile DependentUpon="%(Filename)" SubType="Code" Update="**\obj\**\*.g$(DefaultLanguageSourceExtension)" />
         <Compile DependentUpon="%(Filename)" SubType="Designer" Update="**\*.xaml$(DefaultLanguageSourceExtension)" />
     </ItemGroup>
+
+    <PropertyGroup>
+      <XamlColorSchemeGeneratorVersion>3.0.0.31</XamlColorSchemeGeneratorVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="XamlColorSchemeGenerator" version="$(XamlColorSchemeGeneratorVersion)" privateAssets="All" />
+    </ItemGroup>
+
+    <Target Name="GenerateXamlFilesInner">
+      <PropertyGroup>
+        <XamlColorSchemeGeneratorPath>$(NuGetPackageRoot)/xamlcolorschemegenerator/$(XamlColorSchemeGeneratorVersion)/tools/XamlColorSchemeGenerator.exe</XamlColorSchemeGeneratorPath>
+      </PropertyGroup>
+      <!-- Generate theme files -->
+      <Exec Command="&quot;$(XamlColorSchemeGeneratorPath)&quot; &quot;$(MSBuildProjectDirectory)/Themes/Themes/GeneratorParameters.json&quot;" WorkingDirectory="$(MSBuildProjectDirectory)/Themes/Themes" />
+    </Target>
+
+    <!-- Key to generating the xaml files at the right point in time is to do this before DispatchToInnerBuilds -->
+    <Target Name="GenerateXamlFiles" BeforeTargets="DispatchToInnerBuilds;BeforeBuild">
+      <!--TargetFramework=once is critical here, as it will not execute task from same project with same properties multiple times. 
+    We need to unify TargetFramework between empty, net45, netcoreapp3.0 etc.-->
+      <MSBuild Projects="$(MSBuildProjectFile)" Targets="GenerateXamlFilesInner" Properties="TargetFramework=once" />
+    </Target>
 </Project>
