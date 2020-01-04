@@ -36,7 +36,7 @@
 
                 var baseColorScheme = generatorParameters.BaseColorSchemes.First(x => x.Name == baseColor);
 
-                var colorScheme = new ThemeGenerator.ColorScheme
+                var colorScheme = new ThemeGenerator.ThemeGeneratorColorScheme
                 {
                     Name = accentColor.ToString()
                 };

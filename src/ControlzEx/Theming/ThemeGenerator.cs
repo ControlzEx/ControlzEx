@@ -5,16 +5,16 @@
 
     public static class ThemeGenerator
     {
-        public static GeneratorParameters GetParametersFromString(string input)
+        public static ThemeGeneratorParameters GetParametersFromString(string input)
         {
 #if NETCOREAPP
-            return System.Text.Json.JsonSerializer.Deserialize<GeneratorParameters>(input);
+            return System.Text.Json.JsonSerializer.Deserialize<ThemeGeneratorParameters>(input);
 #else
-            return new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<GeneratorParameters>(input);
+            return new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<ThemeGeneratorParameters>(input);
 #endif
         }
 
-        public static string GenerateColorSchemeFileContent(GeneratorParameters parameters, BaseColorScheme baseColorScheme, ColorScheme colorScheme, string templateContent, string themeName, string themeDisplayName)
+        public static string GenerateColorSchemeFileContent(ThemeGeneratorParameters parameters, ThemeGeneratorBaseColorScheme baseColorScheme, ThemeGeneratorColorScheme colorScheme, string templateContent, string themeName, string themeDisplayName)
         {
             templateContent = templateContent.Replace("{{ThemeName}}", themeName);
             templateContent = templateContent.Replace("{{ThemeDisplayName}}", themeDisplayName);
@@ -39,32 +39,32 @@
             return templateContent;
         }
 
-        public class GeneratorParameters
+        public class ThemeGeneratorParameters
         {
             public string TemplateFile { get; set; }
 
             public Dictionary<string, string> DefaultValues { get; set; } = new Dictionary<string, string>();
 
-            public BaseColorScheme[] BaseColorSchemes { get; set; }
+            public ThemeGeneratorBaseColorScheme[] BaseColorSchemes { get; set; }
 
-            public ColorScheme[] ColorSchemes { get; set; }
+            public ThemeGeneratorColorScheme[] ColorSchemes { get; set; }
         }
 
         [DebuggerDisplay("{" + nameof(Name) + "}")]
-        public class BaseColorScheme
+        public class ThemeGeneratorBaseColorScheme
         {
             public string Name { get; set; }
 
             public Dictionary<string, string> Values { get; set; }
 
-            public BaseColorScheme Clone()
+            public ThemeGeneratorBaseColorScheme Clone()
             {
-                return (BaseColorScheme)this.MemberwiseClone();
+                return (ThemeGeneratorBaseColorScheme)this.MemberwiseClone();
             }
         }
 
         [DebuggerDisplay("{" + nameof(Name) + "}")]
-        public class ColorScheme
+        public class ThemeGeneratorColorScheme
         {
             public string CustomBaseColorSchemeName { get; set; }
 
