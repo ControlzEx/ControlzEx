@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
     <!-- Project properties -->
     <PropertyGroup>
@@ -38,9 +38,6 @@
     </ItemGroup>
     <!-- reference includes -->
     <ItemGroup>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.*">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-        </PackageReference>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.*" PrivateAssets="All" IncludeAssets="build; native" />
     </ItemGroup>
 </Project>
