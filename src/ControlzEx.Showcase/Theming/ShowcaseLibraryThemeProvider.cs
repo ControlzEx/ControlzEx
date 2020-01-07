@@ -1,14 +1,14 @@
-﻿namespace ControlzEx.Showcase.Themes
+﻿namespace ControlzEx.Showcase.Theming
 {
     using System.Collections.Generic;
     using System.Windows.Media;
     using ControlzEx.Theming;
 
-    public class ShowcaseThemeResourceReader : ThemeResourceReader
+    public class ShowcaseLibraryThemeProvider : LibraryThemeProvider
     {
-        public static readonly ShowcaseThemeResourceReader DefaultInstance = new ShowcaseThemeResourceReader();
+        public static readonly ShowcaseLibraryThemeProvider DefaultInstance = new ShowcaseLibraryThemeProvider();
 
-        public ShowcaseThemeResourceReader()
+        public ShowcaseLibraryThemeProvider()
             : base(true)
         {
         }
@@ -20,7 +20,7 @@
             values.Add("ControlzEx.Colors.AccentColor60", accentColor60Percent.ToString());
             values.Add("ControlzEx.Colors.AccentColor40", accentColor40Percent.ToString());
             values.Add("ControlzEx.Colors.AccentColor20", accentColor20Percent.ToString());
-                            
+
             values.Add("ControlzEx.Colors.HighlightColor", highlightColor.ToString());
             values.Add("ControlzEx.Colors.IdealForegroundColor", idealForegroundColor.ToString());
         }

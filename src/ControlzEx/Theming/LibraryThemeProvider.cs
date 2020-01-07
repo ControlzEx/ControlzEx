@@ -10,13 +10,13 @@
     using System.Windows.Media;
     using ControlzEx.Internal;
 
-    public abstract class ThemeResourceReader : DependencyObject
+    public abstract class LibraryThemeProvider : DependencyObject
     {
         private readonly Assembly assembly;
         private readonly string assemblyName;
         private readonly string[] resourceNames;
 
-        protected ThemeResourceReader(bool registerAtThemeManager)
+        protected LibraryThemeProvider(bool registerAtThemeManager)
         {
             this.assembly = this.GetType().Assembly;
             this.assemblyName = this.assembly.GetName().Name;

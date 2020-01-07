@@ -10,7 +10,12 @@
 
     public class RuntimeThemeGenerator
     {
-        public static Theme GenerateRuntimeThemeFromWindowsSettings(string baseColor, IEnumerable<ThemeResourceReader> themeResourceReaders)
+        public static Theme GenerateRuntimeThemeFromWindowsSettings(string baseColor, params LibraryThemeProvider[] themeResourceReaders)
+        {
+            return GenerateRuntimeThemeFromWindowsSettings(baseColor, themeResourceReaders.ToList());
+        }
+
+        public static Theme GenerateRuntimeThemeFromWindowsSettings(string baseColor, IEnumerable<LibraryThemeProvider> themeResourceReaders)
         {
             var windowsAccentColor = WindowsThemeHelper.GetWindowsAccentColor();
 
@@ -21,6 +26,16 @@
 
             var accentColor = windowsAccentColor.Value;
 
+            return GenerateRuntimeTheme(baseColor, accentColor, themeResourceReaders);
+        }
+
+        public static Theme GenerateRuntimeTheme(string baseColor, Color accentColor, params LibraryThemeProvider[] themeResourceReaders)
+        {
+            return GenerateRuntimeTheme(baseColor, accentColor, themeResourceReaders.ToList());
+        }
+
+        public static Theme GenerateRuntimeTheme(string baseColor, Color accentColor, IEnumerable<LibraryThemeProvider> themeResourceReaders)
+        {
             Theme theme = null;
 
             foreach (var themeResourceReader in themeResourceReaders)

@@ -2,11 +2,11 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:ControlzEx.Showcase"
-             xmlns:themes="clr-namespace:ControlzEx.Showcase.Themes"
+             xmlns:theming="clr-namespace:ControlzEx.Showcase.Theming"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
-            <themes:ShowcaseThemeResourceReader x:Key="{x:Static themes:ShowcaseThemeResourceReader.DefaultInstance}" />
+            <theming:ShowcaseLibraryThemeProvider x:Key="{x:Static theming:ShowcaseLibraryThemeProvider.DefaultInstance}" />
 
             <Style x:Key="{x:Type local:WindowChromeWindow}" TargetType="{x:Type local:WindowChromeWindow}">
                 <Setter Property="BorderThickness" Value="1" />

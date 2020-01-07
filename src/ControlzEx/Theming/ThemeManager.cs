@@ -34,7 +34,7 @@
 
         private static bool isEnsuringThemes;
 
-        private static readonly List<ThemeResourceReader> themeResourceReaders = new List<ThemeResourceReader>();
+        private static readonly List<LibraryThemeProvider> themeResourceReaders = new List<LibraryThemeProvider>();
 
         private static readonly ObservableCollection<Theme> themesInternal;
         private static readonly ReadOnlyObservableCollection<Theme> themes;
@@ -143,19 +143,19 @@
             }
         }
 
-        public static void RegisterThemeResourceReader([NotNull] ThemeResourceReader themeResourceReader)
+        public static void RegisterThemeResourceReader([NotNull] LibraryThemeProvider libraryThemeProvider)
         {
-            if (themeResourceReader.IsNull())
+            if (libraryThemeProvider.IsNull())
             {
-                throw new ArgumentNullException(nameof(themeResourceReader));
+                throw new ArgumentNullException(nameof(libraryThemeProvider));
             }
 
-            if (themeResourceReaders.Any(x => x.GetType() == themeResourceReader.GetType()))
+            if (themeResourceReaders.Any(x => x.GetType() == libraryThemeProvider.GetType()))
             {
                 return;
             }
 
-            themeResourceReaders.Add(themeResourceReader);
+            themeResourceReaders.Add(libraryThemeProvider);
 
             themesInternal.Clear();
         }
@@ -510,9 +510,13 @@
                 }
 
                 {
-                    foreach (var themeResource in newTheme.GetAllResources().Reverse())
+                    foreach (var themeResource in newTheme.GetAllResources())
                     {
-                        resourceDictionary.MergedDictionaries.Insert(0, themeResource);
+                        // todo: Should we really append the theme resources or try to insert them at a specific index?
+                        //       The problem here would be to get the correct index.
+                        //       Inserting them at index 0 is not a good idea as user included resources, like generic.xaml, would be behind our resources.
+                        //resourceDictionary.MergedDictionaries.Insert(0, themeResource);
+                        resourceDictionary.MergedDictionaries.Add(themeResource);
                     }
                 }
 
