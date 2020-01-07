@@ -146,9 +146,16 @@
                 throw new ArgumentNullException(nameof(resourceDictionary));
             }
 
-            var key = (string)resourceDictionary[ThemeNameKey];
+            var key = resourceDictionary.Keys
+                    .OfType<string>()
+                    .FirstOrDefault(x => x.Equals(ThemeNameKey, StringComparison.Ordinal));
 
-            return key;
+            if (key is null)
+            {
+                return null;
+            }
+
+            return (string)resourceDictionary[key];
         }
 
         public static bool IsThemeDictionary([NotNull] ResourceDictionary resources)
