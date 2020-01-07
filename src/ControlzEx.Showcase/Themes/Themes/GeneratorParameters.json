@@ -1,5 +1,4 @@
 ﻿{
-  "TemplateFile": "Theme.Template.xaml",
   "DefaultValues": {
     "ControlzEx.Colors.IdealForegroundColor": "White",
     "ControlzEx.Colors.DarkIdealForegroundDisabledColor": "#ADADAD",
