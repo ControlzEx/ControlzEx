@@ -49,5 +49,7 @@
         <PackageReference Include="JetBrains.Annotations" Version="2019.*" PrivateAssets="All" />
         <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.*" />
         <PackageReference Include="WpfAnalyzers" Version="2.2.*" PrivateAssets="All" />
+
+        <PackageReference Include="GitVersionTask" Version="5.*" PrivateAssets="All" IncludeAssets="build; native" />
     </ItemGroup>
 </Project>
