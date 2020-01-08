@@ -10,12 +10,12 @@
 
     public class RuntimeThemeGenerator
     {
-        public static Theme GenerateRuntimeThemeFromWindowsSettings(string baseColor, params LibraryThemeProvider[] themeResourceReaders)
+        public static Theme GenerateRuntimeThemeFromWindowsSettings(string baseColor, params LibraryThemeProvider[] libraryThemeProviders)
         {
-            return GenerateRuntimeThemeFromWindowsSettings(baseColor, themeResourceReaders.ToList());
+            return GenerateRuntimeThemeFromWindowsSettings(baseColor, libraryThemeProviders.ToList());
         }
 
-        public static Theme GenerateRuntimeThemeFromWindowsSettings(string baseColor, IEnumerable<LibraryThemeProvider> themeResourceReaders)
+        public static Theme GenerateRuntimeThemeFromWindowsSettings(string baseColor, IEnumerable<LibraryThemeProvider> libraryThemeProviders)
         {
             var windowsAccentColor = WindowsThemeHelper.GetWindowsAccentColor();
 
@@ -26,7 +26,7 @@
 
             var accentColor = windowsAccentColor.Value;
 
-            return GenerateRuntimeTheme(baseColor, accentColor, themeResourceReaders);
+            return GenerateRuntimeTheme(baseColor, accentColor, libraryThemeProviders);
         }
 
         public static Theme GenerateRuntimeTheme(string baseColor, Color accentColor)
@@ -34,18 +34,18 @@
             return GenerateRuntimeTheme(baseColor, accentColor, ThemeManager.LibraryThemeProviders.ToList());
         }
 
-        public static Theme GenerateRuntimeTheme(string baseColor, Color accentColor, params LibraryThemeProvider[] themeResourceReaders)
+        public static Theme GenerateRuntimeTheme(string baseColor, Color accentColor, params LibraryThemeProvider[] libraryThemeProviders)
         {
-            return GenerateRuntimeTheme(baseColor, accentColor, themeResourceReaders.ToList());
+            return GenerateRuntimeTheme(baseColor, accentColor, libraryThemeProviders.ToList());
         }
 
-        public static Theme GenerateRuntimeTheme(string baseColor, Color accentColor, IEnumerable<LibraryThemeProvider> themeResourceReaders)
+        public static Theme GenerateRuntimeTheme(string baseColor, Color accentColor, IEnumerable<LibraryThemeProvider> libraryThemeProviders)
         {
             Theme theme = null;
 
-            foreach (var themeResourceReader in themeResourceReaders)
+            foreach (var libraryThemeProvider in libraryThemeProviders)
             {
-                var themeGeneratorParametersContent = themeResourceReader.GetThemeGeneratorParametersContent();
+                var themeGeneratorParametersContent = libraryThemeProvider.GetThemeGeneratorParametersContent();
 
                 if (string.IsNullOrEmpty(themeGeneratorParametersContent))
                 {
@@ -80,12 +80,12 @@
                 values.Add("ThemeGenerator.Colors.HighlightColor", highlightColor.ToString());
                 values.Add("ThemeGenerator.Colors.IdealForegroundColor", idealForegroundColor.ToString());
 
-                themeResourceReader.FillColorSchemeValues(values, accentColor, accentColor80Percent, accentColor60Percent, accentColor40Percent, accentColor20Percent, highlightColor, idealForegroundColor);
+                libraryThemeProvider.FillColorSchemeValues(values, accentColor, accentColor80Percent, accentColor60Percent, accentColor40Percent, accentColor20Percent, highlightColor, idealForegroundColor);
 
-                var themeFileContent = ThemeGenerator.GenerateColorSchemeFileContent(generatorParameters, baseColorScheme, colorScheme, themeResourceReader.GetThemeTemplateContent(), $"{baseColor}.Runtime_{accentColor}", $"Runtime {accentColor} ({baseColor})");
+                var themeFileContent = ThemeGenerator.GenerateColorSchemeFileContent(generatorParameters, baseColorScheme, colorScheme, libraryThemeProvider.GetThemeTemplateContent(), $"{baseColor}.Runtime_{accentColor}", $"Runtime {accentColor} ({baseColor})");
                 var resourceDictionary = (ResourceDictionary)XamlReader.Parse(themeFileContent);
 
-                var libraryTheme = new LibraryTheme(resourceDictionary, true);
+                var libraryTheme = new LibraryTheme(resourceDictionary, libraryThemeProvider, true);
 
                 if (theme == null)
                 {

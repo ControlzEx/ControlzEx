@@ -136,9 +136,9 @@
             {
                 isEnsuringThemes = true;
 
-                foreach (var themeResourceReader in libraryThemeProvidersInternal)
+                foreach (var libraryThemeProvider in libraryThemeProvidersInternal)
                 {
-                    foreach (var theme in themeResourceReader.GetLibraryThemes())
+                    foreach (var theme in libraryThemeProvider.GetLibraryThemes())
                     {
                         AddLibraryTheme(theme);
                     }
@@ -154,7 +154,7 @@
             }
         }
 
-        public static void RegisterThemeResourceReader([NotNull] LibraryThemeProvider libraryThemeProvider)
+        public static void RegisterLibraryThemeProvider([NotNull] LibraryThemeProvider libraryThemeProvider)
         {
             if (libraryThemeProvider.IsNull())
             {
@@ -337,7 +337,7 @@
             // support dynamically created runtime resource dictionaries
             if (IsThemeDictionary(resourceDictionary))
             {
-                return new Theme(new LibraryTheme(resourceDictionary, true));
+                return new Theme(new LibraryTheme(resourceDictionary, null, true));
             }
 
             return null;

@@ -1,4 +1,4 @@
-namespace ControlzEx.Theming
+﻿namespace ControlzEx.Theming
 {
     using System;
     using System.Collections.ObjectModel;
@@ -15,9 +15,10 @@ namespace ControlzEx.Theming
         /// Initializes a new instance.
         /// </summary>
         /// <param name="resourceAddress">The URI of the theme ResourceDictionary.</param>
+        /// <param name="libraryThemeProvider">The <see cref="ControlzEx.Theming.LibraryThemeProvider"/> which created this instance.</param>
         /// <param name="isRuntimeGenerated">Defines if the library theme was generated at runtime.</param>
-        public LibraryTheme([NotNull] Uri resourceAddress, bool isRuntimeGenerated)
-            : this(new ResourceDictionary { Source = resourceAddress }, isRuntimeGenerated)
+        public LibraryTheme([NotNull] Uri resourceAddress, [CanBeNull] LibraryThemeProvider libraryThemeProvider, bool isRuntimeGenerated)
+            : this(new ResourceDictionary { Source = resourceAddress }, libraryThemeProvider, isRuntimeGenerated)
         {
             if (resourceAddress == null)
             {
@@ -29,13 +30,16 @@ namespace ControlzEx.Theming
         /// Initializes a new instance.
         /// </summary>
         /// <param name="resourceDictionary">The ResourceDictionary of the theme.</param>
+        /// <param name="libraryThemeProvider">The <see cref="ControlzEx.Theming.LibraryThemeProvider"/> which created this instance.</param>
         /// <param name="isRuntimeGenerated">Defines if the library theme was generated at runtime.</param>
-        public LibraryTheme([NotNull] ResourceDictionary resourceDictionary, bool isRuntimeGenerated)
+        public LibraryTheme([NotNull] ResourceDictionary resourceDictionary, [CanBeNull] LibraryThemeProvider libraryThemeProvider, bool isRuntimeGenerated)
         {
             if (resourceDictionary is null)
             {
                 throw new ArgumentNullException(nameof(resourceDictionary));
             }
+
+            this.LibraryThemeProvider = libraryThemeProvider;
 
             this.IsRuntimeGenerated = isRuntimeGenerated;
 
@@ -50,6 +54,9 @@ namespace ControlzEx.Theming
 
             this.Resources = new ReadOnlyObservableCollection<ResourceDictionary>(this.ResourcesInternal);
         }
+
+        [CanBeNull]
+        public LibraryThemeProvider LibraryThemeProvider { get; }
 
         public bool IsRuntimeGenerated { get; }
 
@@ -94,6 +101,18 @@ namespace ControlzEx.Theming
         /// Gets a brush which can be used to showcase this theme.
         /// </summary>
         public Brush ShowcaseBrush { get; }
+
+        public virtual bool Matches(LibraryTheme libraryTheme)
+        {
+            return this.BaseColorScheme == libraryTheme.BaseColorScheme
+                   && this.ColorScheme == libraryTheme.ColorScheme;
+        }
+
+        public virtual bool MatchesSecondTry(LibraryTheme libraryTheme)
+        {
+            return this.BaseColorScheme == libraryTheme.BaseColorScheme
+                   && this.ShowcaseBrush.ToString() == libraryTheme.ShowcaseBrush.ToString();
+        }
 
         public LibraryTheme AddResource([NotNull] ResourceDictionary resourceDictionary)
         {

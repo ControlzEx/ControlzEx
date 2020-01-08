@@ -25,24 +25,13 @@
 
             if (registerAtThemeManager)
             {
-                ThemeManager.RegisterThemeResourceReader(this);
+                ThemeManager.RegisterLibraryThemeProvider(this);
             }
         }
 
         public string GeneratorParametersResourceName { get; protected set; } = "GeneratorParameters.json";
 
         public string ThemeTemplateResourceName { get; protected set; } = "Theme.Template.xaml";
-
-        protected virtual bool ResourceNamesMatch(string resourceName, string value)
-        {
-            if (resourceName.Equals(value, StringComparison.OrdinalIgnoreCase)
-                || (resourceName.StartsWith(this.assemblyName, StringComparison.OrdinalIgnoreCase) && resourceName.EndsWith(value, StringComparison.OrdinalIgnoreCase)))
-            {
-                return true;
-            }
-
-            return false;
-        }
 
         public abstract void FillColorSchemeValues(Dictionary<string, string> values, Color accentColor, Color accentColor80Percent, Color accentColor60Percent, Color accentColor40Percent, Color accentColor20Percent, Color highlightColor, Color idealForegroundColor);
 
@@ -98,20 +87,6 @@
             return null;
         }
 
-        public virtual bool IsPotentialThemeResourceDictionary(DictionaryEntry dictionaryEntry)
-        {
-            var stringKey = dictionaryEntry.Key as string;
-            if (stringKey.IsNull()
-                || stringKey.IndexOf("/themes/", StringComparison.OrdinalIgnoreCase) == -1
-                || stringKey.EndsWith(".baml", StringComparison.OrdinalIgnoreCase) == false
-                || stringKey.EndsWith("generic.baml", StringComparison.OrdinalIgnoreCase))
-            {
-                return false;
-            }
-
-            return true;
-        }
-
         public virtual LibraryTheme GetLibraryTheme(DictionaryEntry dictionaryEntry)
         {
             if (this.IsPotentialThemeResourceDictionary(dictionaryEntry) == false)
@@ -134,7 +109,7 @@
             if (resourceDictionary.MergedDictionaries.Count == 0
                 && ThemeManager.IsThemeDictionary(resourceDictionary))
             {
-                return new LibraryTheme(resourceDictionary, false);
+                return new LibraryTheme(resourceDictionary, this, false);
             }
 
             return null;
@@ -149,9 +124,10 @@
                     continue;
                 }
 
-                var info = this.assembly.GetManifestResourceInfo(resourceName);
-                if (info.IsNull()
-                    || info.ResourceLocation == ResourceLocation.ContainedInAnotherAssembly)
+                var resourceInfo = this.assembly.GetManifestResourceInfo(resourceName);
+
+                if (resourceInfo.IsNull()
+                    || resourceInfo.ResourceLocation == ResourceLocation.ContainedInAnotherAssembly)
                 {
                     continue;
                 }
@@ -176,6 +152,31 @@
                     }
                 }
             }
+        }
+
+        protected virtual bool IsPotentialThemeResourceDictionary(DictionaryEntry dictionaryEntry)
+        {
+            var stringKey = dictionaryEntry.Key as string;
+            if (stringKey.IsNull()
+                || stringKey.IndexOf("/themes/", StringComparison.OrdinalIgnoreCase) == -1
+                || stringKey.EndsWith(".baml", StringComparison.OrdinalIgnoreCase) == false
+                || stringKey.EndsWith("generic.baml", StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        protected virtual bool ResourceNamesMatch(string resourceName, string value)
+        {
+            if (resourceName.Equals(value, StringComparison.OrdinalIgnoreCase)
+                || (resourceName.StartsWith(this.assemblyName, StringComparison.OrdinalIgnoreCase) && resourceName.EndsWith(value, StringComparison.OrdinalIgnoreCase)))
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

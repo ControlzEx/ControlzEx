@@ -18,7 +18,7 @@ namespace ControlzEx.Tests.Theming
         {
             ThemeManager.ClearThemes();
 
-            ThemeManager.RegisterThemeResourceReader(TestLibraryThemeProvider.DefaultInstance);
+            ThemeManager.RegisterLibraryThemeProvider(TestLibraryThemeProvider.DefaultInstance);
             ThemeManager.ChangeTheme(Application.Current, ThemeManager.Themes.First());
         }
 
@@ -50,7 +50,7 @@ namespace ControlzEx.Tests.Theming
         {
             {
                 var source = new Uri("pack://application:,,,/ControlzEx.Tests;component/Themes/Themes/Dark.Cobalt.xaml");
-                var newTheme = new Theme(new LibraryTheme(source, false));
+                var newTheme = new Theme(new LibraryTheme(source, null, false));
                 Assert.That(ThemeManager.AddTheme(newTheme), Is.Not.EqualTo(newTheme));
             }
 
@@ -64,7 +64,7 @@ namespace ControlzEx.Tests.Theming
                         Theme.ThemeDisplayNameKey, "Runtime"
                     }
                 };
-                var newTheme = new Theme(new LibraryTheme(resource, true));
+                var newTheme = new Theme(new LibraryTheme(resource, null, true));
                 Assert.That(ThemeManager.AddTheme(newTheme), Is.EqualTo(newTheme));
             }
         }
@@ -88,7 +88,7 @@ namespace ControlzEx.Tests.Theming
                                },
                            };
 
-            var newTheme = new Theme(new LibraryTheme(resource, true));
+            var newTheme = new Theme(new LibraryTheme(resource, null, true));
             Assert.That(ThemeManager.AddTheme(newTheme), Is.EqualTo(newTheme));
             Assert.That(ThemeManager.BaseColors, Is.EqualTo(new[] { ThemeManager.BaseColorLight, ThemeManager.BaseColorDark, "Foo" }));
             Assert.That(ThemeManager.ColorSchemes, Does.Contain("Bar"));
@@ -256,7 +256,7 @@ namespace ControlzEx.Tests.Theming
                                    "Theme.DisplayName", "Runtime"
                                }
                            };
-            var theme = new Theme(new LibraryTheme(resource, true));
+            var theme = new Theme(new LibraryTheme(resource, null, true));
 
             var inverseTheme = ThemeManager.GetInverseTheme(theme);
 
