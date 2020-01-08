@@ -1,14 +1,14 @@
-﻿namespace ControlzEx.Showcase.Theming
+﻿namespace ControlzEx.Tests.TestClasses
 {
     using System.Collections.Generic;
     using System.Windows.Media;
     using ControlzEx.Theming;
 
-    public class ShowcaseLibraryThemeProvider : LibraryThemeProvider
+    public class TestLibraryThemeProvider : LibraryThemeProvider
     {
-        public static readonly ShowcaseLibraryThemeProvider DefaultInstance = new ShowcaseLibraryThemeProvider();
+        public static readonly TestLibraryThemeProvider DefaultInstance = new TestLibraryThemeProvider();
 
-        public ShowcaseLibraryThemeProvider()
+        public TestLibraryThemeProvider()
             : base(true)
         {
         }
