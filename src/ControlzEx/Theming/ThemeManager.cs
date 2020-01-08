@@ -34,7 +34,8 @@
 
         private static bool isEnsuringThemes;
 
-        private static readonly List<LibraryThemeProvider> themeResourceReaders = new List<LibraryThemeProvider>();
+        private static readonly ObservableCollection<LibraryThemeProvider> libraryThemeProvidersInternal;
+        private static readonly ReadOnlyObservableCollection<LibraryThemeProvider> libraryThemeProviders;
 
         private static readonly ObservableCollection<Theme> themesInternal;
         private static readonly ReadOnlyObservableCollection<Theme> themes;
@@ -47,6 +48,11 @@
 
         static ThemeManager()
         {
+            {
+                libraryThemeProvidersInternal = new ObservableCollection<LibraryThemeProvider>();
+                libraryThemeProviders = new ReadOnlyObservableCollection<LibraryThemeProvider>(libraryThemeProvidersInternal);
+            }
+
             {
                 themesInternal = new ObservableCollection<Theme>();
                 themes = new ReadOnlyObservableCollection<Theme>(themesInternal);
@@ -73,6 +79,11 @@
                 collectionView.SortDescriptions.Add(new SortDescription(string.Empty, ListSortDirection.Ascending));
             }
         }
+
+        /// <summary>
+        /// Gets a list of all library theme providers.
+        /// </summary>
+        public static ReadOnlyObservableCollection<LibraryThemeProvider> LibraryThemeProviders => libraryThemeProviders;
 
         /// <summary>
         /// Gets a list of all themes.
@@ -125,7 +136,7 @@
             {
                 isEnsuringThemes = true;
 
-                foreach (var themeResourceReader in themeResourceReaders)
+                foreach (var themeResourceReader in libraryThemeProvidersInternal)
                 {
                     foreach (var theme in themeResourceReader.GetLibraryThemes())
                     {
@@ -150,12 +161,12 @@
                 throw new ArgumentNullException(nameof(libraryThemeProvider));
             }
 
-            if (themeResourceReaders.Any(x => x.GetType() == libraryThemeProvider.GetType()))
+            if (libraryThemeProvidersInternal.Any(x => x.GetType() == libraryThemeProvider.GetType()))
             {
                 return;
             }
 
-            themeResourceReaders.Add(libraryThemeProvider);
+            libraryThemeProvidersInternal.Add(libraryThemeProvider);
 
             themesInternal.Clear();
         }
@@ -1114,7 +1125,7 @@
 
             if (theme.IsNull())
             {
-                theme = RuntimeThemeGenerator.GenerateRuntimeThemeFromWindowsSettings(baseColor, themeResourceReaders);
+                theme = RuntimeThemeGenerator.GenerateRuntimeThemeFromWindowsSettings(baseColor, libraryThemeProvidersInternal);
             }
 
             // Only change the theme if it's not the current already

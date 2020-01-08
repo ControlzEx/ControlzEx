@@ -59,7 +59,7 @@
             this.AddLibraryTheme(libraryTheme);
         }
 
-        public Theme(string name, string displayName, string baseColorScheme, string colorScheme, SolidColorBrush showcaseBrush, bool isRuntimeGenerated)
+        public Theme(string name, string displayName, string baseColorScheme, string colorScheme, Brush showcaseBrush, bool isRuntimeGenerated)
         {
             this.IsRuntimeGenerated = isRuntimeGenerated;
 
@@ -107,7 +107,7 @@
         /// <summary>
         /// Gets a brush which can be used to showcase this theme.
         /// </summary>
-        public SolidColorBrush ShowcaseBrush { get; }
+        public Brush ShowcaseBrush { get; }
 
         public IEnumerable<ResourceDictionary> GetAllResources() => this.LibraryThemes.SelectMany(x => x.Resources);
 

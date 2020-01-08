@@ -15,12 +15,13 @@
     <PropertyGroup>
       <DefaultItemExcludes>$(DefaultItemExcludes);**/*.Template.xaml</DefaultItemExcludes>
     </PropertyGroup>
+    <!-- Items include -->
     <ItemGroup>
       <EmbeddedResource Include="**/*.Template.xaml" />
       <EmbeddedResource Include="**/GeneratorParameters.json" />
       <UpToDateCheckInput Include="**/*.xaml" />
     </ItemGroup>
-    <!-- Items include -->
+    
     <ItemGroup>
         <ProjectReference Include="..\ControlzEx\ControlzEx.csproj" />
     </ItemGroup>

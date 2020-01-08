@@ -1,4 +1,4 @@
-﻿namespace ControlzEx.Theming
+namespace ControlzEx.Theming
 {
     using System;
     using System.Collections.ObjectModel;
@@ -44,7 +44,7 @@
             this.DisplayName = (string)resourceDictionary[Theme.ThemeDisplayNameKey];
             this.BaseColorScheme = (string)resourceDictionary[Theme.ThemeBaseColorSchemeKey];
             this.ColorScheme = (string)resourceDictionary[Theme.ThemeColorSchemeKey];
-            this.ShowcaseBrush = (SolidColorBrush)resourceDictionary[Theme.ThemeShowcaseBrushKey];
+            this.ShowcaseBrush = (Brush)resourceDictionary[Theme.ThemeShowcaseBrushKey];
 
             this.AddResource(resourceDictionary);
 
@@ -93,7 +93,7 @@
         /// <summary>
         /// Gets a brush which can be used to showcase this theme.
         /// </summary>
-        public SolidColorBrush ShowcaseBrush { get; }
+        public Brush ShowcaseBrush { get; }
 
         public LibraryTheme AddResource([NotNull] ResourceDictionary resourceDictionary)
         {

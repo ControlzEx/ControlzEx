@@ -29,6 +29,11 @@
             return GenerateRuntimeTheme(baseColor, accentColor, themeResourceReaders);
         }
 
+        public static Theme GenerateRuntimeTheme(string baseColor, Color accentColor)
+        {
+            return GenerateRuntimeTheme(baseColor, accentColor, ThemeManager.LibraryThemeProviders.ToList());
+        }
+
         public static Theme GenerateRuntimeTheme(string baseColor, Color accentColor, params LibraryThemeProvider[] themeResourceReaders)
         {
             return GenerateRuntimeTheme(baseColor, accentColor, themeResourceReaders.ToList());
@@ -67,7 +72,7 @@
                 var idealForegroundColor = GetIdealTextColor(accentColor);
 
                 values.Add("ThemeGenerator.Colors.AccentBaseColor", accentColor.ToString());
-                values.Add("ThemeGenerator.Colors.AccentColor80", accentColor.ToString());
+                values.Add("ThemeGenerator.Colors.AccentColor80", accentColor80Percent.ToString());
                 values.Add("ThemeGenerator.Colors.AccentColor60", accentColor60Percent.ToString());
                 values.Add("ThemeGenerator.Colors.AccentColor40", accentColor40Percent.ToString());
                 values.Add("ThemeGenerator.Colors.AccentColor20", accentColor20Percent.ToString());
