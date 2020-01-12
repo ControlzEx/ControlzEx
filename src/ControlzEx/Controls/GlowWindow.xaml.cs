@@ -390,6 +390,11 @@ namespace ControlzEx.Controls
 
         internal void UpdateCore(RECT rect)
         {
+            if (this.CanUpdateCore() == false)
+            {
+                return;
+            }
+
             // we can handle this._owner.WindowState == WindowState.Normal
             // or use NOZORDER too
             // todo: direct z-order

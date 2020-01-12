@@ -4,7 +4,7 @@
     Shared Controlz for WPF
   </p>
   <p>
-    Supporting .NET Framework 4.5, 4.6.2 and .NET Core 3 (3.0 and 3.1)
+    Supporting .NET Framework (4.5 and 4.6.2) and .NET Core (3.0 and 3.1)
   </p>
   <a href="https://github.com/ControlzEx/ControlzEx">
     <img alt="ControlzEx" with="200" height="200" src="logo-mini.png">
@@ -30,7 +30,9 @@
 
 ## TextBoxInputMaskBehavior
 
-The `TextBoxInputMaskBehavior` can be used to show a mask inside a `TextBox`. Note: It's only a mask and doesn't validates your text!
+The `TextBoxInputMaskBehavior` can be used to show a mask inside a `TextBox`.
+
+Note: It's only a mask and does not validate your text.
 
 ```xml
 <TextBlock Grid.Row="0"
@@ -53,7 +55,8 @@ The `TextBoxInputMaskBehavior` can be used to show a mask inside a `TextBox`. No
          Grid.Column="1"
          Margin="4">
     <behaviors:Interaction.Behaviors>
-        <controlzEx:TextBoxInputMaskBehavior InputMask="( 999 ) 000 000 - 00" PromptChar="_" />
+        <controlzEx:TextBoxInputMaskBehavior InputMask="( 999 ) 000 000 - 00"
+                                             PromptChar="_" />
     </behaviors:Interaction.Behaviors>
 </TextBox>
 ```
@@ -67,13 +70,14 @@ The original TextBoxInputMaskBehavior was taken from from Blindmeis's Blog.
 
 ## KeyboardNavigationEx
 
-The `KeyboardNavigationEx` is a helper class for a common focusing problem. The focus of an UI element itself isn't the problem. But if we use the common focusing methods, the control get the focus, but it doesn't get the focus visual style.
+The `KeyboardNavigationEx` is a helper class for a common focusing problem.
+The focus of an UI element itself isn't the problem. But if we use the common focusing methods, the control gets the focus, but it doesn't get the focus visual style.
 
-The KeyboardNavigationEx class handles the visual style only if the control get the focus from a keyboard device or if the SystemParameters.KeyboardCues is true.
+The original `KeyboardNavigation` class handles the visual style only if the control gets the focus from a keyboard device or if the SystemParameters.KeyboardCues is true.
 
-With the KeyboardNavigationEx you can fix this in two simple ways.
+With `KeyboardNavigationEx` you can fix this in two simple ways.
 
-First in code behind:
+In code behind:
 
 ```csharp
 public partial class MainWindow : Window
@@ -84,13 +88,12 @@ public partial class MainWindow : Window
         this.Loaded += (s, e) => { KeyboardNavigationEx.Focus(this.TheElementWhichShouldGetTheFocus); };
     }
 }
-
 ```
 
-Or in XAML code:
+or in XAML:
 
 ```xaml
-<Button controlzex:KeyboardNavigationEx.AlwaysShowFocusVisual="True">Hey, I get the focus visual style on mouse click! />
+<Button controlzex:KeyboardNavigationEx.AlwaysShowFocusVisual="True">Hey, I get the focus visual style on mouse click!</Button>
 ```
 
 ![keyboardfocusex](https://cloud.githubusercontent.com/assets/658431/15276251/143b9b3e-1ae3-11e6-9fe0-dc704675ad3b.gif)
@@ -128,13 +131,13 @@ An auto moving ToolTip. More [Info](https://jkarger.de/2014/11/02/how-to-make-th
 </Button>
 ```
 
-![automove_tooltip2](https://cloud.githubusercontent.com/assets/658431/13525375/d708a9e8-e200-11e5-9bd9-035d50632b34.gif)  
+![automove_tooltip2](https://cloud.githubusercontent.com/assets/658431/13525375/d708a9e8-e200-11e5-9bd9-035d50632b34.gif)
 
 ![automove_tooltip](https://cloud.githubusercontent.com/assets/658431/13509772/7ff7406a-e18d-11e5-9238-e48c6e4fa2fa.gif)
 
 ## GlowWindowBehavior
 
-The `GlowWindowBehavior` adds a Glow around your target window.
+The `GlowWindowBehavior` adds a Glow around your window.
 
 ## WindowChromeBehavior
 
@@ -144,7 +147,7 @@ Most of the fixes and improvements are from [MahApps.Metro](https://github.com/M
 
 Concrete implementation of techniques described here:
 
-http://blogs.msdn.com/b/wpfsdk/archive/2008/09/08/custom-window-chrome-in-wpf.aspx
+[http://blogs.msdn.com/b/wpfsdk/archive/2008/09/08/custom-window-chrome-in-wpf.aspx](http://blogs.msdn.com/b/wpfsdk/archive/2008/09/08/custom-window-chrome-in-wpf.aspx)
 
 It's a fork of the original Microsoft WPF Shell Integration Library. Current Microsofts implementation can be found:
 
@@ -153,19 +156,19 @@ It's a fork of the original Microsoft WPF Shell Integration Library. Current Mic
 
 ## PopupEx
 
-Custom `Popup` that can be used in validation error templates or something else like in [MaterialDesignInXamlToolkit](https://github.com/ButchersBoy/MaterialDesignInXamlToolkit) or [MahApps.Metro](https://github.com/MahApps/MahApps.Metro).  
+Custom `Popup` that can be used in validation error templates or something else like in [MaterialDesignInXamlToolkit](https://github.com/ButchersBoy/MaterialDesignInXamlToolkit) or [MahApps.Metro](https://github.com/MahApps/MahApps.Metro).
 
 `PopupEx` provides some additional nice features:
 
-+ repositioning if host-window size or location changed
-+ repositioning if host-window gets maximized and vice versa
-+ it's only topmost if the host-window is activated  
+- repositioning if host-window size or location changed
+- repositioning if host-window gets maximized and vice versa
+- it's only topmost if the host-window is activated  
 
 ![2015-10-11_01h03_05](https://cloud.githubusercontent.com/assets/658431/10413784/ea365626-6fb6-11e5-9abc-c174159dcbf8.png)
 
 ## TabControlEx
 
-Custom `TabControl` that keeps the `TabItem` content in the VisualTree after unselect them, so no re-create nightmare is done, after select the `TabItem` again. The visibility behavior can be set by `ChildContentVisibility` dependency property.  
+Custom `TabControl` that keeps the `TabItem` content in the VisualTree while unselecting them, so no re-create nightmare is done, after selecting the `TabItem` again. The visibility behavior can be set by `ChildContentVisibility` dependency property.
 
 Usage:
 
@@ -201,16 +204,17 @@ public enum PackIconKind
 ```
 
 Subclass ```PackIconBase```, adding
-* Default style key
-* A factory providing Path data for each key
+
+- Default style key
+- A factory providing Path data for each key
 
 ```csharp
 public class PackIcon : PackIconBase<PackIconKind>
-{        
+{
     static PackIcon()
     {
         DefaultStyleKeyProperty.OverrideMetadata(typeof(PackIcon), new FrameworkPropertyMetadata(typeof(PackIcon)));
-    }     
+    }
 
     public PackIcon() : base(CreateIconData)
     { }
@@ -240,7 +244,7 @@ Provide a default style (typically in your Generic.xaml, e.g:
             <ControlTemplate TargetType="{x:Type local:PackIcon}">
                 <Viewbox>
                     <Canvas Width="24" Height="24">
-                        <Path Data="{Binding Data, RelativeSource={RelativeSource TemplatedParent}}"                                  
+                        <Path Data="{Binding Data, RelativeSource={RelativeSource TemplatedParent}}"
                               Fill="{TemplateBinding Foreground}" />
                     </Canvas>
                 </Viewbox>
@@ -249,7 +253,6 @@ Provide a default style (typically in your Generic.xaml, e.g:
     </Setter>
 </Style>
 ```
-### and finally...
 
 Your users should now have a simple way to use your icon pack in their applications:
 
