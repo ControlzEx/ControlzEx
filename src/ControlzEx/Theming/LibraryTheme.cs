@@ -1,5 +1,6 @@
 ﻿namespace ControlzEx.Theming
 {
+#nullable enable
     using System;
     using System.Collections.ObjectModel;
     using System.Windows;
@@ -17,7 +18,7 @@
         /// <param name="resourceAddress">The URI of the theme ResourceDictionary.</param>
         /// <param name="libraryThemeProvider">The <see cref="ControlzEx.Theming.LibraryThemeProvider"/> which created this instance.</param>
         /// <param name="isRuntimeGenerated">Defines if the library theme was generated at runtime.</param>
-        public LibraryTheme([NotNull] Uri resourceAddress, [CanBeNull] LibraryThemeProvider libraryThemeProvider, bool isRuntimeGenerated)
+        public LibraryTheme([NotNull] Uri resourceAddress, LibraryThemeProvider? libraryThemeProvider, bool isRuntimeGenerated)
             : this(new ResourceDictionary { Source = resourceAddress }, libraryThemeProvider, isRuntimeGenerated)
         {
             if (resourceAddress == null)
@@ -32,7 +33,7 @@
         /// <param name="resourceDictionary">The ResourceDictionary of the theme.</param>
         /// <param name="libraryThemeProvider">The <see cref="ControlzEx.Theming.LibraryThemeProvider"/> which created this instance.</param>
         /// <param name="isRuntimeGenerated">Defines if the library theme was generated at runtime.</param>
-        public LibraryTheme([NotNull] ResourceDictionary resourceDictionary, [CanBeNull] LibraryThemeProvider libraryThemeProvider, bool isRuntimeGenerated)
+        public LibraryTheme([NotNull] ResourceDictionary resourceDictionary, LibraryThemeProvider? libraryThemeProvider, bool isRuntimeGenerated)
         {
             if (resourceDictionary is null)
             {
@@ -48,15 +49,15 @@
             this.DisplayName = (string)resourceDictionary[Theme.ThemeDisplayNameKey];
             this.BaseColorScheme = (string)resourceDictionary[Theme.ThemeBaseColorSchemeKey];
             this.ColorScheme = (string)resourceDictionary[Theme.ThemeColorSchemeKey];
-            this.ShowcaseBrush = (Brush)resourceDictionary[Theme.ThemeShowcaseBrushKey];
+            this.PrimaryAccentColor = resourceDictionary[Theme.ThemePrimaryAccentColorKey] as Color? ?? throw new ArgumentException($"Resource key \"{Theme.ThemePrimaryAccentColorKey}\" is missing.");
+            this.ShowcaseBrush = (Brush)resourceDictionary[Theme.ThemeShowcaseBrushKey] ?? new SolidColorBrush(this.PrimaryAccentColor);
 
             this.AddResource(resourceDictionary);
 
             this.Resources = new ReadOnlyObservableCollection<ResourceDictionary>(this.ResourcesInternal);
         }
 
-        [CanBeNull]
-        public LibraryThemeProvider LibraryThemeProvider { get; }
+        public LibraryThemeProvider? LibraryThemeProvider { get; }
 
         public bool IsRuntimeGenerated { get; }
 
@@ -70,7 +71,7 @@
         /// </summary>
         private ObservableCollection<ResourceDictionary> ResourcesInternal { get; } = new ObservableCollection<ResourceDictionary>();
 
-        public Theme ParentTheme { get; internal set; }
+        public Theme? ParentTheme { get; internal set; }
 
         /// <summary>
         /// Gets the name of the theme.
@@ -80,7 +81,7 @@
         /// <summary>
         /// Get the origin of the theme.
         /// </summary>
-        public string Origin { get; }
+        public string? Origin { get; }
 
         /// <summary>
         /// Gets the display name of the theme.
@@ -96,6 +97,11 @@
         /// Gets the color scheme for this theme.
         /// </summary>
         public string ColorScheme { get; }
+
+        /// <summary>
+        /// Gets the primary accent color for this theme.
+        /// </summary>
+        public Color PrimaryAccentColor { get; set; }
 
         /// <summary>
         /// Gets a brush which can be used to showcase this theme.
@@ -139,7 +145,7 @@
             return $"DisplayName={this.DisplayName}, Name={this.Name}, Origin={this.Origin}";
         }
 
-        public static string GetThemeName([NotNull] ResourceDictionary resourceDictionary)
+        public static string? GetThemeName([NotNull] ResourceDictionary resourceDictionary)
         {
             return Theme.GetThemeName(resourceDictionary);
         }

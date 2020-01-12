@@ -1,5 +1,6 @@
 ﻿namespace ControlzEx.Theming
 {
+#nullable enable
     using System;
     using System.Collections;
     using System.Collections.Generic;
@@ -12,7 +13,6 @@
     using System.Windows;
     using System.Windows.Data;
     using System.Windows.Threading;
-    using ControlzEx.Internal;
     using JetBrains.Annotations;
     using Microsoft.Win32;
 
@@ -156,7 +156,7 @@
 
         public static void RegisterLibraryThemeProvider([NotNull] LibraryThemeProvider libraryThemeProvider)
         {
-            if (libraryThemeProvider.IsNull())
+            if (libraryThemeProvider is null)
             {
                 throw new ArgumentNullException(nameof(libraryThemeProvider));
             }
@@ -259,7 +259,7 @@
         public static Theme AddLibraryTheme([NotNull] LibraryTheme libraryTheme)
         {
             var theme = GetTheme(libraryTheme.Name);
-            if (theme.IsNotNull())
+            if (!(theme is null))
             {
                 theme.AddLibraryTheme(libraryTheme);
                 return theme;
@@ -274,7 +274,7 @@
         public static Theme AddTheme([NotNull] Theme theme)
         {
             var existingTheme = GetTheme(theme.Name);
-            if (existingTheme.IsNotNull())
+            if (!(existingTheme is null))
             {
                 return existingTheme;
             }
@@ -287,9 +287,9 @@
         /// Gets the <see cref="Theme"/> with the given name.
         /// </summary>
         /// <returns>The <see cref="Theme"/> or <c>null</c>, if the theme wasn't found</returns>
-        public static Theme GetTheme([NotNull] string name)
+        public static Theme? GetTheme([NotNull] string name)
         {
-            if (name.IsNull())
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -301,14 +301,14 @@
         /// Gets the <see cref="Theme"/> with the given name.
         /// </summary>
         /// <returns>The <see cref="Theme"/> or <c>null</c>, if the theme wasn't found</returns>
-        public static Theme GetTheme([NotNull] string baseColorScheme, [NotNull] string colorScheme)
+        public static Theme? GetTheme([NotNull] string baseColorScheme, [NotNull] string colorScheme)
         {
-            if (baseColorScheme.IsNull())
+            if (baseColorScheme is null)
             {
                 throw new ArgumentNullException(nameof(baseColorScheme));
             }
 
-            if (colorScheme.IsNull())
+            if (colorScheme is null)
             {
                 throw new ArgumentNullException(nameof(colorScheme));
             }
@@ -321,15 +321,15 @@
         /// </summary>
         /// <param name="resourceDictionary"><see cref="ResourceDictionary"/> from which the theme should be retrieved.</param>
         /// <returns>The <see cref="Theme"/> or <c>null</c>, if the theme wasn't found.</returns>
-        public static Theme GetTheme([NotNull] ResourceDictionary resourceDictionary)
+        public static Theme? GetTheme([NotNull] ResourceDictionary resourceDictionary)
         {
-            if (resourceDictionary.IsNull())
+            if (resourceDictionary is null)
             {
                 throw new ArgumentNullException(nameof(resourceDictionary));
             }
 
             var builtInTheme = Themes.FirstOrDefault(x => x.Name == Theme.GetThemeName(resourceDictionary));
-            if (builtInTheme.IsNotNull())
+            if (!(builtInTheme is null))
             {
                 return builtInTheme;
             }
@@ -353,9 +353,9 @@
         /// Returns BaseLight, if BaseDark is given or vice versa.
         /// Custom Themes must end with "Dark" or "Light" for this to work, for example "CustomDark" and "CustomLight".
         /// </remarks>
-        public static Theme GetInverseTheme([NotNull] Theme theme)
+        public static Theme? GetInverseTheme([NotNull] Theme theme)
         {
-            if (theme.IsNull())
+            if (theme is null)
             {
                 throw new ArgumentNullException(nameof(theme));
             }
@@ -383,7 +383,7 @@
         /// <exception cref="System.ArgumentNullException">resources</exception>
         public static bool IsThemeDictionary([NotNull] ResourceDictionary resourceDictionary)
         {
-            if (resourceDictionary.IsNull())
+            if (resourceDictionary is null)
             {
                 throw new ArgumentNullException(nameof(resourceDictionary));
             }
@@ -397,7 +397,7 @@
         [SecurityCritical]
         public static Theme ChangeTheme([NotNull] Application app, [NotNull] string themeName)
         {
-            if (app.IsNull())
+            if (app is null)
             {
                 throw new ArgumentNullException(nameof(app));
             }
@@ -407,7 +407,7 @@
                 throw new ArgumentNullException(nameof(themeName));
             }
 
-            return ChangeTheme(app.Resources, GetTheme(themeName));
+            return ChangeTheme(app.Resources, GetTheme(themeName)!);
         }
 
         /// <summary>
@@ -416,7 +416,7 @@
         [SecurityCritical]
         public static Theme ChangeTheme([NotNull] FrameworkElement frameworkElement, [NotNull] string themeName)
         {
-            if (frameworkElement.IsNull())
+            if (frameworkElement is null)
             {
                 throw new ArgumentNullException(nameof(frameworkElement));
             }
@@ -426,7 +426,7 @@
                 throw new ArgumentNullException(nameof(themeName));
             }
 
-            return ChangeTheme(frameworkElement, GetTheme(themeName));
+            return ChangeTheme(frameworkElement, GetTheme(themeName)!);
         }
 
         /// <summary>
@@ -437,12 +437,12 @@
         [SecurityCritical]
         public static Theme ChangeTheme([NotNull] Application app, [NotNull] Theme newTheme)
         {
-            if (app.IsNull())
+            if (app is null)
             {
                 throw new ArgumentNullException(nameof(app));
             }
 
-            if (newTheme.IsNull())
+            if (newTheme is null)
             {
                 throw new ArgumentNullException(nameof(newTheme));
             }
@@ -458,12 +458,12 @@
         [SecurityCritical]
         public static Theme ChangeTheme([NotNull] FrameworkElement frameworkElement, [NotNull] Theme newTheme)
         {
-            if (frameworkElement.IsNull())
+            if (frameworkElement is null)
             {
                 throw new ArgumentNullException(nameof(frameworkElement));
             }
 
-            if (newTheme.IsNull())
+            if (newTheme is null)
             {
                 throw new ArgumentNullException(nameof(newTheme));
             }
@@ -480,12 +480,12 @@
         [SecurityCritical]
         public static Theme ChangeTheme([NotNull] ResourceDictionary resourceDictionary, [NotNull] Theme newTheme)
         {
-            if (resourceDictionary.IsNull())
+            if (resourceDictionary is null)
             {
                 throw new ArgumentNullException(nameof(resourceDictionary));
             }
 
-            if (newTheme.IsNull())
+            if (newTheme is null)
             {
                 throw new ArgumentNullException(nameof(newTheme));
             }
@@ -495,14 +495,14 @@
         }
 
         [SecurityCritical]
-        private static Theme ChangeTheme([NotNull] ResourceDictionary resourceDictionary, Theme oldTheme, [NotNull] Theme newTheme)
+        private static Theme ChangeTheme([NotNull] ResourceDictionary resourceDictionary, Theme? oldTheme, [NotNull] Theme newTheme)
         {
-            if (resourceDictionary.IsNull())
+            if (resourceDictionary is null)
             {
                 throw new ArgumentNullException(nameof(resourceDictionary));
             }
 
-            if (newTheme.IsNull())
+            if (newTheme is null)
             {
                 throw new ArgumentNullException(nameof(newTheme));
             }
@@ -513,8 +513,8 @@
             {
                 resourceDictionary.BeginInit();
 
-                List<ResourceDictionary> oldThemeResources = null;
-                if (oldTheme.IsNotNull())
+                List<ResourceDictionary>? oldThemeResources = null;
+                if (!(oldTheme is null))
                 {
                     oldThemeResources = resourceDictionary.MergedDictionaries.Where(d => Theme.GetThemeName(d) == oldTheme.Name)
                                                  .ToList();
@@ -531,9 +531,9 @@
                     }
                 }
 
-                if (oldThemeResources.IsNotNull())
+                if (!(oldThemeResources is null))
                 {
-                    foreach (var themeResource in oldThemeResources)
+                    foreach (var themeResource in oldThemeResources!)
                     {
                         resourceDictionary.MergedDictionaries.Remove(themeResource);   
                     }
@@ -558,9 +558,9 @@
         /// <param name="baseColor">The base color to apply to the ResourceDictionary.</param>
         /// <param name="colorScheme">The color scheme to apply to the ResourceDictionary.</param>
         [SecurityCritical]
-        public static Theme ChangeTheme([NotNull] Application app, [NotNull] string baseColor, [NotNull] string colorScheme)
+        public static Theme? ChangeTheme([NotNull] Application app, [NotNull] string baseColor, [NotNull] string colorScheme)
         {
-            if (app.IsNull())
+            if (app is null)
             {
                 throw new ArgumentNullException(nameof(app));
             }
@@ -577,14 +577,14 @@
 
             var currentTheme = DetectTheme(app);
 
-            if (currentTheme.IsNull())
+            if (currentTheme is null)
             {
                 return null;
             }
 
             var newTheme = Themes.FirstOrDefault(x => x.BaseColorScheme == baseColor && x.ColorScheme == colorScheme);
 
-            if (newTheme.IsNull())
+            if (newTheme is null)
             {
                 Trace.TraceError($"Could not find a theme with base color scheme '{baseColor}' and color scheme '{currentTheme.ColorScheme}'.");
                 return null;
@@ -600,9 +600,9 @@
         /// <param name="baseColor">The base color to apply to the ResourceDictionary.</param>
         /// <param name="colorScheme">The color scheme to apply to the ResourceDictionary.</param>
         [SecurityCritical]
-        public static Theme ChangeTheme([NotNull] FrameworkElement frameworkElement, [NotNull] string baseColor, [NotNull] string colorScheme)
+        public static Theme? ChangeTheme([NotNull] FrameworkElement frameworkElement, [NotNull] string baseColor, [NotNull] string colorScheme)
         {
-            if (frameworkElement.IsNull())
+            if (frameworkElement is null)
             {
                 throw new ArgumentNullException(nameof(frameworkElement));
             }
@@ -619,14 +619,14 @@
 
             var currentTheme = DetectTheme(frameworkElement);
 
-            if (currentTheme.IsNull())
+            if (currentTheme is null)
             {
                 return null;
             }
 
             var newTheme = Themes.FirstOrDefault(x => x.BaseColorScheme == baseColor && x.ColorScheme == colorScheme);
 
-            if (newTheme.IsNull())
+            if (newTheme is null)
             {
                 Trace.TraceError($"Could not find a theme with base color scheme '{baseColor}' and color scheme '{currentTheme.ColorScheme}'.");
                 return null;
@@ -643,9 +643,9 @@
         /// <param name="baseColor">The base color to apply to the ResourceDictionary.</param>
         /// <param name="colorScheme">The color scheme to apply to the ResourceDictionary.</param>
         [SecurityCritical]
-        public static Theme ChangeTheme([NotNull] ResourceDictionary resourceDictionary, Theme oldTheme, [NotNull] string baseColor, [NotNull] string colorScheme)
+        public static Theme? ChangeTheme([NotNull] ResourceDictionary resourceDictionary, Theme oldTheme, [NotNull] string baseColor, [NotNull] string colorScheme)
         {
-            if (resourceDictionary.IsNull())
+            if (resourceDictionary is null)
             {
                 throw new ArgumentNullException(nameof(resourceDictionary));
             }
@@ -662,7 +662,7 @@
 
             var newTheme = Themes.FirstOrDefault(x => x.BaseColorScheme == baseColor && x.ColorScheme == colorScheme);
 
-            if (newTheme.IsNull())
+            if (newTheme is null)
             {
                 Trace.TraceError($"Could not find a theme with base color scheme '{baseColor}' and color scheme '{oldTheme.ColorScheme}'.");
                 return null;
@@ -677,9 +677,9 @@
         /// <param name="app">The application to change.</param>
         /// <param name="baseColor">The base color to apply to the ResourceDictionary.</param>
         [SecurityCritical]
-        public static Theme ChangeThemeBaseColor([NotNull] Application app, [NotNull] string baseColor)
+        public static Theme? ChangeThemeBaseColor([NotNull] Application app, [NotNull] string baseColor)
         {
-            if (app.IsNull())
+            if (app is null)
             {
                 throw new ArgumentNullException(nameof(app));
             }
@@ -691,7 +691,7 @@
 
             var currentTheme = DetectTheme(app);
 
-            if (currentTheme.IsNull())
+            if (currentTheme is null)
             {
                 return null;
             }
@@ -705,9 +705,9 @@
         /// <param name="frameworkElement">The FrameworkElement to change.</param>
         /// <param name="baseColor">The base color to apply to the ResourceDictionary.</param>
         [SecurityCritical]
-        public static Theme ChangeThemeBaseColor([NotNull] FrameworkElement frameworkElement, [NotNull] string baseColor)
+        public static Theme? ChangeThemeBaseColor([NotNull] FrameworkElement frameworkElement, [NotNull] string baseColor)
         {
-            if (frameworkElement.IsNull())
+            if (frameworkElement is null)
             {
                 throw new ArgumentNullException(nameof(frameworkElement));
             }
@@ -719,7 +719,7 @@
 
             var currentTheme = DetectTheme(frameworkElement);
 
-            if (currentTheme.IsNull())
+            if (currentTheme is null)
             {
                 return null;
             }
@@ -734,9 +734,9 @@
         /// <param name="oldTheme">The old/current theme.</param>
         /// <param name="baseColor">The base color to apply to the ResourceDictionary.</param>
         [SecurityCritical]
-        public static Theme ChangeThemeBaseColor([NotNull] ResourceDictionary resourceDictionary, [CanBeNull] Theme oldTheme, [NotNull] string baseColor)
+        public static Theme? ChangeThemeBaseColor([NotNull] ResourceDictionary resourceDictionary, [CanBeNull] Theme oldTheme, [NotNull] string baseColor)
         {
-            if (resourceDictionary.IsNull())
+            if (resourceDictionary is null)
             {
                 throw new ArgumentNullException(nameof(resourceDictionary));
             }
@@ -748,7 +748,7 @@
 
             var currentTheme = oldTheme ?? DetectTheme(resourceDictionary);
 
-            if (currentTheme.IsNull())
+            if (currentTheme is null)
             {
                 return null;
             }
@@ -762,9 +762,9 @@
         /// <param name="app">The application to change.</param>
         /// <param name="colorScheme">The color scheme to apply to the ResourceDictionary.</param>
         [SecurityCritical]
-        public static Theme ChangeThemeColorScheme([NotNull] Application app, [NotNull] string colorScheme)
+        public static Theme? ChangeThemeColorScheme([NotNull] Application app, [NotNull] string colorScheme)
         {
-            if (app.IsNull())
+            if (app is null)
             {
                 throw new ArgumentNullException(nameof(app));
             }
@@ -776,7 +776,7 @@
 
             var currentTheme = DetectTheme(app);
 
-            if (currentTheme.IsNull())
+            if (currentTheme is null)
             {
                 return null;
             }
@@ -790,9 +790,9 @@
         /// <param name="frameworkElement">The FrameworkElement to change.</param>
         /// <param name="colorScheme">The color scheme to apply to the ResourceDictionary.</param>
         [SecurityCritical]
-        public static Theme ChangeThemeColorScheme([NotNull] FrameworkElement frameworkElement, [NotNull] string colorScheme)
+        public static Theme? ChangeThemeColorScheme([NotNull] FrameworkElement frameworkElement, [NotNull] string colorScheme)
         {
-            if (frameworkElement.IsNull())
+            if (frameworkElement is null)
             {
                 throw new ArgumentNullException(nameof(frameworkElement));
             }
@@ -804,7 +804,7 @@
 
             var currentTheme = DetectTheme(frameworkElement);
 
-            if (currentTheme.IsNull())
+            if (currentTheme is null)
             {
                 return null;
             }
@@ -819,9 +819,9 @@
         /// <param name="oldTheme">The old/current theme.</param>
         /// <param name="colorScheme">The color scheme to apply to the ResourceDictionary.</param>
         [SecurityCritical]
-        public static Theme ChangeThemeColorScheme([NotNull] ResourceDictionary resourceDictionary, [CanBeNull] Theme oldTheme, [NotNull] string colorScheme)
+        public static Theme? ChangeThemeColorScheme([NotNull] ResourceDictionary resourceDictionary, [CanBeNull] Theme oldTheme, [NotNull] string colorScheme)
         {
-            if (resourceDictionary.IsNull())
+            if (resourceDictionary is null)
             {
                 throw new ArgumentNullException(nameof(resourceDictionary));
             }
@@ -833,7 +833,7 @@
 
             var currentTheme = oldTheme ?? DetectTheme(resourceDictionary);
 
-            if (currentTheme.IsNull())
+            if (currentTheme is null)
             {
                 return null;
             }
@@ -849,12 +849,12 @@
         [SecurityCritical]
         public static void ApplyThemeResourcesFromTheme([NotNull] ResourceDictionary resourceDictionary, [NotNull] Theme newTheme)
         {
-            if (resourceDictionary.IsNull())
+            if (resourceDictionary is null)
             {
                 throw new ArgumentNullException(nameof(resourceDictionary));
             }
 
-            if (newTheme.IsNull())
+            if (newTheme is null)
             {
                 throw new ArgumentNullException(nameof(newTheme));
             }
@@ -869,19 +869,19 @@
         // ReSharper disable once SuggestBaseTypeForParameter
         private static void ApplyResourceDictionary([NotNull] ResourceDictionary oldRd, [NotNull] ResourceDictionary newRd)
         {
-            if (oldRd.IsNull())
+            if (oldRd is null)
             {
                 throw new ArgumentNullException(nameof(oldRd));
             }
 
-            if (newRd.IsNull())
+            if (newRd is null)
             {
                 throw new ArgumentNullException(nameof(newRd));
             }
 
             oldRd.BeginInit();
 
-            foreach (DictionaryEntry r in newRd)
+            foreach (var r in newRd.OfType<DictionaryEntry>())
             {
                 if (oldRd.Contains(r.Key))
                 {
@@ -898,18 +898,17 @@
         /// Scans the resources and returns it's theme.
         /// </summary>
         /// <remarks>If the theme can't be detected from the <see cref="Application.MainWindow"/> we try to detect it from <see cref="Application.Current"/>.</remarks>
-        [CanBeNull]
-        public static Theme DetectTheme()
+        public static Theme? DetectTheme()
         {
             var mainWindow = Application.Current?.MainWindow;
 
-            if (mainWindow.IsNotNull())
+            if (!(mainWindow is null))
             {
                 try
                 {
-                    var style = DetectTheme(mainWindow);
+                    var style = DetectTheme(mainWindow!);
 
-                    if (style.IsNotNull())
+                    if (!(style is null))
                     {
                         return style;
                     }
@@ -929,10 +928,9 @@
         /// Scans the application resources and returns it's theme.
         /// </summary>
         /// <param name="app">The Application instance to scan.</param>
-        [CanBeNull]
-        public static Theme DetectTheme([NotNull] Application app)
+        public static Theme? DetectTheme([NotNull] Application app)
         {
-            if (app.IsNull())
+            if (app is null)
             {
                 throw new ArgumentNullException(nameof(app));
             }
@@ -945,10 +943,9 @@
         /// </summary>
         /// <param name="frameworkElement">The FrameworkElement to scan.</param>
         /// <remarks>If the theme can't be detected from the <paramref name="frameworkElement"/> we try to detect it from <see cref="Application.Current"/>.</remarks>
-        [CanBeNull]
-        public static Theme DetectTheme([NotNull] FrameworkElement frameworkElement)
+        public static Theme? DetectTheme([NotNull] FrameworkElement frameworkElement)
         {
-            if (frameworkElement.IsNull())
+            if (frameworkElement is null)
             {
                 throw new ArgumentNullException(nameof(frameworkElement));
             }
@@ -965,10 +962,9 @@
         /// Scans a resources and returns it's theme.
         /// </summary>
         /// <param name="resourceDictionary">The ResourceDictionary to scan.</param>
-        [CanBeNull]
-        public static Theme DetectTheme([NotNull] ResourceDictionary resourceDictionary)
+        public static Theme? DetectTheme([NotNull] ResourceDictionary resourceDictionary)
         {
-            if (resourceDictionary.IsNull())
+            if (resourceDictionary is null)
             {
                 throw new ArgumentNullException(nameof(resourceDictionary));
             }
@@ -981,7 +977,7 @@
             return null;
         }
 
-        private static bool DetectThemeFromResources(ResourceDictionary dict, out Theme detectedTheme)
+        private static bool DetectThemeFromResources(ResourceDictionary dict, out Theme? detectedTheme)
         {
             using (var enumerator = dict.MergedDictionaries.Reverse().GetEnumerator())
             {
@@ -989,13 +985,13 @@
                 {
                     var currentRd = enumerator.Current;
 
-                    if (currentRd.IsNull())
+                    if (currentRd is null)
                     {
                         continue;
                     }
 
-                    Theme matched;
-                    if ((matched = GetTheme(currentRd)).IsNotNull())
+                    Theme? matched;
+                    if (!((matched = GetTheme(currentRd)) is null))
                     {
                         detectedTheme = matched;
                         return true;
@@ -1016,30 +1012,30 @@
         /// This event fires if the theme was changed
         /// this should be using the weak event pattern, but for now it's enough
         /// </summary>
-        public static event EventHandler<ThemeChangedEventArgs> ThemeChanged;
+        public static event EventHandler<ThemeChangedEventArgs>? ThemeChanged;
 
         /// <summary>
         /// Invalidates global colors and resources.
         /// Sometimes the ContextMenu is not changing the colors, so this will fix it.
         /// </summary>
         [SecurityCritical]
-        private static void OnThemeChanged(Theme oldTheme, Theme newTheme)
+        private static void OnThemeChanged(Theme? oldTheme, Theme newTheme)
         {
             ThemeChanged?.Invoke(Application.Current, new ThemeChangedEventArgs(oldTheme, newTheme));
         }
 
         private static bool AreResourceDictionarySourcesEqual(ResourceDictionary first, ResourceDictionary second)
         {
-            if (first.IsNull()
-                || second.IsNull())
+            if (first is null
+                || second is null)
             {
                 return false;
             }
 
             // If RD does not have a source, but both have keys and the first one has at least as many keys as the second,
             // then compares their values.
-            if ((first.Source.IsNull()
-                || second.Source.IsNull())
+            if ((first.Source is null
+                || second.Source is null)
                 && first.Keys.Count > 0
                 && second.Keys.Count > 0
                 && first.Keys.Count >= second.Keys.Count)
@@ -1075,7 +1071,7 @@
         /// </summary>
         public static void SyncThemeBaseColorWithWindowsAppModeSetting()
         {
-            if (Application.Current.IsNull())
+            if (Application.Current is null)
             {
                 return;
             }
@@ -1092,16 +1088,16 @@
             }
         }
 
-        public static void SyncThemeColorSchemeWithWindowsAccentColor(string baseColor = null)
+        public static void SyncThemeColorSchemeWithWindowsAccentColor(string? baseColor = null)
         {
-            if (Application.Current.IsNull())
+            if (Application.Current is null)
             {
                 return;
             }
 
             var accentColor = WindowsThemeHelper.GetWindowsAccentColor();
 
-            if (accentColor.IsNull())
+            if (accentColor is null)
             {
                 return;
             }
@@ -1121,15 +1117,15 @@
             var accentColorAsString = accentColor.ToString();
 
             // Check if we previously generated a theme matching the desired settings
-            var theme = GetTheme(baseColor, accentColorAsString);
+            var theme = GetTheme(baseColor, accentColorAsString!);
 
-            if (theme.IsNull())
+            if (theme is null)
             {
                 theme = RuntimeThemeGenerator.GenerateRuntimeThemeFromWindowsSettings(baseColor, libraryThemeProvidersInternal);
             }
 
             // Only change the theme if it's not the current already
-            if (theme.IsNotNull()
+            if (!(theme is null)
                 && theme != detectedTheme)
             {
                 ChangeTheme(Application.Current, theme);

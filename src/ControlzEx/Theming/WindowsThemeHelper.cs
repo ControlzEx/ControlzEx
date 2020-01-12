@@ -1,9 +1,10 @@
 ﻿namespace ControlzEx.Theming
 {
+#nullable enable
     using System;
     using System.Diagnostics;
     using System.Windows.Media;
-    using ControlzEx.Internal;
+    using JetBrains.Annotations;
     using Microsoft.Win32;
 
     public static class WindowsThemeHelper
@@ -14,7 +15,7 @@
             {
                 var registryValue = Registry.GetValue(@"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize", "AppsUseLightTheme", null);
 
-                if (registryValue.IsNull())
+                if (registryValue is null)
                 {
                     return true;
                 }
@@ -29,6 +30,7 @@
             return true;
         }
 
+        [NotNull]
         public static string GetWindowsBaseColor()
         {
             var baseColor = AppsUseLightTheme()
@@ -38,6 +40,7 @@
             return baseColor;
         }
 
+        [CanBeNull]
         public static Color? GetWindowsAccentColor()
         {
             Color? accentColor = null;
@@ -46,7 +49,7 @@
             {
                 var registryValue = Registry.GetValue(@"HKEY_CURRENT_USER\Software\Microsoft\Windows\DWM", "ColorizationColor", null);
 
-                if (registryValue.IsNull())
+                if (registryValue is null)
                 {
                     return null;
                 }

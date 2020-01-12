@@ -11,6 +11,7 @@
     <system:String x:Key="Theme.DisplayName">{{ThemeDisplayName}}</system:String>
     <system:String x:Key="Theme.BaseColorScheme">{{BaseColorScheme}}</system:String>
     <system:String x:Key="Theme.ColorScheme">{{ColorScheme}}</system:String>
+    <Color x:Key="Theme.PrimaryAccentColor">{{ControlzEx.Colors.AccentBaseColor}}</Color>
     <SolidColorBrush x:Key="Theme.ShowcaseBrush" Color="{{ControlzEx.Colors.AccentBaseColor}}" options:Freeze="True" />
 
     <!-- COLORS -->

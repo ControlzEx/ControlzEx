@@ -1,14 +1,15 @@
 ﻿namespace ControlzEx.Theming
 {
+#nullable enable
     using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Reflection;
     using System.Resources;
     using System.Windows;
     using System.Windows.Media;
-    using ControlzEx.Internal;
 
     public abstract class LibraryThemeProvider : DependencyObject
     {
@@ -19,7 +20,7 @@
         protected LibraryThemeProvider(bool registerAtThemeManager)
         {
             this.assembly = this.GetType().Assembly;
-            this.assemblyName = this.assembly.GetName().Name;
+            this.assemblyName = this.assembly.GetName().Name!;
 
             this.resourceNames = this.assembly.GetManifestResourceNames();
 
@@ -35,7 +36,7 @@
 
         public abstract void FillColorSchemeValues(Dictionary<string, string> values, Color accentColor, Color accentColor80Percent, Color accentColor60Percent, Color accentColor40Percent, Color accentColor20Percent, Color highlightColor, Color idealForegroundColor);
 
-        public virtual string GetThemeGeneratorParametersContent()
+        public virtual string? GetThemeGeneratorParametersContent()
         {
             foreach (var resourceName in this.resourceNames)
             {
@@ -46,7 +47,7 @@
 
                 using (var stream = this.assembly.GetManifestResourceStream(resourceName))
                 {
-                    if (stream.IsNull())
+                    if (stream is null)
                     {
                         continue;
                     }
@@ -61,7 +62,7 @@
             return null;
         }
 
-        public virtual string GetThemeTemplateContent()
+        public virtual string? GetThemeTemplateContent()
         {
             foreach (var resourceName in this.resourceNames)
             {
@@ -72,7 +73,7 @@
 
                 using (var stream = this.assembly.GetManifestResourceStream(resourceName))
                 {
-                    if (stream.IsNull())
+                    if (stream is null)
                     {
                         continue;
                     }
@@ -87,7 +88,7 @@
             return null;
         }
 
-        public virtual LibraryTheme GetLibraryTheme(DictionaryEntry dictionaryEntry)
+        public virtual LibraryTheme? GetLibraryTheme(DictionaryEntry dictionaryEntry)
         {
             if (this.IsPotentialThemeResourceDictionary(dictionaryEntry) == false)
             {
@@ -103,7 +104,7 @@
 
             var resourceDictionary = new ResourceDictionary
             {
-                Source = new Uri($"pack://application:,,,/{this.assemblyName};component/{stringKey.Replace(".baml", ".xaml")}")
+                Source = new Uri($"pack://application:,,,/{this.assemblyName};component/{stringKey!.Replace(".baml", ".xaml")}")
             };
 
             if (resourceDictionary.MergedDictionaries.Count == 0
@@ -126,7 +127,7 @@
 
                 var resourceInfo = this.assembly.GetManifestResourceInfo(resourceName);
 
-                if (resourceInfo.IsNull()
+                if (resourceInfo is null
                     || resourceInfo.ResourceLocation == ResourceLocation.ContainedInAnotherAssembly)
                 {
                     continue;
@@ -134,18 +135,18 @@
 
                 var resourceStream = this.assembly.GetManifestResourceStream(resourceName);
 
-                if (resourceStream.IsNull())
+                if (resourceStream is null)
                 {
                     continue;
                 }
 
                 using (var reader = new ResourceReader(resourceStream))
                 {
-                    foreach (DictionaryEntry dictionaryEntry in reader)
+                    foreach (var dictionaryEntry in reader.OfType<DictionaryEntry>())
                     {
                         var theme = this.GetLibraryTheme(dictionaryEntry);
 
-                        if (theme.IsNotNull())
+                        if (!(theme is null))
                         {
                             yield return theme;
                         }
@@ -154,10 +155,15 @@
             }
         }
 
+        public virtual LibraryTheme? ProvideMissingLibraryTheme(LibraryTheme libraryThemeToProvideNewLibraryThemeFor)
+        {
+            return RuntimeThemeGenerator.GenerateRuntimeLibraryTheme(libraryThemeToProvideNewLibraryThemeFor.BaseColorScheme, libraryThemeToProvideNewLibraryThemeFor.PrimaryAccentColor, this);
+        }
+
         protected virtual bool IsPotentialThemeResourceDictionary(DictionaryEntry dictionaryEntry)
         {
             var stringKey = dictionaryEntry.Key as string;
-            if (stringKey.IsNull()
+            if (stringKey is null
                 || stringKey.IndexOf("/themes/", StringComparison.OrdinalIgnoreCase) == -1
                 || stringKey.EndsWith(".baml", StringComparison.OrdinalIgnoreCase) == false
                 || stringKey.EndsWith("generic.baml", StringComparison.OrdinalIgnoreCase))

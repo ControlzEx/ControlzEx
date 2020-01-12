@@ -1,12 +1,12 @@
 ﻿namespace ControlzEx.Theming
 {
+#nullable enable
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
     using System.Windows;
     using System.Windows.Media;
-    using ControlzEx.Internal;
     using JetBrains.Annotations;
 
     /// <summary>
@@ -40,6 +40,11 @@
         public const string ThemeColorSchemeKey = "Theme.ColorScheme";
 
         /// <summary>
+        /// Gets the key for the themes primary accent color.
+        /// </summary>
+        public const string ThemePrimaryAccentColorKey = "Theme.PrimaryAccentColor";
+
+        /// <summary>
         /// Gets the key for the theme showcase brush.
         /// </summary>
         public const string ThemeShowcaseBrushKey = "Theme.ShowcaseBrush";
@@ -49,7 +54,7 @@
         /// </summary>
         /// <param name="libraryTheme">The first <see cref="LibraryTheme"/> of the theme.</param>
         public Theme([NotNull] LibraryTheme libraryTheme)
-            : this(libraryTheme.Name, libraryTheme.DisplayName, libraryTheme.BaseColorScheme, libraryTheme.ColorScheme, libraryTheme.ShowcaseBrush, libraryTheme.IsRuntimeGenerated)
+            : this(libraryTheme.Name, libraryTheme.DisplayName, libraryTheme.BaseColorScheme, libraryTheme.ColorScheme, libraryTheme.PrimaryAccentColor, libraryTheme.ShowcaseBrush, libraryTheme.IsRuntimeGenerated)
         {
             if (libraryTheme is null)
             {
@@ -59,7 +64,7 @@
             this.AddLibraryTheme(libraryTheme);
         }
 
-        public Theme(string name, string displayName, string baseColorScheme, string colorScheme, Brush showcaseBrush, bool isRuntimeGenerated)
+        public Theme(string name, string displayName, string baseColorScheme, string colorScheme, Color primaryAccentColor, Brush showcaseBrush, bool isRuntimeGenerated)
         {
             this.IsRuntimeGenerated = isRuntimeGenerated;
 
@@ -67,6 +72,7 @@
             this.DisplayName = displayName;
             this.BaseColorScheme = baseColorScheme;
             this.ColorScheme = colorScheme;
+            this.PrimaryAccentColor = primaryAccentColor;
             this.ShowcaseBrush = showcaseBrush;
 
             this.LibraryThemes = new ReadOnlyObservableCollection<LibraryTheme>(this.LibraryThemesInternal);
@@ -100,6 +106,11 @@
         public string BaseColorScheme { get; }
 
         /// <summary>
+        /// Gets the primary accent color for this theme.
+        /// </summary>
+        public Color PrimaryAccentColor { get; set; }
+
+        /// <summary>
         /// Gets the color scheme for this theme.
         /// </summary>
         public string ColorScheme { get; }
@@ -109,7 +120,29 @@
         /// </summary>
         public Brush ShowcaseBrush { get; }
 
-        public IEnumerable<ResourceDictionary> GetAllResources() => this.LibraryThemes.SelectMany(x => x.Resources);
+        public IEnumerable<ResourceDictionary> GetAllResources()
+        {
+            if (this.LibraryThemes.Any() == false)
+            {
+                return Enumerable.Empty<ResourceDictionary>();
+            }
+
+            var libraryThemeProvidersWhichDidNotProvideLibraryTheme = ThemeManager.LibraryThemeProviders.Except(this.LibraryThemes.Select(x => x.LibraryThemeProvider));
+
+            foreach (var libraryThemeProvider in libraryThemeProvidersWhichDidNotProvideLibraryTheme)
+            {
+                var libraryTheme = libraryThemeProvider!.ProvideMissingLibraryTheme(this.LibraryThemes.First());
+
+                if (libraryTheme == null)
+                {
+                    continue;
+                }
+
+                this.AddLibraryTheme(libraryTheme);
+            }
+
+            return this.LibraryThemes.SelectMany(x => x.Resources);
+        }
 
         public Theme AddLibraryTheme([NotNull] LibraryTheme libraryTheme)
         {
@@ -118,12 +151,13 @@
                 throw new ArgumentNullException(nameof(libraryTheme));
             }
 
-            if (libraryTheme.Name != this.Name)
-            {
-                throw new ArgumentException("The theme key does not match the current theme key.");
-            }
+            //// todo: How do we check if the library themes match this theme?
+            //if (libraryTheme.Name != this.Name)
+            //{
+            //    throw new ArgumentException("The theme key does not match the current theme key.");
+            //}
 
-            if (libraryTheme.ParentTheme.IsNotNull())
+            if (!(libraryTheme.ParentTheme is null))
             {
                 throw new ArgumentException("The theme already has a parent.");
             }
@@ -139,7 +173,7 @@
             return $"DisplayName={this.DisplayName}, Name={this.Name}";
         }
 
-        public static string GetThemeName([NotNull] ResourceDictionary resourceDictionary)
+        public static string? GetThemeName([NotNull] ResourceDictionary resourceDictionary)
         {
             if (resourceDictionary is null)
             {

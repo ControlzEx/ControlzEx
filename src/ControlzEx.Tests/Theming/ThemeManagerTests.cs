@@ -62,6 +62,9 @@ namespace ControlzEx.Tests.Theming
                     },
                     {
                         Theme.ThemeDisplayNameKey, "Runtime"
+                    },
+                    {
+                        Theme.ThemePrimaryAccentColorKey, Colors.Blue
                     }
                 };
                 var newTheme = new Theme(new LibraryTheme(resource, null, true));
@@ -86,6 +89,9 @@ namespace ControlzEx.Tests.Theming
                                {
                                    Theme.ThemeColorSchemeKey, "Bar"
                                },
+                               {
+                                   Theme.ThemePrimaryAccentColorKey, Colors.Blue
+                               }
                            };
 
             var newTheme = new Theme(new LibraryTheme(resource, null, true));
@@ -254,6 +260,9 @@ namespace ControlzEx.Tests.Theming
                                },
                                {
                                    "Theme.DisplayName", "Runtime"
+                               },
+                               {
+                                   Theme.ThemePrimaryAccentColorKey, Colors.Blue
                                }
                            };
             var theme = new Theme(new LibraryTheme(resource, null, true));
