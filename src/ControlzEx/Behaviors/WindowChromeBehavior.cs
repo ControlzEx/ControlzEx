@@ -227,7 +227,7 @@ namespace ControlzEx.Behaviors
             {
                 try
                 {
-                    this.AssociatedObject.AllowsTransparency = false;
+                    this.AssociatedObject.SetCurrentValue(Window.AllowsTransparencyProperty, false);
                 }
                 catch (Exception)
                 {
@@ -237,7 +237,7 @@ namespace ControlzEx.Behaviors
 
             if (this.AssociatedObject.WindowStyle != WindowStyle.None)
             {
-                this.AssociatedObject.WindowStyle = WindowStyle.None;
+                this.AssociatedObject.SetCurrentValue(Window.WindowStyleProperty, WindowStyle.None);
             }
 
             this.savedBorderThickness = this.AssociatedObject.BorderThickness;
@@ -269,8 +269,8 @@ namespace ControlzEx.Behaviors
             {
                 var raiseValueChanged = this.topMostChangeNotifier.RaiseValueChanged;
                 this.topMostChangeNotifier.RaiseValueChanged = false;
-                this.AssociatedObject.Topmost = false;
-                this.AssociatedObject.Topmost = true;
+                this.AssociatedObject.SetCurrentValue(Window.TopmostProperty, false);
+                this.AssociatedObject.SetCurrentValue(Window.TopmostProperty, true);
                 this.topMostChangeNotifier.RaiseValueChanged = raiseValueChanged;
             }
         }
@@ -323,8 +323,8 @@ namespace ControlzEx.Behaviors
             // Since IgnoreTaskbarOnMaximize is not changed all the time this hack seems to be less risky than anything else.
             if (behavior.AssociatedObject?.WindowState == WindowState.Maximized)
             {
-                behavior.AssociatedObject.WindowState = WindowState.Normal;
-                behavior.AssociatedObject.WindowState = WindowState.Maximized;
+                behavior.AssociatedObject.SetCurrentValue(Window.WindowStateProperty, WindowState.Normal);
+                behavior.AssociatedObject.SetCurrentValue(Window.WindowStateProperty, WindowState.Maximized);
             }
         }
 
@@ -471,7 +471,7 @@ namespace ControlzEx.Behaviors
                 // Dragging the window to the top with those things set does not change the height of the Window
                 if (this.AssociatedObject.SizeToContent != SizeToContent.Manual)
                 {
-                    this.AssociatedObject.SizeToContent = SizeToContent.Manual;
+                    this.AssociatedObject.SetCurrentValue(Window.SizeToContentProperty, SizeToContent.Manual);
                 }
 
                 if (this.windowHandle != IntPtr.Zero)
@@ -508,8 +508,8 @@ namespace ControlzEx.Behaviors
             // Note that the minimize animation in this case does actually run, but somehow the other
             // application (Google Chrome in this example) is instantly switched to being the top window,
             // and so blocking the animation view.
-            this.AssociatedObject.Topmost = false;
-            this.AssociatedObject.Topmost = this.AssociatedObject.WindowState == WindowState.Minimized || this.savedTopMost;
+            this.AssociatedObject.SetCurrentValue(Window.TopmostProperty, false);
+            this.AssociatedObject.SetCurrentValue(Window.TopmostProperty, this.AssociatedObject.WindowState == WindowState.Minimized || this.savedTopMost);
 
             this.topMostChangeNotifier.RaiseValueChanged = raiseValueChanged;
         }
@@ -556,24 +556,24 @@ namespace ControlzEx.Behaviors
                     }
 
                     // set window border, so we can move the window from top monitor position
-                    this.AssociatedObject.BorderThickness = new Thickness(0, 0, rightBorderThickness, bottomBorderThickness);
+                    this.AssociatedObject.SetCurrentValue(Control.BorderThicknessProperty, new Thickness(0, 0, rightBorderThickness, bottomBorderThickness));
                 }
                 else // Can't get monitor info, so just remove all border thickness
                 {
-                    this.AssociatedObject.BorderThickness = new Thickness(0);
+                    this.AssociatedObject.SetCurrentValue(Control.BorderThicknessProperty, new Thickness(0));
                 }
 
-                this.ResizeBorderThickness = new Thickness(0);
+                this.SetCurrentValue(ResizeBorderThicknessProperty, new Thickness(0));
             }
             else
             {
-                this.AssociatedObject.BorderThickness = this.savedBorderThickness.GetValueOrDefault(new Thickness(0));
+                this.AssociatedObject.SetCurrentValue(Control.BorderThicknessProperty, this.savedBorderThickness.GetValueOrDefault(new Thickness(0)));
 
                 var resizeBorderThickness = this.savedResizeBorderThickness.GetValueOrDefault(new Thickness(0));
 
                 if (this.ResizeBorderThickness != resizeBorderThickness)
                 {
-                    this.ResizeBorderThickness = resizeBorderThickness;
+                    this.SetCurrentValue(ResizeBorderThicknessProperty, resizeBorderThickness);
                 }
             }
 
