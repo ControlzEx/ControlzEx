@@ -1,4 +1,4 @@
-﻿namespace ControlzEx.Theming
+namespace ControlzEx.Theming
 {
 #nullable enable
     using System;
@@ -1067,7 +1067,37 @@
             return Uri.Compare(first.Source, second.Source, UriComponents.Host | UriComponents.Path, UriFormat.SafeUnescaped, StringComparison.OrdinalIgnoreCase) == 0;
         }
 
-        #region WindowsAppModeSetting
+        public static void SyncTheme()
+        {
+            SyncTheme(ThemeSyncMode);
+        }
+
+        public static void SyncTheme(ThemeSyncMode syncMode)
+        {
+            try
+            {
+                switch (syncMode)
+                {
+                    case ThemeSyncMode.SyncWithAppMode:
+                        SyncThemeBaseColorWithWindowsAppModeSetting();
+                        break;
+
+                    case ThemeSyncMode.SyncWithAccent:
+                        SyncThemeColorSchemeWithWindowsAccentColor();
+                        break;
+
+                    case ThemeSyncMode.SyncAll:
+                        SyncThemeColorSchemeWithWindowsAccentColor(WindowsThemeHelper.GetWindowsBaseColor());
+                        break;
+                }
+            }
+            finally
+            {
+                isSyncScheduled = false;
+            }
+        }
+
+        #region Windows-Settings
 
         /// <summary>
         /// Synchronizes the current <see cref="Theme"/> with the "app mode" setting from windows.
@@ -1168,36 +1198,11 @@
             {
                 isSyncScheduled = true;
 
-                Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => ScheduledThemeSync(ThemeSyncMode)));
+                Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => SyncTheme(ThemeSyncMode)));
             }
         }
 
         private static bool isSyncScheduled;
-
-        private static void ScheduledThemeSync(ThemeSyncMode themeSyncMode)
-        {
-            try
-            {
-                switch (themeSyncMode)
-                {
-                    case ThemeSyncMode.SyncWithAppMode:
-                        SyncThemeBaseColorWithWindowsAppModeSetting();
-                        break;
-
-                    case ThemeSyncMode.SyncWithAccent:
-                        SyncThemeColorSchemeWithWindowsAccentColor();
-                        break;
-
-                    case ThemeSyncMode.SyncAll:
-                        SyncThemeColorSchemeWithWindowsAccentColor(WindowsThemeHelper.GetWindowsBaseColor());
-                        break;
-                }
-            }
-            finally
-            {
-                isSyncScheduled = false;
-            }
-        }
 
         #endregion WindowsAppModeSetting
     }
