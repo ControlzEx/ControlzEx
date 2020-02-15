@@ -1,4 +1,4 @@
-﻿namespace ControlzEx.Theming
+namespace ControlzEx.Theming
 {
 #nullable enable
     using System;
@@ -117,6 +117,8 @@
         {
             if (options.UseHSL)
             {
+                var accentColorWithoutTransparency = Color.FromRgb(accentColor.R, accentColor.G, accentColor.B);
+
                 return new RuntimeThemeColorValues
                 {
                     Options = options,
@@ -125,14 +127,14 @@
                     AccentBaseColor = accentColor,
                     PrimaryAccentColor = accentColor,
 
-                    AccentColor80 = HSLColor.GetTintedColor(accentColor, -0.2),
-                    AccentColor60 = HSLColor.GetTintedColor(accentColor, -0.4),
-                    AccentColor40 = HSLColor.GetTintedColor(accentColor, -0.6),
-                    AccentColor20 = HSLColor.GetTintedColor(accentColor, -0.8),
+                    AccentColor80 = HSLColor.GetTintedColor(accentColorWithoutTransparency, 0.2),
+                    AccentColor60 = HSLColor.GetTintedColor(accentColorWithoutTransparency, 0.4),
+                    AccentColor40 = HSLColor.GetTintedColor(accentColorWithoutTransparency, 0.6),
+                    AccentColor20 = HSLColor.GetTintedColor(accentColorWithoutTransparency, 0.8),
 
-                    HighlightColor = GetHighlightColor(accentColor),
+                    HighlightColor = GetHighlightColor(accentColorWithoutTransparency),
 
-                    IdealForegroundColor = GetIdealTextColor(accentColor),
+                    IdealForegroundColor = GetIdealTextColor(accentColorWithoutTransparency),
                 };
             }
             else
