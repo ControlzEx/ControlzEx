@@ -1,15 +1,10 @@
-using System.Windows;
-
 namespace ControlzEx.Showcase
 {
-    using System.Diagnostics;
-    using System.Windows.Media;
+    using System.Windows;
     using ControlzEx.Theming;
 
-    public partial class App : Application
+    public partial class App
     {
-        public App()
-        {
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
@@ -17,8 +12,6 @@ namespace ControlzEx.Showcase
             ThemeManager.ThemeSyncMode = ThemeSyncMode.SyncAll;
 
             ThemeManager.SyncThemeColorSchemeWithWindowsAccentColor();
-        }
-
         }
     }
 }
