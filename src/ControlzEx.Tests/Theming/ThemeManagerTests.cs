@@ -371,13 +371,13 @@ namespace ControlzEx.Tests.Theming
         {
             var applicationTheme = ThemeManager.DetectTheme(Application.Current);
 
-            ThemeManager.ChangeTheme(Application.Current, RuntimeThemeGenerator.GenerateRuntimeTheme(ThemeManager.BaseColorLight, Colors.Red));
+            ThemeManager.ChangeTheme(Application.Current, RuntimeThemeGenerator.Current.GenerateRuntimeTheme(ThemeManager.BaseColorLight, Colors.Red));
 
             var detected = ThemeManager.DetectTheme(Application.Current);
             Assert.NotNull(detected);
             Assert.That(detected.Name, Is.EqualTo("Light.Runtime_#FFFF0000"));
 
-            ThemeManager.ChangeTheme(Application.Current, RuntimeThemeGenerator.GenerateRuntimeTheme(ThemeManager.BaseColorDark, Colors.Green));
+            ThemeManager.ChangeTheme(Application.Current, RuntimeThemeGenerator.Current.GenerateRuntimeTheme(ThemeManager.BaseColorDark, Colors.Green));
 
             detected = ThemeManager.DetectTheme(Application.Current);
             Assert.NotNull(detected);
@@ -389,8 +389,8 @@ namespace ControlzEx.Tests.Theming
         [Test]
         public void CreateDynamicAccentWithColorAndChangeBaseColorScheme()
         {
-            var darkRedTheme = ThemeManager.AddTheme(RuntimeThemeGenerator.GenerateRuntimeTheme(ThemeManager.BaseColorDark, Colors.Red));
-            var lightRedTheme = ThemeManager.AddTheme(RuntimeThemeGenerator.GenerateRuntimeTheme(ThemeManager.BaseColorLight, Colors.Red));
+            var darkRedTheme = ThemeManager.AddTheme(RuntimeThemeGenerator.Current.GenerateRuntimeTheme(ThemeManager.BaseColorDark, Colors.Red));
+            var lightRedTheme = ThemeManager.AddTheme(RuntimeThemeGenerator.Current.GenerateRuntimeTheme(ThemeManager.BaseColorLight, Colors.Red));
             
             ThemeManager.ChangeTheme(Application.Current, lightRedTheme);
 
@@ -422,7 +422,7 @@ namespace ControlzEx.Tests.Theming
                 Source = new Uri(source)
             };
 
-            var newTheme = RuntimeThemeGenerator.GenerateRuntimeTheme(baseColor, (Color)ColorConverter.ConvertFromString(color));
+            var newTheme = RuntimeThemeGenerator.Current.GenerateRuntimeTheme(baseColor, (Color)ColorConverter.ConvertFromString(color));
 
             var ignoredKeyValues = new[]
                                    {

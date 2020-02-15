@@ -10,12 +10,21 @@
 
     public class RuntimeThemeGenerator
     {
-        public static Theme? GenerateRuntimeThemeFromWindowsSettings(string baseColor, params LibraryThemeProvider[] libraryThemeProviders)
+        public static RuntimeThemeGenerator Current { get; set; }
+
+        static RuntimeThemeGenerator()
+        {
+            Current = new RuntimeThemeGenerator();
+        }
+
+        public RuntimeThemeColorOptions ColorOptions { get; } = new RuntimeThemeColorOptions();
+
+        public Theme? GenerateRuntimeThemeFromWindowsSettings(string baseColor, params LibraryThemeProvider[] libraryThemeProviders)
         {
             return GenerateRuntimeThemeFromWindowsSettings(baseColor, libraryThemeProviders.ToList());
         }
 
-        public static Theme? GenerateRuntimeThemeFromWindowsSettings(string baseColor, IEnumerable<LibraryThemeProvider> libraryThemeProviders)
+        public virtual Theme? GenerateRuntimeThemeFromWindowsSettings(string baseColor, IEnumerable<LibraryThemeProvider> libraryThemeProviders)
         {
             var windowsAccentColor = WindowsThemeHelper.GetWindowsAccentColor();
 
@@ -29,17 +38,17 @@
             return GenerateRuntimeTheme(baseColor, accentColor, libraryThemeProviders);
         }
 
-        public static Theme? GenerateRuntimeTheme(string baseColor, Color accentColor)
+        public virtual Theme? GenerateRuntimeTheme(string baseColor, Color accentColor)
         {
             return GenerateRuntimeTheme(baseColor, accentColor, ThemeManager.LibraryThemeProviders.ToList());
         }
 
-        public static Theme? GenerateRuntimeTheme(string baseColor, Color accentColor, params LibraryThemeProvider[] libraryThemeProviders)
+        public Theme? GenerateRuntimeTheme(string baseColor, Color accentColor, params LibraryThemeProvider[] libraryThemeProviders)
         {
             return GenerateRuntimeTheme(baseColor, accentColor, libraryThemeProviders.ToList());
         }
 
-        public static Theme? GenerateRuntimeTheme(string baseColor, Color accentColor, IEnumerable<LibraryThemeProvider> libraryThemeProviders)
+        public virtual Theme? GenerateRuntimeTheme(string baseColor, Color accentColor, IEnumerable<LibraryThemeProvider> libraryThemeProviders)
         {
             Theme? theme = null;
 
@@ -65,7 +74,7 @@
             return theme;
         }
 
-        public static LibraryTheme? GenerateRuntimeLibraryTheme(string baseColor, Color accentColor, LibraryThemeProvider libraryThemeProvider)
+        public virtual LibraryTheme? GenerateRuntimeLibraryTheme(string baseColor, Color accentColor, LibraryThemeProvider libraryThemeProvider)
         {
             var themeGeneratorParametersContent = libraryThemeProvider.GetThemeGeneratorParametersContent();
 
@@ -84,31 +93,68 @@
             };
             var values = colorScheme.Values;
 
-            var accentColor80Percent = Color.FromArgb(204, accentColor.R, accentColor.G, accentColor.B);
-            var accentColor60Percent = Color.FromArgb(153, accentColor.R, accentColor.G, accentColor.B);
-            var accentColor40Percent = Color.FromArgb(102, accentColor.R, accentColor.G, accentColor.B);
-            var accentColor20Percent = Color.FromArgb(51, accentColor.R, accentColor.G, accentColor.B);
+            var runtimeThemeColorValues = this.GetColors(accentColor, this.ColorOptions);
 
-            var highlightColor = GetHighlightColor(accentColor);
+            values.Add("ThemeGenerator.Colors.PrimaryAccentColor", runtimeThemeColorValues.PrimaryAccentColor.ToString());
+            values.Add("ThemeGenerator.Colors.AccentBaseColor", runtimeThemeColorValues.AccentBaseColor.ToString());
+            values.Add("ThemeGenerator.Colors.AccentColor80", runtimeThemeColorValues.AccentColor80.ToString());
+            values.Add("ThemeGenerator.Colors.AccentColor60", runtimeThemeColorValues.AccentColor60.ToString());
+            values.Add("ThemeGenerator.Colors.AccentColor40", runtimeThemeColorValues.AccentColor40.ToString());
+            values.Add("ThemeGenerator.Colors.AccentColor20", runtimeThemeColorValues.AccentColor20.ToString());
 
-            var idealForegroundColor = GetIdealTextColor(accentColor);
+            values.Add("ThemeGenerator.Colors.HighlightColor", runtimeThemeColorValues.HighlightColor.ToString());
+            values.Add("ThemeGenerator.Colors.IdealForegroundColor", runtimeThemeColorValues.IdealForegroundColor.ToString());
 
-            values.Add("ThemeGenerator.Colors.PrimaryAccentColor", accentColor.ToString());
-            values.Add("ThemeGenerator.Colors.AccentBaseColor", accentColor.ToString());
-            values.Add("ThemeGenerator.Colors.AccentColor80", accentColor80Percent.ToString());
-            values.Add("ThemeGenerator.Colors.AccentColor60", accentColor60Percent.ToString());
-            values.Add("ThemeGenerator.Colors.AccentColor40", accentColor40Percent.ToString());
-            values.Add("ThemeGenerator.Colors.AccentColor20", accentColor20Percent.ToString());
-
-            values.Add("ThemeGenerator.Colors.HighlightColor", highlightColor.ToString());
-            values.Add("ThemeGenerator.Colors.IdealForegroundColor", idealForegroundColor.ToString());
-
-            libraryThemeProvider.FillColorSchemeValues(values, accentColor, accentColor80Percent, accentColor60Percent, accentColor40Percent, accentColor20Percent, highlightColor, idealForegroundColor);
+            libraryThemeProvider.FillColorSchemeValues(values, runtimeThemeColorValues);
 
             var themeFileContent = ThemeGenerator.GenerateColorSchemeFileContent(generatorParameters, baseColorScheme, colorScheme, libraryThemeProvider.GetThemeTemplateContent(), $"{baseColor}.Runtime_{accentColor}", $"Runtime {accentColor} ({baseColor})");
             var resourceDictionary = (ResourceDictionary)XamlReader.Parse(themeFileContent);
 
             return new LibraryTheme(resourceDictionary, libraryThemeProvider, true);
+        }
+
+        public virtual RuntimeThemeColorValues GetColors(Color accentColor, RuntimeThemeColorOptions options)
+        {
+            if (options.UseHSL)
+            {
+                return new RuntimeThemeColorValues
+                {
+                    Options = options,
+
+                    AccentColor = accentColor,
+                    AccentBaseColor = accentColor,
+                    PrimaryAccentColor = accentColor,
+
+                    AccentColor80 = HSLColor.GetTintedColor(accentColor, -0.2),
+                    AccentColor60 = HSLColor.GetTintedColor(accentColor, -0.4),
+                    AccentColor40 = HSLColor.GetTintedColor(accentColor, -0.6),
+                    AccentColor20 = HSLColor.GetTintedColor(accentColor, -0.8),
+
+                    HighlightColor = GetHighlightColor(accentColor),
+
+                    IdealForegroundColor = GetIdealTextColor(accentColor),
+                };
+            }
+            else
+            {
+                return new RuntimeThemeColorValues
+                {
+                    Options = options,
+
+                    AccentColor = accentColor,
+                    AccentBaseColor = accentColor,
+                    PrimaryAccentColor = accentColor,
+
+                    AccentColor80 = Color.FromArgb(204, accentColor.R, accentColor.G, accentColor.B),
+                    AccentColor60 = Color.FromArgb(153, accentColor.R, accentColor.G, accentColor.B),
+                    AccentColor40 = Color.FromArgb(102, accentColor.R, accentColor.G, accentColor.B),
+                    AccentColor20 = Color.FromArgb(51, accentColor.R, accentColor.G, accentColor.B),
+
+                    HighlightColor = GetHighlightColor(accentColor),
+
+                    IdealForegroundColor = GetIdealTextColor(accentColor),
+                };
+            }
         }
 
         /// <summary>
@@ -134,5 +180,33 @@
                                   (byte)(color.G + highlightFactor > 255 ? 255 : color.G + highlightFactor),
                                   (byte)(color.B + highlightFactor > 255 ? 255 : color.B + highlightFactor));
         }
+    }
+
+    public class RuntimeThemeColorOptions
+    {
+        public bool UseHSL { get; set; }
+    }
+
+    public class RuntimeThemeColorValues
+    {
+        public RuntimeThemeColorOptions? Options { get; set; }
+
+        public Color AccentColor { get; set; }
+
+        public Color AccentBaseColor { get; set; }
+
+        public Color PrimaryAccentColor { get; set; }
+
+        public Color AccentColor80 { get; set; }
+
+        public Color AccentColor60 { get; set; }
+
+        public Color AccentColor40 { get; set; }
+
+        public Color AccentColor20 { get; set; }
+
+        public Color HighlightColor { get; set; }
+
+        public Color IdealForegroundColor { get; set; }
     }
 }

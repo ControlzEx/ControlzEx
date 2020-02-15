@@ -34,7 +34,7 @@
 
         public string ThemeTemplateResourceName { get; protected set; } = "Theme.Template.xaml";
 
-        public abstract void FillColorSchemeValues(Dictionary<string, string> values, Color accentColor, Color accentColor80Percent, Color accentColor60Percent, Color accentColor40Percent, Color accentColor20Percent, Color highlightColor, Color idealForegroundColor);
+        public abstract void FillColorSchemeValues(Dictionary<string, string> values, RuntimeThemeColorValues colorValues);
 
         public virtual string? GetThemeGeneratorParametersContent()
         {
@@ -157,7 +157,7 @@
 
         public virtual LibraryTheme? ProvideMissingLibraryTheme(LibraryTheme libraryThemeToProvideNewLibraryThemeFor)
         {
-            return RuntimeThemeGenerator.GenerateRuntimeLibraryTheme(libraryThemeToProvideNewLibraryThemeFor.BaseColorScheme, libraryThemeToProvideNewLibraryThemeFor.PrimaryAccentColor, this);
+            return RuntimeThemeGenerator.Current.GenerateRuntimeLibraryTheme(libraryThemeToProvideNewLibraryThemeFor.BaseColorScheme, libraryThemeToProvideNewLibraryThemeFor.PrimaryAccentColor, this);
         }
 
         protected virtual bool IsPotentialThemeResourceDictionary(DictionaryEntry dictionaryEntry)

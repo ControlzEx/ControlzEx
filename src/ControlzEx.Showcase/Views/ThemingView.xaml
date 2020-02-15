@@ -30,9 +30,11 @@
         
         <StackPanel Grid.Row="1"
                     Orientation="Horizontal">
+            <Label>Theme</Label>
+            
             <ComboBox Width="200"
-                        ItemsSource="{Binding Source={x:Static theming:ThemeManager.Themes}}"
-                        SelectedItem="{Binding RelativeSource={RelativeSource AncestorType=local:ThemingView}, Path=CurrentTheme}">
+                      ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=local:ThemingView}, Path=Themes}"
+                      SelectedItem="{Binding RelativeSource={RelativeSource AncestorType=local:ThemingView}, Path=CurrentTheme}">
                 <ComboBox.ItemTemplate>
                     <DataTemplate DataType="{x:Type theming:Theme}">
                         <StackPanel Orientation="Horizontal">
@@ -45,10 +47,14 @@
                 </ComboBox.ItemTemplate>
             </ComboBox>
 
+            <Label>Base color</Label>
+            
             <ComboBox Width="100"
                         ItemsSource="{Binding Source={x:Static theming:ThemeManager.BaseColors}}"
                         SelectedItem="{Binding RelativeSource={RelativeSource AncestorType=local:ThemingView}, Path=CurrentBaseColor}" />
 
+            <Label>Color scheme</Label>
+            
             <ComboBox Width="100"
                         ItemsSource="{Binding Source={x:Static theming:ThemeManager.ColorSchemes}}"
                         SelectedItem="{Binding RelativeSource={RelativeSource AncestorType=local:ThemingView}, Path=CurrentColorScheme}" />

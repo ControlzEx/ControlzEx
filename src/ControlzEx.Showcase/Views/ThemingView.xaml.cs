@@ -1,8 +1,11 @@
 ﻿namespace ControlzEx.Showcase.Views
 {
+    using System;
+    using System.Collections.ObjectModel;
     using System.ComponentModel;
     using System.Runtime.CompilerServices;
     using System.Windows;
+    using System.Windows.Data;
     using ControlzEx.Theming;
     using JetBrains.Annotations;
 
@@ -10,19 +13,60 @@
     {
         public ThemingView()
         {
+            this.CurrentThemeCollection = new ObservableCollection<Theme>();
+
+            this.Themes = new CompositeCollection { new CollectionContainer { Collection = ThemeManager.Themes }, new CollectionContainer { Collection = this.CurrentThemeCollection } };
+
+            ThemeManager.ThemeChanged += this.ThemeManager_ThemeChanged;
+
             this.InitializeComponent();
         }
 
+        protected override void OnInitialized(EventArgs e)
+        {
+            base.OnInitialized(e);
+
+            var currentTheme = this.CurrentTheme;
+
+            if (currentTheme is null == false
+                && this.CurrentThemeCollection.Contains(currentTheme) == false)
+            {
+                this.CurrentThemeCollection.Clear();
+                this.CurrentThemeCollection.Add(currentTheme);
+            }
+        }
+
+        private void ThemeManager_ThemeChanged(object sender, ThemeChangedEventArgs e)
+        {
+            if (e.NewTheme is null == false)
+            {
+                this.CurrentThemeCollection.Add(e.NewTheme);
+            }
+
+            if (e.OldTheme is null == false)
+            {
+                this.CurrentThemeCollection.Remove(e.OldTheme);
+            }
+
+            this.OnPropertyChanged(nameof(this.CurrentTheme));
+        }
+
+        public ObservableCollection<Theme> CurrentThemeCollection { get; }
+
+        public CompositeCollection Themes { get; }
+
         public Theme CurrentTheme
         {
-            get => ThemeManager.DetectTheme(Window.GetWindow(this));
+            get => ThemeManager.DetectTheme();
 
             set
             {
-                if (value is null == false)
+                if (value is null)
                 {
-                    ThemeManager.ChangeTheme(Window.GetWindow(this), value);
+                    return;
                 }
+
+                ThemeManager.ChangeTheme(Application.Current, value);
 
                 this.OnPropertyChanged();
                 this.OnPropertyChanged(nameof(this.CurrentBaseColor));
@@ -37,7 +81,7 @@
             {
                 if (string.IsNullOrEmpty(value) == false)
                 {
-                    ThemeManager.ChangeThemeBaseColor(Window.GetWindow(this), value);
+                    ThemeManager.ChangeThemeBaseColor(Application.Current, value);
                 }
 
                 this.OnPropertyChanged();
@@ -53,7 +97,7 @@
             {
                 if (string.IsNullOrEmpty(value) == false)
                 {
-                    ThemeManager.ChangeThemeColorScheme(Window.GetWindow(this), value);
+                    ThemeManager.ChangeThemeColorScheme(Application.Current, value);
                 }
 
                 this.OnPropertyChanged();

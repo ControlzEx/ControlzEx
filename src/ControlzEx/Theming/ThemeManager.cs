@@ -329,16 +329,19 @@
             }
 
             var builtInTheme = Themes.FirstOrDefault(x => x.Name == Theme.GetThemeName(resourceDictionary));
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             if (!(builtInTheme is null))
             {
                 return builtInTheme;
             }
 
             // support dynamically created runtime resource dictionaries
+            // ReSharper disable HeuristicUnreachableCode
             if (IsThemeDictionary(resourceDictionary))
             {
                 return new Theme(new LibraryTheme(resourceDictionary, null, true));
             }
+            // ReSharper restore HeuristicUnreachableCode
 
             return null;
         }
@@ -1121,7 +1124,7 @@
 
             if (theme is null)
             {
-                theme = RuntimeThemeGenerator.GenerateRuntimeThemeFromWindowsSettings(baseColor, libraryThemeProvidersInternal);
+                theme = RuntimeThemeGenerator.Current.GenerateRuntimeThemeFromWindowsSettings(baseColor, libraryThemeProvidersInternal);
             }
 
             // Only change the theme if it's not the current already
