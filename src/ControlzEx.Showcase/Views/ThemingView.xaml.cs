@@ -14,8 +14,10 @@
         public ThemingView()
         {
             this.CurrentThemeCollection = new ObservableCollection<Theme>();
+            this.CurrentColorSchemeCollection = new ObservableCollection<string>();
 
             this.Themes = new CompositeCollection { new CollectionContainer { Collection = ThemeManager.Themes }, new CollectionContainer { Collection = this.CurrentThemeCollection } };
+            this.ColorSchemes = new CompositeCollection { new CollectionContainer { Collection = ThemeManager.ColorSchemes }, new CollectionContainer { Collection = this.CurrentColorSchemeCollection } };
 
             ThemeManager.ThemeChanged += this.ThemeManager_ThemeChanged;
 
@@ -33,27 +35,51 @@
             {
                 this.CurrentThemeCollection.Clear();
                 this.CurrentThemeCollection.Add(currentTheme);
+
+                this.CurrentColorSchemeCollection.Clear();
+                this.CurrentColorSchemeCollection.Add(currentTheme.ColorScheme);
             }
         }
 
         private void ThemeManager_ThemeChanged(object sender, ThemeChangedEventArgs e)
         {
-            if (e.NewTheme is null == false)
+            // Add the new theme first, if it's generated
+            if (e.NewTheme is null == false
+                && e.NewTheme.IsRuntimeGenerated)
             {
                 this.CurrentThemeCollection.Add(e.NewTheme);
+
+                if (e.OldTheme?.ColorScheme != e.NewTheme?.ColorScheme)
+                {
+                    this.CurrentColorSchemeCollection.Add(e.NewTheme.ColorScheme);
+                }
             }
 
-            if (e.OldTheme is null == false)
+            // Notify about selection change
+            this.OnPropertyChanged(nameof(this.CurrentTheme));
+            this.OnPropertyChanged(nameof(this.CurrentColorScheme));
+
+            // Remove the old theme, if it's generated
+            // We have to do this after the notification to ensure the selection does not get reset by the removal
+            if (e.OldTheme is null == false
+                && e.OldTheme.IsRuntimeGenerated)
             {
                 this.CurrentThemeCollection.Remove(e.OldTheme);
-            }
 
-            this.OnPropertyChanged(nameof(this.CurrentTheme));
+                if (e.OldTheme?.ColorScheme != e.NewTheme?.ColorScheme)
+                {
+                    this.CurrentColorSchemeCollection.Remove(e.OldTheme.ColorScheme);
+                }
+            }
         }
 
         public ObservableCollection<Theme> CurrentThemeCollection { get; }
 
         public CompositeCollection Themes { get; }
+
+        public ObservableCollection<string> CurrentColorSchemeCollection { get; }
+
+        public CompositeCollection ColorSchemes { get; }
 
         public Theme CurrentTheme
         {
@@ -111,6 +137,11 @@
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void SyncNow_OnClick(object sender, RoutedEventArgs e)
+        {
+            ThemeManager.SyncTheme();
         }
     }
 }

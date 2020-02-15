@@ -23,10 +23,15 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <WrapPanel Grid.Row="0">
+        <StackPanel Grid.Row="0"
+                    Orientation="Horizontal">
+            <Label>Sync mode</Label>
             <ComboBox ItemsSource="{Binding Source={StaticResource SyncModePreferenceEnumValues}}"
                       SelectedItem="{Binding Path=(theming:ThemeManager.ThemeSyncMode)}" />
-        </WrapPanel>
+
+            <Button Click="SyncNow_OnClick">Sync now</Button>
+            <CheckBox IsChecked="{Binding Path=ColorOptions.UseHSL, Source={x:Static theming:RuntimeThemeGenerator.Current}, Mode=TwoWay}">Use HSL color</CheckBox>
+        </StackPanel>
         
         <StackPanel Grid.Row="1"
                     Orientation="Horizontal">
@@ -56,7 +61,7 @@
             <Label>Color scheme</Label>
             
             <ComboBox Width="100"
-                        ItemsSource="{Binding Source={x:Static theming:ThemeManager.ColorSchemes}}"
+                        ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=local:ThemingView}, Path=ColorSchemes}"
                         SelectedItem="{Binding RelativeSource={RelativeSource AncestorType=local:ThemingView}, Path=CurrentColorScheme}" />
         </StackPanel>
 
