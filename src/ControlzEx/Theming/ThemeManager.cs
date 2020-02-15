@@ -1,4 +1,4 @@
-namespace ControlzEx.Theming
+﻿namespace ControlzEx.Theming
 {
 #nullable enable
     using System;
@@ -339,6 +339,14 @@ namespace ControlzEx.Theming
             // ReSharper disable HeuristicUnreachableCode
             if (IsThemeDictionary(resourceDictionary))
             {
+                foreach (var resourceDictionaryKey in resourceDictionary.Keys)
+                {
+                    if (resourceDictionaryKey == RuntimeThemeGenerator.LibraryThemeInstanceKeyObject)
+                    {
+                        return ((LibraryTheme)resourceDictionary[resourceDictionaryKey]).ParentTheme;
+                    }
+                }
+
                 return new Theme(new LibraryTheme(resourceDictionary, null, true));
             }
             // ReSharper restore HeuristicUnreachableCode

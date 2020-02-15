@@ -10,6 +10,16 @@ namespace ControlzEx.Theming
 
     public class RuntimeThemeGenerator
     {
+        /// <summary>
+        /// Gets the key for the library theme instance.
+        /// </summary>
+        public const string LibraryThemeInstanceKey = "RuntimeThemeGenerator.LibraryThemeInstance";
+
+        /// <summary>
+        /// Gets the key for the library theme instance as object.
+        /// </summary>
+        public static object LibraryThemeInstanceKeyObject = LibraryThemeInstanceKey;
+
         public static RuntimeThemeGenerator Current { get; set; }
 
         static RuntimeThemeGenerator()
@@ -110,7 +120,9 @@ namespace ControlzEx.Theming
             var themeFileContent = ThemeGenerator.GenerateColorSchemeFileContent(generatorParameters, baseColorScheme, colorScheme, libraryThemeProvider.GetThemeTemplateContent(), $"{baseColor}.Runtime_{accentColor}", $"Runtime {accentColor} ({baseColor})");
             var resourceDictionary = (ResourceDictionary)XamlReader.Parse(themeFileContent);
 
-            return new LibraryTheme(resourceDictionary, libraryThemeProvider, true);
+            var runtimeLibraryTheme = new LibraryTheme(resourceDictionary, libraryThemeProvider, true);
+            resourceDictionary[LibraryThemeInstanceKey] = runtimeLibraryTheme;
+            return runtimeLibraryTheme;
         }
 
         public virtual RuntimeThemeColorValues GetColors(Color accentColor, RuntimeThemeColorOptions options)
