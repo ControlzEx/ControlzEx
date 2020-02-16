@@ -155,9 +155,9 @@
             }
         }
 
-        public virtual LibraryTheme? ProvideMissingLibraryTheme(LibraryTheme libraryThemeToProvideNewLibraryThemeFor)
+        public virtual LibraryTheme? ProvideMissingLibraryTheme(Theme themeToProvideNewLibraryThemeFor)
         {
-            return RuntimeThemeGenerator.Current.GenerateRuntimeLibraryTheme(libraryThemeToProvideNewLibraryThemeFor.BaseColorScheme, libraryThemeToProvideNewLibraryThemeFor.PrimaryAccentColor, this);
+            return RuntimeThemeGenerator.Current.GenerateRuntimeLibraryTheme(themeToProvideNewLibraryThemeFor.BaseColorScheme, themeToProvideNewLibraryThemeFor.PrimaryAccentColor, this);
         }
 
         protected virtual bool IsPotentialThemeResourceDictionary(DictionaryEntry dictionaryEntry)

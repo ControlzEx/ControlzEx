@@ -120,18 +120,17 @@
         /// </summary>
         public Brush ShowcaseBrush { get; }
 
-        public IEnumerable<ResourceDictionary> GetAllResources()
+        /// <summary>
+        /// Ensures that all <see cref="LibraryThemeProvider"/> from <see cref="ThemeManager.LibraryThemeProviders"/> provided a <see cref="LibraryTheme"/> for this <see cref="Theme"/>.
+        /// </summary>
+        /// <returns>This instance for fluent call usage.</returns>
+        public Theme EnsureAllLibraryThemeProvidersProvided()
         {
-            if (this.LibraryThemes.Any() == false)
-            {
-                return Enumerable.Empty<ResourceDictionary>();
-            }
-
             var libraryThemeProvidersWhichDidNotProvideLibraryTheme = ThemeManager.LibraryThemeProviders.Except(this.LibraryThemes.Select(x => x.LibraryThemeProvider));
 
             foreach (var libraryThemeProvider in libraryThemeProvidersWhichDidNotProvideLibraryTheme)
             {
-                var libraryTheme = libraryThemeProvider!.ProvideMissingLibraryTheme(this.LibraryThemes.First());
+                var libraryTheme = libraryThemeProvider!.ProvideMissingLibraryTheme(this);
 
                 if (libraryTheme == null)
                 {
@@ -141,9 +140,53 @@
                 this.AddLibraryTheme(libraryTheme);
             }
 
-            return this.LibraryThemes.SelectMany(x => x.Resources);
+            return this;
         }
 
+        /// <summary>
+        /// Gets the first resource that matches <paramref name="key"/>.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns>The found resource or null.</returns>
+        public object? GetResource(object key)
+        {
+            foreach (var resources in this.GetAllResources())
+            {
+                var resource = resources[key];
+
+                if (resource is null)
+                {
+                    continue;
+                }
+
+                return resource;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Gets a flat list of all <see cref="ResourceDictionary"/> from all library themes.
+        /// </summary>
+        /// <returns>A flat list of all <see cref="ResourceDictionary"/> from all library themes.</returns>
+        public IEnumerable<ResourceDictionary> GetAllResources()
+        {
+            this.EnsureAllLibraryThemeProvidersProvided();
+
+            foreach (var libraryTheme in this.LibraryThemes)
+            {
+                foreach (var libraryThemeResource in libraryTheme.Resources)
+                {
+                    yield return libraryThemeResource;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Adds a new <see cref="LibraryTheme"/> to this <see cref="Theme"/>.
+        /// </summary>
+        /// <param name="libraryTheme">The <see cref="LibraryTheme"/> to add.</param>
+        /// <returns>This instance for fluent call usage.</returns>
         public Theme AddLibraryTheme([NotNull] LibraryTheme libraryTheme)
         {
             if (libraryTheme is null)
@@ -168,6 +211,7 @@
             return this;
         }
 
+        /// <inheritdoc />
         public override string ToString()
         {
             return $"DisplayName={this.DisplayName}, Name={this.Name}";
@@ -180,16 +224,16 @@
                 throw new ArgumentNullException(nameof(resourceDictionary));
             }
 
-            var key = resourceDictionary.Keys
-                    .OfType<string>()
-                    .FirstOrDefault(x => x.Equals(ThemeNameKey, StringComparison.Ordinal));
-
-            if (key is null)
+            foreach (var resourceDictionaryKey in resourceDictionary.Keys)
             {
-                return null;
+                if (resourceDictionaryKey is string key
+                    && key.Equals(ThemeNameKey, StringComparison.Ordinal))
+                {
+                    return (string)resourceDictionary[resourceDictionaryKey];
+                }
             }
 
-            return (string)resourceDictionary[key];
+            return null;
         }
 
         public static bool IsThemeDictionary([NotNull] ResourceDictionary resources)
