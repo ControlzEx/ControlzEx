@@ -426,9 +426,10 @@ namespace ControlzEx.Tests.Theming
 
             var ignoredKeyValues = new[]
                                    {
-                                       "Theme.Name",
-                                       "Theme.DisplayName",
-                                       "Theme.ColorScheme",
+                                       Theme.ThemeNameKey,
+                                       Theme.ThemeDisplayNameKey,
+                                       Theme.ThemeColorSchemeKey,
+                                       RuntimeThemeGenerator.LibraryThemeInstanceKey,
                                        "ControlzEx.Colors.HighlightColor", // Ignored because it's hand crafted
                                        "ControlzEx.Brushes.HighlightBrush", // Ignored because it's hand crafted
                                    };
@@ -440,13 +441,13 @@ namespace ControlzEx.Tests.Theming
         {
             foreach (var key in first.Keys)
             {
-                if (second.Contains(key) == false)
-                {
-                    throw new Exception($"Key \"{key}\" is missing from {second.Source}.");
-                }
-
                 if (ignoredKeyValues.Contains(key) == false)
                 {
+                    if (second.Contains(key) == false)
+                    {
+                        throw new Exception($"Key \"{key}\" is missing from {second.Source}.");
+                    }
+
                     Assert.That(second[key].ToString(), Is.EqualTo(first[key].ToString()), $"Values for {key} should be equal.");
                 }
             }
