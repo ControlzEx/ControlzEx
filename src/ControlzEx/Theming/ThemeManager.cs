@@ -25,12 +25,22 @@
         /// <summary>
         /// Gets the name for the light base color.
         /// </summary>
-        public static readonly string BaseColorLight = "Light";
+        public static readonly string BaseColorLight = BaseColorLightConst;
+
+        /// <summary>
+        /// Gets the name for the light base color.
+        /// </summary>
+        public const string BaseColorLightConst = "Light";
 
         /// <summary>
         /// Gets the name for the dark base color.
         /// </summary>
-        public static readonly string BaseColorDark = "Dark";
+        public static readonly string BaseColorDark = BaseColorDarkConst;
+
+        /// <summary>
+        /// Gets the name for the dark base color.
+        /// </summary>
+        public const string BaseColorDarkConst = "Dark";
 
         private static bool isEnsuringThemes;
 
@@ -917,11 +927,11 @@
             {
                 try
                 {
-                    var style = DetectTheme(mainWindow!);
+                    var theme = DetectTheme(mainWindow);
 
-                    if (!(style is null))
+                    if (!(theme is null))
                     {
-                        return style;
+                        return theme;
                     }
                 }
                 catch (Exception ex)
