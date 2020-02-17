@@ -607,7 +607,7 @@
 
             if (newTheme is null)
             {
-                Trace.TraceError($"Could not find a theme with base color scheme '{baseColor}' and color scheme '{currentTheme.ColorScheme}'.");
+                Trace.TraceError($"Could not find a theme with base color scheme '{baseColor}' and color scheme '{colorScheme}'.");
                 return null;
             }
 
@@ -649,7 +649,7 @@
 
             if (newTheme is null)
             {
-                Trace.TraceError($"Could not find a theme with base color scheme '{baseColor}' and color scheme '{currentTheme.ColorScheme}'.");
+                Trace.TraceError($"Could not find a theme with base color scheme '{baseColor}' and color scheme '{colorScheme}'.");
                 return null;
             }
 
@@ -685,7 +685,7 @@
 
             if (newTheme is null)
             {
-                Trace.TraceError($"Could not find a theme with base color scheme '{baseColor}' and color scheme '{oldTheme.ColorScheme}'.");
+                Trace.TraceError($"Could not find a theme with base color scheme '{baseColor}' and color scheme '{colorScheme}'.");
                 return null;
             }
 
