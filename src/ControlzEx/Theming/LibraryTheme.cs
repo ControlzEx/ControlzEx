@@ -132,14 +132,6 @@
             return this;
         }
 
-        public void AddResource(ReadOnlyObservableCollection<ResourceDictionary> resourceDictionaries)
-        {
-            foreach (var resourceDictionary in resourceDictionaries)
-            {
-                this.AddResource(resourceDictionary);
-            }
-        }
-
         public override string ToString()
         {
             return $"DisplayName={this.DisplayName}, Name={this.Name}, Origin={this.Origin}";
