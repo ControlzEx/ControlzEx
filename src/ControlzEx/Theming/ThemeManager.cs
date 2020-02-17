@@ -45,7 +45,6 @@
         private static bool isEnsuringThemes;
 
         private static readonly ObservableCollection<LibraryThemeProvider> libraryThemeProvidersInternal;
-        private static readonly ReadOnlyObservableCollection<LibraryThemeProvider> libraryThemeProviders;
 
         private static readonly ObservableCollection<Theme> themesInternal;
         private static readonly ReadOnlyObservableCollection<Theme> themes;
@@ -60,7 +59,7 @@
         {
             {
                 libraryThemeProvidersInternal = new ObservableCollection<LibraryThemeProvider>();
-                libraryThemeProviders = new ReadOnlyObservableCollection<LibraryThemeProvider>(libraryThemeProvidersInternal);
+                LibraryThemeProviders = new ReadOnlyObservableCollection<LibraryThemeProvider>(libraryThemeProvidersInternal);
             }
 
             {
@@ -93,7 +92,7 @@
         /// <summary>
         /// Gets a list of all library theme providers.
         /// </summary>
-        public static ReadOnlyObservableCollection<LibraryThemeProvider> LibraryThemeProviders => libraryThemeProviders;
+        public static ReadOnlyObservableCollection<LibraryThemeProvider> LibraryThemeProviders { get; }
 
         /// <summary>
         /// Gets a list of all themes.
