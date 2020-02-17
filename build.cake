@@ -119,6 +119,7 @@ Task("Build")
 });
 
 Task("Pack")
+    .IsDependentOn("Build")
     .Does(() =>
 {
     var msBuildSettings = new MSBuildSettings {
