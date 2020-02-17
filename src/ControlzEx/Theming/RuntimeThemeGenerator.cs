@@ -4,6 +4,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text.RegularExpressions;
     using System.Windows;
     using System.Windows.Markup;
     using System.Windows.Media;
@@ -117,12 +118,48 @@
 
             libraryThemeProvider.FillColorSchemeValues(values, runtimeThemeColorValues);
 
-            var themeFileContent = ThemeGenerator.GenerateColorSchemeFileContent(generatorParameters, baseColorScheme, colorScheme, libraryThemeProvider.GetThemeTemplateContent(), $"{baseColor}.Runtime_{accentColor}", $"Runtime {accentColor} ({baseColor})");
-            var resourceDictionary = (ResourceDictionary)XamlReader.Parse(themeFileContent);
+            var xamlContent = ThemeGenerator.GenerateColorSchemeFileContent(generatorParameters, baseColorScheme, colorScheme, libraryThemeProvider.GetThemeTemplateContent(), $"{baseColor}.Runtime_{accentColor}", $"Runtime {accentColor} ({baseColor})");
+
+            var fixedXamlContent = this.FixXamlContent(xamlContent);
+
+            var resourceDictionary = (ResourceDictionary)XamlReader.Parse(fixedXamlContent);
 
             var runtimeLibraryTheme = new LibraryTheme(resourceDictionary, libraryThemeProvider, true);
             resourceDictionary[LibraryThemeInstanceKey] = runtimeLibraryTheme;
             return runtimeLibraryTheme;
+        }
+
+        public virtual string FixXamlContent(string xamlContent)
+        {
+            xamlContent = this.FixXamlReaderBug(xamlContent);
+
+            return xamlContent;
+        }
+
+        protected virtual string FixXamlReaderBug(string xamlContent)
+        {
+            // Check if we have to fix something
+            if (xamlContent.Contains("WithAssembly=\"") == false)
+            {
+                return xamlContent;
+            }
+
+            // search for namespace names with suffix "WithAssembly"
+            var withAssemblyMatches = Regex.Matches(xamlContent, @"\s*xmlns:(?<namespace_name>.+?)WithAssembly=(?<namespace>"".+?"")");
+
+            foreach (var withAssemblyMatch in withAssemblyMatches!.OfType<Match>())
+            {
+                // search for namespaces that are the same without suffix "WithAssembly"
+                var originalMatches = Regex.Matches(xamlContent, $@"\s*xmlns:({withAssemblyMatch.Groups["namespace_name"].Value})=(?<namespace>"".+?"")");
+
+                foreach (var originalMatch in originalMatches!.OfType<Match>())
+                {
+                    // replace the used namespace value of the namespaces without the suffix with the content from the namespace with suffix
+                    xamlContent = xamlContent.Replace(originalMatch.Groups["namespace"].Value, withAssemblyMatch.Groups["namespace"].Value);
+                }
+            }
+
+            return xamlContent;
         }
 
         public virtual RuntimeThemeColorValues GetColors(Color accentColor, RuntimeThemeColorOptions options)
