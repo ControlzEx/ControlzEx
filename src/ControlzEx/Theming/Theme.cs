@@ -205,8 +205,11 @@
                 throw new ArgumentException("The theme already has a parent.");
             }
 
-            this.LibraryThemesInternal.Add(libraryTheme);
-            libraryTheme.ParentTheme = this;
+            if (this.LibraryThemesInternal.Contains(libraryTheme) == false)
+            {
+                this.LibraryThemesInternal.Add(libraryTheme);
+                libraryTheme.ParentTheme = this;
+            }
 
             return this;
         }
