@@ -9,7 +9,6 @@
     using System.Reflection;
     using System.Resources;
     using System.Windows;
-    using System.Windows.Media;
 
     public abstract class LibraryThemeProvider : DependencyObject
     {
