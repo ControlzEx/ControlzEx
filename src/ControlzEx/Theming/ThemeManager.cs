@@ -147,9 +147,9 @@
 
                 foreach (var libraryThemeProvider in libraryThemeProvidersInternal)
                 {
-                    foreach (var theme in libraryThemeProvider.GetLibraryThemes())
+                    foreach (var libraryTheme in libraryThemeProvider.GetLibraryThemes())
                     {
-                        AddLibraryTheme(theme);
+                        AddLibraryTheme(libraryTheme);
                     }
                 }
             }
@@ -177,7 +177,10 @@
 
             libraryThemeProvidersInternal.Add(libraryThemeProvider);
 
-            themesInternal.Clear();
+            foreach (var libraryTheme in libraryThemeProvider.GetLibraryThemes())
+            {
+                AddLibraryTheme(libraryTheme);
+            }
         }
 
         private static void ThemesInternalCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
