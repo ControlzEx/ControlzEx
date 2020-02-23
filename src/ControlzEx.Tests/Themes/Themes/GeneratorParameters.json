@@ -1,0 +1,308 @@
+﻿{
+  "DefaultValues": {
+    "ControlzEx.Colors.IdealForegroundColor": "White",
+    "ControlzEx.Colors.DarkIdealForegroundDisabledColor": "#ADADAD",
+    "ControlzEx.Colors.ExtremeHighlightColor": "#FFFFD232",
+    "ControlzEx.Colors.DarkExtremeHighlightColor": "#FFF29536",
+    "ControlzEx.Colors.Images.DefaultColor": "{StaticResource BlackColor}",
+    "ControlzEx.Brushes.WindowCommands.CaptionButton.Foreground": "{StaticResource BlackColor}"
+  },
+  "BaseColorSchemes": [
+    {
+      "Name": "Dark",
+      "Values": {
+        "BlackColor": "#FFFFFFFF",
+        "BlackColor20": "#51FFFFFF",
+        "WhiteColor": "#FF252525",
+        "WhiteColor20": "#51252525",
+        "Gray1": "#FFF9F9F9",
+        "Gray2": "#FF7F7F7F",
+        "Gray3": "#FF9D9D9D",
+        "Gray4": "#FFA59F93",
+        "Gray5": "#FFB9B9B9",
+        "Gray6": "#FFCCCCCC",
+        "Gray7": "#FF7E7E7E",
+        "Gray8": "#FF454545",
+        "Gray9": "#5EC9C9C9",
+        "Gray10": "#FF2F2F2F",
+        "ControlzEx.Brushes.LabelTextBrush": "{StaticResource Gray6}"
+      }
+    },
+    {
+      "Name": "Light",
+      "Values": {
+        "BlackColor": "#FF000000",
+        "BlackColor20": "#51000000",
+        "WhiteColor": "#FFFFFFFF",
+        "WhiteColor20": "#51FFFFFF",
+        "Gray1": "#FF333333",
+        "Gray2": "#FF7F7F7F",
+        "Gray3": "#FF9D9D9D",
+        "Gray4": "#FFA59F93",
+        "Gray5": "#FFB9B9B9",
+        "Gray6": "#FFCCCCCC",
+        "Gray7": "#FFD8D8D9",
+        "Gray8": "#FFE0E0E0",
+        "Gray9": "#5EC9C9C9",
+        "Gray10": "#FFF7F7F7",
+        "ControlzEx.Brushes.LabelTextBrush": "{StaticResource BlackColor}"
+      }
+    }
+  ],
+  "ColorSchemes": [
+    {
+      "Name": "Amber",
+      "Values": {
+        "ControlzEx.Colors.AccentBaseColor": "#FFF0A30A",
+        "ControlzEx.Colors.AccentColor80": "#CCF0A30A",
+        "ControlzEx.Colors.AccentColor60": "#99F0A30A",
+        "ControlzEx.Colors.AccentColor40": "#66F0A30A",
+        "ControlzEx.Colors.AccentColor20": "#33F0A30A",
+        "ControlzEx.Colors.HighlightColor": "#FFB17807"
+      }
+    },
+    {
+      "Name": "Blue",
+      "Values": {
+        "ControlzEx.Colors.AccentBaseColor": "#FF2B579A",
+        "ControlzEx.Colors.AccentColor80": "#CC2B579A",
+        "ControlzEx.Colors.AccentColor60": "#992B579A",
+        "ControlzEx.Colors.AccentColor40": "#662B579A",
+        "ControlzEx.Colors.AccentColor20": "#332B579A",
+        "ControlzEx.Colors.HighlightColor": "#FF086F9E"
+      }
+    },
+    {
+      "Name": "Brown",
+      "Values": {
+        "ControlzEx.Colors.AccentBaseColor": "#FF825A2C",
+        "ControlzEx.Colors.AccentColor80": "#CC825A2C",
+        "ControlzEx.Colors.AccentColor60": "#99825A2C",
+        "ControlzEx.Colors.AccentColor40": "#66825A2C",
+        "ControlzEx.Colors.AccentColor20": "#33825A2C",
+        "ControlzEx.Colors.HighlightColor": "#FF604220"
+      }
+    },
+    {
+      "Name": "Cobalt",
+      "Values": {
+        "ControlzEx.Colors.AccentBaseColor": "#FF0050EF",
+        "ControlzEx.Colors.AccentColor80": "#CC0050EF",
+        "ControlzEx.Colors.AccentColor60": "#990050EF",
+        "ControlzEx.Colors.AccentColor40": "#660050EF",
+        "ControlzEx.Colors.AccentColor20": "#330050EF",
+        "ControlzEx.Colors.HighlightColor": "#FF003BB0"
+      }
+    },
+    {
+      "Name": "Crimson",
+      "Values": {
+        "ControlzEx.Colors.AccentBaseColor": "#FFA20025",
+        "ControlzEx.Colors.AccentColor80": "#CCA20025",
+        "ControlzEx.Colors.AccentColor60": "#99A20025",
+        "ControlzEx.Colors.AccentColor40": "#66A20025",
+        "ControlzEx.Colors.AccentColor20": "#33A20025",
+        "ControlzEx.Colors.HighlightColor": "#FF77001B"
+      }
+    },
+    {
+      "Name": "Cyan",
+      "Values": {
+        "ControlzEx.Colors.AccentBaseColor": "#FF1BA1E2",
+        "ControlzEx.Colors.AccentColor80": "#CC1BA1E2",
+        "ControlzEx.Colors.AccentColor60": "#991BA1E2",
+        "ControlzEx.Colors.AccentColor40": "#661BA1E2",
+        "ControlzEx.Colors.AccentColor20": "#331BA1E2",
+        "ControlzEx.Colors.HighlightColor": "#FF1377A7"
+      }
+    },
+    {
+      "Name": "Emerald",
+      "Values": {
+        "ControlzEx.Colors.AccentBaseColor": "#FF008A00",
+        "ControlzEx.Colors.AccentColor80": "#CC008A00",
+        "ControlzEx.Colors.AccentColor60": "#99008A00",
+        "ControlzEx.Colors.AccentColor40": "#66008A00",
+        "ControlzEx.Colors.AccentColor20": "#33008A00",
+        "ControlzEx.Colors.HighlightColor": "#FF006600"
+      }
+    },
+    {
+      "Name": "Green",
+      "Values": {
+        "ControlzEx.Colors.AccentBaseColor": "#FF60A917",
+        "ControlzEx.Colors.AccentColor80": "#CC60A917",
+        "ControlzEx.Colors.AccentColor60": "#9960A917",
+        "ControlzEx.Colors.AccentColor40": "#6660A917",
+        "ControlzEx.Colors.AccentColor20": "#3360A917",
+        "ControlzEx.Colors.HighlightColor": "#FF477D11"
+      }
+    },
+    {
+      "Name": "Indigo",
+      "Values": {
+        "ControlzEx.Colors.AccentBaseColor": "#FF6A00FF",
+        "ControlzEx.Colors.AccentColor80": "#CC6A00FF",
+        "ControlzEx.Colors.AccentColor60": "#996A00FF",
+        "ControlzEx.Colors.AccentColor40": "#666A00FF",
+        "ControlzEx.Colors.AccentColor20": "#336A00FF",
+        "ControlzEx.Colors.HighlightColor": "#FF4E00BC"
+      }
+    },
+    {
+      "Name": "Lime",
+      "Values": {
+        "ControlzEx.Colors.AccentBaseColor": "#FFA4C400",
+        "ControlzEx.Colors.AccentColor80": "#CCA4C400",
+        "ControlzEx.Colors.AccentColor60": "#99A4C400",
+        "ControlzEx.Colors.AccentColor40": "#66A4C400",
+        "ControlzEx.Colors.AccentColor20": "#33A4C400",
+        "ControlzEx.Colors.HighlightColor": "#FF799100"
+      }
+    },
+    {
+      "Name": "Magenta",
+      "Values": {
+        "ControlzEx.Colors.AccentBaseColor": "#FFD80073",
+        "ControlzEx.Colors.AccentColor80": "#CCD80073",
+        "ControlzEx.Colors.AccentColor60": "#99D80073",
+        "ControlzEx.Colors.AccentColor40": "#66D80073",
+        "ControlzEx.Colors.AccentColor20": "#33D80073",
+        "ControlzEx.Colors.HighlightColor": "#FF9F0055"
+      }
+    },
+    {
+      "Name": "Mauve",
+      "Values": {
+        "ControlzEx.Colors.AccentBaseColor": "#FF76608A",
+        "ControlzEx.Colors.AccentColor80": "#CC76608A",
+        "ControlzEx.Colors.AccentColor60": "#9976608A",
+        "ControlzEx.Colors.AccentColor40": "#6676608A",
+        "ControlzEx.Colors.AccentColor20": "#3376608A",
+        "ControlzEx.Colors.HighlightColor": "#FF574766"
+      }
+    },
+    {
+      "Name": "Olive",
+      "Values": {
+        "ControlzEx.Colors.AccentBaseColor": "#FF6D8764",
+        "ControlzEx.Colors.AccentColor80": "#CC6D8764",
+        "ControlzEx.Colors.AccentColor60": "#996D8764",
+        "ControlzEx.Colors.AccentColor40": "#666D8764",
+        "ControlzEx.Colors.AccentColor20": "#336D8764",
+        "ControlzEx.Colors.HighlightColor": "#FF50634A"
+      }
+    },
+    {
+      "Name": "Orange",
+      "Values": {
+        "ControlzEx.Colors.AccentBaseColor": "#FFFA6800",
+        "ControlzEx.Colors.AccentColor80": "#CCFA6800",
+        "ControlzEx.Colors.AccentColor60": "#99FA6800",
+        "ControlzEx.Colors.AccentColor40": "#66FA6800",
+        "ControlzEx.Colors.AccentColor20": "#33FA6800",
+        "ControlzEx.Colors.HighlightColor": "#FFB94C00"
+      }
+    },
+    {
+      "Name": "Pink",
+      "Values": {
+        "ControlzEx.Colors.AccentBaseColor": "#FFF472D0",
+        "ControlzEx.Colors.AccentColor80": "#CCF472D0",
+        "ControlzEx.Colors.AccentColor60": "#99F472D0",
+        "ControlzEx.Colors.AccentColor40": "#66F472D0",
+        "ControlzEx.Colors.AccentColor20": "#33F472D0",
+        "ControlzEx.Colors.HighlightColor": "#FFB45499"
+      }
+    },
+    {
+      "Name": "Purple",
+      "Values": {
+        "ControlzEx.Colors.AccentBaseColor": "#FF6459DF",
+        "ControlzEx.Colors.AccentColor80": "#CC6459DF",
+        "ControlzEx.Colors.AccentColor60": "#996459DF",
+        "ControlzEx.Colors.AccentColor40": "#666459DF",
+        "ControlzEx.Colors.AccentColor20": "#336459DF",
+        "ControlzEx.Colors.HighlightColor": "#FF5133AB"
+      }
+    },
+    {
+      "Name": "Red",
+      "Values": {
+        "ControlzEx.Colors.AccentBaseColor": "#FFE51400",
+        "ControlzEx.Colors.AccentColor80": "#CCE51400",
+        "ControlzEx.Colors.AccentColor60": "#99E51400",
+        "ControlzEx.Colors.AccentColor40": "#66E51400",
+        "ControlzEx.Colors.AccentColor20": "#33E51400",
+        "ControlzEx.Colors.HighlightColor": "#FFA90E00"
+      }
+    },
+    {
+      "Name": "Sienna",
+      "Values": {
+        "ControlzEx.Colors.AccentBaseColor": "#FFA0522D",
+        "ControlzEx.Colors.AccentColor80": "#CCA0522D",
+        "ControlzEx.Colors.AccentColor60": "#99A0522D",
+        "ControlzEx.Colors.AccentColor40": "#66A0522D",
+        "ControlzEx.Colors.AccentColor20": "#33A0522D",
+        "ControlzEx.Colors.HighlightColor": "#FF763C21"
+      }
+    },
+    {
+      "Name": "Steel",
+      "Values": {
+        "ControlzEx.Colors.AccentBaseColor": "#FF647687",
+        "ControlzEx.Colors.AccentColor80": "#CC647687",
+        "ControlzEx.Colors.AccentColor60": "#99647687",
+        "ControlzEx.Colors.AccentColor40": "#66647687",
+        "ControlzEx.Colors.AccentColor20": "#33647687",
+        "ControlzEx.Colors.HighlightColor": "#FF4A5763"
+      }
+    },
+    {
+      "Name": "Taupe",
+      "Values": {
+        "ControlzEx.Colors.AccentBaseColor": "#FF87794E",
+        "ControlzEx.Colors.AccentColor80": "#CC87794E",
+        "ControlzEx.Colors.AccentColor60": "#9987794E",
+        "ControlzEx.Colors.AccentColor40": "#6687794E",
+        "ControlzEx.Colors.AccentColor20": "#3387794E",
+        "ControlzEx.Colors.HighlightColor": "#FF635939"
+      }
+    },
+    {
+      "Name": "Teal",
+      "Values": {
+        "ControlzEx.Colors.AccentBaseColor": "#FF00ABA9",
+        "ControlzEx.Colors.AccentColor80": "#CC00ABA9",
+        "ControlzEx.Colors.AccentColor60": "#9900ABA9",
+        "ControlzEx.Colors.AccentColor40": "#6600ABA9",
+        "ControlzEx.Colors.AccentColor20": "#3300ABA9",
+        "ControlzEx.Colors.HighlightColor": "#FF007E7D"
+      }
+    },
+    {
+      "Name": "Violet",
+      "Values": {
+        "ControlzEx.Colors.AccentBaseColor": "#FFAA00FF",
+        "ControlzEx.Colors.AccentColor80": "#CCAA00FF",
+        "ControlzEx.Colors.AccentColor60": "#99AA00FF",
+        "ControlzEx.Colors.AccentColor40": "#66AA00FF",
+        "ControlzEx.Colors.AccentColor20": "#33AA00FF",
+        "ControlzEx.Colors.HighlightColor": "#FF7D00BC"
+      }
+    },
+    {
+      "Name": "Yellow",
+      "Values": {
+        "ControlzEx.Colors.AccentBaseColor": "#FFFEDE06",
+        "ControlzEx.Colors.AccentColor80": "#CCFEDE06",
+        "ControlzEx.Colors.AccentColor60": "#99FEDE06",
+        "ControlzEx.Colors.AccentColor40": "#66FEDE06",
+        "ControlzEx.Colors.AccentColor20": "#33FEDE06",
+        "ControlzEx.Colors.HighlightColor": "#FFBBA404",
+        "ControlzEx.Colors.IdealForegroundColor": "Black"
+      }
+    }
+  ]
+}

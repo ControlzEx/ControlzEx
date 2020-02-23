@@ -116,4 +116,7 @@
     <Rule Id="IDE0001" Action="None" />
     <Rule Id="IDE0003" Action="None" />
   </Rules>
+  <Rules AnalyzerId="WpfAnalyzers" RuleNamespace="WpfAnalyzers.Analyzers">
+    <Rule Id="WPF0041" Action="Info" />
+  </Rules>
 </RuleSet>

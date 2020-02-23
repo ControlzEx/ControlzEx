@@ -7,6 +7,7 @@
                           xmlns:local="clr-namespace:ControlzEx.Showcase"
                           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                           xmlns:system="clr-namespace:System;assembly=mscorlib"
+                          xmlns:views="clr-namespace:ControlzEx.Showcase.Views"
                           x:Name="Window"
                           Title="ControlzEx.Showcase"
                           Width="800"
@@ -60,7 +61,7 @@
                           Height="8"
                           HorizontalAlignment="Stretch"
                           controlzEx:WindowChrome.IsHitTestVisibleInChrome="True"
-                          Background="Green" />
+                          Background="{DynamicResource ControlzEx.Brushes.AccentBaseColorBrush}" />
 
             <controlzEx:TabControlEx Grid.Row="2">
                 <TabItem Header="WindowChrome">
@@ -539,6 +540,10 @@
                         </TextBox>
 
                     </Grid>
+                </TabItem>
+
+                <TabItem Header="Theming">
+                    <views:ThemingView />
                 </TabItem>
             </controlzEx:TabControlEx>
         </Grid>

@@ -7,6 +7,7 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <Description>ControlzEx is a library with some shared Controls for WPF.</Description>
     </PropertyGroup>
+
     <!-- NuGet -->
     <PropertyGroup>
         <Authors>Jan Karger, Bastian Schmidt, James Willock</Authors>
@@ -19,6 +20,7 @@
         <RepositoryType>git</RepositoryType>
         <GenerateLibraryLayout>true</GenerateLibraryLayout>
     </PropertyGroup>
+
     <ItemGroup>
       <None Include="..\..\logo-mini.png">
         <Pack>True</Pack>
@@ -36,11 +38,15 @@
         <Compile DependentUpon="%(Filename)" SubType="Code" Update="**\obj\**\*.g$(DefaultLanguageSourceExtension)" />
         <Compile DependentUpon="%(Filename)" SubType="Designer" Update="**\*.xaml$(DefaultLanguageSourceExtension)" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="System.Web" Condition="$(DefineConstants.Contains(NETCOREAPP)) == false" />
+      <Reference Include="System.Web.Extensions" Condition="$(DefineConstants.Contains(NETCOREAPP)) == false" />
+      <PackageReference Include="System.Text.Json" Version="4.*" Condition="$(DefineConstants.Contains(NETCOREAPP))" />
+    </ItemGroup>
+
     <!-- reference includes -->
     <ItemGroup>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.*">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-        </PackageReference>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.*" PrivateAssets="All" IncludeAssets="build; native" />
     </ItemGroup>
 </Project>
