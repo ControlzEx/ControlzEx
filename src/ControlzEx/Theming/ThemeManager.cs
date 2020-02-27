@@ -42,7 +42,7 @@
         /// </summary>
         public const string BaseColorDarkConst = "Dark";
 
-        private static bool isEnsuringThemes;
+        private static bool isEnsuringThemesOrRegisteringProvider;
 
         private static readonly ObservableCollection<LibraryThemeProvider> libraryThemeProvidersInternal;
 
@@ -136,14 +136,14 @@
         private static void EnsureThemes()
         {
             if (themes.Count > 0
-                || isEnsuringThemes)
+                || isEnsuringThemesOrRegisteringProvider)
             {
                 return;
             }
 
             try
             {
-                isEnsuringThemes = true;
+                isEnsuringThemesOrRegisteringProvider = true;
 
                 foreach (var libraryThemeProvider in libraryThemeProvidersInternal)
                 {
@@ -159,7 +159,7 @@
             }
             finally
             {
-                isEnsuringThemes = false;
+                isEnsuringThemesOrRegisteringProvider = false;
             }
         }
 
@@ -177,9 +177,18 @@
 
             libraryThemeProvidersInternal.Add(libraryThemeProvider);
 
-            foreach (var libraryTheme in libraryThemeProvider.GetLibraryThemes())
+            try
             {
-                AddLibraryTheme(libraryTheme);
+                isEnsuringThemesOrRegisteringProvider = true;
+
+                foreach (var libraryTheme in libraryThemeProvider.GetLibraryThemes())
+                {
+                    AddLibraryTheme(libraryTheme);
+                }
+            }
+            finally
+            {
+                isEnsuringThemesOrRegisteringProvider = false;
             }
         }
 
@@ -353,9 +362,22 @@
             {
                 foreach (var resourceDictionaryKey in resourceDictionary.Keys)
                 {
-                    if (resourceDictionaryKey == RuntimeThemeGenerator.LibraryThemeInstanceKeyObject)
+                    if (Theme.ThemeInstanceKey.Equals(resourceDictionaryKey))
                     {
-                        return ((LibraryTheme)resourceDictionary[resourceDictionaryKey]).ParentTheme;
+                        return (Theme)resourceDictionary[resourceDictionaryKey];
+                    }
+                }
+
+                foreach (var resourceDictionaryKey in resourceDictionary.Keys)
+                {
+                    if (LibraryTheme.LibraryThemeInstanceKey.Equals(resourceDictionaryKey))
+                    {
+                        var parentTheme = ((LibraryTheme)resourceDictionary[resourceDictionaryKey]).ParentTheme;
+
+                        if (!(parentTheme is null))
+                        {
+                            return parentTheme;
+                        }
                     }
                 }
 
@@ -536,34 +558,54 @@
             {
                 resourceDictionary.BeginInit();
 
-                List<ResourceDictionary>? oldThemeResources = null;
-                if (!(oldTheme is null))
+                try
                 {
-                    oldThemeResources = resourceDictionary.MergedDictionaries.Where(d => Theme.GetThemeName(d) == oldTheme.Name)
-                                                 .ToList();
-                }
+                    ResourceDictionary? oldThemeDictionary = null;
+                    List<ResourceDictionary>? oldThemeResources = null;
 
-                {
-                    foreach (var themeResource in newTheme.GetAllResources())
+                    if (!(oldTheme is null))
                     {
-                        // todo: Should we really append the theme resources or try to insert them at a specific index?
-                        //       The problem here would be to get the correct index.
-                        //       Inserting them at index 0 is not a good idea as user included resources, like generic.xaml, would be behind our resources.
-                        //resourceDictionary.MergedDictionaries.Insert(0, themeResource);
-                        resourceDictionary.MergedDictionaries.Add(themeResource);
-                    }
-                }
+                        oldThemeDictionary = resourceDictionary.MergedDictionaries.FirstOrDefault(d => Theme.GetThemeInstance(d) == oldTheme);
 
-                if (!(oldThemeResources is null))
-                {
-                    foreach (var themeResource in oldThemeResources!)
+                        if (oldThemeDictionary is null)
+                        {
+                            oldThemeResources = resourceDictionary.MergedDictionaries.Where(d => Theme.GetThemeName(d) == oldTheme.Name)
+                                                                  .ToList();
+                        }
+                    }
+
                     {
-                        resourceDictionary.MergedDictionaries.Remove(themeResource);   
-                    }
-                }
+                        newTheme.EnsureAllLibraryThemeProvidersProvided();
+                        resourceDictionary.MergedDictionaries.Add(newTheme.ResourceDictionary);
 
-                themeChanged = true;
-                resourceDictionary.EndInit();
+                        //foreach (var themeResource in newTheme.GetAllResources())
+                        //{
+                        //    // todo: Should we really append the theme resources or try to insert them at a specific index?
+                        //    //       The problem here would be to get the correct index.
+                        //    //       Inserting them at index 0 is not a good idea as user included resources, like generic.xaml, would be behind our resources.
+                        //    //resourceDictionary.MergedDictionaries.Insert(0, themeResource);
+                        //    resourceDictionary.MergedDictionaries.Add(themeResource);
+                        //}
+                    }
+
+                    if (!(oldThemeDictionary is null))
+                    {
+                        resourceDictionary.MergedDictionaries.Remove(oldThemeDictionary);
+                    }
+                    else if (!(oldThemeResources is null))
+                    {
+                        foreach (var themeResource in oldThemeResources)
+                        {
+                            resourceDictionary.MergedDictionaries.Remove(themeResource);
+                        }
+                    }
+
+                    themeChanged = true;
+                }
+                finally
+                {
+                    resourceDictionary.EndInit();
+                }
             }
 
             if (themeChanged)
@@ -882,10 +924,9 @@
                 throw new ArgumentNullException(nameof(newTheme));
             }
 
-            foreach (var themeResources in newTheme.GetAllResources())
-            {
-                ApplyResourceDictionary(resourceDictionary, themeResources);   
-            }
+            newTheme.EnsureAllLibraryThemeProvidersProvided();
+
+            ApplyResourceDictionary(resourceDictionary, newTheme.ResourceDictionary);
         }
 
         [SecurityCritical]
@@ -904,15 +945,31 @@
 
             oldRd.BeginInit();
 
-            foreach (var r in newRd.OfType<DictionaryEntry>())
+#pragma warning disable CS8605
+            // todo: Do we have to use recursion to get merged dictionaries from merged dictionaries here?
+            foreach (var newRdMergedDictionary in newRd.MergedDictionaries)
             {
-                if (oldRd.Contains(r.Key))
+                foreach (DictionaryEntry dictionaryEntry in newRdMergedDictionary)
                 {
-                    oldRd.Remove(r.Key);
+                    if (oldRd.Contains(dictionaryEntry.Key))
+                    {
+                        oldRd.Remove(dictionaryEntry.Key);
+                    }
+
+                    oldRd.Add(dictionaryEntry.Key, dictionaryEntry.Value);
+                }
+            }
+
+            foreach (DictionaryEntry dictionaryEntry in newRd)
+            {
+                if (oldRd.Contains(dictionaryEntry.Key))
+                {
+                    oldRd.Remove(dictionaryEntry.Key);
                 }
 
-                oldRd.Add(r.Key, r.Value);
+                oldRd.Add(dictionaryEntry.Key, dictionaryEntry.Value);
             }
+#pragma warning restore CS8605
 
             oldRd.EndInit();
         }
@@ -923,13 +980,19 @@
         /// <remarks>If the theme can't be detected from the <see cref="Application.MainWindow"/> we try to detect it from <see cref="Application.Current"/>.</remarks>
         public static Theme? DetectTheme()
         {
-            var mainWindow = Application.Current?.MainWindow;
+            if (Application.Current is null)
+            {
+                return null;
+            }
 
-            if (!(mainWindow is null))
+            var theme = DetectTheme(Application.Current);
+
+            if (theme is null
+                && !(Application.Current.MainWindow is null))
             {
                 try
                 {
-                    var theme = DetectTheme(mainWindow);
+                    theme = DetectTheme(Application.Current.MainWindow);
 
                     if (!(theme is null))
                     {
@@ -942,9 +1005,7 @@
                 }
             }
 
-            return Application.Current != null
-                ? DetectTheme(Application.Current)
-                : null;
+            return theme;
         }
 
         /// <summary>

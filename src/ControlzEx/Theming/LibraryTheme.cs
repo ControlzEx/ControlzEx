@@ -2,7 +2,6 @@
 {
 #nullable enable
     using System;
-    using System.Collections.ObjectModel;
     using System.Windows;
     using System.Windows.Media;
     using JetBrains.Annotations;
@@ -12,6 +11,11 @@
     /// </summary>
     public class LibraryTheme
     {
+        /// <summary>
+        /// Gets the key for the library theme instance.
+        /// </summary>
+        public const string LibraryThemeInstanceKey = "LibraryTheme.LibraryThemeInstance";
+
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
@@ -54,7 +58,7 @@
 
             this.AddResource(resourceDictionary);
 
-            this.Resources = new ReadOnlyObservableCollection<ResourceDictionary>(this.ResourcesInternal);
+            this.ResourceDictionary[LibraryThemeInstanceKey] = this;
         }
 
         public LibraryThemeProvider? LibraryThemeProvider { get; }
@@ -62,14 +66,9 @@
         public bool IsRuntimeGenerated { get; }
 
         /// <summary>
-        /// The ResourceDictionaries that represent this theme.
+        /// The root <see cref="System.Windows.ResourceDictionary"/> containing all resource dictionaries belonging to this instance as <see cref="System.Windows.ResourceDictionary.MergedDictionaries"/>
         /// </summary>
-        public ReadOnlyObservableCollection<ResourceDictionary> Resources { get; }
-
-        /// <summary>
-        /// The ResourceDictionaries that represent this theme.
-        /// </summary>
-        private ObservableCollection<ResourceDictionary> ResourcesInternal { get; } = new ObservableCollection<ResourceDictionary>();
+        public ResourceDictionary ResourceDictionary { get; } = new ResourceDictionary();
 
         public Theme? ParentTheme { get; internal set; }
 
@@ -127,7 +126,7 @@
                 throw new ArgumentNullException(nameof(resourceDictionary));
             }
 
-            this.ResourcesInternal.Add(resourceDictionary);
+            this.ResourceDictionary.MergedDictionaries.Add(resourceDictionary);
 
             return this;
         }

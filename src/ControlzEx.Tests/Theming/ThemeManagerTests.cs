@@ -429,7 +429,8 @@ namespace ControlzEx.Tests.Theming
                                        Theme.ThemeNameKey,
                                        Theme.ThemeDisplayNameKey,
                                        Theme.ThemeColorSchemeKey,
-                                       RuntimeThemeGenerator.LibraryThemeInstanceKey,
+                                       Theme.ThemeInstanceKey,
+                                       LibraryTheme.LibraryThemeInstanceKey,
                                        "ControlzEx.Colors.HighlightColor", // Ignored because it's hand crafted
                                        "ControlzEx.Brushes.HighlightBrush", // Ignored because it's hand crafted
                                    };

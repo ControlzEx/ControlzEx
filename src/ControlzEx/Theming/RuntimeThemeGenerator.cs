@@ -11,16 +11,6 @@
 
     public class RuntimeThemeGenerator
     {
-        /// <summary>
-        /// Gets the key for the library theme instance.
-        /// </summary>
-        public const string LibraryThemeInstanceKey = "RuntimeThemeGenerator.LibraryThemeInstance";
-
-        /// <summary>
-        /// Gets the key for the library theme instance as object.
-        /// </summary>
-        public static object LibraryThemeInstanceKeyObject = LibraryThemeInstanceKey;
-
         public static RuntimeThemeGenerator Current { get; set; }
 
         static RuntimeThemeGenerator()
@@ -125,7 +115,6 @@
             var resourceDictionary = (ResourceDictionary)XamlReader.Parse(fixedXamlContent);
 
             var runtimeLibraryTheme = new LibraryTheme(resourceDictionary, libraryThemeProvider, true);
-            resourceDictionary[LibraryThemeInstanceKey] = runtimeLibraryTheme;
             return runtimeLibraryTheme;
         }
 

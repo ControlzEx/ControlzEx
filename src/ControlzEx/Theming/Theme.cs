@@ -2,6 +2,7 @@
 {
 #nullable enable
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
@@ -50,6 +51,11 @@
         public const string ThemeShowcaseBrushKey = "Theme.ShowcaseBrush";
 
         /// <summary>
+        /// Gets the key for the theme instance.
+        /// </summary>
+        public const string ThemeInstanceKey = "Theme.ThemeInstance";
+
+        /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="libraryTheme">The first <see cref="LibraryTheme"/> of the theme.</param>
@@ -76,6 +82,8 @@
             this.ShowcaseBrush = showcaseBrush;
 
             this.LibraryThemes = new ReadOnlyObservableCollection<LibraryTheme>(this.LibraryThemesInternal);
+
+            this.ResourceDictionary[ThemeInstanceKey] = this;
         }
 
         public bool IsRuntimeGenerated { get; }
@@ -121,6 +129,11 @@
         public Brush ShowcaseBrush { get; }
 
         /// <summary>
+        /// The root <see cref="System.Windows.ResourceDictionary"/> containing all resource dictionaries of all <see cref="LibraryTheme"/> belonging to this instance as <see cref="System.Windows.ResourceDictionary.MergedDictionaries"/>
+        /// </summary>
+        public ResourceDictionary ResourceDictionary { get; } = new ResourceDictionary();
+
+        /// <summary>
         /// Ensures that all <see cref="LibraryThemeProvider"/> from <see cref="ThemeManager.LibraryThemeProviders"/> provided a <see cref="LibraryTheme"/> for this <see cref="Theme"/>.
         /// </summary>
         /// <returns>This instance for fluent call usage.</returns>
@@ -130,7 +143,7 @@
 
             foreach (var libraryThemeProvider in libraryThemeProvidersWhichDidNotProvideLibraryTheme)
             {
-                var libraryTheme = libraryThemeProvider!.ProvideMissingLibraryTheme(this);
+                var libraryTheme = libraryThemeProvider?.ProvideMissingLibraryTheme(this);
 
                 if (libraryTheme == null)
                 {
@@ -144,28 +157,6 @@
         }
 
         /// <summary>
-        /// Gets the first resource that matches <paramref name="key"/>.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns>The found resource or null.</returns>
-        public object? GetResource(object key)
-        {
-            foreach (var resources in this.GetAllResources())
-            {
-                var resource = resources[key];
-
-                if (resource is null)
-                {
-                    continue;
-                }
-
-                return resource;
-            }
-
-            return null;
-        }
-
-        /// <summary>
         /// Gets a flat list of all <see cref="ResourceDictionary"/> from all library themes.
         /// </summary>
         /// <returns>A flat list of all <see cref="ResourceDictionary"/> from all library themes.</returns>
@@ -175,7 +166,7 @@
 
             foreach (var libraryTheme in this.LibraryThemes)
             {
-                foreach (var libraryThemeResource in libraryTheme.Resources)
+                foreach (var libraryThemeResource in libraryTheme.ResourceDictionary.MergedDictionaries)
                 {
                     yield return libraryThemeResource;
                 }
@@ -209,6 +200,8 @@
             {
                 this.LibraryThemesInternal.Add(libraryTheme);
                 libraryTheme.ParentTheme = this;
+
+                this.ResourceDictionary.MergedDictionaries.Add(libraryTheme.ResourceDictionary);
             }
 
             return this;
@@ -227,21 +220,62 @@
                 throw new ArgumentNullException(nameof(resourceDictionary));
             }
 
-            foreach (var resourceDictionaryKey in resourceDictionary.Keys)
+            return GetValueFromKey(resourceDictionary, ThemeNameKey) as string;
+        }
+
+        public static Theme? GetThemeInstance([NotNull] ResourceDictionary resourceDictionary)
+        {
+            if (resourceDictionary is null)
             {
-                if (resourceDictionaryKey is string key
-                    && key.Equals(ThemeNameKey, StringComparison.Ordinal))
+                throw new ArgumentNullException(nameof(resourceDictionary));
+            }
+
+            return GetValueFromKey(resourceDictionary, ThemeInstanceKey) as Theme;
+        }
+
+        public static bool IsThemeDictionary(ResourceDictionary resourceDictionary)
+        {
+            if (resourceDictionary is null)
+            {
+                throw new ArgumentNullException(nameof(resourceDictionary));
+            }
+
+            return ContainsKey(resourceDictionary, ThemeInstanceKey)
+                   || string.IsNullOrEmpty(GetThemeName(resourceDictionary)) == false;
+        }
+
+        /// <summary>
+        /// Gets the value associated with <paramref name="key"/> directly from <paramref name="resourceDictionary"/>.
+        /// </summary>
+        private static object? GetValueFromKey([NotNull] ResourceDictionary resourceDictionary, object key)
+        {
+#pragma warning disable CS8605
+            foreach (DictionaryEntry resourceEntry in resourceDictionary)
+            {
+                if (key.Equals(resourceEntry.Key))
                 {
-                    return (string)resourceDictionary[resourceDictionaryKey];
+                    return resourceEntry.Value;
                 }
             }
+#pragma warning restore CS8605
 
             return null;
         }
 
-        public static bool IsThemeDictionary([NotNull] ResourceDictionary resources)
+        /// <summary>
+        /// Checks if <paramref name="resourceDictionary"/> directly contains <paramref name="key"/>.
+        /// </summary>
+        private static bool ContainsKey(ResourceDictionary resourceDictionary, object key)
         {
-            return string.IsNullOrEmpty(GetThemeName(resources)) == false;
+            foreach (var resourcesKey in resourceDictionary.Keys)
+            {
+                if (key.Equals(resourcesKey))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

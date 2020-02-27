@@ -37,11 +37,11 @@
         {
             var librabryTheme = GenerateValidLibraryTheme();
 
-            Assert.That(librabryTheme.Resources, Has.Count.EqualTo(1));
+            Assert.That(librabryTheme.ResourceDictionary.MergedDictionaries, Has.Count.EqualTo(1));
 
             librabryTheme.AddResource(new ResourceDictionary());
 
-            Assert.That(librabryTheme.Resources, Has.Count.EqualTo(2));
+            Assert.That(librabryTheme.ResourceDictionary.MergedDictionaries, Has.Count.EqualTo(2));
         }
 
         [Test]
