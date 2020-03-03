@@ -945,19 +945,17 @@
 
             oldRd.BeginInit();
 
+            ApplyResourceDictionaryEntries(oldRd, newRd);
+
+            oldRd.EndInit();
+        }
+
+        private static void ApplyResourceDictionaryEntries([NotNull] ResourceDictionary oldRd, [NotNull] ResourceDictionary newRd)
+        {
 #pragma warning disable CS8605
-            // todo: Do we have to use recursion to get merged dictionaries from merged dictionaries here?
             foreach (var newRdMergedDictionary in newRd.MergedDictionaries)
             {
-                foreach (DictionaryEntry dictionaryEntry in newRdMergedDictionary)
-                {
-                    if (oldRd.Contains(dictionaryEntry.Key))
-                    {
-                        oldRd.Remove(dictionaryEntry.Key);
-                    }
-
-                    oldRd.Add(dictionaryEntry.Key, dictionaryEntry.Value);
-                }
+                ApplyResourceDictionaryEntries(oldRd, newRdMergedDictionary);
             }
 
             foreach (DictionaryEntry dictionaryEntry in newRd)
@@ -970,8 +968,6 @@
                 oldRd.Add(dictionaryEntry.Key, dictionaryEntry.Value);
             }
 #pragma warning restore CS8605
-
-            oldRd.EndInit();
         }
 
         /// <summary>
