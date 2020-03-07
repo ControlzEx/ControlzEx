@@ -22,7 +22,7 @@
 
         public Theme? GenerateRuntimeThemeFromWindowsSettings(string baseColor, params LibraryThemeProvider[] libraryThemeProviders)
         {
-            return GenerateRuntimeThemeFromWindowsSettings(baseColor, libraryThemeProviders.ToList());
+            return this.GenerateRuntimeThemeFromWindowsSettings(baseColor, libraryThemeProviders.ToList());
         }
 
         public virtual Theme? GenerateRuntimeThemeFromWindowsSettings(string baseColor, IEnumerable<LibraryThemeProvider> libraryThemeProviders)
@@ -36,17 +36,17 @@
 
             var accentColor = windowsAccentColor.Value;
 
-            return GenerateRuntimeTheme(baseColor, accentColor, libraryThemeProviders);
+            return this.GenerateRuntimeTheme(baseColor, accentColor, libraryThemeProviders);
         }
 
         public virtual Theme? GenerateRuntimeTheme(string baseColor, Color accentColor)
         {
-            return GenerateRuntimeTheme(baseColor, accentColor, ThemeManager.LibraryThemeProviders.ToList());
+            return this.GenerateRuntimeTheme(baseColor, accentColor, ThemeManager.LibraryThemeProviders.ToList());
         }
 
         public Theme? GenerateRuntimeTheme(string baseColor, Color accentColor, params LibraryThemeProvider[] libraryThemeProviders)
         {
-            return GenerateRuntimeTheme(baseColor, accentColor, libraryThemeProviders.ToList());
+            return this.GenerateRuntimeTheme(baseColor, accentColor, libraryThemeProviders.ToList());
         }
 
         public virtual Theme? GenerateRuntimeTheme(string baseColor, Color accentColor, IEnumerable<LibraryThemeProvider> libraryThemeProviders)
@@ -55,7 +55,7 @@
 
             foreach (var libraryThemeProvider in libraryThemeProviders)
             {
-                var libraryTheme = GenerateRuntimeLibraryTheme(baseColor, accentColor, libraryThemeProvider);
+                var libraryTheme = this.GenerateRuntimeLibraryTheme(baseColor, accentColor, libraryThemeProvider);
 
                 if (libraryTheme == null)
                 {
