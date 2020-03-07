@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 namespace ControlzEx.Theming
 {
     using System;
@@ -623,7 +623,7 @@ namespace ControlzEx.Theming
 
             if (themeChanged)
             {
-                OnThemeChanged(oldTheme, newTheme);
+                OnThemeChanged(resourceDictionary, oldTheme, newTheme);
             }
 
             return newTheme;
@@ -1112,9 +1112,9 @@ namespace ControlzEx.Theming
         /// Sometimes the ContextMenu is not changing the colors, so this will fix it.
         /// </summary>
         [SecurityCritical]
-        private static void OnThemeChanged(Theme? oldTheme, Theme newTheme)
+        private static void OnThemeChanged(ResourceDictionary targetResourceDictionary, Theme? oldTheme, Theme newTheme)
         {
-            ThemeChanged?.Invoke(Application.Current, new ThemeChangedEventArgs(oldTheme, newTheme));
+            ThemeChanged?.Invoke(Application.Current, new ThemeChangedEventArgs(targetResourceDictionary, oldTheme, newTheme));
         }
 
         private static bool AreResourceDictionarySourcesEqual(ResourceDictionary first, ResourceDictionary second)
