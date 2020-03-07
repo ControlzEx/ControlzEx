@@ -1,6 +1,6 @@
-﻿namespace ControlzEx.Theming
+﻿#nullable enable
+namespace ControlzEx.Theming
 {
-#nullable enable
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -78,13 +78,20 @@
         public virtual LibraryTheme? GenerateRuntimeLibraryTheme(string baseColor, Color accentColor, LibraryThemeProvider libraryThemeProvider)
         {
             var themeGeneratorParametersContent = libraryThemeProvider.GetThemeGeneratorParametersContent();
-
+            
             if (string.IsNullOrEmpty(themeGeneratorParametersContent))
             {
                 return null;
             }
 
-            var generatorParameters = ThemeGenerator.GetParametersFromString(themeGeneratorParametersContent);
+            var themeTemplateContent = libraryThemeProvider.GetThemeTemplateContent();
+
+            if (string.IsNullOrEmpty(themeTemplateContent))
+            {
+                return null;
+            }
+
+            var generatorParameters = ThemeGenerator.GetParametersFromString(themeGeneratorParametersContent!);
 
             var baseColorScheme = generatorParameters.BaseColorSchemes.First(x => x.Name == baseColor);
 
@@ -108,7 +115,7 @@
 
             libraryThemeProvider.FillColorSchemeValues(values, runtimeThemeColorValues);
 
-            var xamlContent = ThemeGenerator.GenerateColorSchemeFileContent(generatorParameters, baseColorScheme, colorScheme, libraryThemeProvider.GetThemeTemplateContent(), $"{baseColor}.Runtime_{accentColor}", $"Runtime {accentColor} ({baseColor})");
+            var xamlContent = ThemeGenerator.GenerateColorSchemeFileContent(generatorParameters, baseColorScheme, colorScheme, themeTemplateContent!, $"{baseColor}.Runtime_{accentColor}", $"Runtime {accentColor} ({baseColor})");
 
             var fixedXamlContent = this.FixXamlContent(xamlContent);
 

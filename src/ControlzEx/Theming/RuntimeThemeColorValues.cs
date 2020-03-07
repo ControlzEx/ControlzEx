@@ -1,6 +1,6 @@
-﻿namespace ControlzEx.Theming
+﻿#nullable enable
+namespace ControlzEx.Theming
 {
-#nullable enable
     using System.Windows.Media;
 
     public class RuntimeThemeColorValues

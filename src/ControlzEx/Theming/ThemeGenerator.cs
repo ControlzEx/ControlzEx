@@ -1,4 +1,5 @@
-﻿namespace ControlzEx.Theming
+﻿#nullable enable
+namespace ControlzEx.Theming
 {
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -41,21 +42,19 @@
 
         public class ThemeGeneratorParameters
         {
-            public string TemplateFile { get; set; }
-
             public Dictionary<string, string> DefaultValues { get; set; } = new Dictionary<string, string>();
 
-            public ThemeGeneratorBaseColorScheme[] BaseColorSchemes { get; set; }
+            public ThemeGeneratorBaseColorScheme[] BaseColorSchemes { get; set; } = new ThemeGeneratorBaseColorScheme[0];
 
-            public ThemeGeneratorColorScheme[] ColorSchemes { get; set; }
+            public ThemeGeneratorColorScheme[] ColorSchemes { get; set; } = new ThemeGeneratorColorScheme[0];
         }
 
         [DebuggerDisplay("{" + nameof(Name) + "}")]
         public class ThemeGeneratorBaseColorScheme
         {
-            public string Name { get; set; }
+            public string Name { get; set; } = string.Empty;
 
-            public Dictionary<string, string> Values { get; set; }
+            public Dictionary<string, string> Values { get; set; } = new Dictionary<string, string>();
 
             public ThemeGeneratorBaseColorScheme Clone()
             {
@@ -66,11 +65,7 @@
         [DebuggerDisplay("{" + nameof(Name) + "}")]
         public class ThemeGeneratorColorScheme
         {
-            public string CustomBaseColorSchemeName { get; set; }
-
-            public string BaseColorSchemeReference { get; set; }
-
-            public string Name { get; set; }
+            public string Name { get; set; } = string.Empty;
 
             public Dictionary<string, string> Values { get; set; } = new Dictionary<string, string>();
         }
