@@ -405,14 +405,27 @@
                 throw new ArgumentNullException(nameof(theme));
             }
 
-            if (theme.BaseColorScheme == BaseColorDark)
+            if (theme.IsRuntimeGenerated)
             {
-                return GetTheme(BaseColorLight, theme.ColorScheme);
-            }
+                switch (theme.BaseColorScheme)
+                {
+                    case BaseColorDarkConst:
+                        return RuntimeThemeGenerator.Current.GenerateRuntimeTheme(BaseColorLight, theme.PrimaryAccentColor);
 
-            if (theme.BaseColorScheme == BaseColorLight)
+                    case BaseColorLightConst:
+                        return RuntimeThemeGenerator.Current.GenerateRuntimeTheme(BaseColorDark, theme.PrimaryAccentColor);
+                }
+            }
+            else
             {
-                return GetTheme(BaseColorDark, theme.ColorScheme);
+                switch (theme.BaseColorScheme)
+                {
+                    case BaseColorDarkConst:
+                        return GetTheme(BaseColorLight, theme.ColorScheme);
+
+                    case BaseColorLightConst:
+                        return GetTheme(BaseColorDark, theme.ColorScheme);
+                }
             }
 
             return null;

@@ -273,6 +273,33 @@ namespace ControlzEx.Tests.Theming
         }
 
         [Test]
+        [TestCase(ThemeManager.BaseColorLightConst, ThemeManager.BaseColorDarkConst)]
+        [TestCase(ThemeManager.BaseColorDarkConst, ThemeManager.BaseColorLightConst)]
+        public void GetInverseThemeReturnsInverseThemeForRuntimeGeneratedTheme(string baseColor, string inverseBaseColor)
+        {
+            var resource = new ResourceDictionary
+            {
+                {
+                    Theme.ThemeNameKey, "Runtime"
+                },
+                {
+                    Theme.ThemeDisplayNameKey, "Runtime"
+                },
+                {
+                    Theme.ThemeBaseColorSchemeKey, baseColor
+                },
+                {
+                    Theme.ThemePrimaryAccentColorKey, Colors.Blue
+                }
+            };
+            var theme = new Theme(new LibraryTheme(resource, null, true));
+
+            var inverseTheme = ThemeManager.GetInverseTheme(theme);
+
+            Assert.AreEqual(inverseTheme.BaseColorScheme, inverseBaseColor);
+        }
+
+        [Test]
         public void GetThemeIsCaseInsensitive()
         {
             var theme = ThemeManager.GetTheme("Dark.Blue");
