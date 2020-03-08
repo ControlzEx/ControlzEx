@@ -17,6 +17,11 @@ namespace ControlzEx.Theming
         public const string LibraryThemeInstanceKey = "LibraryTheme.LibraryThemeInstance";
 
         /// <summary>
+        /// Gets the key for the theme color scheme.
+        /// </summary>
+        public const string LibraryThemeAlternativeColorSchemeKey = "Theme.AlternativeColorScheme";
+
+        /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="resourceAddress">The URI of the theme ResourceDictionary.</param>
@@ -53,6 +58,7 @@ namespace ControlzEx.Theming
             this.DisplayName = (string)resourceDictionary[Theme.ThemeDisplayNameKey];
             this.BaseColorScheme = (string)resourceDictionary[Theme.ThemeBaseColorSchemeKey];
             this.ColorScheme = (string)resourceDictionary[Theme.ThemeColorSchemeKey];
+            this.AlternativeColorScheme = (string)resourceDictionary[LibraryTheme.LibraryThemeAlternativeColorSchemeKey];
             this.PrimaryAccentColor = resourceDictionary[Theme.ThemePrimaryAccentColorKey] as Color? ?? throw new ArgumentException($"Resource key \"{Theme.ThemePrimaryAccentColorKey}\" is missing, is null or is not a color.");
             this.ShowcaseBrush = (Brush)resourceDictionary[Theme.ThemeShowcaseBrushKey] ?? new SolidColorBrush(this.PrimaryAccentColor);
 
@@ -98,6 +104,11 @@ namespace ControlzEx.Theming
         public string ColorScheme { get; }
 
         /// <summary>
+        /// Gets the alternative color scheme for this theme.
+        /// </summary>
+        public string AlternativeColorScheme { get; set; }
+
+        /// <summary>
         /// Gets the primary accent color for this theme.
         /// </summary>
         public Color PrimaryAccentColor { get; set; }
@@ -134,6 +145,11 @@ namespace ControlzEx.Theming
         public override string ToString()
         {
             return $"DisplayName={this.DisplayName}, Name={this.Name}, Origin={this.Origin}";
+        }
+
+        public LibraryTheme Clone()
+        {
+            return new LibraryTheme(this.ResourceDictionary, this.LibraryThemeProvider, this.is);
         }
 
         public static string? GetThemeName([NotNull] ResourceDictionary resourceDictionary)

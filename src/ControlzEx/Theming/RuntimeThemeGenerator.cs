@@ -115,7 +115,7 @@ namespace ControlzEx.Theming
 
             libraryThemeProvider.FillColorSchemeValues(values, runtimeThemeColorValues);
 
-            var xamlContent = ThemeGenerator.GenerateColorSchemeFileContent(generatorParameters, baseColorScheme, colorScheme, themeTemplateContent!, $"{baseColor}.Runtime_{accentColor}", $"Runtime {accentColor} ({baseColor})");
+            var xamlContent = ThemeGenerator.GenerateColorSchemeFileContent(themeTemplateContent!, $"{baseColor}.Runtime_{accentColor}", $"Runtime {accentColor} ({baseColor})", baseColorScheme.Name, colorScheme.Name, colorScheme.Name, colorScheme.Values, baseColorScheme.Values, generatorParameters.DefaultValues);
 
             var fixedXamlContent = this.FixXamlContent(xamlContent);
 
