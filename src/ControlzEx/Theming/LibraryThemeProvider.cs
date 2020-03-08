@@ -156,6 +156,22 @@ namespace ControlzEx.Theming
 
         public virtual LibraryTheme? ProvideMissingLibraryTheme(Theme themeToProvideNewLibraryThemeFor)
         {
+            foreach (var themeLibraryTheme in themeToProvideNewLibraryThemeFor.LibraryThemes)
+            {
+                if (string.IsNullOrEmpty(themeLibraryTheme.AlternativeColorScheme) == false
+                    && themeLibraryTheme.ColorScheme != themeLibraryTheme.AlternativeColorScheme)
+                {
+                    foreach (var libraryTheme in this.GetLibraryThemes())
+                    {
+                        if (libraryTheme.BaseColorScheme == themeLibraryTheme.BaseColorScheme
+                            && libraryTheme.ColorScheme == themeLibraryTheme.AlternativeColorScheme)
+                        {
+                            return libraryTheme;
+                        }
+                    }
+                }
+            }
+
             return RuntimeThemeGenerator.Current.GenerateRuntimeLibraryTheme(themeToProvideNewLibraryThemeFor.BaseColorScheme, themeToProvideNewLibraryThemeFor.PrimaryAccentColor, this);
         }
 
