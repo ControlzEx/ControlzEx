@@ -83,7 +83,7 @@ namespace ControlzEx.Theming
 
             this.LibraryThemes = new ReadOnlyObservableCollection<LibraryTheme>(this.LibraryThemesInternal);
 
-            this.ResourceDictionary[ThemeInstanceKey] = this;
+            this.Resources[ThemeInstanceKey] = this;
         }
 
         public bool IsRuntimeGenerated { get; }
@@ -131,7 +131,7 @@ namespace ControlzEx.Theming
         /// <summary>
         /// The root <see cref="System.Windows.ResourceDictionary"/> containing all resource dictionaries of all <see cref="LibraryTheme"/> belonging to this instance as <see cref="System.Windows.ResourceDictionary.MergedDictionaries"/>
         /// </summary>
-        public ResourceDictionary ResourceDictionary { get; } = new ResourceDictionary();
+        public ResourceDictionary Resources { get; } = new ResourceDictionary();
 
         /// <summary>
         /// Ensures that all <see cref="LibraryThemeProvider"/> from <see cref="ThemeManager.LibraryThemeProviders"/> provided a <see cref="LibraryTheme"/> for this <see cref="Theme"/>.
@@ -166,7 +166,7 @@ namespace ControlzEx.Theming
 
             foreach (var libraryTheme in this.LibraryThemes)
             {
-                foreach (var libraryThemeResource in libraryTheme.ResourceDictionary.MergedDictionaries)
+                foreach (var libraryThemeResource in libraryTheme.Resources.MergedDictionaries)
                 {
                     yield return libraryThemeResource;
                 }
@@ -201,7 +201,7 @@ namespace ControlzEx.Theming
                 this.LibraryThemesInternal.Add(libraryTheme);
                 libraryTheme.ParentTheme = this;
 
-                this.ResourceDictionary.MergedDictionaries.Add(libraryTheme.ResourceDictionary);
+                this.Resources.MergedDictionaries.Add(libraryTheme.Resources);
             }
 
             return this;

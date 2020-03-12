@@ -92,7 +92,7 @@
 
             foreach (var libraryTheme in theme.LibraryThemes)
             {
-                foreach (var resourceDictionary in libraryTheme.ResourceDictionary.MergedDictionaries)
+                foreach (var resourceDictionary in libraryTheme.Resources.MergedDictionaries)
                 {
                     foreach (DictionaryEntry dictionaryEntry in resourceDictionary)
                     {

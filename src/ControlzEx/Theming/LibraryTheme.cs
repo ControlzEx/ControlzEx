@@ -64,7 +64,7 @@ namespace ControlzEx.Theming
 
             this.AddResource(resourceDictionary);
 
-            this.ResourceDictionary[LibraryThemeInstanceKey] = this;
+            this.Resources[LibraryThemeInstanceKey] = this;
         }
 
         public LibraryThemeProvider? LibraryThemeProvider { get; }
@@ -74,7 +74,7 @@ namespace ControlzEx.Theming
         /// <summary>
         /// The root <see cref="System.Windows.ResourceDictionary"/> containing all resource dictionaries belonging to this instance as <see cref="System.Windows.ResourceDictionary.MergedDictionaries"/>
         /// </summary>
-        public ResourceDictionary ResourceDictionary { get; } = new ResourceDictionary();
+        public ResourceDictionary Resources { get; } = new ResourceDictionary();
 
         public Theme? ParentTheme { get; internal set; }
 
@@ -137,7 +137,7 @@ namespace ControlzEx.Theming
                 throw new ArgumentNullException(nameof(resourceDictionary));
             }
 
-            this.ResourceDictionary.MergedDictionaries.Add(resourceDictionary);
+            this.Resources.MergedDictionaries.Add(resourceDictionary);
 
             return this;
         }
@@ -149,7 +149,7 @@ namespace ControlzEx.Theming
 
         public LibraryTheme Clone()
         {
-            return new LibraryTheme(this.ResourceDictionary, this.LibraryThemeProvider, this.is);
+            return new LibraryTheme(this.Resources, this.LibraryThemeProvider, this.IsRuntimeGenerated);
         }
 
         public static string? GetThemeName([NotNull] ResourceDictionary resourceDictionary)

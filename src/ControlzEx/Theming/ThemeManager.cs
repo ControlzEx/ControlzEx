@@ -589,7 +589,7 @@ namespace ControlzEx.Theming
 
                     {
                         newTheme.EnsureAllLibraryThemeProvidersProvided();
-                        resourceDictionary.MergedDictionaries.Add(newTheme.ResourceDictionary);
+                        resourceDictionary.MergedDictionaries.Add(newTheme.Resources);
 
                         //foreach (var themeResource in newTheme.GetAllResources())
                         //{
@@ -939,7 +939,7 @@ namespace ControlzEx.Theming
 
             newTheme.EnsureAllLibraryThemeProvidersProvided();
 
-            ApplyResourceDictionary(resourceDictionary, newTheme.ResourceDictionary);
+            ApplyResourceDictionary(resourceDictionary, newTheme.Resources);
         }
 
         [SecurityCritical]
