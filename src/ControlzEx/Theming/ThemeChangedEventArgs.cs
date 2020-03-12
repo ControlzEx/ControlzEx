@@ -12,12 +12,18 @@ namespace ControlzEx.Theming
         /// <summary>
         /// Creates a new instance of this class.
         /// </summary>
-        public ThemeChangedEventArgs(ResourceDictionary targetResourceDictionary, Theme? oldTheme, Theme newTheme)
+        public ThemeChangedEventArgs(object? target, ResourceDictionary targetResourceDictionary, Theme? oldTheme, Theme newTheme)
         {
+            this.Target = target;
             this.TargetResourceDictionary = targetResourceDictionary;
             this.OldTheme = oldTheme;
             this.NewTheme = newTheme;
         }
+
+        /// <summary>
+        /// The target object for which was targeted by the theme change.
+        /// </summary>
+        public object? Target { get; }
 
         /// <summary>
         /// The <see cref="ResourceDictionary"/> for which was targeted by the theme change.

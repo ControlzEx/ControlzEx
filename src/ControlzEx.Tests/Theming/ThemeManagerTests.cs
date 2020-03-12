@@ -145,7 +145,7 @@ namespace ControlzEx.Tests.Theming
                 Assert.That(currentTheme, Is.Not.Null);
 
                 var control = new Control();
-                ThemeManager.ChangeThemeBaseColor(control.Resources, currentTheme, ThemeManager.GetInverseTheme(currentTheme).BaseColorScheme);
+                ThemeManager.ChangeThemeBaseColor(control, control.Resources, currentTheme, ThemeManager.GetInverseTheme(currentTheme).BaseColorScheme);
 
                 Assert.That(ThemeManager.DetectTheme(control.Resources).BaseColorScheme, Is.Not.EqualTo(currentTheme.BaseColorScheme));
                 Assert.That(ThemeManager.DetectTheme(control.Resources).ColorScheme, Is.EqualTo(currentTheme.ColorScheme));
@@ -184,7 +184,7 @@ namespace ControlzEx.Tests.Theming
                 Assert.That(currentTheme, Is.Not.Null);
 
                 var control = new Control();
-                ThemeManager.ChangeThemeColorScheme(control.Resources, currentTheme, "Red");
+                ThemeManager.ChangeThemeColorScheme(control, control.Resources, currentTheme, "Red");
 
                 Assert.That(ThemeManager.DetectTheme(control.Resources).BaseColorScheme, Is.EqualTo(currentTheme.BaseColorScheme));
                 Assert.That(ThemeManager.DetectTheme(control.Resources).ColorScheme, Is.EqualTo("Red"));
@@ -225,7 +225,7 @@ namespace ControlzEx.Tests.Theming
                 Assert.That(currentTheme, Is.Not.Null);
 
                 var control = new Control();
-                ThemeManager.ChangeTheme(control.Resources, currentTheme, ThemeManager.BaseColorDark, "Red");
+                ThemeManager.ChangeTheme(control, control.Resources, currentTheme, ThemeManager.BaseColorDark, "Red");
 
                 Assert.That(ThemeManager.DetectTheme(control.Resources).BaseColorScheme, Is.EqualTo(ThemeManager.BaseColorDark));
                 Assert.That(ThemeManager.DetectTheme(control.Resources).ColorScheme, Is.EqualTo("Red"));

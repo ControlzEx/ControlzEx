@@ -465,7 +465,7 @@ namespace ControlzEx.Theming
                 throw new ArgumentNullException(nameof(themeName));
             }
 
-            return ChangeTheme(app.Resources, GetTheme(themeName)!);
+            return ChangeTheme(app, app.Resources, GetTheme(themeName)!);
         }
 
         /// <summary>
@@ -505,7 +505,7 @@ namespace ControlzEx.Theming
                 throw new ArgumentNullException(nameof(newTheme));
             }
 
-            return ChangeTheme(app.Resources, newTheme);
+            return ChangeTheme(app, app.Resources, newTheme);
         }
 
         /// <summary>
@@ -527,16 +527,17 @@ namespace ControlzEx.Theming
             }
 
             var oldTheme = DetectTheme(frameworkElement);
-            return ChangeTheme(frameworkElement.Resources, oldTheme, newTheme);
+            return ChangeTheme(frameworkElement, frameworkElement.Resources, oldTheme, newTheme);
         }
 
         /// <summary>
         /// Change theme for the given ResourceDictionary.
         /// </summary>
+        /// <param name="target">The target object for which the theme change should be made. This is optional an can be <c>null</c>.</param>
         /// <param name="resourceDictionary">The ResourceDictionary to change.</param>
         /// <param name="newTheme">The theme to apply.</param>
         [SecurityCritical]
-        public static Theme ChangeTheme([NotNull] ResourceDictionary resourceDictionary, [NotNull] Theme newTheme)
+        public static Theme ChangeTheme(object? target, [NotNull] ResourceDictionary resourceDictionary, [NotNull] Theme newTheme)
         {
             if (resourceDictionary is null)
             {
@@ -549,11 +550,11 @@ namespace ControlzEx.Theming
             }
 
             var oldTheme = DetectTheme(resourceDictionary);
-            return ChangeTheme(resourceDictionary, oldTheme, newTheme);
+            return ChangeTheme(target, resourceDictionary, oldTheme, newTheme);
         }
 
         [SecurityCritical]
-        private static Theme ChangeTheme([NotNull] ResourceDictionary resourceDictionary, Theme? oldTheme, [NotNull] Theme newTheme)
+        private static Theme ChangeTheme(object? target, [NotNull] ResourceDictionary resourceDictionary, Theme? oldTheme, [NotNull] Theme newTheme)
         {
             if (resourceDictionary is null)
             {
@@ -623,7 +624,7 @@ namespace ControlzEx.Theming
 
             if (themeChanged)
             {
-                OnThemeChanged(resourceDictionary, oldTheme, newTheme);
+                OnThemeChanged(target, resourceDictionary, oldTheme, newTheme);
             }
 
             return newTheme;
@@ -668,7 +669,7 @@ namespace ControlzEx.Theming
                 return null;
             }
 
-            return ChangeTheme(app.Resources, currentTheme, newTheme);
+            return ChangeTheme(app, app.Resources, currentTheme, newTheme);
         }
 
         /// <summary>
@@ -710,18 +711,19 @@ namespace ControlzEx.Theming
                 return null;
             }
 
-            return ChangeTheme(frameworkElement.Resources, currentTheme, newTheme);
+            return ChangeTheme(frameworkElement, frameworkElement.Resources, currentTheme, newTheme);
         }
 
         /// <summary>
         /// Change base color and color scheme of for the given ResourceDictionary.
         /// </summary>
+        /// <param name="target">The target object for which the theme change should be made. This is optional an can be <c>null</c>.</param>
         /// <param name="resourceDictionary">The ResourceDictionary to modify.</param>
         /// <param name="oldTheme">The old/current theme.</param>
         /// <param name="baseColor">The base color to apply to the ResourceDictionary.</param>
         /// <param name="colorScheme">The color scheme to apply to the ResourceDictionary.</param>
         [SecurityCritical]
-        public static Theme? ChangeTheme([NotNull] ResourceDictionary resourceDictionary, Theme oldTheme, [NotNull] string baseColor, [NotNull] string colorScheme)
+        public static Theme? ChangeTheme(object? target, [NotNull] ResourceDictionary resourceDictionary, Theme oldTheme, [NotNull] string baseColor, [NotNull] string colorScheme)
         {
             if (resourceDictionary is null)
             {
@@ -746,7 +748,7 @@ namespace ControlzEx.Theming
                 return null;
             }
 
-            return ChangeTheme(resourceDictionary, oldTheme, newTheme);
+            return ChangeTheme(resourceDictionary, resourceDictionary, oldTheme, newTheme);
         }
 
         /// <summary>
@@ -774,7 +776,7 @@ namespace ControlzEx.Theming
                 return null;
             }
 
-            return ChangeTheme(app.Resources, currentTheme, baseColor, currentTheme.ColorScheme);
+            return ChangeTheme(app, app.Resources, currentTheme, baseColor, currentTheme.ColorScheme);
         }
 
         /// <summary>
@@ -802,17 +804,18 @@ namespace ControlzEx.Theming
                 return null;
             }
 
-            return ChangeTheme(frameworkElement.Resources, currentTheme, baseColor, currentTheme.ColorScheme);
+            return ChangeTheme(frameworkElement, frameworkElement.Resources, currentTheme, baseColor, currentTheme.ColorScheme);
         }
 
         /// <summary>
         /// Change base color of for the given ResourceDictionary.
         /// </summary>
+        /// <param name="target">The target object for which the theme change should be made. This is optional an can be <c>null</c>.</param>
         /// <param name="resourceDictionary">The ResourceDictionary to modify.</param>
         /// <param name="oldTheme">The old/current theme.</param>
         /// <param name="baseColor">The base color to apply to the ResourceDictionary.</param>
         [SecurityCritical]
-        public static Theme? ChangeThemeBaseColor([NotNull] ResourceDictionary resourceDictionary, [CanBeNull] Theme oldTheme, [NotNull] string baseColor)
+        public static Theme? ChangeThemeBaseColor(object? target, [NotNull] ResourceDictionary resourceDictionary, [CanBeNull] Theme oldTheme, [NotNull] string baseColor)
         {
             if (resourceDictionary is null)
             {
@@ -831,7 +834,7 @@ namespace ControlzEx.Theming
                 return null;
             }
 
-            return ChangeTheme(resourceDictionary, currentTheme, baseColor, currentTheme.ColorScheme);
+            return ChangeTheme(target, resourceDictionary, currentTheme, baseColor, currentTheme.ColorScheme);
         }
 
         /// <summary>
@@ -859,7 +862,7 @@ namespace ControlzEx.Theming
                 return null;
             }
 
-            return ChangeTheme(app.Resources, currentTheme, currentTheme.BaseColorScheme, colorScheme);
+            return ChangeTheme(app, app.Resources, currentTheme, currentTheme.BaseColorScheme, colorScheme);
         }
 
         /// <summary>
@@ -887,17 +890,18 @@ namespace ControlzEx.Theming
                 return null;
             }
 
-            return ChangeTheme(frameworkElement.Resources, currentTheme, currentTheme.BaseColorScheme, colorScheme);
+            return ChangeTheme(frameworkElement, frameworkElement.Resources, currentTheme, currentTheme.BaseColorScheme, colorScheme);
         }
 
         /// <summary>
         /// Change color scheme for the given ResourceDictionary.
         /// </summary>
+        /// <param name="target">The target object for which the theme change should be made. This is optional an can be <c>null</c>.</param>
         /// <param name="resourceDictionary">The ResourceDictionary to modify.</param>
         /// <param name="oldTheme">The old/current theme.</param>
         /// <param name="colorScheme">The color scheme to apply to the ResourceDictionary.</param>
         [SecurityCritical]
-        public static Theme? ChangeThemeColorScheme([NotNull] ResourceDictionary resourceDictionary, [CanBeNull] Theme oldTheme, [NotNull] string colorScheme)
+        public static Theme? ChangeThemeColorScheme(object? target, [NotNull] ResourceDictionary resourceDictionary, [CanBeNull] Theme oldTheme, [NotNull] string colorScheme)
         {
             if (resourceDictionary is null)
             {
@@ -916,7 +920,7 @@ namespace ControlzEx.Theming
                 return null;
             }
 
-            return ChangeTheme(resourceDictionary, currentTheme, currentTheme.BaseColorScheme, colorScheme);
+            return ChangeTheme(target, resourceDictionary, currentTheme, currentTheme.BaseColorScheme, colorScheme);
         }
 
         /// <summary>
@@ -1112,9 +1116,9 @@ namespace ControlzEx.Theming
         /// Sometimes the ContextMenu is not changing the colors, so this will fix it.
         /// </summary>
         [SecurityCritical]
-        private static void OnThemeChanged(ResourceDictionary targetResourceDictionary, Theme? oldTheme, Theme newTheme)
+        private static void OnThemeChanged(object? target, ResourceDictionary targetResourceDictionary, Theme? oldTheme, Theme newTheme)
         {
-            ThemeChanged?.Invoke(Application.Current, new ThemeChangedEventArgs(targetResourceDictionary, oldTheme, newTheme));
+            ThemeChanged?.Invoke(Application.Current, new ThemeChangedEventArgs(target, targetResourceDictionary, oldTheme, newTheme));
         }
 
         private static bool AreResourceDictionarySourcesEqual(ResourceDictionary first, ResourceDictionary second)
