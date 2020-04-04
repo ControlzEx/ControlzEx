@@ -3,12 +3,21 @@ namespace ControlzEx.Theming
 {
     using System.Collections.Generic;
     using System.Diagnostics;
+    using JetBrains.Annotations;
 
-    // This class has to be kept in sync with https://github.com/batzen/XamlColorSchemeGenerator/blob/develop/src/ColorSchemeGenerator.cs
+    // This class has to be kept in sync with https://github.com/batzen/XamlColorSchemeGenerator/blob/develop/src/ThemeGenerator.cs
     // Please do not remove unused code/properties here as it makes syncing more difficult.
-    public static class ThemeGenerator
+    [PublicAPI]
+    public class ThemeGenerator
     {
-        public static ThemeGeneratorParameters GetParametersFromString(string input)
+        public static ThemeGenerator Current { get; set; }
+
+        static ThemeGenerator()
+        {
+            Current = new ThemeGenerator();
+        }
+
+        public virtual ThemeGeneratorParameters GetParametersFromString(string input)
         {
 #if NETCOREAPP
             return System.Text.Json.JsonSerializer.Deserialize<ThemeGeneratorParameters>(input);
@@ -19,7 +28,7 @@ namespace ControlzEx.Theming
 
         // The order of the passed valueSources is important.
         // More specialized/concrete values must be passed first and more generic ones must follow.
-        public static string GenerateColorSchemeFileContent(string templateContent, string themeName, string themeDisplayName, string baseColorScheme, string colorScheme, string alternativeColorScheme, params Dictionary<string, string>[] valueSources)
+        public virtual string GenerateColorSchemeFileContent(string templateContent, string themeName, string themeDisplayName, string baseColorScheme, string colorScheme, string alternativeColorScheme, params Dictionary<string, string>[] valueSources)
         {
             templateContent = templateContent.Replace("{{ThemeName}}", themeName);
             templateContent = templateContent.Replace("{{ThemeDisplayName}}", themeDisplayName);
@@ -31,13 +40,14 @@ namespace ControlzEx.Theming
             {
                 foreach (var value in valueSource)
                 {
-                    templateContent = templateContent.Replace($"{{{{{value.Key}}}}}", value.Value);   
+                    templateContent = templateContent.Replace($"{{{{{value.Key}}}}}", value.Value);
                 }
             }
 
             return templateContent;
         }
 
+        [PublicAPI]
         public class ThemeGeneratorParameters
         {
             public Dictionary<string, string> DefaultValues { get; set; } = new Dictionary<string, string>();
@@ -49,6 +59,7 @@ namespace ControlzEx.Theming
             public AdditionalColorSchemeVariant[] AdditionalColorSchemeVariants { get; set; } = new AdditionalColorSchemeVariant[0];
         }
 
+        [PublicAPI]
         [DebuggerDisplay("{" + nameof(Name) + "}")]
         public class ThemeGeneratorBaseColorScheme
         {
@@ -57,6 +68,7 @@ namespace ControlzEx.Theming
             public Dictionary<string, string> Values { get; set; } = new Dictionary<string, string>();
         }
 
+        [PublicAPI]
         [DebuggerDisplay("{" + nameof(Name) + "}")]
         public class AdditionalColorSchemeVariant
         {
@@ -65,6 +77,7 @@ namespace ControlzEx.Theming
             public Dictionary<string, string> Values { get; set; } = new Dictionary<string, string>();
         }
 
+        [PublicAPI]
         [DebuggerDisplay("{" + nameof(Name) + "}")]
         public class ThemeGeneratorColorScheme
         {

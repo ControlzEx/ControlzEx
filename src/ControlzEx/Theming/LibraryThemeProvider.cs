@@ -25,7 +25,7 @@ namespace ControlzEx.Theming
 
             if (registerAtThemeManager)
             {
-                ThemeManager.RegisterLibraryThemeProvider(this);
+                ThemeManager.Current.RegisterLibraryThemeProvider(this);
             }
         }
 
@@ -107,7 +107,7 @@ namespace ControlzEx.Theming
             };
 
             if (resourceDictionary.MergedDictionaries.Count == 0
-                && ThemeManager.IsThemeDictionary(resourceDictionary))
+                && ThemeManager.Current.IsThemeDictionary(resourceDictionary))
             {
                 return new LibraryTheme(resourceDictionary, this, false);
             }

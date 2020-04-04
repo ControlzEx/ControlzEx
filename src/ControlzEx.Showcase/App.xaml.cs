@@ -9,9 +9,9 @@ namespace ControlzEx.Showcase
         {
             base.OnStartup(e);
 
-            ThemeManager.ThemeSyncMode = ThemeSyncMode.SyncAll;
+            ThemeManager.Current.ThemeSyncMode = ThemeSyncMode.SyncAll;
 
-            ThemeManager.SyncThemeColorSchemeWithWindowsAccentColor();
+            ThemeManager.Current.SyncThemeColorSchemeWithWindowsAccentColor();
         }
     }
 }

@@ -41,7 +41,7 @@ namespace ControlzEx.Theming
 
         public virtual Theme? GenerateRuntimeTheme(string baseColor, Color accentColor)
         {
-            return this.GenerateRuntimeTheme(baseColor, accentColor, ThemeManager.LibraryThemeProviders.ToList());
+            return this.GenerateRuntimeTheme(baseColor, accentColor, ThemeManager.Current.LibraryThemeProviders.ToList());
         }
 
         public Theme? GenerateRuntimeTheme(string baseColor, Color accentColor, params LibraryThemeProvider[] libraryThemeProviders)
@@ -91,7 +91,7 @@ namespace ControlzEx.Theming
                 return null;
             }
 
-            var generatorParameters = ThemeGenerator.GetParametersFromString(themeGeneratorParametersContent!);
+            var generatorParameters = ThemeGenerator.Current.GetParametersFromString(themeGeneratorParametersContent!);
 
             var baseColorScheme = generatorParameters.BaseColorSchemes.First(x => x.Name == baseColor);
 
@@ -115,7 +115,7 @@ namespace ControlzEx.Theming
 
             libraryThemeProvider.FillColorSchemeValues(values, runtimeThemeColorValues);
 
-            var xamlContent = ThemeGenerator.GenerateColorSchemeFileContent(themeTemplateContent!, $"{baseColor}.Runtime_{accentColor}", $"Runtime {accentColor} ({baseColor})", baseColorScheme.Name, colorScheme.Name, colorScheme.Name, colorScheme.Values, baseColorScheme.Values, generatorParameters.DefaultValues);
+            var xamlContent = ThemeGenerator.Current.GenerateColorSchemeFileContent(themeTemplateContent!, $"{baseColor}.Runtime_{accentColor}", $"Runtime {accentColor} ({baseColor})", baseColorScheme.Name, colorScheme.Name, colorScheme.Name, colorScheme.Values, baseColorScheme.Values, generatorParameters.DefaultValues);
 
             var fixedXamlContent = this.FixXamlContent(xamlContent);
 

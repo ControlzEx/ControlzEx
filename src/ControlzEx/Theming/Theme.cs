@@ -139,7 +139,7 @@ namespace ControlzEx.Theming
         /// <returns>This instance for fluent call usage.</returns>
         public Theme EnsureAllLibraryThemeProvidersProvided()
         {
-            var libraryThemeProvidersWhichDidNotProvideLibraryTheme = ThemeManager.LibraryThemeProviders.Except(this.LibraryThemes.Select(x => x.LibraryThemeProvider));
+            var libraryThemeProvidersWhichDidNotProvideLibraryTheme = ThemeManager.Current.LibraryThemeProviders.Except(this.LibraryThemes.Select(x => x.LibraryThemeProvider));
 
             foreach (var libraryThemeProvider in libraryThemeProvidersWhichDidNotProvideLibraryTheme)
             {

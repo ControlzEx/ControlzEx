@@ -24,9 +24,9 @@
             view.GroupDescriptions.Add(new PropertyGroupDescription(nameof(ThemeResource.Theme)));
             view.GroupDescriptions.Add(new PropertyGroupDescription(nameof(ThemeResource.LibraryTheme)));
 
-            this.UpdateThemeAnalyzers(ThemeManager.DetectTheme());
+            this.UpdateThemeAnalyzers(ThemeManager.Current.DetectTheme());
 
-            ThemeManager.ThemeChanged += this.ThemeManager_ThemeChanged;
+            ThemeManager.Current.ThemeChanged += this.ThemeManager_ThemeChanged;
         }
 
         public static readonly DependencyProperty ThemeResourcesProperty = DependencyProperty.Register(

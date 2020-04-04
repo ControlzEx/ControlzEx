@@ -26,11 +26,15 @@
         <StackPanel Grid.Row="0"
                     Orientation="Horizontal">
             <Label>Sync mode</Label>
-            <ComboBox ItemsSource="{Binding Source={StaticResource SyncModePreferenceEnumValues}}"
-                      SelectedItem="{Binding Path=(theming:ThemeManager.ThemeSyncMode)}" />
+            <ComboBox Width="130" 
+                      VerticalContentAlignment="Center"
+                      ItemsSource="{Binding Source={StaticResource SyncModePreferenceEnumValues}}"
+                      SelectedItem="{Binding Source={x:Static theming:ThemeManager.Current}, Path=ThemeSyncMode}" />
 
             <Button Click="SyncNow_OnClick">Sync now</Button>
-            <CheckBox IsChecked="{Binding Path=ColorOptions.UseHSL, Source={x:Static theming:RuntimeThemeGenerator.Current}, Mode=TwoWay}">Use HSL color</CheckBox>
+            <CheckBox IsChecked="{Binding Path=ColorOptions.UseHSL, Source={x:Static theming:RuntimeThemeGenerator.Current}, Mode=TwoWay}"
+                      Content="Use HSL color"
+                      VerticalAlignment="Center" />
         </StackPanel>
         
         <StackPanel Grid.Row="1"
@@ -38,6 +42,7 @@
             <Label>Theme</Label>
             
             <ComboBox Width="200"
+                      VerticalContentAlignment="Center"
                       ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=local:ThemingView}, Path=Themes}"
                       SelectedItem="{Binding RelativeSource={RelativeSource AncestorType=local:ThemingView}, Path=CurrentTheme}">
                 <ComboBox.ItemTemplate>
@@ -55,14 +60,16 @@
             <Label>Base color</Label>
             
             <ComboBox Width="100"
-                        ItemsSource="{Binding Source={x:Static theming:ThemeManager.BaseColors}}"
-                        SelectedItem="{Binding RelativeSource={RelativeSource AncestorType=local:ThemingView}, Path=CurrentBaseColor}" />
+                      VerticalContentAlignment="Center"
+                      ItemsSource="{Binding Source={x:Static theming:ThemeManager.Current}, Path=BaseColors}"
+                      SelectedItem="{Binding RelativeSource={RelativeSource AncestorType=local:ThemingView}, Path=CurrentBaseColor}" />
 
             <Label>Color scheme</Label>
             
             <ComboBox Width="100"
-                        ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=local:ThemingView}, Path=ColorSchemes}"
-                        SelectedItem="{Binding RelativeSource={RelativeSource AncestorType=local:ThemingView}, Path=CurrentColorScheme}" />
+                      VerticalContentAlignment="Center"
+                      ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=local:ThemingView}, Path=ColorSchemes}"
+                      SelectedItem="{Binding RelativeSource={RelativeSource AncestorType=local:ThemingView}, Path=CurrentColorScheme}" />
         </StackPanel>
 
         <local:ResourcesView Grid.Row="2" />

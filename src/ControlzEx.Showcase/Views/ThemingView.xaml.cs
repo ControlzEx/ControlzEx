@@ -16,10 +16,10 @@
             this.CurrentThemeCollection = new ObservableCollection<Theme>();
             this.CurrentColorSchemeCollection = new ObservableCollection<string>();
 
-            this.Themes = new CompositeCollection { new CollectionContainer { Collection = ThemeManager.Themes }, new CollectionContainer { Collection = this.CurrentThemeCollection } };
-            this.ColorSchemes = new CompositeCollection { new CollectionContainer { Collection = ThemeManager.ColorSchemes }, new CollectionContainer { Collection = this.CurrentColorSchemeCollection } };
+            this.Themes = new CompositeCollection { new CollectionContainer { Collection = ThemeManager.Current.Themes }, new CollectionContainer { Collection = this.CurrentThemeCollection } };
+            this.ColorSchemes = new CompositeCollection { new CollectionContainer { Collection = ThemeManager.Current.ColorSchemes }, new CollectionContainer { Collection = this.CurrentColorSchemeCollection } };
 
-            ThemeManager.ThemeChanged += this.ThemeManager_ThemeChanged;
+            ThemeManager.Current.ThemeChanged += this.ThemeManager_ThemeChanged;
 
             this.InitializeComponent();
         }
@@ -83,7 +83,7 @@
 
         public Theme CurrentTheme
         {
-            get => ThemeManager.DetectTheme();
+            get => ThemeManager.Current.DetectTheme();
 
             set
             {
@@ -92,7 +92,7 @@
                     return;
                 }
 
-                ThemeManager.ChangeTheme(Application.Current, value);
+                ThemeManager.Current.ChangeTheme(Application.Current, value);
 
                 this.OnPropertyChanged();
                 this.OnPropertyChanged(nameof(this.CurrentBaseColor));
@@ -107,7 +107,7 @@
             {
                 if (string.IsNullOrEmpty(value) == false)
                 {
-                    ThemeManager.ChangeThemeBaseColor(Application.Current, value);
+                    ThemeManager.Current.ChangeThemeBaseColor(Application.Current, value);
                 }
 
                 this.OnPropertyChanged();
@@ -123,7 +123,7 @@
             {
                 if (string.IsNullOrEmpty(value) == false)
                 {
-                    ThemeManager.ChangeThemeColorScheme(Application.Current, value);
+                    ThemeManager.Current.ChangeThemeColorScheme(Application.Current, value);
                 }
 
                 this.OnPropertyChanged();
@@ -141,7 +141,7 @@
 
         private void SyncNow_OnClick(object sender, RoutedEventArgs e)
         {
-            ThemeManager.SyncTheme();
+            ThemeManager.Current.SyncTheme();
         }
     }
 }
