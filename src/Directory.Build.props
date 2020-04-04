@@ -48,6 +48,7 @@
     <!-- Configuration for GitVersionTask -->
     <PropertyGroup>
       <WriteVersionInfoToBuildLog>false</WriteVersionInfoToBuildLog>
+      <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
     </PropertyGroup>
 
     <!-- Add the references for all projects and targets-->
