@@ -24,7 +24,7 @@ namespace ControlzEx.Theming
             }
             catch (Exception exception)
             {
-                Trace.WriteLine(exception);
+                Trace.TraceError(exception.ToString());
             }
 
             return true;
@@ -67,7 +67,7 @@ namespace ControlzEx.Theming
             }
             catch (Exception exception)
             {
-                Trace.WriteLine(exception);
+                Trace.TraceError(exception.ToString());
             }
 
             return accentColor;

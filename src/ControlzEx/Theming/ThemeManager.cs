@@ -1021,7 +1021,7 @@ namespace ControlzEx.Theming
                 }
                 catch (Exception ex)
                 {
-                    Trace.WriteLine($"Failed to detect app style on main window.{Environment.NewLine}{ex}");
+                    Trace.TraceWarning($"Failed to detect app style on main window.{Environment.NewLine}{ex}");
                 }
             }
 
