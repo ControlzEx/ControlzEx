@@ -783,7 +783,7 @@ namespace ControlzEx.Theming
                 return null;
             }
 
-            return this.ChangeTheme(app, app.Resources, currentTheme, baseColor, currentTheme.ColorScheme);
+            return this.ChangeThemeBaseColor(app, app.Resources, currentTheme, baseColor);
         }
 
         /// <summary>
@@ -811,7 +811,7 @@ namespace ControlzEx.Theming
                 return null;
             }
 
-            return this.ChangeTheme(frameworkElement, frameworkElement.Resources, currentTheme, baseColor, currentTheme.ColorScheme);
+            return this.ChangeThemeBaseColor(frameworkElement, frameworkElement.Resources, currentTheme, baseColor);
         }
 
         /// <summary>
@@ -869,7 +869,7 @@ namespace ControlzEx.Theming
                 return null;
             }
 
-            return this.ChangeTheme(app, app.Resources, currentTheme, currentTheme.BaseColorScheme, colorScheme);
+            return this.ChangeThemeColorScheme(app, app.Resources, currentTheme, colorScheme);
         }
 
         /// <summary>
@@ -897,7 +897,7 @@ namespace ControlzEx.Theming
                 return null;
             }
 
-            return this.ChangeTheme(frameworkElement, frameworkElement.Resources, currentTheme, currentTheme.BaseColorScheme, colorScheme);
+            return this.ChangeThemeColorScheme(frameworkElement, frameworkElement.Resources, currentTheme, colorScheme);
         }
 
         /// <summary>
