@@ -12,6 +12,7 @@ namespace ControlzEx.Theming
     using System.Security;
     using System.Windows;
     using System.Windows.Data;
+    using System.Windows.Media;
     using System.Windows.Threading;
     using JetBrains.Annotations;
     using Microsoft.Win32;
@@ -841,7 +842,20 @@ namespace ControlzEx.Theming
                 return null;
             }
 
-            return this.ChangeTheme(target, resourceDictionary, currentTheme, baseColor, currentTheme.ColorScheme);
+            var newTheme = this.ChangeTheme(target, resourceDictionary, currentTheme, baseColor, currentTheme.ColorScheme);
+
+            if (newTheme is null
+                && currentTheme.IsRuntimeGenerated)
+            {
+                var runtimeTheme = RuntimeThemeGenerator.Current.GenerateRuntimeTheme(baseColor, currentTheme.PrimaryAccentColor);
+
+                if (!(runtimeTheme is null))
+                {
+                    newTheme = this.ChangeTheme(target, resourceDictionary, currentTheme, runtimeTheme);
+                }
+            }
+
+            return newTheme;
         }
 
         /// <summary>
@@ -927,7 +941,21 @@ namespace ControlzEx.Theming
                 return null;
             }
 
-            return this.ChangeTheme(target, resourceDictionary, currentTheme, currentTheme.BaseColorScheme, colorScheme);
+            var newTheme = this.ChangeTheme(target, resourceDictionary, currentTheme, currentTheme.BaseColorScheme, colorScheme);
+
+            if (newTheme is null
+                && currentTheme.IsRuntimeGenerated
+                && TryConvertColorFromString(colorScheme, out var color))
+            {
+                var runtimeTheme = RuntimeThemeGenerator.Current.GenerateRuntimeTheme(currentTheme.BaseColorScheme, color);
+
+                if (!(runtimeTheme is null))
+                {
+                    newTheme = this.ChangeTheme(target, resourceDictionary, currentTheme, runtimeTheme);
+                }
+            }
+
+            return newTheme;
         }
 
         /// <summary>
@@ -1302,6 +1330,31 @@ namespace ControlzEx.Theming
         private bool isSyncScheduled;
 
         #endregion WindowsAppModeSetting
+
+        private static bool TryConvertColorFromString(string colorScheme, out Color color)
+        {
+            try
+            {
+                var convertedValue = ColorConverter.ConvertFromString(colorScheme);
+
+                if (convertedValue is null)
+                {
+                    color = default;
+                    return false;
+                }
+
+                color = (Color)convertedValue;
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Trace.TraceWarning(e.ToString());
+
+                color = default;
+                return false;
+            }
+        }
     }
 
     [Flags]
