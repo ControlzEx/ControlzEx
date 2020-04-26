@@ -109,7 +109,7 @@ namespace ControlzEx.Theming
             if (resourceDictionary.MergedDictionaries.Count == 0
                 && ThemeManager.Current.IsThemeDictionary(resourceDictionary))
             {
-                return new LibraryTheme(resourceDictionary, this, false);
+                return new LibraryTheme(resourceDictionary, this);
             }
 
             return null;
@@ -156,23 +156,50 @@ namespace ControlzEx.Theming
 
         public virtual LibraryTheme? ProvideMissingLibraryTheme(Theme themeToProvideNewLibraryThemeFor)
         {
+            var libraryThemes = this.GetLibraryThemes()
+                                    .ToList();
+
             foreach (var themeLibraryTheme in themeToProvideNewLibraryThemeFor.LibraryThemes)
             {
-                if (string.IsNullOrEmpty(themeLibraryTheme.AlternativeColorScheme) == false
-                    && themeLibraryTheme.ColorScheme != themeLibraryTheme.AlternativeColorScheme)
+                foreach (var libraryTheme in libraryThemes)
                 {
-                    foreach (var libraryTheme in this.GetLibraryThemes())
+                    // We have to ask both sides every time
+                    if (libraryTheme.Matches(themeLibraryTheme)
+                        || themeLibraryTheme.Matches(libraryTheme))
                     {
-                        if (libraryTheme.BaseColorScheme == themeLibraryTheme.BaseColorScheme
-                            && libraryTheme.ColorScheme == themeLibraryTheme.AlternativeColorScheme)
-                        {
-                            return libraryTheme;
-                        }
+                        return libraryTheme;
                     }
                 }
             }
 
-            return RuntimeThemeGenerator.Current.GenerateRuntimeLibraryTheme(themeToProvideNewLibraryThemeFor.BaseColorScheme, themeToProvideNewLibraryThemeFor.PrimaryAccentColor, this);
+            foreach (var themeLibraryTheme in themeToProvideNewLibraryThemeFor.LibraryThemes)
+            {
+                foreach (var libraryTheme in libraryThemes)
+                {
+                    // We have to ask both sides every time
+                    if (libraryTheme.MatchesSecondTry(themeLibraryTheme)
+                        || themeLibraryTheme.MatchesSecondTry(libraryTheme))
+                    {
+                        return libraryTheme;
+                    }
+                }
+            }
+
+            foreach (var themeLibraryTheme in themeToProvideNewLibraryThemeFor.LibraryThemes)
+            {
+                foreach (var libraryTheme in libraryThemes)
+                {
+                    // We have to ask both sides every time
+                    if (libraryTheme.MatchesThirdTry(themeLibraryTheme)
+                        || themeLibraryTheme.MatchesThirdTry(libraryTheme))
+                    {
+                        return libraryTheme;
+                    }
+                }
+            }
+
+            // If we were unable to provide a built in theme we have to generate a new runtime theme
+            return RuntimeThemeGenerator.Current.GenerateRuntimeLibraryTheme(themeToProvideNewLibraryThemeFor.BaseColorScheme, themeToProvideNewLibraryThemeFor.PrimaryAccentColor, themeToProvideNewLibraryThemeFor.IsHighContrast, this);
         }
 
         protected virtual bool IsPotentialThemeResourceDictionary(DictionaryEntry dictionaryEntry)
@@ -198,6 +225,22 @@ namespace ControlzEx.Theming
             }
 
             return false;
+        }
+
+        public virtual string PrepareXamlContent(RuntimeThemeGenerator runtimeThemeGenerator, string xamlContent, RuntimeThemeColorValues runtimeThemeColorValues)
+        {
+            xamlContent = XamlThemeHelper.FixXamlReaderXmlNsIssue(xamlContent);
+
+            return xamlContent;
+        }
+
+        public virtual void PrepareRuntimeThemeResourceDictionary(RuntimeThemeGenerator runtimeThemeGenerator, ResourceDictionary resourceDictionary, RuntimeThemeColorValues runtimeThemeColorValues)
+        {
+        }
+
+        public LibraryTheme CreateRuntimeLibraryTheme(ResourceDictionary resourceDictionary, RuntimeThemeColorValues runtimeThemeColorValues)
+        {
+            return new LibraryTheme(resourceDictionary, this);
         }
     }
 }

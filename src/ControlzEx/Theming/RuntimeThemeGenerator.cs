@@ -4,7 +4,6 @@ namespace ControlzEx.Theming
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text.RegularExpressions;
     using System.Windows;
     using System.Windows.Markup;
     using System.Windows.Media;
@@ -18,14 +17,14 @@ namespace ControlzEx.Theming
             Current = new RuntimeThemeGenerator();
         }
 
-        public RuntimeThemeColorOptions ColorOptions { get; } = new RuntimeThemeColorOptions();
+        public RuntimeThemeGeneratorOptions Options { get; } = new RuntimeThemeGeneratorOptions();
 
-        public Theme? GenerateRuntimeThemeFromWindowsSettings(string baseColor, params LibraryThemeProvider[] libraryThemeProviders)
+        public Theme? GenerateRuntimeThemeFromWindowsSettings(string baseColor, bool isHighContrast, params LibraryThemeProvider[] libraryThemeProviders)
         {
-            return this.GenerateRuntimeThemeFromWindowsSettings(baseColor, libraryThemeProviders.ToList());
+            return this.GenerateRuntimeThemeFromWindowsSettings(baseColor, isHighContrast, libraryThemeProviders.ToList());
         }
 
-        public virtual Theme? GenerateRuntimeThemeFromWindowsSettings(string baseColor, IEnumerable<LibraryThemeProvider> libraryThemeProviders)
+        public virtual Theme? GenerateRuntimeThemeFromWindowsSettings(string baseColor, bool isHighContrast, IEnumerable<LibraryThemeProvider> libraryThemeProviders)
         {
             var windowsAccentColor = WindowsThemeHelper.GetWindowsAccentColor();
 
@@ -36,26 +35,31 @@ namespace ControlzEx.Theming
 
             var accentColor = windowsAccentColor.Value;
 
-            return this.GenerateRuntimeTheme(baseColor, accentColor, libraryThemeProviders);
+            return this.GenerateRuntimeTheme(baseColor, accentColor, isHighContrast, libraryThemeProviders);
         }
 
-        public virtual Theme? GenerateRuntimeTheme(string baseColor, Color accentColor)
+        public Theme? GenerateRuntimeTheme(string baseColor, Color accentColor)
         {
-            return this.GenerateRuntimeTheme(baseColor, accentColor, ThemeManager.Current.LibraryThemeProviders.ToList());
+            return this.GenerateRuntimeTheme(baseColor, accentColor, false, ThemeManager.Current.LibraryThemeProviders.ToList());
         }
 
-        public Theme? GenerateRuntimeTheme(string baseColor, Color accentColor, params LibraryThemeProvider[] libraryThemeProviders)
+        public virtual Theme? GenerateRuntimeTheme(string baseColor, Color accentColor, bool isHighContrast)
         {
-            return this.GenerateRuntimeTheme(baseColor, accentColor, libraryThemeProviders.ToList());
+            return this.GenerateRuntimeTheme(baseColor, accentColor, isHighContrast, ThemeManager.Current.LibraryThemeProviders.ToList());
         }
 
-        public virtual Theme? GenerateRuntimeTheme(string baseColor, Color accentColor, IEnumerable<LibraryThemeProvider> libraryThemeProviders)
+        public Theme? GenerateRuntimeTheme(string baseColor, Color accentColor, bool isHighContrast, params LibraryThemeProvider[] libraryThemeProviders)
+        {
+            return this.GenerateRuntimeTheme(baseColor, accentColor, isHighContrast, libraryThemeProviders.ToList());
+        }
+
+        public virtual Theme? GenerateRuntimeTheme(string baseColor, Color accentColor, bool isHighContrast, IEnumerable<LibraryThemeProvider> libraryThemeProviders)
         {
             Theme? theme = null;
 
             foreach (var libraryThemeProvider in libraryThemeProviders)
             {
-                var libraryTheme = this.GenerateRuntimeLibraryTheme(baseColor, accentColor, libraryThemeProvider);
+                var libraryTheme = this.GenerateRuntimeLibraryTheme(baseColor, accentColor, isHighContrast, libraryThemeProvider);
 
                 if (libraryTheme == null)
                 {
@@ -75,7 +79,7 @@ namespace ControlzEx.Theming
             return theme;
         }
 
-        public virtual LibraryTheme? GenerateRuntimeLibraryTheme(string baseColor, Color accentColor, LibraryThemeProvider libraryThemeProvider)
+        public virtual LibraryTheme? GenerateRuntimeLibraryTheme(string baseColor, Color accentColor, bool isHighContrast, LibraryThemeProvider libraryThemeProvider)
         {
             var themeGeneratorParametersContent = libraryThemeProvider.GetThemeGeneratorParametersContent();
             
@@ -99,9 +103,18 @@ namespace ControlzEx.Theming
             {
                 Name = accentColor.ToString()
             };
+
+            var themeName = $"{baseColor}.Runtime_{colorScheme.Name}";
+            var themeDisplayName = $"Runtime {colorScheme.Name} ({baseColor})";
+
+            if (isHighContrast)
+            {
+                themeDisplayName += " HighContrast";
+            }
+
             var values = colorScheme.Values;
 
-            var runtimeThemeColorValues = this.GetColors(accentColor, this.ColorOptions);
+            var runtimeThemeColorValues = this.GetColors(accentColor, this.Options.CreateRuntimeThemeOptions(isHighContrast, generatorParameters, baseColorScheme));
 
             values.Add("ThemeGenerator.Colors.PrimaryAccentColor", runtimeThemeColorValues.PrimaryAccentColor.ToString());
             values.Add("ThemeGenerator.Colors.AccentBaseColor", runtimeThemeColorValues.AccentBaseColor.ToString());
@@ -115,59 +128,29 @@ namespace ControlzEx.Theming
 
             libraryThemeProvider.FillColorSchemeValues(values, runtimeThemeColorValues);
 
-            var xamlContent = ThemeGenerator.Current.GenerateColorSchemeFileContent(themeTemplateContent!, $"{baseColor}.Runtime_{accentColor}", $"Runtime {accentColor} ({baseColor})", baseColorScheme.Name, colorScheme.Name, colorScheme.Name, colorScheme.Values, baseColorScheme.Values, generatorParameters.DefaultValues);
+            var xamlContent = ThemeGenerator.Current.GenerateColorSchemeFileContent(themeTemplateContent!, themeName, themeDisplayName, baseColorScheme.Name, colorScheme.Name, colorScheme.Name, isHighContrast, colorScheme.Values, baseColorScheme.Values, generatorParameters.DefaultValues);
 
-            var fixedXamlContent = this.FixXamlContent(xamlContent);
+            var preparedXamlContent = libraryThemeProvider.PrepareXamlContent(this, xamlContent, runtimeThemeColorValues);
 
-            var resourceDictionary = (ResourceDictionary)XamlReader.Parse(fixedXamlContent);
+            var resourceDictionary = (ResourceDictionary)XamlReader.Parse(preparedXamlContent);
+            resourceDictionary.Add(Theme.ThemeIsRuntimeGeneratedKey, true);
+            resourceDictionary[Theme.ThemeIsHighContrastKey] = isHighContrast;
+            resourceDictionary[LibraryTheme.RuntimeThemeColorValuesKey] = runtimeThemeColorValues;
 
-            var runtimeLibraryTheme = new LibraryTheme(resourceDictionary, libraryThemeProvider, true);
+            libraryThemeProvider.PrepareRuntimeThemeResourceDictionary(this, resourceDictionary, runtimeThemeColorValues);
+
+            var runtimeLibraryTheme = libraryThemeProvider.CreateRuntimeLibraryTheme(resourceDictionary, runtimeThemeColorValues);
             return runtimeLibraryTheme;
         }
 
-        public virtual string FixXamlContent(string xamlContent)
-        {
-            xamlContent = this.FixXamlReaderBug(xamlContent);
-
-            return xamlContent;
-        }
-
-        protected virtual string FixXamlReaderBug(string xamlContent)
-        {
-            // Check if we have to fix something
-            if (xamlContent.Contains("WithAssembly=\"") == false)
-            {
-                return xamlContent;
-            }
-
-            // search for namespace names with suffix "WithAssembly"
-            var withAssemblyMatches = Regex.Matches(xamlContent, @"\s*xmlns:(?<namespace_name>.+?)WithAssembly=(?<namespace>"".+?"")");
-
-            foreach (var withAssemblyMatch in withAssemblyMatches!.OfType<Match>())
-            {
-                // search for namespaces that are the same without suffix "WithAssembly"
-                var originalMatches = Regex.Matches(xamlContent, $@"\s*xmlns:({withAssemblyMatch.Groups["namespace_name"].Value})=(?<namespace>"".+?"")");
-
-                foreach (var originalMatch in originalMatches!.OfType<Match>())
-                {
-                    // replace the used namespace value of the namespaces without the suffix with the content from the namespace with suffix
-                    xamlContent = xamlContent.Replace(originalMatch.Groups["namespace"].Value, withAssemblyMatch.Groups["namespace"].Value);
-                }
-            }
-
-            return xamlContent;
-        }
-
-        public virtual RuntimeThemeColorValues GetColors(Color accentColor, RuntimeThemeColorOptions options)
+        public virtual RuntimeThemeColorValues GetColors(Color accentColor, RuntimeThemeOptions options)
         {
             if (options.UseHSL)
             {
                 var accentColorWithoutTransparency = Color.FromRgb(accentColor.R, accentColor.G, accentColor.B);
 
-                return new RuntimeThemeColorValues
+                return new RuntimeThemeColorValues(options)
                 {
-                    Options = options,
-
                     AccentColor = accentColor,
                     AccentBaseColor = accentColor,
                     PrimaryAccentColor = accentColor,
@@ -184,18 +167,16 @@ namespace ControlzEx.Theming
             }
             else
             {
-                return new RuntimeThemeColorValues
+                return new RuntimeThemeColorValues(options)
                 {
-                    Options = options,
-
                     AccentColor = accentColor,
                     AccentBaseColor = accentColor,
                     PrimaryAccentColor = accentColor,
 
-                    AccentColor80 = Color.FromArgb(204, accentColor.R, accentColor.G, accentColor.B),
-                    AccentColor60 = Color.FromArgb(153, accentColor.R, accentColor.G, accentColor.B),
-                    AccentColor40 = Color.FromArgb(102, accentColor.R, accentColor.G, accentColor.B),
-                    AccentColor20 = Color.FromArgb(51, accentColor.R, accentColor.G, accentColor.B),
+                    AccentColor80 = Color.FromArgb(204 /* 255 * 0.8 */, accentColor.R, accentColor.G, accentColor.B),
+                    AccentColor60 = Color.FromArgb(153 /* 255 * 0.6 */, accentColor.R, accentColor.G, accentColor.B),
+                    AccentColor40 = Color.FromArgb(102 /* 255 * 0.4 */, accentColor.R, accentColor.G, accentColor.B),
+                    AccentColor20 = Color.FromArgb(51  /* 255 * 0.2 */, accentColor.R, accentColor.G, accentColor.B),
 
                     HighlightColor = GetHighlightColor(accentColor),
 

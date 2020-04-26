@@ -13,6 +13,7 @@
     <system:String x:Key="Theme.ColorScheme">{{ColorScheme}}</system:String>
     <Color x:Key="Theme.PrimaryAccentColor">{{ControlzEx.Colors.AccentBaseColor}}</Color>
     <SolidColorBrush x:Key="Theme.ShowcaseBrush" Color="{{ControlzEx.Colors.AccentBaseColor}}" options:Freeze="True" />
+    <system:Boolean x:Key="Theme.IsHighContrast">{{IsHighContrast}}</system:Boolean>
 
     <!-- COLORS -->
 

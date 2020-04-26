@@ -45,7 +45,7 @@ namespace ControlzEx.Tests.Theming
         {
             {
                 var source = new Uri("pack://application:,,,/ControlzEx.Tests;component/Themes/Themes/Dark.Cobalt.xaml");
-                var newTheme = new Theme(new LibraryTheme(source, null, false));
+                var newTheme = new Theme(new LibraryTheme(source, null));
                 Assert.That(this.testThemeManager.AddTheme(newTheme), Is.Not.EqualTo(newTheme));
             }
 
@@ -60,9 +60,12 @@ namespace ControlzEx.Tests.Theming
                     },
                     {
                         Theme.ThemePrimaryAccentColorKey, Colors.Blue
+                    },
+                    {
+                        Theme.ThemeIsRuntimeGeneratedKey, true
                     }
                 };
-                var newTheme = new Theme(new LibraryTheme(resource, null, true));
+                var newTheme = new Theme(new LibraryTheme(resource, null));
                 Assert.That(this.testThemeManager.AddTheme(newTheme), Is.EqualTo(newTheme));
             }
         }
@@ -86,10 +89,13 @@ namespace ControlzEx.Tests.Theming
                                },
                                {
                                    Theme.ThemePrimaryAccentColorKey, Colors.Blue
+                               },
+                               {
+                                   Theme.ThemeIsRuntimeGeneratedKey, true
                                }
                            };
 
-            var newTheme = new Theme(new LibraryTheme(resource, null, true));
+            var newTheme = new Theme(new LibraryTheme(resource, null));
             Assert.That(this.testThemeManager.AddTheme(newTheme), Is.EqualTo(newTheme));
             Assert.That(this.testThemeManager.BaseColors, Is.EqualTo(new[] { ThemeManager.BaseColorLight, ThemeManager.BaseColorDark, "Foo" }));
             Assert.That(this.testThemeManager.ColorSchemes, Does.Contain("Bar"));
@@ -264,9 +270,12 @@ namespace ControlzEx.Tests.Theming
                                },
                                {
                                    Theme.ThemePrimaryAccentColorKey, Colors.Blue
+                               },
+                               {
+                                   Theme.ThemeIsRuntimeGeneratedKey, true
                                }
                            };
-            var theme = new Theme(new LibraryTheme(resource, null, true));
+            var theme = new Theme(new LibraryTheme(resource, null));
 
             var inverseTheme = this.testThemeManager.GetInverseTheme(theme);
 
@@ -291,9 +300,12 @@ namespace ControlzEx.Tests.Theming
                 },
                 {
                     Theme.ThemePrimaryAccentColorKey, Colors.Blue
+                },
+                {
+                    Theme.ThemeIsRuntimeGeneratedKey, true
                 }
             };
-            var theme = new Theme(new LibraryTheme(resource, null, true));
+            var theme = new Theme(new LibraryTheme(resource, null));
 
             var inverseTheme = this.testThemeManager.GetInverseTheme(theme);
 
@@ -458,6 +470,7 @@ namespace ControlzEx.Tests.Theming
                                        Theme.ThemeDisplayNameKey,
                                        Theme.ThemeColorSchemeKey,
                                        Theme.ThemeInstanceKey,
+                                       Theme.ThemeIsRuntimeGeneratedKey,
                                        LibraryTheme.LibraryThemeInstanceKey,
                                        "ControlzEx.Colors.HighlightColor", // Ignored because it's hand crafted
                                        "ControlzEx.Brushes.HighlightBrush", // Ignored because it's hand crafted

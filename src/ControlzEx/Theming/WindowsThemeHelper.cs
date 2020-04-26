@@ -3,12 +3,19 @@ namespace ControlzEx.Theming
 {
     using System;
     using System.Diagnostics;
+    using System.Windows;
     using System.Windows.Media;
     using JetBrains.Annotations;
     using Microsoft.Win32;
 
     public static class WindowsThemeHelper
     {
+        public static bool IsHighContrastEnabled()
+        {
+            return SystemParameters.HighContrast;
+        }
+
+        [MustUseReturnValue]
         public static bool AppsUseLightTheme()
         {
             try
@@ -31,6 +38,7 @@ namespace ControlzEx.Theming
         }
 
         [NotNull]
+        [MustUseReturnValue]
         public static string GetWindowsBaseColor()
         {
             var baseColor = AppsUseLightTheme()
@@ -41,6 +49,7 @@ namespace ControlzEx.Theming
         }
 
         [CanBeNull]
+        [MustUseReturnValue]
         public static Color? GetWindowsAccentColor()
         {
             Color? accentColor = null;

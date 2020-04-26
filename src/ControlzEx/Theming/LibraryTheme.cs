@@ -14,7 +14,7 @@ namespace ControlzEx.Theming
         /// <summary>
         /// Gets the key for the library theme instance.
         /// </summary>
-        public const string LibraryThemeInstanceKey = "LibraryTheme.LibraryThemeInstance";
+        public const string LibraryThemeInstanceKey = "Theme.LibraryThemeInstance";
 
         /// <summary>
         /// Gets the key for the theme color scheme.
@@ -22,18 +22,18 @@ namespace ControlzEx.Theming
         public const string LibraryThemeAlternativeColorSchemeKey = "Theme.AlternativeColorScheme";
 
         /// <summary>
+        /// Gets the key for the color values being used to generate a runtime theme.
+        /// </summary>
+        public const string RuntimeThemeColorValuesKey = "Theme.RuntimeThemeColorValues";
+
+        /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="resourceAddress">The URI of the theme ResourceDictionary.</param>
         /// <param name="libraryThemeProvider">The <see cref="ControlzEx.Theming.LibraryThemeProvider"/> which created this instance.</param>
-        /// <param name="isRuntimeGenerated">Defines if the library theme was generated at runtime.</param>
-        public LibraryTheme([NotNull] Uri resourceAddress, LibraryThemeProvider? libraryThemeProvider, bool isRuntimeGenerated)
-            : this(new ResourceDictionary { Source = resourceAddress }, libraryThemeProvider, isRuntimeGenerated)
+        public LibraryTheme([NotNull] Uri resourceAddress, LibraryThemeProvider? libraryThemeProvider)
+            : this(CreateResourceDictionary(resourceAddress), libraryThemeProvider)
         {
-            if (resourceAddress == null)
-            {
-                throw new ArgumentNullException(nameof(resourceAddress));
-            }
         }
 
         /// <summary>
@@ -41,8 +41,7 @@ namespace ControlzEx.Theming
         /// </summary>
         /// <param name="resourceDictionary">The ResourceDictionary of the theme.</param>
         /// <param name="libraryThemeProvider">The <see cref="ControlzEx.Theming.LibraryThemeProvider"/> which created this instance.</param>
-        /// <param name="isRuntimeGenerated">Defines if the library theme was generated at runtime.</param>
-        public LibraryTheme([NotNull] ResourceDictionary resourceDictionary, LibraryThemeProvider? libraryThemeProvider, bool isRuntimeGenerated)
+        public LibraryTheme([NotNull] ResourceDictionary resourceDictionary, LibraryThemeProvider? libraryThemeProvider)
         {
             if (resourceDictionary is null)
             {
@@ -51,7 +50,8 @@ namespace ControlzEx.Theming
 
             this.LibraryThemeProvider = libraryThemeProvider;
 
-            this.IsRuntimeGenerated = isRuntimeGenerated;
+            this.IsRuntimeGenerated = (bool)(resourceDictionary[Theme.ThemeIsRuntimeGeneratedKey] ?? false);
+            this.IsHighContrast = (bool)(resourceDictionary[Theme.ThemeIsHighContrastKey] ?? false);
 
             this.Name = (string)resourceDictionary[Theme.ThemeNameKey];
             this.Origin = (string)resourceDictionary[Theme.ThemeOriginKey];
@@ -67,20 +67,13 @@ namespace ControlzEx.Theming
             this.Resources[LibraryThemeInstanceKey] = this;
         }
 
-        public LibraryThemeProvider? LibraryThemeProvider { get; }
-
+        /// <inheritdoc cref="Theme.IsRuntimeGenerated"/>
         public bool IsRuntimeGenerated { get; }
 
-        /// <summary>
-        /// The root <see cref="System.Windows.ResourceDictionary"/> containing all resource dictionaries belonging to this instance as <see cref="System.Windows.ResourceDictionary.MergedDictionaries"/>
-        /// </summary>
-        public ResourceDictionary Resources { get; } = new ResourceDictionary();
+        /// <inheritdoc cref="Theme.IsHighContrast"/>
+        public bool IsHighContrast { get; }
 
-        public Theme? ParentTheme { get; internal set; }
-
-        /// <summary>
-        /// Gets the name of the theme.
-        /// </summary>
+        /// <inheritdoc cref="Theme.Name"/>
         public string Name { get; }
 
         /// <summary>
@@ -88,46 +81,54 @@ namespace ControlzEx.Theming
         /// </summary>
         public string? Origin { get; }
 
-        /// <summary>
-        /// Gets the display name of the theme.
-        /// </summary>
+        /// <inheritdoc cref="Theme.DisplayName"/>
         public string DisplayName { get; }
 
-        /// <summary>
-        /// Get the base color scheme for this theme.
-        /// </summary>
+        /// <inheritdoc cref="Theme.BaseColorScheme"/>
         public string BaseColorScheme { get; }
 
-        /// <summary>
-        /// Gets the color scheme for this theme.
-        /// </summary>
+        /// <inheritdoc cref="Theme.ColorScheme"/>
         public string ColorScheme { get; }
+
+        /// <inheritdoc cref="Theme.PrimaryAccentColor"/>
+        public Color PrimaryAccentColor { get; set; }
+
+        /// <inheritdoc cref="Theme.ShowcaseBrush"/>
+        public Brush ShowcaseBrush { get; }
+
+        /// <summary>
+        /// The root <see cref="System.Windows.ResourceDictionary"/> containing all resource dictionaries belonging to this instance as <see cref="System.Windows.ResourceDictionary.MergedDictionaries"/>
+        /// </summary>
+        public ResourceDictionary Resources { get; } = new ResourceDictionary();
 
         /// <summary>
         /// Gets the alternative color scheme for this theme.
         /// </summary>
         public string AlternativeColorScheme { get; set; }
 
-        /// <summary>
-        /// Gets the primary accent color for this theme.
-        /// </summary>
-        public Color PrimaryAccentColor { get; set; }
+        public Theme? ParentTheme { get; internal set; }
 
-        /// <summary>
-        /// Gets a brush which can be used to showcase this theme.
-        /// </summary>
-        public Brush ShowcaseBrush { get; }
+        public LibraryThemeProvider? LibraryThemeProvider { get; }
 
         public virtual bool Matches(LibraryTheme libraryTheme)
         {
             return this.BaseColorScheme == libraryTheme.BaseColorScheme
-                   && this.ColorScheme == libraryTheme.ColorScheme;
+                   && this.ColorScheme == libraryTheme.ColorScheme
+                   && this.IsHighContrast == libraryTheme.IsHighContrast;
         }
 
         public virtual bool MatchesSecondTry(LibraryTheme libraryTheme)
         {
             return this.BaseColorScheme == libraryTheme.BaseColorScheme
-                   && this.ShowcaseBrush.ToString() == libraryTheme.ShowcaseBrush.ToString();
+                   && this.AlternativeColorScheme == libraryTheme.ColorScheme
+                   && this.IsHighContrast == libraryTheme.IsHighContrast;
+        }
+
+        public virtual bool MatchesThirdTry(LibraryTheme libraryTheme)
+        {
+            return this.BaseColorScheme == libraryTheme.BaseColorScheme
+                   && this.ShowcaseBrush.ToString() == libraryTheme.ShowcaseBrush.ToString()
+                   && this.IsHighContrast == libraryTheme.IsHighContrast;
         }
 
         public LibraryTheme AddResource([NotNull] ResourceDictionary resourceDictionary)
@@ -144,12 +145,7 @@ namespace ControlzEx.Theming
 
         public override string ToString()
         {
-            return $"DisplayName={this.DisplayName}, Name={this.Name}, Origin={this.Origin}";
-        }
-
-        public LibraryTheme Clone()
-        {
-            return new LibraryTheme(this.Resources, this.LibraryThemeProvider, this.IsRuntimeGenerated);
+            return $"DisplayName={this.DisplayName}, Name={this.Name}, Origin={this.Origin}, IsHighContrast={this.IsHighContrast}";
         }
 
         public static string? GetThemeName([NotNull] ResourceDictionary resourceDictionary)
@@ -159,7 +155,24 @@ namespace ControlzEx.Theming
 
         public static bool IsThemeDictionary([NotNull] ResourceDictionary resourceDictionary)
         {
-            return Theme.IsThemeDictionary(resourceDictionary);
+            return Theme.IsThemeDictionary(resourceDictionary)
+                || Theme.ContainsKey(resourceDictionary, LibraryThemeInstanceKey);
+        }
+
+        public static bool IsRuntimeGeneratedThemeDictionary([NotNull] ResourceDictionary resourceDictionary)
+        {
+            return Theme.IsRuntimeGeneratedThemeDictionary(resourceDictionary)
+                || (Theme.ContainsKey(resourceDictionary, LibraryThemeInstanceKey) && ((LibraryTheme)resourceDictionary[LibraryThemeInstanceKey]).IsRuntimeGenerated);
+        }
+
+        private static ResourceDictionary CreateResourceDictionary(Uri resourceAddress)
+        {
+            if (resourceAddress == null)
+            {
+                throw new ArgumentNullException(nameof(resourceAddress));
+            }
+
+            return new ResourceDictionary { Source = resourceAddress };
         }
     }
 }

@@ -3,7 +3,8 @@
     "ControlzEx.Colors.IdealForegroundColor": "White",
     "ControlzEx.Colors.DarkIdealForegroundDisabledColor": "#ADADAD",
     "ControlzEx.Colors.ExtremeHighlightColor": "#FFFFD232",
-    "ControlzEx.Colors.DarkExtremeHighlightColor": "#FFF29536"
+    "ControlzEx.Colors.DarkExtremeHighlightColor": "#FFF29536",
+    "Theme.IsHighContrast": "false"
   },
   "BaseColorSchemes": [
     {
@@ -57,6 +58,44 @@
         "ControlzEx.Colors.AccentColor40": "#662B579A",
         "ControlzEx.Colors.AccentColor20": "#332B579A",
         "ControlzEx.Colors.HighlightColor": "#FF086F9E"
+      }
+    },
+    {
+      "Name": "Green",
+      "Values": {
+        "ControlzEx.Colors.AccentBaseColor": "#FF60A917",
+        "ControlzEx.Colors.AccentColor80": "#CC60A917",
+        "ControlzEx.Colors.AccentColor60": "#9960A917",
+        "ControlzEx.Colors.AccentColor40": "#6660A917",
+        "ControlzEx.Colors.AccentColor20": "#3360A917",
+        "ControlzEx.Colors.HighlightColor": "#FF477D11"
+      }
+    },
+    {
+      "Name": "Green",
+      "ForBaseColor": "Light",
+      "IsHighContrast": true,
+      "Values": {
+        "ControlzEx.Colors.AccentBaseColor": "#FF60A917",
+        "ControlzEx.Colors.AccentColor80": "#CC60A917",
+        "ControlzEx.Colors.AccentColor60": "#9960A917",
+        "ControlzEx.Colors.AccentColor40": "#6660A917",
+        "ControlzEx.Colors.AccentColor20": "#3360A917",
+        "ControlzEx.Colors.HighlightColor": "#FF477D11"
+      }
+    },
+    {
+      "Name": "Green",
+      "ForBaseColor": "Dark",
+      "IsHighContrast": true,
+      "Values": {
+        "ControlzEx.Colors.AccentBaseColor": "#FF60A917",
+        "ControlzEx.Colors.AccentColor80": "#CC60A917",
+        "ControlzEx.Colors.AccentColor60": "#9960A917",
+        "ControlzEx.Colors.AccentColor40": "#6660A917",
+        "ControlzEx.Colors.AccentColor20": "#3360A917",
+        "ControlzEx.Colors.HighlightColor": "#FF477D11",
+        "ControlzEx.Brushes.LabelTextBrush": "{StaticResource ControlzEx.Colors.AccentBaseColor}"
       }
     },
     {

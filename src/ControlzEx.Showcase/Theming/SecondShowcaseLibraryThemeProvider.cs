@@ -1,19 +1,15 @@
-﻿namespace ControlzEx.Tests.TestClasses
+﻿namespace ControlzEx.Showcase.Theming
 {
     using System.Collections.Generic;
+    using System.Windows;
     using ControlzEx.Theming;
 
-    public class TestLibraryThemeProvider : LibraryThemeProvider
+    public class SecondShowcaseLibraryThemeProvider : LibraryThemeProvider
     {
-        public static readonly TestLibraryThemeProvider DefaultInstance = new TestLibraryThemeProvider();
+        public static readonly SecondShowcaseLibraryThemeProvider DefaultInstance = new SecondShowcaseLibraryThemeProvider();
 
-        public TestLibraryThemeProvider()
-            : this(true)
-        {
-        }
-
-        public TestLibraryThemeProvider(bool registerAtThemeManager)
-            : base(registerAtThemeManager)
+        public SecondShowcaseLibraryThemeProvider()
+            : base(true)
         {
         }
 
@@ -27,6 +23,13 @@
 
             values.Add("ControlzEx.Colors.HighlightColor", colorValues.HighlightColor.ToString());
             values.Add("ControlzEx.Colors.IdealForegroundColor", colorValues.IdealForegroundColor.ToString());
+        }
+
+        public override void PrepareRuntimeThemeResourceDictionary(RuntimeThemeGenerator runtimeThemeGenerator, ResourceDictionary resourceDictionary, RuntimeThemeColorValues runtimeThemeColorValues)
+        {
+            base.PrepareRuntimeThemeResourceDictionary(runtimeThemeGenerator, resourceDictionary, runtimeThemeColorValues);
+
+            resourceDictionary[Theme.ThemeOriginKey] = (string)resourceDictionary[Theme.ThemeOriginKey] + " Second";
         }
     }
 }

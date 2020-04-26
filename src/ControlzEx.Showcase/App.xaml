@@ -7,6 +7,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <theming:ShowcaseLibraryThemeProvider x:Key="{x:Static theming:ShowcaseLibraryThemeProvider.DefaultInstance}" />
+            <theming:SecondShowcaseLibraryThemeProvider x:Key="{x:Static theming:SecondShowcaseLibraryThemeProvider.DefaultInstance}" />
 
             <Style x:Key="{x:Type local:WindowChromeWindow}" TargetType="{x:Type local:WindowChromeWindow}">
                 <Setter Property="BorderThickness" Value="1" />

@@ -39,16 +39,9 @@
     </EmbeddedResource>
   </ItemGroup>
 
-  <Target Name="GenerateXamlFilesInner">
+  <Target Name="GenerateXamlFiles" BeforeTargets="DispatchToInnerBuilds">
     <!-- Generate theme files -->
     <Message Text="$(XamlColorSchemeGeneratorExecutable)" />
     <Exec Command="&quot;$(XamlColorSchemeGeneratorExecutable)&quot;" WorkingDirectory="$(MSBuildProjectDirectory)/Themes/Themes" />
-  </Target>
-
-  <!-- Key to generating the xaml files at the right point in time is to do this before DispatchToInnerBuilds -->
-  <Target Name="GenerateXamlFiles" BeforeTargets="DispatchToInnerBuilds;BeforeBuild">
-    <!--TargetFramework= is critical here, as it will not execute task from same project with same properties multiple times. 
-        We need to unify TargetFramework between empty, net45, netcoreapp3.0 etc.-->
-    <MSBuild Projects="$(MSBuildProjectFile)" Targets="GenerateXamlFilesInner" Properties="TargetFramework=" />
   </Target>
 </Project>

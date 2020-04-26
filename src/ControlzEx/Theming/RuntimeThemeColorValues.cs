@@ -5,7 +5,12 @@ namespace ControlzEx.Theming
 
     public class RuntimeThemeColorValues
     {
-        public RuntimeThemeColorOptions? Options { get; set; }
+        public RuntimeThemeColorValues(RuntimeThemeOptions options)
+        {
+            this.Options = options;
+        }
+
+        public RuntimeThemeOptions Options { get; }
 
         public Color AccentColor { get; set; }
 

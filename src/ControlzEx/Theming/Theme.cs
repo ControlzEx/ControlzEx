@@ -16,27 +16,27 @@ namespace ControlzEx.Theming
     public class Theme
     {
         /// <summary>
-        /// Gets the key for the theme name.
+        /// Gets the key for the themes name.
         /// </summary>
         public const string ThemeNameKey = "Theme.Name";
 
         /// <summary>
-        /// Gets the key for the theme origin.
+        /// Gets the key for the themes origin.
         /// </summary>
         public const string ThemeOriginKey = "Theme.Origin";
 
         /// <summary>
-        /// Gets the key for the theme display name.
+        /// Gets the key for the themes display name.
         /// </summary>
         public const string ThemeDisplayNameKey = "Theme.DisplayName";
 
         /// <summary>
-        /// Gets the key for the theme base color scheme.
+        /// Gets the key for the themes base color scheme.
         /// </summary>
         public const string ThemeBaseColorSchemeKey = "Theme.BaseColorScheme";
 
         /// <summary>
-        /// Gets the key for the theme color scheme.
+        /// Gets the key for the themes color scheme.
         /// </summary>
         public const string ThemeColorSchemeKey = "Theme.ColorScheme";
 
@@ -46,9 +46,19 @@ namespace ControlzEx.Theming
         public const string ThemePrimaryAccentColorKey = "Theme.PrimaryAccentColor";
 
         /// <summary>
-        /// Gets the key for the theme showcase brush.
+        /// Gets the key for the themes showcase brush.
         /// </summary>
         public const string ThemeShowcaseBrushKey = "Theme.ShowcaseBrush";
+
+        /// <summary>
+        /// Gets the key for the themes runtime generation flag.
+        /// </summary>
+        public const string ThemeIsRuntimeGeneratedKey = "Theme.IsRuntimeGenerated";
+
+        /// <summary>
+        /// Gets the key for the themes high contrast flag.
+        /// </summary>
+        public const string ThemeIsHighContrastKey = "Theme.IsHighContrast";
 
         /// <summary>
         /// Gets the key for the theme instance.
@@ -60,7 +70,7 @@ namespace ControlzEx.Theming
         /// </summary>
         /// <param name="libraryTheme">The first <see cref="LibraryTheme"/> of the theme.</param>
         public Theme([NotNull] LibraryTheme libraryTheme)
-            : this(libraryTheme.Name, libraryTheme.DisplayName, libraryTheme.BaseColorScheme, libraryTheme.ColorScheme, libraryTheme.PrimaryAccentColor, libraryTheme.ShowcaseBrush, libraryTheme.IsRuntimeGenerated)
+            : this(libraryTheme.Name, libraryTheme.DisplayName, libraryTheme.BaseColorScheme, libraryTheme.ColorScheme, libraryTheme.PrimaryAccentColor, libraryTheme.ShowcaseBrush, libraryTheme.IsRuntimeGenerated, libraryTheme.IsHighContrast)
         {
             if (libraryTheme is null)
             {
@@ -70,9 +80,10 @@ namespace ControlzEx.Theming
             this.AddLibraryTheme(libraryTheme);
         }
 
-        public Theme(string name, string displayName, string baseColorScheme, string colorScheme, Color primaryAccentColor, Brush showcaseBrush, bool isRuntimeGenerated)
+        public Theme(string name, string displayName, string baseColorScheme, string colorScheme, Color primaryAccentColor, Brush showcaseBrush, bool isRuntimeGenerated, bool isHighContrast)
         {
             this.IsRuntimeGenerated = isRuntimeGenerated;
+            this.IsHighContrast = isHighContrast;
 
             this.Name = name;
             this.DisplayName = displayName;
@@ -86,17 +97,15 @@ namespace ControlzEx.Theming
             this.Resources[ThemeInstanceKey] = this;
         }
 
+        /// <summary>
+        /// Gets whether this theme was generated at runtime.
+        /// </summary>
         public bool IsRuntimeGenerated { get; }
 
         /// <summary>
-        /// The ResourceDictionaries that represent this theme.
+        /// Gets whether this theme is for high contrast mode.
         /// </summary>
-        public ReadOnlyObservableCollection<LibraryTheme> LibraryThemes { get; }
-
-        /// <summary>
-        /// The ResourceDictionaries that represent this theme.
-        /// </summary>
-        private ObservableCollection<LibraryTheme> LibraryThemesInternal { get; } = new ObservableCollection<LibraryTheme>();
+        public bool IsHighContrast { get; }
 
         /// <summary>
         /// Gets the name of the theme.
@@ -132,6 +141,16 @@ namespace ControlzEx.Theming
         /// The root <see cref="System.Windows.ResourceDictionary"/> containing all resource dictionaries of all <see cref="LibraryTheme"/> belonging to this instance as <see cref="System.Windows.ResourceDictionary.MergedDictionaries"/>
         /// </summary>
         public ResourceDictionary Resources { get; } = new ResourceDictionary();
+
+        /// <summary>
+        /// The ResourceDictionaries that represent this theme.
+        /// </summary>
+        public ReadOnlyObservableCollection<LibraryTheme> LibraryThemes { get; }
+
+        /// <summary>
+        /// The ResourceDictionaries that represent this theme.
+        /// </summary>
+        private ObservableCollection<LibraryTheme> LibraryThemesInternal { get; } = new ObservableCollection<LibraryTheme>();
 
         /// <summary>
         /// Ensures that all <see cref="LibraryThemeProvider"/> from <see cref="ThemeManager.LibraryThemeProviders"/> provided a <see cref="LibraryTheme"/> for this <see cref="Theme"/>.
@@ -220,7 +239,8 @@ namespace ControlzEx.Theming
                 throw new ArgumentNullException(nameof(resourceDictionary));
             }
 
-            return GetValueFromKey(resourceDictionary, ThemeNameKey) as string;
+            return GetThemeInstance(resourceDictionary)?.Name 
+                   ?? GetValueFromKey(resourceDictionary, ThemeNameKey) as string;
         }
 
         public static Theme? GetThemeInstance([NotNull] ResourceDictionary resourceDictionary)
@@ -244,10 +264,21 @@ namespace ControlzEx.Theming
                    || string.IsNullOrEmpty(GetThemeName(resourceDictionary)) == false;
         }
 
+        public static bool IsRuntimeGeneratedThemeDictionary(ResourceDictionary resourceDictionary)
+        {
+            if (IsThemeDictionary(resourceDictionary))
+            {
+                return (ContainsKey(resourceDictionary, ThemeInstanceKey) && ((Theme)resourceDictionary[ThemeInstanceKey]).IsRuntimeGenerated)
+                        || (ContainsKey(resourceDictionary, ThemeIsRuntimeGeneratedKey) && (bool)resourceDictionary[ThemeIsRuntimeGeneratedKey]);
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// Gets the value associated with <paramref name="key"/> directly from <paramref name="resourceDictionary"/>.
         /// </summary>
-        private static object? GetValueFromKey([NotNull] ResourceDictionary resourceDictionary, object key)
+        public static object? GetValueFromKey([NotNull] ResourceDictionary resourceDictionary, object key)
         {
 #pragma warning disable CS8605
             foreach (DictionaryEntry resourceEntry in resourceDictionary)
@@ -265,7 +296,7 @@ namespace ControlzEx.Theming
         /// <summary>
         /// Checks if <paramref name="resourceDictionary"/> directly contains <paramref name="key"/>.
         /// </summary>
-        private static bool ContainsKey(ResourceDictionary resourceDictionary, object key)
+        public static bool ContainsKey(ResourceDictionary resourceDictionary, object key)
         {
             foreach (var resourcesKey in resourceDictionary.Keys)
             {

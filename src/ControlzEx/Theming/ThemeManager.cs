@@ -287,7 +287,7 @@ namespace ControlzEx.Theming
 
         public Theme AddLibraryTheme([NotNull] LibraryTheme libraryTheme)
         {
-            var theme = this.GetTheme(libraryTheme.Name);
+            var theme = this.GetTheme(libraryTheme.Name, libraryTheme.IsHighContrast);
             if (!(theme is null))
             {
                 theme.AddLibraryTheme(libraryTheme);
@@ -302,7 +302,7 @@ namespace ControlzEx.Theming
 
         public Theme AddTheme([NotNull] Theme theme)
         {
-            var existingTheme = this.GetTheme(theme.Name);
+            var existingTheme = this.GetTheme(theme.Name, theme.IsHighContrast);
             if (!(existingTheme is null))
             {
                 return existingTheme;
@@ -316,21 +316,21 @@ namespace ControlzEx.Theming
         /// Gets the <see cref="Theme"/> with the given name.
         /// </summary>
         /// <returns>The <see cref="Theme"/> or <c>null</c>, if the theme wasn't found</returns>
-        public Theme? GetTheme([NotNull] string name)
+        public Theme? GetTheme([NotNull] string name, bool highContrast = false)
         {
             if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
 
-            return this.Themes.FirstOrDefault(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+            return this.Themes.FirstOrDefault(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase) && x.IsHighContrast == highContrast);
         }
 
         /// <summary>
         /// Gets the <see cref="Theme"/> with the given name.
         /// </summary>
         /// <returns>The <see cref="Theme"/> or <c>null</c>, if the theme wasn't found</returns>
-        public Theme? GetTheme([NotNull] string baseColorScheme, [NotNull] string colorScheme)
+        public Theme? GetTheme([NotNull] string baseColorScheme, [NotNull] string colorScheme, bool highContrast = false)
         {
             if (baseColorScheme is null)
             {
@@ -342,7 +342,7 @@ namespace ControlzEx.Theming
                 throw new ArgumentNullException(nameof(colorScheme));
             }
 
-            return this.Themes.FirstOrDefault(x => x.BaseColorScheme == baseColorScheme && x.ColorScheme == colorScheme);
+            return this.Themes.FirstOrDefault(x => x.BaseColorScheme == baseColorScheme && x.ColorScheme == colorScheme && x.IsHighContrast == highContrast);
         }
 
         /// <summary>
@@ -365,8 +365,7 @@ namespace ControlzEx.Theming
             }
 
             // support dynamically created runtime resource dictionaries
-            // ReSharper disable HeuristicUnreachableCode
-            if (this.IsThemeDictionary(resourceDictionary))
+            if (this.IsRuntimeGeneratedThemeDictionary(resourceDictionary))
             {
                 foreach (var resourceDictionaryKey in resourceDictionary.Keys)
                 {
@@ -389,7 +388,7 @@ namespace ControlzEx.Theming
                     }
                 }
 
-                return new Theme(new LibraryTheme(resourceDictionary, null, true));
+                return new Theme(new LibraryTheme(resourceDictionary, null));
             }
             // ReSharper restore HeuristicUnreachableCode
 
@@ -418,10 +417,10 @@ namespace ControlzEx.Theming
                 switch (theme.BaseColorScheme)
                 {
                     case BaseColorDarkConst:
-                        return RuntimeThemeGenerator.Current.GenerateRuntimeTheme(BaseColorLight, theme.PrimaryAccentColor);
+                        return RuntimeThemeGenerator.Current.GenerateRuntimeTheme(BaseColorLight, theme.PrimaryAccentColor, theme.IsHighContrast);
 
                     case BaseColorLightConst:
-                        return RuntimeThemeGenerator.Current.GenerateRuntimeTheme(BaseColorDark, theme.PrimaryAccentColor);
+                        return RuntimeThemeGenerator.Current.GenerateRuntimeTheme(BaseColorDark, theme.PrimaryAccentColor, theme.IsHighContrast);
                 }
             }
             else
@@ -429,10 +428,10 @@ namespace ControlzEx.Theming
                 switch (theme.BaseColorScheme)
                 {
                     case BaseColorDarkConst:
-                        return this.GetTheme(BaseColorLight, theme.ColorScheme);
+                        return this.GetTheme(BaseColorLight, theme.ColorScheme, theme.IsHighContrast);
 
                     case BaseColorLightConst:
-                        return this.GetTheme(BaseColorDark, theme.ColorScheme);
+                        return this.GetTheme(BaseColorDark, theme.ColorScheme, theme.IsHighContrast);
                 }
             }
 
@@ -440,7 +439,7 @@ namespace ControlzEx.Theming
         }
 
         /// <summary>
-        /// Determines whether the specified resource dictionary represents an <see cref="Theme"/>.
+        /// Determines whether the specified resource dictionary represents a <see cref="Theme"/>.
         /// <para />
         /// This might include runtime themes which do not have a resource uri.
         /// </summary>
@@ -449,19 +448,27 @@ namespace ControlzEx.Theming
         /// <exception cref="System.ArgumentNullException">resources</exception>
         public bool IsThemeDictionary([NotNull] ResourceDictionary resourceDictionary)
         {
-            if (resourceDictionary is null)
-            {
-                throw new ArgumentNullException(nameof(resourceDictionary));
-            }
-
             return Theme.IsThemeDictionary(resourceDictionary);
+        }
+
+        /// <summary>
+        /// Determines whether the specified resource dictionary represents a <see cref="Theme"/> and was generated at runtime.
+        /// <para />
+        /// This might include runtime themes which do not have a resource uri.
+        /// </summary>
+        /// <param name="resourceDictionary">The resources.</param>
+        /// <returns><c>true</c> if the resource dictionary is an <see cref="Theme"/>; otherwise, <c>false</c>.</returns>
+        /// <exception cref="System.ArgumentNullException">resources</exception>
+        public bool IsRuntimeGeneratedThemeDictionary([NotNull] ResourceDictionary resourceDictionary)
+        {
+            return Theme.IsRuntimeGeneratedThemeDictionary(resourceDictionary);
         }
 
         /// <summary>
         /// Change the theme for the whole application.
         /// </summary>
         [SecurityCritical]
-        public Theme ChangeTheme([NotNull] Application app, [NotNull] string themeName)
+        public Theme ChangeTheme([NotNull] Application app, [NotNull] string themeName, bool highContrast = false)
         {
             if (app is null)
             {
@@ -473,14 +480,14 @@ namespace ControlzEx.Theming
                 throw new ArgumentNullException(nameof(themeName));
             }
 
-            return this.ChangeTheme(app, app.Resources, this.GetTheme(themeName)!);
+            return this.ChangeTheme(app, app.Resources, this.GetTheme(themeName, highContrast)!);
         }
 
         /// <summary>
         /// Change theme for the given window.
         /// </summary>
         [SecurityCritical]
-        public Theme ChangeTheme([NotNull] FrameworkElement frameworkElement, [NotNull] string themeName)
+        public Theme ChangeTheme([NotNull] FrameworkElement frameworkElement, [NotNull] string themeName, bool highContrast = false)
         {
             if (frameworkElement is null)
             {
@@ -492,7 +499,7 @@ namespace ControlzEx.Theming
                 throw new ArgumentNullException(nameof(themeName));
             }
 
-            return this.ChangeTheme(frameworkElement, this.GetTheme(themeName)!);
+            return this.ChangeTheme(frameworkElement, this.GetTheme(themeName, highContrast)!);
         }
 
         /// <summary>
@@ -847,7 +854,7 @@ namespace ControlzEx.Theming
             if (newTheme is null
                 && currentTheme.IsRuntimeGenerated)
             {
-                var runtimeTheme = RuntimeThemeGenerator.Current.GenerateRuntimeTheme(baseColor, currentTheme.PrimaryAccentColor);
+                var runtimeTheme = RuntimeThemeGenerator.Current.GenerateRuntimeTheme(baseColor, currentTheme.PrimaryAccentColor, currentTheme.IsHighContrast);
 
                 if (!(runtimeTheme is null))
                 {
@@ -947,7 +954,7 @@ namespace ControlzEx.Theming
                 && currentTheme.IsRuntimeGenerated
                 && TryConvertColorFromString(colorScheme, out var color))
             {
-                var runtimeTheme = RuntimeThemeGenerator.Current.GenerateRuntimeTheme(currentTheme.BaseColorScheme, color);
+                var runtimeTheme = RuntimeThemeGenerator.Current.GenerateRuntimeTheme(currentTheme.BaseColorScheme, color, currentTheme.IsHighContrast);
 
                 if (!(runtimeTheme is null))
                 {
@@ -1208,15 +1215,15 @@ namespace ControlzEx.Theming
                 switch (syncMode)
                 {
                     case ThemeSyncMode.SyncWithAppMode:
-                        this.SyncThemeBaseColorWithWindowsAppModeSetting();
+                        this.SyncThemeBaseColorWithWindowsAppModeSetting(syncMode);
                         break;
 
                     case ThemeSyncMode.SyncWithAccent:
-                        this.SyncThemeColorSchemeWithWindowsAccentColor();
+                        this.SyncThemeColorSchemeWithWindowsAccentColor(syncMode);
                         break;
 
                     case ThemeSyncMode.SyncAll:
-                        this.SyncThemeColorSchemeWithWindowsAccentColor(WindowsThemeHelper.GetWindowsBaseColor());
+                        this.SyncThemeColorSchemeWithWindowsAccentColor(syncMode, WindowsThemeHelper.GetWindowsBaseColor());
                         break;
                 }
             }
@@ -1231,7 +1238,7 @@ namespace ControlzEx.Theming
         /// <summary>
         /// Synchronizes the current <see cref="Theme"/> with the "app mode" setting from windows.
         /// </summary>
-        public void SyncThemeBaseColorWithWindowsAppModeSetting()
+        public void SyncThemeBaseColorWithWindowsAppModeSetting(ThemeSyncMode? syncMode = null)
         {
             if (Application.Current is null)
             {
@@ -1239,10 +1246,11 @@ namespace ControlzEx.Theming
             }
 
             var baseColor = WindowsThemeHelper.GetWindowsBaseColor();
+            var syncModeToUse = syncMode ?? this.themeSyncMode;
 
-            if (this.ThemeSyncMode.HasFlag(ThemeSyncMode.SyncWithAccent))
+            if (syncModeToUse.HasFlag(ThemeSyncMode.SyncWithAccent))
             {
-                this.SyncThemeColorSchemeWithWindowsAccentColor(baseColor);
+                this.SyncThemeColorSchemeWithWindowsAccentColor(syncMode, baseColor);
             }
             else
             {
@@ -1250,7 +1258,22 @@ namespace ControlzEx.Theming
             }
         }
 
-        public void SyncThemeColorSchemeWithWindowsAccentColor(string? baseColor = null)
+        public void SyncThemeColorSchemeWithWindowsAccentColor()
+        {
+            this.SyncThemeColorSchemeWithWindowsAccentColor(this.ThemeSyncMode, null);
+        }
+
+        public void SyncThemeColorSchemeWithWindowsAccentColor(string baseColor)
+        {
+            this.SyncThemeColorSchemeWithWindowsAccentColor(this.ThemeSyncMode, baseColor);
+        }
+
+        public void SyncThemeColorSchemeWithWindowsAccentColor(ThemeSyncMode syncMode)
+        {
+            this.SyncThemeColorSchemeWithWindowsAccentColor(syncMode, null);
+        }
+
+        public void SyncThemeColorSchemeWithWindowsAccentColor(ThemeSyncMode? syncMode, string? baseColor)
         {
             if (Application.Current is null)
             {
@@ -1265,9 +1288,10 @@ namespace ControlzEx.Theming
             }
 
             var detectedTheme = this.DetectTheme();
+            var syncModeToUse = syncMode ?? this.themeSyncMode;
 
             if (baseColor == null
-                && this.ThemeSyncMode.HasFlag(ThemeSyncMode.SyncWithAppMode))
+                && syncModeToUse.HasFlag(ThemeSyncMode.SyncWithAppMode))
             {
                 baseColor = WindowsThemeHelper.GetWindowsBaseColor();
             }
@@ -1276,11 +1300,15 @@ namespace ControlzEx.Theming
                 baseColor ??= detectedTheme?.BaseColorScheme ?? BaseColorLight;
             }
 
+            var isHighContrast = detectedTheme?.IsHighContrast == true ||
+                                 (syncModeToUse.HasFlag(ThemeSyncMode.SyncWithHighContrast)
+                                    && WindowsThemeHelper.IsHighContrastEnabled());
+
             var accentColorAsString = accentColor.ToString();
 
             // Check if we previously generated a theme matching the desired settings
-            var theme = this.GetTheme(baseColor, accentColorAsString!) 
-                        ?? RuntimeThemeGenerator.Current.GenerateRuntimeThemeFromWindowsSettings(baseColor, this.libraryThemeProvidersInternal);
+            var theme = this.GetTheme(baseColor, accentColorAsString!, isHighContrast) 
+                        ?? RuntimeThemeGenerator.Current.GenerateRuntimeThemeFromWindowsSettings(baseColor, isHighContrast, this.libraryThemeProvidersInternal);
 
             // Only change the theme if it's not the current already
             if (!(theme is null)
@@ -1368,10 +1396,15 @@ namespace ControlzEx.Theming
         SyncWithAppMode = 1 << 2,
 
         /// <summary>
-        /// Gets or sets whether changes to the "app mode" setting from windows should be detected at runtime and the current <see cref="Theme"/> be changed accordingly.
+        /// Gets or sets whether changes to the accent color settings from windows should be detected at runtime and the current <see cref="Theme"/> be changed accordingly.
         /// </summary>
         SyncWithAccent = 1 << 3,
 
-        SyncAll = SyncWithAppMode | SyncWithAccent
+        /// <summary>
+        /// Gets or sets whether changes to the high contrast setting from windows should be detected at runtime and the current <see cref="Theme"/> be changed accordingly.
+        /// </summary>
+        SyncWithHighContrast = 1 << 4,
+
+        SyncAll = SyncWithAppMode | SyncWithAccent | SyncWithHighContrast
     }
 }
