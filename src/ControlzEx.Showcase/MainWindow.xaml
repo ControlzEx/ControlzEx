@@ -47,14 +47,26 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="150" />
+                    <ColumnDefinition Width="Auto" />                
                 </Grid.ColumnDefinitions>
-                <Border Grid.ColumnSpan="2" Background="{Binding ElementName=Window, Path=NCCurrentBrush}" />
+                <Border Grid.ColumnSpan="10" Background="{Binding ElementName=Window, Path=NCCurrentBrush}" />
 
                 <TextBlock x:Name="TitlebarText"
                            Grid.Column="0"
                            Margin="4 0 0 0"
                            HorizontalAlignment="Center"
                            Text="Use GridSplitter below to move content above titlebar" />
+                
+                <UniformGrid Grid.Column="2"
+                            Columns="3">
+                    <Button Content="_"
+                            Width="20"
+                            Click="MinimizeButton_Click" />
+                    <Button Content="[ ]"
+                            Click="RestoreOrMaximizeButton_Click" />
+                    <Button Content="X"
+                            Click="CloseButton_Click" />
+                </UniformGrid>
             </Grid>
 
             <GridSplitter Grid.Row="1"
