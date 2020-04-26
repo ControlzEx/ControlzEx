@@ -32,7 +32,7 @@
                       SelectedItem="{Binding Source={x:Static theming:ThemeManager.Current}, Path=ThemeSyncMode}" />
 
             <Button Click="SyncNow_OnClick">Sync now</Button>
-            <CheckBox IsChecked="{Binding Path=ColorOptions.UseHSL, Source={x:Static theming:RuntimeThemeGenerator.Current}, Mode=TwoWay}"
+            <CheckBox IsChecked="{Binding Path=Options.UseHSL, Source={x:Static theming:RuntimeThemeGenerator.Current}, Mode=TwoWay}"
                       Content="Use HSL color"
                       VerticalAlignment="Center" />
         </StackPanel>
