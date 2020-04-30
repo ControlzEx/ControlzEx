@@ -1,4 +1,4 @@
-﻿using ControlzEx.Theming;
+using ControlzEx.Theming;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -16,12 +16,21 @@ namespace ControlzEx.Tests.Theming
         // [Test]
         public void TestHslFromColor()
         {
-            for (uint i = 0; i < uint.MaxValue; i++)
+            Parallel.For(0, byte.MaxValue, (a) => 
             {
-                var color = (Color)ColorConverter.ConvertFromString("#" + i.ToString("X8"));
-
-                Assert.AreEqual(color, new HSLColor(color).ToColor());
-            }
+                Color color;
+                for (byte r = 0; r < byte.MaxValue; r++)
+                {
+                    for (byte g = 0; g < byte.MaxValue; g++)
+                    {
+                        for (byte b = 0; b < byte.MaxValue; b++)
+                        {
+                            color = Color.FromArgb((byte)a, r, g, b);
+                            Assert.AreEqual(color, new HSLColor(color).ToColor());
+                        }
+                    }
+                }
+            });
         }
 
         [Test]
