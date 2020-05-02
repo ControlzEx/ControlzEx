@@ -234,12 +234,22 @@ namespace ControlzEx.Theming
 
         public static string? GetThemeName([NotNull] ResourceDictionary resourceDictionary)
         {
+            return GetThemeName(resourceDictionary, false);
+        }
+
+        public static string? GetThemeName([NotNull] ResourceDictionary resourceDictionary, bool skipThemeDictionaryCheck)
+        {
             if (resourceDictionary is null)
             {
                 throw new ArgumentNullException(nameof(resourceDictionary));
             }
 
-            return GetThemeInstance(resourceDictionary)?.Name 
+            if (!skipThemeDictionaryCheck && !IsThemeDictionary(resourceDictionary))
+            {
+                return null;
+            }
+
+            return GetThemeInstance(resourceDictionary)?.Name
                    ?? GetValueFromKey(resourceDictionary, ThemeNameKey) as string;
         }
 
@@ -250,8 +260,15 @@ namespace ControlzEx.Theming
                 throw new ArgumentNullException(nameof(resourceDictionary));
             }
 
+            if (!IsThemeDictionary(resourceDictionary))
+            {
+                return null;
+            }
+
             return GetValueFromKey(resourceDictionary, ThemeInstanceKey) as Theme;
         }
+
+        private static readonly Dictionary<Uri, bool> ThemeDictionaryCache = new Dictionary<Uri, bool>();
 
         public static bool IsThemeDictionary(ResourceDictionary resourceDictionary)
         {
@@ -260,8 +277,24 @@ namespace ControlzEx.Theming
                 throw new ArgumentNullException(nameof(resourceDictionary));
             }
 
-            return ContainsKey(resourceDictionary, ThemeInstanceKey)
-                   || string.IsNullOrEmpty(GetThemeName(resourceDictionary)) == false;
+            var source = resourceDictionary.Source;
+            if (source != null)
+            {
+                if (ThemeDictionaryCache.TryGetValue(source, out var existingValue))
+                {
+                    return existingValue;
+                }
+            }
+
+            var result = ContainsKey(resourceDictionary, ThemeInstanceKey)
+                   || string.IsNullOrEmpty(GetThemeName(resourceDictionary, true)) == false;
+
+            if (source != null)
+            {
+                ThemeDictionaryCache[source] = result;
+            }
+
+            return result;
         }
 
         public static bool IsRuntimeGeneratedThemeDictionary(ResourceDictionary resourceDictionary)
