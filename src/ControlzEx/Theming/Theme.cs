@@ -2,12 +2,12 @@
 namespace ControlzEx.Theming
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
     using System.Windows;
     using System.Windows.Media;
+    using ControlzEx.Internal;
     using JetBrains.Annotations;
 
     /// <summary>
@@ -96,6 +96,8 @@ namespace ControlzEx.Theming
 
             this.Resources[ThemeInstanceKey] = this;
         }
+
+        public static readonly Dictionary<Uri, bool> ThemeDictionaryCache = new Dictionary<Uri, bool>();
 
         /// <summary>
         /// Gets whether this theme was generated at runtime.
@@ -204,12 +206,6 @@ namespace ControlzEx.Theming
                 throw new ArgumentNullException(nameof(libraryTheme));
             }
 
-            //// todo: How do we check if the library themes match this theme?
-            //if (libraryTheme.Name != this.Name)
-            //{
-            //    throw new ArgumentException("The theme key does not match the current theme key.");
-            //}
-
             if (!(libraryTheme.ParentTheme is null))
             {
                 throw new ArgumentException("The theme already has a parent.");
@@ -229,7 +225,7 @@ namespace ControlzEx.Theming
         /// <inheritdoc />
         public override string ToString()
         {
-            return $"DisplayName={this.DisplayName}, Name={this.Name}";
+            return $"DisplayName={this.DisplayName}, Name={this.Name}, IsHighContrast={this.IsHighContrast}, IsRuntimeGenerated={this.IsRuntimeGenerated}";
         }
 
         public static string? GetThemeName([NotNull] ResourceDictionary resourceDictionary)
@@ -244,13 +240,14 @@ namespace ControlzEx.Theming
                 throw new ArgumentNullException(nameof(resourceDictionary));
             }
 
-            if (!skipThemeDictionaryCheck && !IsThemeDictionary(resourceDictionary))
+            if (skipThemeDictionaryCheck == false
+                && IsThemeDictionary(resourceDictionary) == false)
             {
                 return null;
             }
 
             return GetThemeInstance(resourceDictionary)?.Name
-                   ?? GetValueFromKey(resourceDictionary, ThemeNameKey) as string;
+                   ?? ResourceDictionaryHelper.GetValueFromKey(resourceDictionary, ThemeNameKey) as string;
         }
 
         public static Theme? GetThemeInstance([NotNull] ResourceDictionary resourceDictionary)
@@ -260,15 +257,13 @@ namespace ControlzEx.Theming
                 throw new ArgumentNullException(nameof(resourceDictionary));
             }
 
-            if (!IsThemeDictionary(resourceDictionary))
+            if (IsThemeDictionary(resourceDictionary) == false)
             {
                 return null;
             }
 
-            return GetValueFromKey(resourceDictionary, ThemeInstanceKey) as Theme;
+            return ResourceDictionaryHelper.GetValueFromKey(resourceDictionary, ThemeInstanceKey) as Theme;
         }
-
-        private static readonly Dictionary<Uri, bool> ThemeDictionaryCache = new Dictionary<Uri, bool>();
 
         public static bool IsThemeDictionary(ResourceDictionary resourceDictionary)
         {
@@ -278,7 +273,7 @@ namespace ControlzEx.Theming
             }
 
             var source = resourceDictionary.Source;
-            if (source != null)
+            if (!(source is null))
             {
                 if (ThemeDictionaryCache.TryGetValue(source, out var existingValue))
                 {
@@ -286,10 +281,10 @@ namespace ControlzEx.Theming
                 }
             }
 
-            var result = ContainsKey(resourceDictionary, ThemeInstanceKey)
-                   || string.IsNullOrEmpty(GetThemeName(resourceDictionary, true)) == false;
+            var result = ResourceDictionaryHelper.ContainsKey(resourceDictionary, ThemeInstanceKey)
+                         || string.IsNullOrEmpty(GetThemeName(resourceDictionary, true)) == false;
 
-            if (source != null)
+            if (!(source is null))
             {
                 ThemeDictionaryCache[source] = result;
             }
@@ -301,51 +296,13 @@ namespace ControlzEx.Theming
         {
             if (IsThemeDictionary(resourceDictionary))
             {
-                return (ContainsKey(resourceDictionary, ThemeInstanceKey) && ((Theme)resourceDictionary[ThemeInstanceKey]).IsRuntimeGenerated)
-                        || (ContainsKey(resourceDictionary, ThemeIsRuntimeGeneratedKey) && (bool)resourceDictionary[ThemeIsRuntimeGeneratedKey]);
+                return (ResourceDictionaryHelper.ContainsKey(resourceDictionary, ThemeInstanceKey) && ((Theme)resourceDictionary[ThemeInstanceKey]).IsRuntimeGenerated)
+                        || (ResourceDictionaryHelper.ContainsKey(resourceDictionary, ThemeIsRuntimeGeneratedKey) && (bool)resourceDictionary[ThemeIsRuntimeGeneratedKey]);
             }
 
             return false;
         }
 
-        /// <summary>
-        /// Gets the value associated with <paramref name="key"/> directly from <paramref name="resourceDictionary"/>.
-        /// </summary>
-        public static object? GetValueFromKey([NotNull] ResourceDictionary resourceDictionary, object key)
-        {
-            foreach (var resourceKey in resourceDictionary.Keys)
-            {
-                if (key.Equals(resourceKey))
-                {
-                    try
-                    {
-                        return resourceDictionary[resourceKey];
-                    }
-                    catch
-                    {
-                        // ignored
-                        // if we get an exception here the resource dictionary is, most likely, malformed
-                    }
-                }
-            }
 
-            return null;
-        }
-
-        /// <summary>
-        /// Checks if <paramref name="resourceDictionary"/> directly contains <paramref name="key"/>.
-        /// </summary>
-        public static bool ContainsKey(ResourceDictionary resourceDictionary, object key)
-        {
-            foreach (var resourceKey in resourceDictionary.Keys)
-            {
-                if (key.Equals(resourceKey))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
     }
 }
