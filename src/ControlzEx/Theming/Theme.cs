@@ -274,6 +274,7 @@ namespace ControlzEx.Theming
                 }
             }
 
+            // We are not allowed to use other methods like GetThemeInstance or GetThemeName here as that would cause an endless-loop
             var result = ResourceDictionaryHelper.ContainsKey(resourceDictionary, ThemeInstanceKey)
                          || string.IsNullOrEmpty(ResourceDictionaryHelper.GetValueFromKey(resourceDictionary, ThemeNameKey) as string) == false;
 
