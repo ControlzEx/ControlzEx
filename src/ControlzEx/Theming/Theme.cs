@@ -280,15 +280,21 @@ namespace ControlzEx.Theming
         /// </summary>
         public static object? GetValueFromKey([NotNull] ResourceDictionary resourceDictionary, object key)
         {
-#pragma warning disable CS8605
-            foreach (DictionaryEntry resourceEntry in resourceDictionary)
+            foreach (var resourceKey in resourceDictionary.Keys)
             {
-                if (key.Equals(resourceEntry.Key))
+                if (key.Equals(resourceKey))
                 {
-                    return resourceEntry.Value;
+                    try
+                    {
+                        return resourceDictionary[resourceKey];
+                    }
+                    catch
+                    {
+                        // ignored
+                        // if we get an exception here the resource dictionary is, most likely, malformed
+                    }
                 }
             }
-#pragma warning restore CS8605
 
             return null;
         }
@@ -298,9 +304,9 @@ namespace ControlzEx.Theming
         /// </summary>
         public static bool ContainsKey(ResourceDictionary resourceDictionary, object key)
         {
-            foreach (var resourcesKey in resourceDictionary.Keys)
+            foreach (var resourceKey in resourceDictionary.Keys)
             {
-                if (key.Equals(resourcesKey))
+                if (key.Equals(resourceKey))
                 {
                     return true;
                 }
