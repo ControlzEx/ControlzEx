@@ -13,7 +13,7 @@ namespace ControlzEx.Theming
         /// </summary>
         public virtual RuntimeThemeOptions CreateRuntimeThemeOptions(bool isHighContrast, ThemeGenerator.ThemeGeneratorParameters? generatorParameters, ThemeGenerator.ThemeGeneratorBaseColorScheme? baseColorScheme)
         {
-            return new RuntimeThemeOptions(this.UseHSL, generatorParameters, baseColorScheme);
+            return new RuntimeThemeOptions(this.UseHSL, isHighContrast, generatorParameters, baseColorScheme);
         }
     }
 }
