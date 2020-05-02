@@ -473,7 +473,8 @@ namespace ControlzEx.Tests.Theming
                                        Theme.ThemeIsRuntimeGeneratedKey,
                                        LibraryTheme.LibraryThemeInstanceKey,
                                        "ControlzEx.Colors.HighlightColor", // Ignored because it's hand crafted
-                                       "ControlzEx.Brushes.HighlightBrush", // Ignored because it's hand crafted
+                                       "ControlzEx.Brushes.HighlightBrush", // Ignored because it's hand crafted,
+                                       "Theme.RuntimeThemeColorValues"
                                    };
             CompareResourceDictionaries(dic, newTheme.GetAllResources().First(), ignoredKeyValues);
             CompareResourceDictionaries(newTheme.GetAllResources().First(), dic, ignoredKeyValues);

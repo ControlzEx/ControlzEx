@@ -46,10 +46,12 @@
             Assert.That(colorValues.Options, Is.EqualTo(runtimeThemeOptions));
             Assert.That(colorValues.AccentBaseColor, Is.EqualTo(Colors.Blue));
             Assert.That(colorValues.AccentColor, Is.EqualTo(Colors.Blue));
-            Assert.That(colorValues.AccentColor20, Is.EqualTo(ColorConverter.ConvertFromString("#FFCCCCFE")));
+
+            // Taken values to compare from here: https://www.w3schools.com/colors/colors_picker.asp?colorhex=0000ff
+            Assert.That(colorValues.AccentColor20, Is.EqualTo(ColorConverter.ConvertFromString("#FFCCCCFF")));
             Assert.That(colorValues.AccentColor40, Is.EqualTo(ColorConverter.ConvertFromString("#FF9999FF")));
-            Assert.That(colorValues.AccentColor60, Is.EqualTo(ColorConverter.ConvertFromString("#FF6565FF")));
-            Assert.That(colorValues.AccentColor80, Is.EqualTo(ColorConverter.ConvertFromString("#FF3232FF")));
+            Assert.That(colorValues.AccentColor60, Is.EqualTo(ColorConverter.ConvertFromString("#FF6666FF")));
+            Assert.That(colorValues.AccentColor80, Is.EqualTo(ColorConverter.ConvertFromString("#FF3333FF")));
             Assert.That(colorValues.HighlightColor, Is.EqualTo(ColorConverter.ConvertFromString("#FF0707FF")));
             Assert.That(colorValues.IdealForegroundColor, Is.EqualTo(ColorConverter.ConvertFromString("#FFFFFFFF")));
             Assert.That(colorValues.PrimaryAccentColor, Is.EqualTo(Colors.Blue));
