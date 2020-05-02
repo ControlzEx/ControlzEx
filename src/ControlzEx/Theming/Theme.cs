@@ -230,24 +230,17 @@ namespace ControlzEx.Theming
 
         public static string? GetThemeName([NotNull] ResourceDictionary resourceDictionary)
         {
-            return GetThemeName(resourceDictionary, false);
-        }
-
-        public static string? GetThemeName([NotNull] ResourceDictionary resourceDictionary, bool skipThemeDictionaryCheck)
-        {
             if (resourceDictionary is null)
             {
                 throw new ArgumentNullException(nameof(resourceDictionary));
             }
 
-            if (skipThemeDictionaryCheck == false
-                && IsThemeDictionary(resourceDictionary) == false)
+            if (IsThemeDictionary(resourceDictionary) == false)
             {
                 return null;
             }
 
-            return GetThemeInstance(resourceDictionary)?.Name
-                   ?? ResourceDictionaryHelper.GetValueFromKey(resourceDictionary, ThemeNameKey) as string;
+            return ResourceDictionaryHelper.GetValueFromKey(resourceDictionary, ThemeNameKey) as string;
         }
 
         public static Theme? GetThemeInstance([NotNull] ResourceDictionary resourceDictionary)
@@ -282,7 +275,7 @@ namespace ControlzEx.Theming
             }
 
             var result = ResourceDictionaryHelper.ContainsKey(resourceDictionary, ThemeInstanceKey)
-                         || string.IsNullOrEmpty(GetThemeName(resourceDictionary, true)) == false;
+                         || string.IsNullOrEmpty(ResourceDictionaryHelper.GetValueFromKey(resourceDictionary, ThemeNameKey) as string) == false;
 
             if (!(source is null))
             {
