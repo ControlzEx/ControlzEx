@@ -102,6 +102,39 @@ namespace ControlzEx
             set { SetValue(BadgeMarginProperty, value); }
         }
 
+
+        /// <summary>Identifies the <see cref="BadgeTemplate"/> dependency property.</summary>
+        public static readonly DependencyProperty BadgeTemplateProperty
+            = DependencyProperty.Register(nameof(BadgeTemplate),
+                                          typeof(DataTemplate),
+                                          typeof(BadgedEx),
+                                          new PropertyMetadata(null));
+
+        /// <summary>
+        /// Gets or Sets the <see cref="DataTemplate"/> for the Badge
+        /// </summary>
+        public DataTemplate BadgeTemplate
+        {
+            get { return (DataTemplate)GetValue(BadgeTemplateProperty); }
+            set { SetValue(BadgeTemplateProperty, value); }
+        }
+
+        /// <summary>Identifies the <see cref="BadgeTemplateSelector"/> dependency property.</summary>
+        public static readonly DependencyProperty BadgeTemplateSelectorProperty
+            = DependencyProperty.Register(nameof(BadgeTemplateSelector),
+                                          typeof(DataTemplateSelector),
+                                          typeof(BadgedEx),
+                                          new PropertyMetadata(null));
+
+        /// <summary>
+        /// Gets or Sets the <see cref="DataTemplateSelector"/> for the Badge
+        /// </summary>
+        public DataTemplateSelector BadgeTemplateSelector
+        {
+            get { return (DataTemplateSelector)GetValue(BadgeTemplateSelectorProperty); }
+            set { SetValue(BadgeTemplateSelectorProperty, value); }
+        }
+
         public static readonly RoutedEvent BadgeChangedEvent
             = EventManager.RegisterRoutedEvent(nameof(BadgeChanged),
                                                RoutingStrategy.Bubble,
