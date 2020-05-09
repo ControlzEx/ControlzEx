@@ -144,6 +144,11 @@ namespace ControlzEx.Showcase
             //this.LoadedCountTextBlock.Text = $"Load-Count: {--this.LoadedCount}";
         }
 
+        private void BadgedButtonOnClick(object sender, RoutedEventArgs e)
+        {
+            this.BadgedButton.Badge = DateTime.Now;
+        }
+
 #pragma warning disable 618
         private void TitleBarGrid_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {

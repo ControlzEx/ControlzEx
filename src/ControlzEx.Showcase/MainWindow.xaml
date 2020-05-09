@@ -47,7 +47,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="150" />
-                    <ColumnDefinition Width="Auto" />                
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <Border Grid.ColumnSpan="10" Background="{Binding ElementName=Window, Path=NCCurrentBrush}" />
 
@@ -56,16 +56,13 @@
                            Margin="4 0 0 0"
                            HorizontalAlignment="Center"
                            Text="Use GridSplitter below to move content above titlebar" />
-                
-                <UniformGrid Grid.Column="2"
-                            Columns="3">
-                    <Button Content="_"
-                            Width="20"
-                            Click="MinimizeButton_Click" />
-                    <Button Content="[ ]"
-                            Click="RestoreOrMaximizeButton_Click" />
-                    <Button Content="X"
-                            Click="CloseButton_Click" />
+
+                <UniformGrid Grid.Column="2" Columns="3">
+                    <Button Width="20"
+                            Click="MinimizeButton_Click"
+                            Content="_" />
+                    <Button Click="RestoreOrMaximizeButton_Click" Content="[ ]" />
+                    <Button Click="CloseButton_Click" Content="X" />
                 </UniformGrid>
             </Grid>
 
@@ -191,6 +188,7 @@
                                 <WrapPanel Orientation="Horizontal">
                                     <Button MinWidth="100"
                                             Margin="4"
+                                            Padding="4"
                                             Content="ToolTipAssist">
                                         <Button.ToolTip>
                                             <ToolTip controlzEx:ToolTipAssist.AutoMove="True">
@@ -221,6 +219,17 @@
                                             </ToolTip>
                                         </Button.ToolTip>
                                     </Button>
+                                    <controlzEx:BadgedEx x:Name="BadgedButton"
+                                                         Badge="{x:Static system:DateTime.Now}"
+                                                         BadgeBackground="DodgerBlue"
+                                                         BadgeForeground="White"
+                                                         BadgeStringFormat="{}{0:ss}">
+                                        <Button MinWidth="100"
+                                                Margin="4"
+                                                Padding="4"
+                                                Click="BadgedButtonOnClick"
+                                                Content="Badge" />
+                                    </controlzEx:BadgedEx>
                                 </WrapPanel>
                             </GroupBox>
 
