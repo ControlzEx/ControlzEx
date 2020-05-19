@@ -129,7 +129,9 @@ namespace ControlzEx.Behaviors
             if(this.AssociatedObject.WindowState == WindowState.Normal)
             {
                 var ignoreTaskBar = Interaction.GetBehaviors(this.AssociatedObject).OfType<WindowChromeBehavior>().FirstOrDefault()?.IgnoreTaskbarOnMaximize == true;
-                if (this.makeGlowVisibleTimer != null && SystemParameters.MinimizeAnimation && !ignoreTaskBar)
+                if (this.makeGlowVisibleTimer != null
+                    && SystemParameters.MinimizeAnimation 
+                    && !ignoreTaskBar)
                 {
                     this.makeGlowVisibleTimer.Start();
                 }
