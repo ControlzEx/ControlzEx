@@ -1,4 +1,4 @@
-﻿namespace ControlzEx.Behaviors
+namespace ControlzEx.Behaviors
 {
     using System;
     using System.ComponentModel;
@@ -263,7 +263,7 @@
                     {
                         Assert.IsNotDefault(lParam);
                         var wp = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
-                        if (wp.Equals(this.prevWindowPos) == false)
+                        if (wp.SizeAndPositionEquals(this.prevWindowPos) == false)
                         {
                             this.UpdateCore();
                             this.prevWindowPos = wp;
@@ -276,7 +276,7 @@
                     {
                         Assert.IsNotDefault(lParam);
                         var wp = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
-                        if (wp.Equals(this.prevWindowPos) == false)
+                        if (wp.SizeAndPositionEquals(this.prevWindowPos) == false)
                         {
                             this.UpdateCore();
                             this.prevWindowPos = wp;
