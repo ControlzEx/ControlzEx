@@ -34,6 +34,8 @@ namespace ControlzEx.Controls
 
         private readonly Window owner;
 
+        private RECT lastUpdateCoreRect;
+
         #region PInvoke
         
         [DllImport("user32.dll")]
@@ -390,6 +392,13 @@ namespace ControlzEx.Controls
 
         internal void UpdateCore(RECT rect)
         {
+            if (this.lastUpdateCoreRect.Equals(rect))
+            {
+                return;
+            }
+
+            this.lastUpdateCoreRect = rect;
+
             if (this.CanUpdateCore() == false)
             {
                 return;
