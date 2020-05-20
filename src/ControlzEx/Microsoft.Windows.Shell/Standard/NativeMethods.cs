@@ -2461,6 +2461,32 @@ namespace ControlzEx.Standard
         }
     }
 
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct WNDCLASS
+    {
+        public uint style;
+
+        public Delegate lpfnWndProc;
+
+        public int cbClsExtra;
+
+        public int cbWndExtra;
+
+        public IntPtr hInstance;
+
+        public IntPtr hIcon;
+
+        public IntPtr hCursor;
+
+        public IntPtr hbrBackground;
+
+        [MarshalAs(UnmanagedType.LPWStr)]
+        public string lpszMenuName;
+
+        [MarshalAs(UnmanagedType.LPWStr)]
+        public string lpszClassName;
+    }
+
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
     public struct WNDCLASSEX
@@ -2896,6 +2922,10 @@ namespace ControlzEx.Standard
             IntPtr hInstance,
             IntPtr lpParam);
 
+        [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        public static extern IntPtr CreateWindowEx(int dwExStyle, IntPtr classAtom, string lpWindowName, int dwStyle, int x, int y, int nWidth, int nHeight, IntPtr hWndParent, IntPtr hMenu, IntPtr hInstance, IntPtr lpParam);
+
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static IntPtr CreateWindowEx(
@@ -3745,6 +3775,10 @@ namespace ControlzEx.Standard
             return ret;
         }
 
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        public static extern ushort RegisterClass(ref WNDCLASS lpWndClass);
+
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("user32.dll", EntryPoint = "RegisterWindowMessage", SetLastError = true, CharSet = CharSet.Unicode)]
         private static extern uint _RegisterWindowMessage([MarshalAs(UnmanagedType.LPWStr)] string lpString);
 
@@ -4024,6 +4058,16 @@ namespace ControlzEx.Standard
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool _UnregisterClassName(string lpClassName, IntPtr hInstance);
 
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        public static void UnregisterClass(ushort atom, IntPtr hinstance)
+        {
+            if (!_UnregisterClassAtom(new IntPtr(atom), hinstance))
+            {
+                HRESULT.ThrowLastError();
+            }
+        }
+
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static void UnregisterClass(short atom, IntPtr hinstance)
         {
             if (!_UnregisterClassAtom(new IntPtr(atom), hinstance))
@@ -4122,5 +4166,9 @@ namespace ControlzEx.Standard
         public static extern bool Shell_NotifyIcon(NIM dwMessage, [In] NOTIFYICONDATA lpdata);
 
         #endregion
+
+        [DllImport("msimg32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern bool AlphaBlend(IntPtr hdcDest, int xoriginDest, int yoriginDest, int wDest, int hDest, IntPtr hdcSrc, int xoriginSrc, int yoriginSrc, int wSrc, int hSrc, BLENDFUNCTION pfn);
     }
 }

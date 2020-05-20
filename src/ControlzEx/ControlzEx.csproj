@@ -21,6 +21,9 @@
         <RepositoryType>git</RepositoryType>
         <GenerateLibraryLayout>true</GenerateLibraryLayout>
     </PropertyGroup>
+    <ItemGroup>
+      <EmbeddedResource Remove="Resources\*.png" />
+    </ItemGroup>
 
     <ItemGroup>
       <None Include="..\..\logo-mini.png">

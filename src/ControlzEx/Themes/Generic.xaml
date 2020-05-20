@@ -4,7 +4,6 @@
                     xmlns:controls1="clr-namespace:ControlzEx.Controls">
 
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="pack://application:,,,/ControlzEx;component/Themes/Glow.xaml" />
         <ResourceDictionary Source="pack://application:,,,/ControlzEx;component/Themes/TabControlEx.xaml" />
         <ResourceDictionary Source="pack://application:,,,/ControlzEx;component/Themes/BadgedEx.xaml" />
     </ResourceDictionary.MergedDictionaries>

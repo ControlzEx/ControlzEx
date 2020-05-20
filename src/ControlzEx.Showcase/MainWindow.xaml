@@ -63,6 +63,7 @@
                             Content="_" />
                     <Button Click="RestoreOrMaximizeButton_Click" Content="[ ]" />
                     <Button Click="CloseButton_Click" Content="X" />
+                    <ProgressBar IsIndeterminate="True" />
                 </UniformGrid>
             </Grid>
 
