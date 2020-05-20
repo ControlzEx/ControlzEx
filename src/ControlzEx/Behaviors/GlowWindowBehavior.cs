@@ -197,7 +197,7 @@ namespace ControlzEx.Behaviors
                         var window = NativeMethods.GetWindow(loadedGlowWindow.Handle, GW.HWNDPREV);
                         if (window != handle)
                         {
-                            NativeMethods.SetWindowPos(loadedGlowWindow.Handle, handle, 0, 0, 0, 0, (SWP)19);
+                            NativeMethods.SetWindowPos(loadedGlowWindow.Handle, handle, 0, 0, 0, 0, SWP.NOSIZE | SWP.NOMOVE | SWP.NOACTIVATE);
                         }
 
                         handle = loadedGlowWindow.Handle;
@@ -242,7 +242,7 @@ namespace ControlzEx.Behaviors
                     }
                 }
 
-                NativeMethods.SetWindowPos(hwndOwner, lastOwnedWindow, 0, 0, 0, 0, (SWP)19);
+                NativeMethods.SetWindowPos(hwndOwner, lastOwnedWindow, 0, 0, 0, 0, SWP.NOSIZE | SWP.NOMOVE | SWP.NOACTIVATE);
             }
         }
 
