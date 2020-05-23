@@ -7,6 +7,7 @@
                           xmlns:local="clr-namespace:ControlzEx.Showcase"
                           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                           xmlns:system="clr-namespace:System;assembly=mscorlib"
+                          xmlns:views="clr-namespace:ControlzEx.Showcase.Views"
                           x:Name="Window"
                           Title="ControlzEx.Showcase"
                           Width="800"
@@ -46,21 +47,30 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="150" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <Border Grid.ColumnSpan="2" Background="{Binding ElementName=Window, Path=NCCurrentBrush}" />
+                <Border Grid.ColumnSpan="10" Background="{Binding ElementName=Window, Path=NCCurrentBrush}" />
 
                 <TextBlock x:Name="TitlebarText"
                            Grid.Column="0"
                            Margin="4 0 0 0"
                            HorizontalAlignment="Center"
                            Text="Use GridSplitter below to move content above titlebar" />
+
+                <UniformGrid Grid.Column="2" Columns="3">
+                    <Button Width="20"
+                            Click="MinimizeButton_Click"
+                            Content="_" />
+                    <Button Click="RestoreOrMaximizeButton_Click" Content="[ ]" />
+                    <Button Click="CloseButton_Click" Content="X" />
+                </UniformGrid>
             </Grid>
 
             <GridSplitter Grid.Row="1"
                           Height="8"
                           HorizontalAlignment="Stretch"
                           controlzEx:WindowChrome.IsHitTestVisibleInChrome="True"
-                          Background="Green" />
+                          Background="{DynamicResource ControlzEx.Brushes.AccentBaseColorBrush}" />
 
             <controlzEx:TabControlEx Grid.Row="2">
                 <TabItem Header="WindowChrome">
@@ -178,6 +188,7 @@
                                 <WrapPanel Orientation="Horizontal">
                                     <Button MinWidth="100"
                                             Margin="4"
+                                            Padding="4"
                                             Content="ToolTipAssist">
                                         <Button.ToolTip>
                                             <ToolTip controlzEx:ToolTipAssist.AutoMove="True">
@@ -208,6 +219,17 @@
                                             </ToolTip>
                                         </Button.ToolTip>
                                     </Button>
+                                    <controlzEx:BadgedEx x:Name="BadgedButton"
+                                                         Badge="{x:Static system:DateTime.Now}"
+                                                         BadgeBackground="DodgerBlue"
+                                                         BadgeForeground="White"
+                                                         BadgeStringFormat="{}{0:ss}">
+                                        <Button MinWidth="100"
+                                                Margin="4"
+                                                Padding="4"
+                                                Click="BadgedButtonOnClick"
+                                                Content="Badge" />
+                                    </controlzEx:BadgedEx>
                                 </WrapPanel>
                             </GroupBox>
 
@@ -539,6 +561,10 @@
                         </TextBox>
 
                     </Grid>
+                </TabItem>
+
+                <TabItem Header="Theming">
+                    <views:ThemingView />
                 </TabItem>
             </controlzEx:TabControlEx>
         </Grid>

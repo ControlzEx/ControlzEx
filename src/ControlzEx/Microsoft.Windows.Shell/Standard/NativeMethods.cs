@@ -1,4 +1,4 @@
-﻿#pragma warning disable 1591, 618
+#pragma warning disable 1591, 618
 namespace ControlzEx.Standard
 {
     using System;
@@ -2217,7 +2217,7 @@ namespace ControlzEx.Standard
 
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential, Pack = 0)]
-    public struct RECT
+    public struct RECT : IEquatable<RECT>
     {
         private int _left;
         private int _top;
@@ -2319,16 +2319,20 @@ namespace ControlzEx.Standard
         {
             try
             {
-                var rc = (RECT)obj;
-                return rc._bottom == _bottom
-                    && rc._left == _left
-                    && rc._right == _right
-                    && rc._top == _top;
+                return this.Equals((RECT)obj);
             }
             catch (InvalidCastException)
             {
                 return false;
             }
+        }
+
+        public bool Equals(RECT other)
+        {
+            return other._bottom == _bottom
+                   && other._left == _left
+                   && other._right == _right
+                   && other._top == _top;
         }
 
         public bool IsEmpty
@@ -2354,12 +2358,12 @@ namespace ControlzEx.Standard
 
         public static bool operator ==(RECT rect1, RECT rect2)
         {
-            return (rect1.Left == rect2.Left && rect1.Top == rect2.Top && rect1.Right == rect2.Right && rect1.Bottom == rect2.Bottom);
+            return rect1.Equals(rect2);
         }
 
         public static bool operator !=(RECT rect1, RECT rect2)
         {
-            return !(rect1 == rect2);
+            return !rect1.Equals(rect2);
         }
     }
 
@@ -2492,7 +2496,7 @@ namespace ControlzEx.Standard
 
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
-    public struct WINDOWPOS
+    public struct WINDOWPOS : IEquatable<WINDOWPOS>
     {
         public IntPtr hwnd;
         public IntPtr hwndInsertAfter;
@@ -2522,6 +2526,48 @@ namespace ControlzEx.Standard
                    && this.y == 0 
                    && this.cx == 0 
                    && this.cy == 0;
+        }
+
+        public bool Equals(WINDOWPOS other)
+        {
+            return this.hwnd.Equals(other.hwnd) 
+                   && this.hwndInsertAfter.Equals(other.hwndInsertAfter) 
+                   && this.x == other.x 
+                   && this.y == other.y 
+                   && this.cx == other.cx 
+                   && this.cy == other.cy 
+                   && this.flags == other.flags;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is WINDOWPOS other 
+                   && this.Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = this.hwnd.GetHashCode();
+                hashCode = (hashCode * 397) ^ this.hwndInsertAfter.GetHashCode();
+                hashCode = (hashCode * 397) ^ this.x;
+                hashCode = (hashCode * 397) ^ this.y;
+                hashCode = (hashCode * 397) ^ this.cx;
+                hashCode = (hashCode * 397) ^ this.cy;
+                hashCode = (hashCode * 397) ^ (int)this.flags;
+                return hashCode;
+            }
+        }
+
+        public static bool operator ==(WINDOWPOS left, WINDOWPOS right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(WINDOWPOS left, WINDOWPOS right)
+        {
+            return !left.Equals(right);
         }
     }
 

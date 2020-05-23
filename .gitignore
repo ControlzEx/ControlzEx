@@ -261,3 +261,9 @@ tools/
 
 # XamlStyler
 !XamlStyler/
+
+# Generated themes
+src/ControlzEx.Showcase/Themes/Themes/*.xaml
+!src/ControlzEx.Showcase/Themes/Themes/Theme.Template.xaml
+src/ControlzEx.Tests/Themes/Themes/*.xaml
+!src/ControlzEx.Tests/Themes/Themes/Theme.Template.xaml

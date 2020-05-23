@@ -81,5 +81,4 @@
         </Style.Triggers>
     </Style>
 
-    <Style BasedOn="{StaticResource ControlzEx.Styles.TabControlEx}" TargetType="{x:Type controls:TabControlEx}" />
 </ResourceDictionary>

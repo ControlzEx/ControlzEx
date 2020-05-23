@@ -51,6 +51,7 @@ if (FileExists(msBuildPathExe) == false)
 // Directories and Paths
 var solution = "src/ControlzEx.sln";
 var publishDir = "./src/bin";
+var testResultsDir = Directory("./TestResults");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP / TEARDOWN
@@ -106,7 +107,7 @@ Task("Build")
         Verbosity = verbosity
         , ToolPath = msBuildPathExe
         , Configuration = configuration
-        , ArgumentCustomization = args => args.Append("/m").Append("/nr:false") // The /nr switch tells msbuild to quite once it’s done
+        , ArgumentCustomization = args => args.Append("/m").Append("/nr:false") // The /nr switch tells msbuild to quit once it's done
     };
     MSBuild(solution, msBuildSettings
             .SetMaxCpuCount(0)
@@ -118,6 +119,7 @@ Task("Build")
 });
 
 Task("Pack")
+    .IsDependentOn("Build")
     .Does(() =>
 {
     var msBuildSettings = new MSBuildSettings {
@@ -290,6 +292,24 @@ Task("SignNuGet")
             Information("Exit code: {0}", process.GetExitCode());
         }
     }
+});
+
+Task("Test")    
+    .Does(() =>
+{
+    CleanDirectory(testResultsDir);
+
+    var settings = new DotNetCoreTestSettings
+        {
+            Configuration = configuration,
+            NoBuild = true,
+            NoRestore = true,
+            Logger = "trx",
+            ResultsDirectory = testResultsDir,
+            Verbosity = DotNetCoreVerbosity.Normal
+        };
+
+    DotNetCoreTest("./src/ControlzEx.sln", settings);
 });
 
 Task("Zip")

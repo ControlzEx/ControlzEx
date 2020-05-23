@@ -8,11 +8,12 @@
     <!-- Project properties -->
     <PropertyGroup>
         <TargetFrameworks>net45;net462;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <OutputPath Condition="$(IsBuildingWpfTempProj) != 'true'">$(MSBuildThisFileDirectory)\bin\$(Configuration)\$(MSBuildProjectName)</OutputPath>
         <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
         <GenerateDocumentationFile>false</GenerateDocumentationFile>
         <AutoGenerateBindingRedirects Condition=" $(TargetFramework.StartsWith('net4')) ">true</AutoGenerateBindingRedirects>
-        <LangVersion>7.3</LangVersion>
+        <LangVersion>latest</LangVersion>
         <DebugSymbols>true</DebugSymbols>
         <DebugType>full</DebugType>
         <NoWarn>$(NoWarn);CS1591</NoWarn>
@@ -44,10 +45,18 @@
         <EmbedAllSources>true</EmbedAllSources>
     </PropertyGroup>
 
+    <!-- Configuration for GitVersionTask -->
+    <PropertyGroup>
+        <WriteVersionInfoToBuildLog>false</WriteVersionInfoToBuildLog>
+        <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
+    </PropertyGroup>
+
     <!-- Add the references for all projects and targets-->
     <ItemGroup>
-        <PackageReference Include="JetBrains.Annotations" Version="2019.*" PrivateAssets="All" />
+        <PackageReference Include="JetBrains.Annotations" Version="2019.*" PrivateAssets="All" includeAssets="build;compile" />
         <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.*" />
         <PackageReference Include="WpfAnalyzers" Version="2.2.*" PrivateAssets="All" />
+
+        <!-- <PackageReference Include="GitVersionTask" Version="5.*" PrivateAssets="All" IncludeAssets="build; native" /> -->
     </ItemGroup>
 </Project>

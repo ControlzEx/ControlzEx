@@ -1,11 +1,17 @@
-﻿using System.Windows;
-
 namespace ControlzEx.Showcase
 {
-    public partial class App : Application
+    using System.Windows;
+    using ControlzEx.Theming;
+
+    public partial class App
     {
-        public App()
+        protected override void OnStartup(StartupEventArgs e)
         {
+            base.OnStartup(e);
+
+            ThemeManager.Current.ThemeSyncMode = ThemeSyncMode.SyncAll;
+
+            ThemeManager.Current.SyncThemeColorSchemeWithWindowsAccentColor();
         }
     }
 }

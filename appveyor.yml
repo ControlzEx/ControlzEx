@@ -6,6 +6,7 @@ branches:
   only:
     - develop
     - master
+    - /\d*\.\d*\.\d*/
 
 environment:
   azure-key-vault-url:

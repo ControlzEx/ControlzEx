@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.ComponentModel;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -27,15 +28,112 @@ namespace ControlzEx
             = DependencyProperty.Register(nameof(Badge),
                                           typeof(object),
                                           typeof(BadgedEx),
-                                          new FrameworkPropertyMetadata(default(object), FrameworkPropertyMetadataOptions.AffectsArrange, OnBadgeChanged));
+                                          new FrameworkPropertyMetadata(default, FrameworkPropertyMetadataOptions.AffectsArrange, OnBadgeChanged));
 
         /// <summary>
         /// Gets or sets the Badge content to display.
         /// </summary>
         public object Badge
         {
-            get { return (object)GetValue(BadgeProperty); }
-            set { SetValue(BadgeProperty, value); }
+            get => (object)GetValue(BadgeProperty);
+            set => SetValue(BadgeProperty, value);
+        }
+
+        /// <summary>Identifies the <see cref="BadgeFontFamily"/> dependency property.</summary>
+        public static readonly DependencyProperty BadgeFontFamilyProperty =
+            DependencyProperty.RegisterAttached(nameof(BadgeFontFamily),
+                                                typeof(FontFamily),
+                                                typeof(BadgedEx),
+                                                new FrameworkPropertyMetadata(
+                                                    SystemFonts.MessageFontFamily,
+                                                    FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.Inherits));
+
+        /// <summary>
+        /// The BadgeFontFamily property specifies the name of font family.
+        /// </summary>
+        [Bindable(true)]
+        [Localizability(LocalizationCategory.Font)]
+        public FontFamily BadgeFontFamily
+        {
+            get => (FontFamily)GetValue(BadgeFontFamilyProperty);
+            set => SetValue(BadgeFontFamilyProperty, value);
+        }
+
+        /// <summary>Identifies the <see cref="BadgeFontStyle"/> dependency property.</summary>
+        public static readonly DependencyProperty BadgeFontStyleProperty =
+            DependencyProperty.RegisterAttached(nameof(BadgeFontStyle),
+                                                typeof(FontStyle),
+                                                typeof(BadgedEx),
+                                                new FrameworkPropertyMetadata(
+                                                    SystemFonts.MessageFontStyle,
+                                                    FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.Inherits));
+
+        /// <summary>
+        /// The BadgeFontStyle property requests normal, italic, and oblique faces within a font family.
+        /// </summary>
+        [Bindable(true)]
+        public FontStyle BadgeFontStyle
+        {
+            get => (FontStyle)GetValue(BadgeFontStyleProperty);
+            set => SetValue(BadgeFontStyleProperty, value);
+        }
+
+        /// <summary>Identifies the <see cref="BadgeFontWeight"/> dependency property.</summary>
+        public static readonly DependencyProperty BadgeFontWeightProperty =
+            DependencyProperty.RegisterAttached(nameof(BadgeFontWeight),
+                                                typeof(FontWeight),
+                                                typeof(BadgedEx),
+                                                new FrameworkPropertyMetadata(
+                                                    SystemFonts.MessageFontWeight,
+                                                    FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.Inherits));
+
+        /// <summary>
+        /// The BadgeFontWeight property specifies the weight of the font.
+        /// </summary>
+        [Bindable(true)]
+        public FontWeight BadgeFontWeight
+        {
+            get => (FontWeight)GetValue(BadgeFontWeightProperty);
+            set => SetValue(BadgeFontWeightProperty, value);
+        }
+
+        /// <summary>Identifies the <see cref="BadgeFontStretch"/> dependency property.</summary>
+        public static readonly DependencyProperty BadgeFontStretchProperty =
+            DependencyProperty.RegisterAttached(nameof(BadgeFontStretch),
+                                                typeof(FontStretch),
+                                                typeof(BadgedEx),
+                                                new FrameworkPropertyMetadata(
+                                                    FontStretches.Normal,
+                                                    FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.Inherits));
+
+        /// <summary>
+        /// The BadgeFontStretch property selects a normal, condensed, or extended face from a font family.
+        /// </summary>
+        [Bindable(true)]
+        public FontStretch BadgeFontStretch
+        {
+            get => (FontStretch)GetValue(BadgeFontStretchProperty);
+            set => SetValue(BadgeFontStretchProperty, value);
+        }
+
+        /// <summary>Identifies the <see cref="BadgeFontSize"/> dependency property.</summary>
+        public static readonly DependencyProperty BadgeFontSizeProperty =
+            DependencyProperty.RegisterAttached(nameof(BadgeFontSize),
+                                                typeof(double),
+                                                typeof(BadgedEx),
+                                                new FrameworkPropertyMetadata(
+                                                    SystemFonts.MessageFontSize,
+                                                    FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.Inherits));
+
+        /// <summary>
+        /// The BadgeFontSize property specifies the size of the font.
+        /// </summary>
+        [TypeConverter(typeof(FontSizeConverter))]
+        [Localizability(LocalizationCategory.None)]
+        public double BadgeFontSize
+        {
+            get => (double)GetValue(BadgeFontSizeProperty);
+            set => SetValue(BadgeFontSizeProperty, value);
         }
 
         /// <summary>Identifies the <see cref="BadgeBackground"/> dependency property.</summary>
@@ -50,8 +148,8 @@ namespace ControlzEx
         /// </summary>
         public Brush BadgeBackground
         {
-            get { return (Brush)GetValue(BadgeBackgroundProperty); }
-            set { SetValue(BadgeBackgroundProperty, value); }
+            get => (Brush)GetValue(BadgeBackgroundProperty);
+            set => SetValue(BadgeBackgroundProperty, value);
         }
 
         /// <summary>Identifies the <see cref="BadgeForeground"/> dependency property.</summary>
@@ -66,8 +164,40 @@ namespace ControlzEx
         /// </summary>
         public Brush BadgeForeground
         {
-            get { return (Brush)GetValue(BadgeForegroundProperty); }
-            set { SetValue(BadgeForegroundProperty, value); }
+            get => (Brush)GetValue(BadgeForegroundProperty);
+            set => SetValue(BadgeForegroundProperty, value);
+        }
+
+        /// <summary>Identifies the <see cref="BadgeBorderBrush"/> dependency property.</summary>
+        public static readonly DependencyProperty BadgeBorderBrushProperty
+            = DependencyProperty.Register(nameof(BadgeBorderBrush),
+                                          typeof(Brush),
+                                          typeof(BadgedEx),
+                                          new PropertyMetadata(default(Brush)));
+
+        /// <summary>
+        /// Gets or sets the border brush for the Badge.
+        /// </summary>
+        public Brush BadgeBorderBrush
+        {
+            get => (Brush)GetValue(BadgeBorderBrushProperty);
+            set => SetValue(BadgeBorderBrushProperty, value);
+        }
+
+        /// <summary>Identifies the <see cref="BadgeBorderThickness"/> dependency property.</summary>
+        public static readonly DependencyProperty BadgeBorderThicknessProperty
+            = DependencyProperty.Register(nameof(BadgeBorderThickness),
+                                          typeof(Thickness),
+                                          typeof(BadgedEx),
+                                          new PropertyMetadata(new Thickness()));
+
+        /// <summary>
+        /// Gets or sets the border thickness for the Badge.
+        /// </summary>
+        public Thickness BadgeBorderThickness
+        {
+            get => (Thickness)GetValue(BadgeBorderThicknessProperty);
+            set => SetValue(BadgeBorderThicknessProperty, value);
         }
 
         /// <summary>Identifies the <see cref="BadgePlacementMode"/> dependency property.</summary>
@@ -82,8 +212,8 @@ namespace ControlzEx
         /// </summary>
         public BadgePlacementMode BadgePlacementMode
         {
-            get { return (BadgePlacementMode)GetValue(BadgePlacementModeProperty); }
-            set { SetValue(BadgePlacementModeProperty, value); }
+            get => (BadgePlacementMode)GetValue(BadgePlacementModeProperty);
+            set => SetValue(BadgePlacementModeProperty, value);
         }
 
         /// <summary>Identifies the <see cref="BadgeMargin"/> dependency property.</summary>
@@ -98,8 +228,60 @@ namespace ControlzEx
         /// </summary>
         public Thickness BadgeMargin
         {
-            get { return (Thickness)GetValue(BadgeMarginProperty); }
-            set { SetValue(BadgeMarginProperty, value); }
+            get => (Thickness)GetValue(BadgeMarginProperty);
+            set => SetValue(BadgeMarginProperty, value);
+        }
+
+
+        /// <summary>Identifies the <see cref="BadgeTemplate"/> dependency property.</summary>
+        public static readonly DependencyProperty BadgeTemplateProperty
+            = DependencyProperty.Register(nameof(BadgeTemplate),
+                                          typeof(DataTemplate),
+                                          typeof(BadgedEx),
+                                          new PropertyMetadata(null));
+
+        /// <summary>
+        /// Gets or sets the <see cref="DataTemplate"/> for the Badge
+        /// </summary>
+        public DataTemplate BadgeTemplate
+        {
+            get => (DataTemplate)GetValue(BadgeTemplateProperty);
+            set => SetValue(BadgeTemplateProperty, value);
+        }
+
+        /// <summary>Identifies the <see cref="BadgeTemplateSelector"/> dependency property.</summary>
+        public static readonly DependencyProperty BadgeTemplateSelectorProperty
+            = DependencyProperty.Register(nameof(BadgeTemplateSelector),
+                                          typeof(DataTemplateSelector),
+                                          typeof(BadgedEx),
+                                          new PropertyMetadata(null));
+
+        /// <summary>
+        /// Gets or sets the <see cref="DataTemplateSelector"/> for the Badge
+        /// </summary>
+        public DataTemplateSelector BadgeTemplateSelector
+        {
+            get => (DataTemplateSelector)GetValue(BadgeTemplateSelectorProperty);
+            set => SetValue(BadgeTemplateSelectorProperty, value);
+        }
+
+        /// <summary>Identifies the <see cref="BadgeStringFormat"/> dependency property.</summary>
+        public static readonly DependencyProperty BadgeStringFormatProperty
+            = DependencyProperty.Register(nameof(BadgeStringFormat),
+                                          typeof(string),
+                                          typeof(BadgedEx),
+                                          new FrameworkPropertyMetadata((string)null));
+
+        /// <summary>
+        /// Gets or sets a composite string that specifies how to format the Badge property if it is displayed as a string.
+        /// </summary>
+        /// <remarks> 
+        /// This property is ignored if <seealso cref="BadgeTemplate"/> is set.
+        /// </remarks>
+        public string BadgeStringFormat
+        {
+            get => (string)this.GetValue(BadgeStringFormatProperty);
+            set => this.SetValue(BadgeStringFormatProperty, value);
         }
 
         public static readonly RoutedEvent BadgeChangedEvent
@@ -110,8 +292,8 @@ namespace ControlzEx
 
         public event RoutedPropertyChangedEventHandler<object> BadgeChanged
         {
-            add { AddHandler(BadgeChangedEvent, value); }
-            remove { RemoveHandler(BadgeChangedEvent, value); }
+            add => AddHandler(BadgeChangedEvent, value);
+            remove => RemoveHandler(BadgeChangedEvent, value);
         }
 
         private static readonly DependencyPropertyKey IsBadgeSetPropertyKey
@@ -128,8 +310,8 @@ namespace ControlzEx
         /// </summary>
         public bool IsBadgeSet
         {
-            get { return (bool)GetValue(IsBadgeSetProperty); }
-            private set { SetValue(IsBadgeSetPropertyKey, value); }
+            get => (bool)GetValue(IsBadgeSetProperty);
+            private set => SetValue(IsBadgeSetPropertyKey, value);
         }
 
         private static void OnBadgeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -140,6 +322,11 @@ namespace ControlzEx
 
             var args = new RoutedPropertyChangedEventArgs<object>(e.OldValue, e.NewValue) { RoutedEvent = BadgeChangedEvent };
             instance.RaiseEvent(args);
+        }
+
+        static BadgedEx()
+        {
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(BadgedEx), new FrameworkPropertyMetadata(typeof(BadgedEx)));
         }
 
         public override void OnApplyTemplate()
@@ -157,8 +344,10 @@ namespace ControlzEx
 
             var containerDesiredSize = _badgeContainer.DesiredSize;
             if ((containerDesiredSize.Width <= 0.0 || containerDesiredSize.Height <= 0.0)
-                && !double.IsNaN(_badgeContainer.ActualWidth) && !double.IsInfinity(_badgeContainer.ActualWidth)
-                && !double.IsNaN(_badgeContainer.ActualHeight) && !double.IsInfinity(_badgeContainer.ActualHeight))
+                && !double.IsNaN(_badgeContainer.ActualWidth)
+                && !double.IsInfinity(_badgeContainer.ActualWidth)
+                && !double.IsNaN(_badgeContainer.ActualHeight)
+                && !double.IsInfinity(_badgeContainer.ActualHeight))
             {
                 containerDesiredSize = new Size(_badgeContainer.ActualWidth, _badgeContainer.ActualHeight);
             }

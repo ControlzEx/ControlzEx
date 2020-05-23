@@ -1,0 +1,77 @@
+﻿<UserControl x:Class="ControlzEx.Showcase.Views.ThemingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ControlzEx.Showcase.Views"
+             xmlns:theming="clr-namespace:ControlzEx.Theming;assembly=ControlzEx"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ObjectDataProvider MethodName="GetValues"
+                            ObjectType="{x:Type theming:ThemeSyncMode}"
+                            x:Key="SyncModePreferenceEnumValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="theming:ThemeSyncMode" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0"
+                    Orientation="Horizontal">
+            <Label>Sync mode</Label>
+            <ComboBox Width="130" 
+                      VerticalContentAlignment="Center"
+                      ItemsSource="{Binding Source={StaticResource SyncModePreferenceEnumValues}}"
+                      SelectedItem="{Binding Source={x:Static theming:ThemeManager.Current}, Path=ThemeSyncMode}" />
+
+            <Button Click="SyncNow_OnClick">Sync now</Button>
+            <CheckBox IsChecked="{Binding Path=Options.UseHSL, Source={x:Static theming:RuntimeThemeGenerator.Current}, Mode=TwoWay}"
+                      Content="Use HSL color"
+                      VerticalAlignment="Center" />
+        </StackPanel>
+        
+        <StackPanel Grid.Row="1"
+                    Orientation="Horizontal">
+            <Label>Theme</Label>
+            
+            <ComboBox Width="200"
+                      VerticalContentAlignment="Center"
+                      ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=local:ThemingView}, Path=Themes}"
+                      SelectedItem="{Binding RelativeSource={RelativeSource AncestorType=local:ThemingView}, Path=CurrentTheme}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type theming:Theme}">
+                        <StackPanel Orientation="Horizontal">
+                            <Ellipse Width="16"
+                                        Height="16"
+                                        Fill="{Binding ShowcaseBrush, Mode=OneWay}" />
+                            <TextBlock Text="{Binding DisplayName}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+
+            <Label>Base color</Label>
+            
+            <ComboBox Width="100"
+                      VerticalContentAlignment="Center"
+                      ItemsSource="{Binding Source={x:Static theming:ThemeManager.Current}, Path=BaseColors}"
+                      SelectedItem="{Binding RelativeSource={RelativeSource AncestorType=local:ThemingView}, Path=CurrentBaseColor}" />
+
+            <Label>Color scheme</Label>
+            
+            <ComboBox Width="100"
+                      VerticalContentAlignment="Center"
+                      ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=local:ThemingView}, Path=ColorSchemes}"
+                      SelectedItem="{Binding RelativeSource={RelativeSource AncestorType=local:ThemingView}, Path=CurrentColorScheme}" />
+        </StackPanel>
+
+        <local:ResourcesView Grid.Row="2" />
+    </Grid>
+</UserControl>

@@ -25,7 +25,16 @@
         /// <summary>
         /// <see cref="DependencyProperty"/> for <see cref="GlowBrush"/>.
         /// </summary>
-        public static readonly DependencyProperty GlowBrushProperty = DependencyProperty.Register(nameof(GlowBrush), typeof(Brush), typeof(GlowWindowBehavior), new PropertyMetadata(default(Brush)));
+        public static readonly DependencyProperty GlowBrushProperty = DependencyProperty.Register(nameof(GlowBrush), typeof(Brush), typeof(GlowWindowBehavior), new PropertyMetadata(default(Brush), OnGlowBrushChanged));
+
+        private static void OnGlowBrushChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (e.OldValue is null
+                || e.NewValue is null)
+            {
+                ((GlowWindowBehavior)d).Update();
+            }
+        }
 
         /// <summary>
         /// Gets or sets a brush which is used as the glow when the window is active.
@@ -78,7 +87,9 @@
             set => this.SetValue(ResizeBorderThicknessProperty, value);
         }
 
-        private bool IsGlowDisabled => this.GlowBrush is null;
+        private bool IsActiveGlowDisabled => this.GlowBrush is null;
+
+        private bool IsNoneActiveGlowDisabled => this.NonActiveGlowBrush is null;
 
         protected override void OnAttached()
         {
@@ -104,6 +115,8 @@
 
             this.hwndSource?.RemoveHook(this.AssociatedObjectWindowProc);
 
+            this.AssociatedObject.Activated -= this.AssociatedObjectActivatedOrDeactivated;
+            this.AssociatedObject.Deactivated -= this.AssociatedObjectActivatedOrDeactivated;
             this.AssociatedObject.StateChanged -= this.AssociatedObjectStateChanged;
             this.AssociatedObject.IsVisibleChanged -= this.AssociatedObjectIsVisibleChanged;
             this.AssociatedObject.Closing -= this.AssociatedObjectOnClosing;
@@ -129,7 +142,9 @@
             if(this.AssociatedObject.WindowState == WindowState.Normal)
             {
                 var ignoreTaskBar = Interaction.GetBehaviors(this.AssociatedObject).OfType<WindowChromeBehavior>().FirstOrDefault()?.IgnoreTaskbarOnMaximize == true;
-                if (this.makeGlowVisibleTimer != null && SystemParameters.MinimizeAnimation && !ignoreTaskBar)
+                if (this.makeGlowVisibleTimer != null
+                    && SystemParameters.MinimizeAnimation 
+                    && !ignoreTaskBar)
                 {
                     this.makeGlowVisibleTimer.Start();
                 }
@@ -190,10 +205,15 @@
         private void AssociatedObjectOnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
             // No glow effect if GlowBrush not set.
-            if (this.IsGlowDisabled)
+            if (this.IsActiveGlowDisabled)
             {
                 return;
             }
+
+            this.AssociatedObject.Activated -= this.AssociatedObjectActivatedOrDeactivated;
+            this.AssociatedObject.Activated += this.AssociatedObjectActivatedOrDeactivated;
+            this.AssociatedObject.Deactivated -= this.AssociatedObjectActivatedOrDeactivated;
+            this.AssociatedObject.Deactivated += this.AssociatedObjectActivatedOrDeactivated;
 
             this.AssociatedObject.StateChanged -= this.AssociatedObjectStateChanged;
             this.AssociatedObject.StateChanged += this.AssociatedObjectStateChanged;
@@ -263,7 +283,7 @@
                     {
                         Assert.IsNotDefault(lParam);
                         var wp = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
-                        if (wp.Equals(this.prevWindowPos) == false)
+                        if (wp.SizeAndPositionEquals(this.prevWindowPos) == false)
                         {
                             this.UpdateCore();
                             this.prevWindowPos = wp;
@@ -276,7 +296,7 @@
                     {
                         Assert.IsNotDefault(lParam);
                         var wp = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
-                        if (wp.Equals(this.prevWindowPos) == false)
+                        if (wp.SizeAndPositionEquals(this.prevWindowPos) == false)
                         {
                             this.UpdateCore();
                             this.prevWindowPos = wp;
@@ -374,6 +394,11 @@
 
         #endregion
 
+        private void AssociatedObjectActivatedOrDeactivated(object sender, EventArgs e)
+        {
+            this.UpdateCore();   
+        }
+
         private void AssociatedObjectIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             if (!this.AssociatedObject.IsVisible)
@@ -401,21 +426,21 @@
 #pragma warning disable 618
         private void UpdateCore()
         {
-            var canUpdateCore = this.left?.CanUpdateCore() == true
-                                && this.right?.CanUpdateCore() == true
-                                && this.top?.CanUpdateCore()  == true
-                                && this.bottom?.CanUpdateCore() == true;
-
-            if (canUpdateCore)
+            if (this.windowHandle == IntPtr.Zero
+                || (this.IsActiveGlowDisabled && this.AssociatedObject.IsActive)
+                || (this.IsNoneActiveGlowDisabled && this.AssociatedObject.IsActive == false)
+                || UnsafeNativeMethods.IsWindow(this.windowHandle) == false
+                || NativeMethods.IsWindowVisible(this.windowHandle) == false)
             {
-                if (this.windowHandle != IntPtr.Zero 
-                    && UnsafeNativeMethods.GetWindowRect(this.windowHandle, out var rect))
-                {
-                    this.left.UpdateCore(rect);
-                    this.right.UpdateCore(rect);
-                    this.top.UpdateCore(rect);
-                    this.bottom.UpdateCore(rect);
-                }
+                return;
+            }
+
+            if (UnsafeNativeMethods.GetWindowRect(this.windowHandle, out var rect))
+            {
+                this.left?.UpdateCore(rect);
+                this.right?.UpdateCore(rect);
+                this.top?.UpdateCore(rect);
+                this.bottom?.UpdateCore(rect);
             }
         }
 #pragma warning restore 618
