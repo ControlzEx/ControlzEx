@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 namespace ControlzEx.Theming
 {
     using System;
@@ -1300,9 +1300,8 @@ namespace ControlzEx.Theming
                 baseColor ??= detectedTheme?.BaseColorScheme ?? BaseColorLight;
             }
 
-            var isHighContrast = detectedTheme?.IsHighContrast == true ||
-                                 (syncModeToUse.HasFlag(ThemeSyncMode.SyncWithHighContrast)
-                                    && WindowsThemeHelper.IsHighContrastEnabled());
+            var isHighContrast = syncModeToUse.HasFlag(ThemeSyncMode.SyncWithHighContrast)
+                                 && WindowsThemeHelper.IsHighContrastEnabled();
 
             var accentColorAsString = accentColor.ToString();
 
