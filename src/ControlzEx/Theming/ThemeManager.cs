@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 namespace ControlzEx.Theming
 {
     using System;
@@ -1336,10 +1336,12 @@ namespace ControlzEx.Theming
                 // Always remove handler first.
                 // That way we prevent double registrations.
                 SystemEvents.UserPreferenceChanged -= this.HandleUserPreferenceChanged;
+                SystemParameters.StaticPropertyChanged -= this.HandleStaticPropertyChanged;
 
                 if (this.themeSyncMode != ThemeSyncMode.DoNotSync)
                 {
                     SystemEvents.UserPreferenceChanged += this.HandleUserPreferenceChanged;
+                    SystemParameters.StaticPropertyChanged += this.HandleStaticPropertyChanged;
                 }
             }
         }
@@ -1348,6 +1350,16 @@ namespace ControlzEx.Theming
         {
             if (e.Category == UserPreferenceCategory.General
                 && this.isSyncScheduled == false)
+            {
+                this.isSyncScheduled = true;
+
+                Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => this.SyncTheme(this.ThemeSyncMode)));
+            }
+        }
+
+        private void HandleStaticPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (this.isSyncScheduled == false)
             {
                 this.isSyncScheduled = true;
 
