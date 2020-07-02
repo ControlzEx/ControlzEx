@@ -1300,9 +1300,8 @@ namespace ControlzEx.Theming
                 baseColor ??= detectedTheme?.BaseColorScheme ?? BaseColorLight;
             }
 
-            var isHighContrast = detectedTheme?.IsHighContrast == true ||
-                                 (syncModeToUse.HasFlag(ThemeSyncMode.SyncWithHighContrast)
-                                    && WindowsThemeHelper.IsHighContrastEnabled());
+            var isHighContrast = syncModeToUse.HasFlag(ThemeSyncMode.SyncWithHighContrast)
+                                 && WindowsThemeHelper.IsHighContrastEnabled();
 
             var accentColorAsString = accentColor.ToString();
 
@@ -1336,10 +1335,12 @@ namespace ControlzEx.Theming
                 // Always remove handler first.
                 // That way we prevent double registrations.
                 SystemEvents.UserPreferenceChanged -= this.HandleUserPreferenceChanged;
+                SystemParameters.StaticPropertyChanged -= this.HandleStaticPropertyChanged;
 
                 if (this.themeSyncMode != ThemeSyncMode.DoNotSync)
                 {
                     SystemEvents.UserPreferenceChanged += this.HandleUserPreferenceChanged;
+                    SystemParameters.StaticPropertyChanged += this.HandleStaticPropertyChanged;
                 }
             }
         }
@@ -1347,6 +1348,17 @@ namespace ControlzEx.Theming
         private void HandleUserPreferenceChanged(object sender, UserPreferenceChangedEventArgs e)
         {
             if (e.Category == UserPreferenceCategory.General
+                && this.isSyncScheduled == false)
+            {
+                this.isSyncScheduled = true;
+
+                Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => this.SyncTheme(this.ThemeSyncMode)));
+            }
+        }
+
+        private void HandleStaticPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(SystemParameters.HighContrast)
                 && this.isSyncScheduled == false)
             {
                 this.isSyncScheduled = true;
