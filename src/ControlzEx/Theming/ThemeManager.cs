@@ -1358,7 +1358,8 @@ namespace ControlzEx.Theming
 
         private void HandleStaticPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (this.isSyncScheduled == false)
+            if (e.PropertyName == nameof(SystemParameters.HighContrast)
+                && this.isSyncScheduled == false)
             {
                 this.isSyncScheduled = true;
 
