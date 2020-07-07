@@ -17,7 +17,7 @@
 [![Downloads](https://img.shields.io/nuget/dt/ControlzEx.svg?style=flat-square)](http://www.nuget.org/packages/ControlzEx/)
 [![Issues](https://img.shields.io/github/issues/ControlzEx/ControlzEx.svg?style=flat-square)](https://github.com/ControlzEx/ControlzEx/issues)
 [![Nuget](https://img.shields.io/nuget/vpre/ControlzEx.svg?style=flat-square)](http://nuget.org/packages/ControlzEx)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/ControlzEx/ControlzEx/blob/master/License.txt)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/ControlzEx/ControlzEx/blob/main/License.txt)
 
 [![Twitter Jan](https://img.shields.io/badge/twitter-%40punker76-55acee.svg?style=flat-square)](https://twitter.com/punker76) [![Twitter Bastian](https://img.shields.io/badge/twitter-%40batzendev-55acee.svg?style=flat-square)](https://twitter.com/batzendev) [![Twitter James](https://img.shields.io/badge/twitter-%40James_Willock-55acee.svg?style=flat-square)](https://twitter.com/James_Willock)
 
