@@ -1,14 +1,16 @@
 ﻿# ThemeManager
 
+> **Please Note:** All code surrounded by `[ ]` needs to be replaced with the correct value by you.  
+
 ## What is the ThemeManager
-The `ThemeManager` provides several options to provide Themes for your application or control library. For example [MahApps.Metro](https://github.com/MahApps/MahApps.Metro) and [Fluent.Ribbon](https://github.com/fluentribbon/Fluent.Ribbon) use it to provide different themes to the user. 
+The `ThemeManager` provides several options to provide Themes for your application or control library. For example [MahApps.Metro](https://github.com/MahApps/MahApps.Metro) and [Fluent.Ribbon](https://github.com/fluentribbon/Fluent.Ribbon) uses it to provide different themes to the user.
 
 In the following sections the usage will be described by the sample usage at [MahApps.Metro](https://github.com/MahApps/MahApps.Metro).
 
 ## Create build in Themes
 
 ### Using the XamlColorSchemeGenerator
-You can provide build in themes in your `App` or `Controls Library` by running the [XamlColorSchemeGenerator](https://github.com/batzen/XamlColorSchemeGenerator) while building or via command line. For detailed information about the usage please visit the [XamlColorSchemeGenerator site](https://github.com/batzen/XamlColorSchemeGenerator).
+You can provide build in themes in your `App` or `Controls Library` by running the [XamlColorSchemeGenerator](https://github.com/batzen/XamlColorSchemeGenerator) while building or via command line. For detailed information about the usage, please visit the [XamlColorSchemeGenerator site](https://github.com/batzen/XamlColorSchemeGenerator).
 
 ### Providing ResourceDicitionaries
 You may also provide a custom `ResourceDicitionary` with all the needed Resources. 
@@ -46,7 +48,7 @@ First of all you need to add the following namespace in your using section:
 using ControlzEx.Theming;
 ```
 
-1. Optional: If you wish to use `HSL` to create the `AccentColors` instead of semi-transparent colors you can set this in the options:
+1. Optional: If you wish to use `HSL` to create the `AccentColors` instead of semi-transparent colors, you can set this in the options:
     ```c#
     RuntimeThemeGenerator.Current.Options.UseHSL = [true/false];
     ```
@@ -120,7 +122,7 @@ If you want to have even more control about the theme generation you can overrid
     ```
     
 Below is a complete sample with some customization:
-- If the user selects the `Light` Theme the accent colors have the same appearance as the transparent ones, but they are solid.
+- If the user selects the `Light` Theme, the accent colors have the same appearance as the transparent ones, but they are solid.
 - If the user selects the `Dark` Theme the accent colors are a bit brighter than in the original implementation.
 - The `HighlightColor` is calculated differently
 - The gray shades are calculated to be equally distributed from black to white
