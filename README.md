@@ -260,6 +260,9 @@ Your users should now have a simple way to use your icon pack in their applicati
 <ns:PackIcon Kind="HappyIcon" />
 ```
 
+## Theming
+ControlzEx provides a `ThemeManager` which helps you to provide Theming to your App. For more information see [this section](Wiki/ThemeManager.md).
+
 ## Licence
 
 The MIT License (MIT)
