@@ -51,7 +51,7 @@ The `ThemeManager` can be called from different locations, for example:
 
 **Example** 
 
-If you want, for example, set your Application Theme to `Dark.Red`, when the user hits a Button called "ButtonChangeTheme" you can do this: 
+If you want, for example, set your Application Theme to `Dark.Red`, when the user clicks a Button called "ButtonChangeTheme" you can do this: 
 ```
 private void ButtonChangeTheme_Click(object sender, RoutedEventArgs e)
 {
