@@ -42,6 +42,23 @@ Where `[Affected item]` may be:
 
 and `[Name of the theme]` is any valid theme name, e.g. `Dark.Blue` in MahApps.Metro.
 
+The `ThemeManager` can be called from different locations, for example: 
+- Inside the constructor of your `App.xaml.cs`
+- Inside the constructor of your `Window`
+- In a `Click-Event` of a `Button`
+- In your `ViewModel`
+- ...
+
+**Example** 
+
+If you want, for example, set your Application Theme to `Dark.Red`, when the user hits a Button called "ButtonChangeTheme" you can do this: 
+```
+private void ButtonChangeTheme_Click(object sender, RoutedEventArgs e)
+{
+    ThemeManager.Current.ChangeTheme(App.Current, "Dark.Red");
+}
+```
+
 ### Change the Theme by creating a custom one
 First of all you need to add the following namespace in your using section: 
 ```c#
