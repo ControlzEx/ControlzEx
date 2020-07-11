@@ -59,6 +59,34 @@ private void ButtonChangeTheme_Click(object sender, RoutedEventArgs e)
 }
 ```
 
+### Sync your Theme with the Windows Theme
+It is also possible to sync your `Theme` with the users Windows Theme. The first step is again to add the following line namespace in your using section: 
+```c#
+using ControlzEx.Theming;
+```
+
+Now you need to define if you want to sync the `BaseTheme`, the `Accent` or both: 
+```
+ThemeManager.Current.ThemeSyncMode = ThemeSyncMode.[DoNotSync|SyncAll|SyncWithAccent|SyncWithAppMode|SyncWithHighContrast];
+```
+
+The table below explains the available `ThemeSyncModes`:
+
+| ThemeSyncMode        | Description                              |
+|----------------------|------------------------------------------|
+| DoNotSync            | No sync at all                           |
+| SyncAll              | Gets or sets whether changes to the "app mode", accent color and high contrast setting from windows should be detected at runtime and the current Theme be changed accordingly. |
+| SyncWithAppMode      | Gets or sets whether changes to the "app mode" setting from windows should be detected at runtime and the current Theme be changed accordingly. |
+| SyncWithAccent       | Gets or sets whether changes to the accent color settings from windows should be detected at runtime and the current Theme be changed accordingly. |
+| SyncWithHighContrast | Gets or sets whether changes to the high contrast setting from windows should be detected at runtime and the current Theme be changed accordingly. |
+
+To actually sync the `Theme` call this line: 
+```c#
+ThemeManager.Current.SyncTheme();
+```
+
+> Note: If you want to sync just a part of the `Theme` and use a custom `Theme` make sure that the `Theme` is correctlyy added to the `ThemeManager`. 
+
 ### Change the Theme by creating a custom one
 First of all you need to add the following namespace in your using section: 
 ```c#
@@ -82,12 +110,19 @@ using ControlzEx.Theming;
                                [IsHighContast: false/true]);
     ```
     Modify all parameters surrounded by `[]` in the above snipped with your needs.
+    
 3. Optional: Add or override any `Resources` in the new `Theme` if needed, e.g.:
     ```c# 
     newTheme.Resources["MahApps.Colors.Highlight"] = HighlightColor;
     newTheme.Resources["MahApps.Brushes.Highlight"] = new SolidColorBrush(HighlightColor);
     ```
-4. Apply new `Theme`
+    
+4. Optional: Add the `Theme` to the current `ThemeMangers` collection:
+    ```c#
+    ThemeManager.Current.AddTheme(newTheme);
+    ```
+    
+5. Apply new `Theme`
     ```c#
     ThemeManager.Current.ChangeTheme([Affected item], newTheme);
     ```
@@ -97,6 +132,7 @@ using ControlzEx.Theming;
     - any `Window`
     - any `Control`
     - any `FrameworkElement`
+
     
 ### Override the RuntimeThemeGenerator
 If you want to have even more control about the theme generation you can override the `LibraryThemeProvider` with your own provider. In the following sample we will show how to do this for MahApps.Metro.
@@ -140,7 +176,7 @@ If you want to have even more control about the theme generation you can overrid
     
 Below is a complete sample with some customization:
 - If the user selects the `Light` Theme, the accent colors have the same appearance as the transparent ones, but they are solid.
-- If the user selects the `Dark` Theme the accent colors are a bit brighter than in the original implementation.
+- If the user selects the `Dark` Theme, the accent colors are a bit brighter than in the original implementation.
 - The `HighlightColor` is calculated differently
 - The gray shades are calculated to be equally distributed from black to white
 
@@ -223,3 +259,19 @@ public class MyLibraryThemeProvider : MahAppsLibraryThemeProvider
 }
 ``` 
 
+## Detect the current Theme
+You can get the current applied Theme of the entire `App`, a single `Window` or any `FrameworkElement`. To do so import this namespace to your usings:
+```c#
+using ControlzEx.Theming;
+```
+
+Now you can call this statement to get the current Theme:
+```c#
+Theme currentTheme = ThemeManager.Current.DetectTheme([ThemedItem]);
+```
+where `ThemedItem` may be:
+- `Applictaion.Current`
+- `this`
+- any `Window`
+- any `Control`
+- any `FrameworkElement`
