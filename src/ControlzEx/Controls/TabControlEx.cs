@@ -31,34 +31,66 @@ namespace ControlzEx.Controls
     ///         http://stackoverflow.com/a/10210889/920384
     ///     http://stackoverflow.com/a/7838955/920384
     /// </summary>
-    [TemplatePart(Name = "PART_ItemsHolder", Type = typeof(Panel))]    
+    /// <remarks>
+    /// We use two attached properties to later recognize the content presenters we generated.
+    /// We need the OwningItem because the TabItem associated with an item can later change.
+    ///
+    /// We need the OwningTabItem to reduce the amount of lookups we have to do.
+    /// </remarks>
+    [TemplatePart(Name = "PART_HeaderPanel", Type = typeof(Panel))]
+    [TemplatePart(Name = "PART_ItemsHolder", Type = typeof(Panel))]
     public class TabControlEx : TabControl
     {
         private static readonly MethodInfo updateSelectedContentMethodInfo = typeof(TabControl).GetMethod("UpdateSelectedContent", BindingFlags.NonPublic | BindingFlags.Instance);
 
         private Panel itemsHolder;
 
+        /// <summary>Identifies the <see cref="ChildContentVisibility"/> dependency property.</summary>
         public static readonly DependencyProperty ChildContentVisibilityProperty
             = DependencyProperty.Register(nameof(ChildContentVisibility), typeof(Visibility), typeof(TabControlEx), new PropertyMetadata(Visibility.Visible));
 
+        /// <summary>Identifies the <see cref="TabPanelVisibility"/> dependency property.</summary>
         public static readonly DependencyProperty TabPanelVisibilityProperty =
             DependencyProperty.Register(nameof(TabPanelVisibility), typeof(Visibility), typeof(TabControlEx), new PropertyMetadata(Visibility.Visible));
 
         public static readonly DependencyProperty OwningTabItemProperty = DependencyProperty.RegisterAttached("OwningTabItem", typeof(TabItem), typeof(TabControlEx), new PropertyMetadata(default(TabItem)));
 
+        /// <summary>Helper for getting <see cref="OwningTabItemProperty"/> from <paramref name="element"/>.</summary>
+        /// <param name="element"><see cref="DependencyObject"/> to read <see cref="OwningTabItemProperty"/> from.</param>
+        /// <returns>OwningTabItem property value.</returns>
         [AttachedPropertyBrowsableForType(typeof(ContentPresenter))]
         public static TabItem GetOwningTabItem(DependencyObject element)
         {
             return (TabItem)element.GetValue(OwningTabItemProperty);
         }
 
+        /// <summary>Helper for setting <see cref="OwningTabItemProperty"/> on <paramref name="element"/>.</summary>
+        /// <param name="element"><see cref="DependencyObject"/> to set <see cref="OwningTabItemProperty"/> on.</param>
+        /// <param name="value">OwningTabItem property value.</param>
         public static void SetOwningTabItem(DependencyObject element, TabItem value)
         {
             element.SetValue(OwningTabItemProperty, value);
         }
 
+        public static readonly DependencyProperty OwningItemProperty = DependencyProperty.RegisterAttached(
+            "OwningItem", typeof(object), typeof(TabControlEx), new PropertyMetadata(default(object)));
+
+        public static void SetOwningItem(DependencyObject element, object value)
+        {
+            element.SetValue(OwningItemProperty, value);
+        }
+
+        public static object GetOwningItem(DependencyObject element)
+        {
+            return (object)element.GetValue(OwningItemProperty);
+        }
+
+        /// <summary>Identifies the <see cref="MoveFocusToContentWhenSelectionChanges"/> dependency property.</summary>
         public static readonly DependencyProperty MoveFocusToContentWhenSelectionChangesProperty = DependencyProperty.Register(nameof(MoveFocusToContentWhenSelectionChanges), typeof(bool), typeof(TabControlEx), new PropertyMetadata(default(bool)));
 
+        /// <summary>
+        /// Gets or sets whether keyboard focus should be moved to the content area when the selected item changes.
+        /// </summary>
         public bool MoveFocusToContentWhenSelectionChanges
         {
             get => (bool)this.GetValue(MoveFocusToContentWhenSelectionChangesProperty);
@@ -162,7 +194,7 @@ namespace ControlzEx.Controls
                     {
                         foreach (var item in e.OldItems)
                         {
-                            var contentPresenter = this.FindChildContentPresenter(item);
+                            var contentPresenter = this.FindChildContentPresenter(item, null);
 
                             if (contentPresenter is null == false)
                             {
@@ -304,6 +336,7 @@ namespace ControlzEx.Controls
             {
                 var contentPresenter = itemsHolderChild as ContentPresenter;
 
+                contentPresenter?.ClearValue(OwningItemProperty);
                 contentPresenter?.ClearValue(OwningTabItemProperty);
             }
 
@@ -352,18 +385,18 @@ namespace ControlzEx.Controls
 
             updateSelectedContentMethodInfo.Invoke(this, null);
 
-            var selectedItem = this.GetSelectedTabItem();
+            var selectedTabItem = this.GetSelectedTabItem();
 
-            if (selectedItem is null == false)
+            if (selectedTabItem is null == false)
             {
                 // generate a ContentPresenter if necessary
-                this.CreateChildContentPresenterIfRequired(selectedItem);
+                this.CreateChildContentPresenterIfRequired(this.SelectedItem, selectedTabItem);
             }
 
             // show the right child
             foreach (ContentPresenter contentPresenter in this.itemsHolder.Children)
             {
-                var tabItem = GetOwningTabItem(contentPresenter);
+                var tabItem = (TabItem)this.ItemContainerGenerator.ContainerFromItem(GetOwningItem(contentPresenter)) ?? GetOwningTabItem(contentPresenter);
 
                 // Hide all non selected items and show the selected item
                 if (tabItem.IsSelected)
@@ -403,7 +436,7 @@ namespace ControlzEx.Controls
         /// <summary>
         /// Create the child ContentPresenter for the given item (could be data or a TabItem) if none exists.
         /// </summary>
-        private void CreateChildContentPresenterIfRequired(object item)
+        private void CreateChildContentPresenterIfRequired(object item, TabItem tabItem)
         {
             if (item is null)
             {
@@ -411,7 +444,7 @@ namespace ControlzEx.Controls
             }
 
             // Jump out if we already created a ContentPresenter for this item
-            if (this.FindChildContentPresenter(item) is null == false)
+            if (this.FindChildContentPresenter(item, tabItem) is null == false)
             {
                 return;
             }
@@ -419,7 +452,7 @@ namespace ControlzEx.Controls
             // the actual child to be added
             var contentPresenter = new ContentPresenter
             {
-                Content = item is TabItem tabItem ? tabItem.Content : item,
+                Content = item is TabItem itemAsTabItem ? itemAsTabItem.Content : item,
                 Visibility = Visibility.Collapsed
             };
 
@@ -430,6 +463,7 @@ namespace ControlzEx.Controls
                 throw new Exception("No owning TabItem could be found.");
             }
 
+            SetOwningItem(contentPresenter, item);
             SetOwningTabItem(contentPresenter, owningTabItem);
 
             this.itemsHolder.Children.Add(contentPresenter);
@@ -438,7 +472,7 @@ namespace ControlzEx.Controls
         /// <summary>
         /// Find the <see cref="ContentPresenter"/> for the given object. Data could be a TabItem or a piece of data.
         /// </summary>
-        public ContentPresenter FindChildContentPresenter(object item)
+        public ContentPresenter FindChildContentPresenter(object item, TabItem tabItem)
         {
             if (item is null)
             {
@@ -450,19 +484,24 @@ namespace ControlzEx.Controls
                 return null;
             }
 
-            var tabItem = item as TabItem ?? (TabItem)this.ItemContainerGenerator.ContainerFromItem(item);
+            //var tabItem = item as TabItem ?? (TabItem)this.ItemContainerGenerator.ContainerFromItem(item);
 
             var contentPresenters = this.itemsHolder.Children
-                .OfType<ContentPresenter>();
+                .OfType<ContentPresenter>()
+                .ToList();
 
             if (tabItem is null == false)
             {
                 return contentPresenters
-                    .FirstOrDefault(contentPresenter => ReferenceEquals(GetOwningTabItem(contentPresenter), tabItem));
+                    .FirstOrDefault(contentPresenter => ReferenceEquals(GetOwningTabItem(contentPresenter), tabItem))
+                    ?? contentPresenters
+                        .FirstOrDefault(contentPresenter => ReferenceEquals(GetOwningItem(contentPresenter), item));
             }
 
             return contentPresenters
-                .FirstOrDefault(contentPresenter => ReferenceEquals(contentPresenter.Content, item));
+                .FirstOrDefault(contentPresenter => ReferenceEquals(GetOwningItem(contentPresenter), item))
+                ?? contentPresenters
+                    .FirstOrDefault(contentPresenter => ReferenceEquals(contentPresenter.Content, item));
         }
 
         private void MoveFocusToContent(ContentPresenter contentPresenter, TabItem tabItem)
