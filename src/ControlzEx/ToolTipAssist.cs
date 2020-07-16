@@ -86,7 +86,8 @@ namespace ControlzEx
         private static void OnAutoMoveChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
         {
             var toolTip = (ToolTip)dependencyObject;
-            if (eventArgs.OldValue != eventArgs.NewValue && eventArgs.NewValue != null)
+            if (eventArgs.OldValue != eventArgs.NewValue
+                && eventArgs.NewValue != null)
             {
                 var autoMove = (bool)eventArgs.NewValue;
                 if (autoMove)
@@ -126,13 +127,17 @@ namespace ControlzEx
 
         private static void ToolTipTargetPreviewMouseMove(object sender, MouseEventArgs e)
         {
-            var toolTip = (sender is FrameworkElement target ? target.ToolTip : null) as ToolTip;
+            var toolTip = (sender is FrameworkElement target
+                ? target.ToolTip
+                : null) as ToolTip;
             MoveToolTip(sender as IInputElement, toolTip);
         }
 
         private static void MoveToolTip(IInputElement target, ToolTip toolTip)
         {
-            if (toolTip == null || target == null || toolTip.PlacementTarget == null)
+            if (toolTip == null
+                || target == null
+                || toolTip.PlacementTarget == null)
             {
                 return;
             }
@@ -155,29 +160,23 @@ namespace ControlzEx
 
             var topLeftFromScreen = toolTip.PlacementTarget.PointToScreen(new Point(0, 0));
 
-#pragma warning disable 618
-            MONITORINFO monitorINFO = null;
-#pragma warning restore 618
-
-            try
+            if (MonitorHelper.TryGetMonitorInfoFromPoint(out var mInfo))
             {
-                monitorINFO = MonitorHelper.GetMonitorInfoFromPoint();
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                Debug.WriteLine("UnauthorizedAccessException occurred getting MONITORINFO: {0}", ex.Message);
-            }
+                Debug.WriteLine(">>rcWork    >> w: {0} \t h: {1}", mInfo.rcWork.Width, mInfo.rcWork.Height);
+                Debug.WriteLine(">>rcMonitor >> w: {0} \t h: {1}", mInfo.rcMonitor.Width, mInfo.rcMonitor.Height);
 
-            if (monitorINFO != null)
-            {
-                Debug.WriteLine(">>rcWork    >> w: {0} \t h: {1}", monitorINFO.rcWork.Width, monitorINFO.rcWork.Height);
-                Debug.WriteLine(">>rcMonitor >> w: {0} \t h: {1}", monitorINFO.rcMonitor.Width, monitorINFO.rcMonitor.Height);
+                var monitorWorkWidth = Math.Abs(mInfo.rcWork.Width);
+                var monitorWorkHeight = Math.Abs(mInfo.rcWork.Height);
 
-                var monitorWorkWidth = Math.Abs(monitorINFO.rcWork.Width);
-                var monitorWorkHeight = Math.Abs(monitorINFO.rcWork.Height);
+                if (monitorWorkWidth == 0
+                    || monitorWorkHeight == 0)
+                {
+                    Trace.TraceError("Got wrong monitor info values ({0})", mInfo.rcWork);
+                    return;
+                }
 
-                topLeftFromScreen.X = -monitorINFO.rcWork.Left + topLeftFromScreen.X;
-                topLeftFromScreen.Y = -monitorINFO.rcWork.Top + topLeftFromScreen.Y;
+                topLeftFromScreen.X = -mInfo.rcWork.Left + topLeftFromScreen.X;
+                topLeftFromScreen.Y = -mInfo.rcWork.Top + topLeftFromScreen.Y;
 
                 var locationX = (int)topLeftFromScreen.X % monitorWorkWidth;
                 var locationY = (int)topLeftFromScreen.Y % monitorWorkHeight;

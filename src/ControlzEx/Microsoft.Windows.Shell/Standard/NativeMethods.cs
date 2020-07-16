@@ -2219,89 +2219,50 @@ namespace ControlzEx.Standard
     [StructLayout(LayoutKind.Sequential, Pack = 0)]
     public struct RECT : IEquatable<RECT>
     {
-        private int _left;
-        private int _top;
-        private int _right;
-        private int _bottom;
-
         public static readonly RECT Empty = new RECT();
 
         public RECT(int left, int top, int right, int bottom)
         {
-            this._left = left;
-            this._top = top;
-            this._right = right;
-            this._bottom = bottom;
+            this.Left = left;
+            this.Top = top;
+            this.Right = right;
+            this.Bottom = bottom;
         }
 
         public RECT(RECT rcSrc)
         {
-            _left = rcSrc.Left;
-            _top = rcSrc.Top;
-            _right = rcSrc.Right;
-            _bottom = rcSrc.Bottom;
+            this.Left = rcSrc.Left;
+            this.Top = rcSrc.Top;
+            this.Right = rcSrc.Right;
+            this.Bottom = rcSrc.Bottom;
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public void Offset(int dx, int dy)
         {
-            _left += dx;
-            _top += dy;
-            _right += dx;
-            _bottom += dy;
+            this.Left += dx;
+            this.Top += dy;
+            this.Right += dx;
+            this.Bottom += dy;
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public int Left
-        {
-            get { return _left; }
-            set { _left = value; }
-        }
+        public int Left { get; set; }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public int Right
-        {
-            get { return _right; }
-            set { _right = value; }
-        }
+        public int Top { get; set; }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public int Top
-        {
-            get { return _top; }
-            set { _top = value; }
-        }
+        public int Right { get; set; }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public int Bottom
-        {
-            get { return _bottom; }
-            set { _bottom = value; }
-        }
+        public int Bottom { get; set; }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public int Width
-        {
-            get { return _right - _left; }
-        }
+        public int Width => this.Right - this.Left;
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public int Height
-        {
-            get { return _bottom - _top; }
-        }
-
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public POINT Position
-        {
-            get { return new POINT { X = _left, Y = _top }; }
-        }
-
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public SIZE Size
-        {
-            get { return new SIZE { cx = Width, cy = Height }; }
-        }
+        public int Height => this.Bottom - this.Top;
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static RECT Union(RECT rect1, RECT rect2)
@@ -2317,43 +2278,41 @@ namespace ControlzEx.Standard
 
         public override bool Equals(object obj)
         {
-            try
-            {
-                return this.Equals((RECT)obj);
-            }
-            catch (InvalidCastException)
-            {
-                return false;
-            }
+            return obj is RECT rect && this.Equals(rect);
         }
 
         public bool Equals(RECT other)
         {
-            return other._bottom == _bottom
-                   && other._left == _left
-                   && other._right == _right
-                   && other._top == _top;
+            return other.Bottom == this.Bottom
+                   && other.Left == this.Left
+                   && other.Right == this.Right
+                   && other.Top == this.Top;
         }
 
-        public bool IsEmpty
-        {
-            get
-            {
-                // BUGBUG : On Bidi OS (hebrew arabic) left > right
-                return Left >= Right || Top >= Bottom;
-            }
-        }
+        public bool IsEmpty =>
+            // BUG : On Bidi OS (hebrew arabic) left > right
+            this.Left >= this.Right || this.Top >= this.Bottom;
 
         public override string ToString()
         {
             if (this == Empty)
+            {
                 return "RECT {Empty}";
-            return "RECT { left : " + Left + " / top : " + Top + " / right : " + Right + " / bottom : " + Bottom + " }";
+            }
+
+            return "RECT { left : " + this.Left + " / top : " + this.Top + " / right : " + this.Right + " / bottom : " + this.Bottom + " }";
         }
 
         public override int GetHashCode()
         {
-            return (_left << 16 | Utility.LOWORD(_right)) ^ (_top << 16 | Utility.LOWORD(_bottom));
+            if (this.IsEmpty)
+            {
+                return 0;
+            }
+            else
+            {
+                return (this.Left << 16 | Utility.LOWORD(this.Right)) ^ (this.Top << 16 | Utility.LOWORD(this.Bottom));
+            }
         }
 
         public static bool operator ==(RECT rect1, RECT rect2)
@@ -3412,14 +3371,15 @@ namespace ControlzEx.Standard
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        [DllImport("user32.dll", EntryPoint = "GetMonitorInfo", SetLastError = true)]
+        [DllImport("user32.dll", EntryPoint = "GetMonitorInfo", SetLastError = true, CharSet = CharSet.Auto)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool _GetMonitorInfo(IntPtr hMonitor, [In, Out] MONITORINFO lpmi);
+        private static extern bool _GetMonitorInfo([In] IntPtr hMonitor, [Out] MONITORINFO lpmi);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public static MONITORINFO GetMonitorInfo(IntPtr hMonitor)
+        public static MONITORINFO GetMonitorInfo([In] IntPtr hMonitor)
         {
             var mi = new MONITORINFO();
+            mi.cbSize = Marshal.SizeOf(typeof(MONITORINFO));
             if (!_GetMonitorInfo(hMonitor, mi))
             {
                 throw new Win32Exception();
@@ -3433,9 +3393,10 @@ namespace ControlzEx.Standard
         private static extern bool _GetMonitorInfoW([In] IntPtr hMonitor, [Out] MONITORINFO lpmi);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public static MONITORINFO GetMonitorInfoW(IntPtr hMonitor)
+        public static MONITORINFO GetMonitorInfoW([In] IntPtr hMonitor)
         {
             var mi = new MONITORINFO();
+            mi.cbSize = Marshal.SizeOf(typeof(MONITORINFO));
             if (!_GetMonitorInfoW(hMonitor, mi))
             {
                 throw new Win32Exception();
