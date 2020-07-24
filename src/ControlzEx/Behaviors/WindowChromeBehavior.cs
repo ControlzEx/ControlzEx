@@ -235,11 +235,6 @@ namespace ControlzEx.Behaviors
                 }
             }
 
-            if (this.AssociatedObject.WindowStyle != WindowStyle.None)
-            {
-                this.AssociatedObject.SetCurrentValue(Window.WindowStyleProperty, WindowStyle.None);
-            }
-
             this.savedBorderThickness = this.AssociatedObject.BorderThickness;
             this.borderThicknessChangeNotifier = new PropertyChangeNotifier(this.AssociatedObject, Control.BorderThicknessProperty);
             this.borderThicknessChangeNotifier.ValueChanged += this.BorderThicknessChangeNotifierOnValueChanged;
