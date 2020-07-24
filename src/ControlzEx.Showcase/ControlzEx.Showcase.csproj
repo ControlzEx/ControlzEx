@@ -22,6 +22,9 @@
       <EmbeddedResource Include="**/GeneratorParameters.json" />
       <UpToDateCheckInput Include="**/*.xaml" />
     </ItemGroup>
+    <ItemGroup>
+      <UpToDateCheckInput Remove="Themes\Generic.xaml" />
+    </ItemGroup>
     
     <ItemGroup>
         <ProjectReference Include="..\ControlzEx\ControlzEx.csproj" />

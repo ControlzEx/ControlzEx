@@ -18,11 +18,20 @@
                           FlowDirection="LeftToRight"
                           GlowBrush="Navy"
                           NonActiveGlowBrush="Crimson"
-                          Style="{Binding ElementName=StyleComboBox, Path=SelectedValue}"
                           WindowStartupLocation="CenterScreen"
                           WindowState="Normal"
                           mc:Ignorable="d">
+
     <local:WindowChromeWindow.Resources>
+
+        <ObjectDataProvider x:Key="WindowStyleEnumValues"
+                            MethodName="GetValues"
+                            ObjectType="{x:Type WindowStyle}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="WindowStyle" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
         <ObjectDataProvider x:Key="ResizeModeEnumValues"
                             MethodName="GetValues"
                             ObjectType="{x:Type ResizeMode}">
@@ -30,6 +39,7 @@
                 <x:Type TypeName="ResizeMode" />
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
+
     </local:WindowChromeWindow.Resources>
 
     <Grid SnapsToDevicePixels="True">
@@ -241,9 +251,11 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" SharedSizeGroup="Labels" />
                                         <ColumnDefinition Width="Auto" MinWidth="250" />
+                                        <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
 
                                     <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
@@ -260,33 +272,38 @@
                                     </Grid.RowDefinitions>
 
                                     <Label Grid.Row="0" Grid.Column="0">
-                                        Style
+                                        WindowStyle
                                     </Label>
+                                    <Label Grid.Row="0" Grid.Column="1" Content="{Binding ElementName=Window, Path=WindowStyle, Mode=OneWay}" />
+
                                     <ComboBox x:Name="StyleComboBox"
-                                              Grid.Row="0"
+                                              Grid.Row="1"
                                               Grid.Column="1"
                                               Margin="4"
                                               VerticalAlignment="Center"
-                                              SelectedValue="{StaticResource NoneWindowStyle}"
-                                              SelectedValuePath="Tag">
-                                        <TextBlock Tag="{StaticResource NoneWindowStyle}">NoneWindowStyle</TextBlock>
-                                    </ComboBox>
+                                              ItemsSource="{Binding Source={StaticResource WindowStyleEnumValues}}"
+                                              SelectedItem="{Binding ElementName=Window, Path=WindowStyle, Mode=OneWay}" />
+                                    <Button Grid.Row="1"
+                                            Grid.Column="2"
+                                            Margin="4"
+                                            Click="OpenNewWindowStyleWindowButtonClick"
+                                            Content="Open new Window" />
 
-                                    <Label Grid.Row="1" Grid.Column="0">
+                                    <Label Grid.Row="2" Grid.Column="0">
                                         ResizeMode
                                     </Label>
                                     <ComboBox x:Name="ResizeModeComboBox"
-                                              Grid.Row="1"
+                                              Grid.Row="2"
                                               Grid.Column="1"
                                               Margin="4"
                                               VerticalAlignment="Center"
                                               ItemsSource="{Binding Source={StaticResource ResizeModeEnumValues}}"
                                               SelectedItem="{Binding ElementName=Window, Path=ResizeMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-                                    <Label Grid.Row="2" Grid.Column="0">
+                                    <Label Grid.Row="3" Grid.Column="0">
                                         GlowBrush
                                     </Label>
-                                    <ComboBox Grid.Row="2"
+                                    <ComboBox Grid.Row="3"
                                               Grid.Column="1"
                                               Margin="4"
                                               VerticalAlignment="Center"
@@ -314,10 +331,10 @@
                                         </ComboBox.ItemTemplate>
                                     </ComboBox>
 
-                                    <Label Grid.Row="3" Grid.Column="0">
+                                    <Label Grid.Row="4" Grid.Column="0">
                                         NonActiveGlowBrush
                                     </Label>
-                                    <ComboBox Grid.Row="3"
+                                    <ComboBox Grid.Row="4"
                                               Grid.Column="1"
                                               Margin="4"
                                               VerticalAlignment="Center"
@@ -345,66 +362,66 @@
                                         </ComboBox.ItemTemplate>
                                     </ComboBox>
 
-                                    <Label Grid.Row="4" Grid.Column="0">
-                                        IgnoreTaskbarOnMaximize
-                                    </Label>
-                                    <CheckBox Grid.Row="4"
-                                              Grid.Column="1"
-                                              Margin="4"
-                                              VerticalAlignment="Center"
-                                              IsChecked="{Binding ElementName=Window, Path=IgnoreTaskbarOnMaximize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-
                                     <Label Grid.Row="5" Grid.Column="0">
-                                        KeepBorderOnMaximize
+                                        IgnoreTaskbarOnMaximize
                                     </Label>
                                     <CheckBox Grid.Row="5"
                                               Grid.Column="1"
                                               Margin="4"
                                               VerticalAlignment="Center"
-                                              IsChecked="{Binding ElementName=Window, Path=KeepBorderOnMaximize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                              IsChecked="{Binding ElementName=Window, Path=IgnoreTaskbarOnMaximize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                                     <Label Grid.Row="6" Grid.Column="0">
-                                        TryToBeFlickerFree
+                                        KeepBorderOnMaximize
                                     </Label>
                                     <CheckBox Grid.Row="6"
                                               Grid.Column="1"
                                               Margin="4"
                                               VerticalAlignment="Center"
-                                              IsChecked="{Binding ElementName=Window, Path=TryToBeFlickerFree, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                              IsChecked="{Binding ElementName=Window, Path=KeepBorderOnMaximize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                                     <Label Grid.Row="7" Grid.Column="0">
-                                        IsActive
+                                        TryToBeFlickerFree
                                     </Label>
                                     <CheckBox Grid.Row="7"
+                                              Grid.Column="1"
+                                              Margin="4"
+                                              VerticalAlignment="Center"
+                                              IsChecked="{Binding ElementName=Window, Path=TryToBeFlickerFree, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <Label Grid.Row="8" Grid.Column="0">
+                                        IsActive
+                                    </Label>
+                                    <CheckBox Grid.Row="8"
                                               Grid.Column="1"
                                               Margin="4"
                                               VerticalAlignment="Center"
                                               IsChecked="{Binding ElementName=Window, Path=IsActive, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                               IsEnabled="False" />
 
-                                    <Label Grid.Row="8" Grid.Column="0">
+                                    <Label Grid.Row="9" Grid.Column="0">
                                         IsNCActive
                                     </Label>
-                                    <CheckBox Grid.Row="8"
+                                    <CheckBox Grid.Row="9"
                                               Grid.Column="1"
                                               Margin="4"
                                               VerticalAlignment="Center"
                                               IsChecked="{Binding ElementName=Window, Path=IsNCActive, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                               IsEnabled="False" />
 
-                                    <Label Grid.Row="9" Grid.Column="0">
+                                    <Label Grid.Row="10" Grid.Column="0">
                                         EnableMinimize (Enable/Disable System Menu Item)
                                     </Label>
-                                    <CheckBox Grid.Row="9"
+                                    <CheckBox Grid.Row="10"
                                               Grid.Column="1"
                                               Margin="4"
                                               VerticalAlignment="Center"
                                               IsChecked="{Binding ElementName=Window, Path=ShowMinButton, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-                                    <Label Grid.Row="10" Grid.Column="0">
+                                    <Label Grid.Row="11" Grid.Column="0">
                                         EnableMaxRestore (Enable/Disable System Menu Item)
                                     </Label>
-                                    <CheckBox Grid.Row="10"
+                                    <CheckBox Grid.Row="11"
                                               Grid.Column="1"
                                               Margin="4"
                                               VerticalAlignment="Center"

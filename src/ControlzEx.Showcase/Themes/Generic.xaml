@@ -1,0 +1,78 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:showcase="clr-namespace:ControlzEx.Showcase">
+
+    <Style TargetType="{x:Type showcase:WindowChromeWindow}">
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="NCActiveBrush" Value="{Binding Background, RelativeSource={RelativeSource Self}}" />
+        <Setter Property="NCCurrentBrush" Value="{Binding NCActiveBrush, RelativeSource={RelativeSource Self}}" />
+        <Setter Property="NCNonActiveBrush" Value="{Binding Source={x:Static SystemColors.WindowFrameBrush}}" />
+        <Setter Property="ResizeBorderThickness" Value="8" />
+        <Setter Property="WindowStyle" Value="SingleBorderWindow" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type showcase:WindowChromeWindow}">
+                    <Grid Background="{TemplateBinding Background}">
+                        <AdornerDecorator>
+                            <ContentPresenter />
+                        </AdornerDecorator>
+
+                        <Border x:Name="PART_Border2"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch"
+                                        Background="{x:Null}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        UseLayoutRounding="True" />
+
+                        <Border x:Name="PART_Border"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch"
+                                        Background="{x:Null}"
+                                        BorderBrush="{TemplateBinding GlowBrush}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        UseLayoutRounding="True" />
+
+                        <ResizeGrip x:Name="WindowResizeGrip"
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Bottom"
+                                            IsTabStop="false"
+                                            Visibility="Collapsed" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <!--  handle active/inactive state  -->
+                        <Trigger Property="IsActive" Value="False">
+                            <Setter TargetName="PART_Border" Property="BorderBrush" Value="{Binding Path=NonActiveGlowBrush, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" />
+                        </Trigger>
+                        <Trigger SourceName="PART_Border" Property="BorderBrush" Value="{x:Null}">
+                            <Setter TargetName="PART_Border2" Property="BorderBrush" Value="Black" />
+                        </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="Window.ResizeMode" Value="CanResizeWithGrip" />
+                                <Condition Property="Window.WindowState" Value="Normal" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="WindowResizeGrip" Property="Visibility" Value="Visible" />
+                        </MultiTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="WindowState" Value="Maximized">
+                <Setter Property="Margin" Value="0" />
+            </Trigger>
+            <!--
+                        #1823 try to fix another nasty issue
+                        WindowState = Maximized
+                        ResizeMode = NoResize
+                    -->
+            <Trigger Property="ResizeMode" Value="NoResize">
+                <Setter Property="Margin" Value="0" />
+            </Trigger>
+            <Trigger Property="IsNCActive" Value="False">
+                <Setter Property="NCCurrentBrush" Value="{Binding NCNonActiveBrush, RelativeSource={RelativeSource Self}}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+</ResourceDictionary>
