@@ -73,7 +73,8 @@ namespace ControlzEx.Showcase
         {
             var window = new MainWindow
             {
-                WindowStartupLocation = WindowStartupLocation.Manual
+                WindowStartupLocation = WindowStartupLocation.Manual,
+                WindowStyle = (WindowStyle)StyleComboBox.SelectedItem
             };
 
             if (this.SetOwner.IsChecked == true)
@@ -88,7 +89,8 @@ namespace ControlzEx.Showcase
         {
             var window = new MainWindow
             {
-                WindowStartupLocation = WindowStartupLocation.Manual
+                WindowStartupLocation = WindowStartupLocation.Manual,
+                WindowStyle = (WindowStyle)StyleComboBox.SelectedItem
             };
 
             if (this.SetOwner.IsChecked == true)
@@ -104,6 +106,7 @@ namespace ControlzEx.Showcase
             var window = new MainWindow
             {
                 WindowStartupLocation = WindowStartupLocation.Manual,
+                WindowStyle = (WindowStyle)StyleComboBox.SelectedItem,
                 Owner = this // for this to work we always have to set the owner
             };
 
