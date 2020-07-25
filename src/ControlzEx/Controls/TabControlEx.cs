@@ -72,14 +72,20 @@ namespace ControlzEx.Controls
             element.SetValue(OwningTabItemProperty, value);
         }
 
-        public static readonly DependencyProperty OwningItemProperty = DependencyProperty.RegisterAttached(
-            "OwningItem", typeof(object), typeof(TabControlEx), new PropertyMetadata(default(object)));
+        public static readonly DependencyProperty OwningItemProperty = DependencyProperty.RegisterAttached("OwningItem", typeof(object), typeof(TabControlEx), new PropertyMetadata(default(object)));
 
+        /// <summary>Helper for setting <see cref="OwningItemProperty"/> on <paramref name="element"/>.</summary>
+        /// <param name="element"><see cref="DependencyObject"/> to set <see cref="OwningItemProperty"/> on.</param>
+        /// <param name="value">OwningItem property value.</param>
         public static void SetOwningItem(DependencyObject element, object value)
         {
             element.SetValue(OwningItemProperty, value);
         }
 
+        /// <summary>Helper for getting <see cref="OwningItemProperty"/> from <paramref name="element"/>.</summary>
+        /// <param name="element"><see cref="DependencyObject"/> to read <see cref="OwningItemProperty"/> from.</param>
+        /// <returns>OwningItem property value.</returns>
+        [AttachedPropertyBrowsableForType(typeof(ContentPresenter))]
         public static object GetOwningItem(DependencyObject element)
         {
             return (object)element.GetValue(OwningItemProperty);
@@ -146,27 +152,12 @@ namespace ControlzEx.Controls
         }
 
         /// <inheritdoc />
-        protected override void OnItemContainerStyleChanged(Style oldItemContainerStyle, Style newItemContainerStyle)
-        {
-            base.OnItemContainerStyleChanged(oldItemContainerStyle, newItemContainerStyle);
-
-            this.RefreshItemsHolder();
-        }
-
-        /// <inheritdoc />
-        protected override void OnItemContainerStyleSelectorChanged(StyleSelector oldItemContainerStyleSelector, StyleSelector newItemContainerStyleSelector)
-        {
-            base.OnItemContainerStyleSelectorChanged(oldItemContainerStyleSelector, newItemContainerStyleSelector);
-
-            this.RefreshItemsHolder();
-        }
-
-        /// <inheritdoc />
         protected override void OnInitialized(EventArgs e)
         {
             base.OnInitialized(e);
 
             this.ItemContainerGenerator.StatusChanged += this.OnGeneratorStatusChanged;
+            this.ItemContainerGenerator.ItemsChanged += this.OnGeneratorItemsChanged;
         }
 
         /// <inheritdoc />
@@ -373,6 +364,17 @@ namespace ControlzEx.Controls
             this.UpdateSelectedContent();
         }
 
+        private void OnGeneratorItemsChanged(object sender, ItemsChangedEventArgs e)
+        {
+            // We only care about reset.
+            // Reset, in case of ItemContainerGenerator, is generated when it's refreshed.
+            // It gets refresh when things like ItemContainerStyleSelector etc. change.
+            if (e.Action == NotifyCollectionChangedAction.Reset)
+            {
+                this.RefreshItemsHolder();
+            }
+        }
+
         /// <summary>
         /// Generate a ContentPresenter for the selected item and control the visibility of already created presenters.
         /// </summary>
@@ -483,8 +485,6 @@ namespace ControlzEx.Controls
             {
                 return null;
             }
-
-            //var tabItem = item as TabItem ?? (TabItem)this.ItemContainerGenerator.ContainerFromItem(item);
 
             var contentPresenters = this.itemsHolder.Children
                 .OfType<ContentPresenter>()
