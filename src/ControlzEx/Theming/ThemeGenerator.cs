@@ -19,7 +19,9 @@ namespace ControlzEx.Theming
 
         public virtual ThemeGeneratorParameters GetParametersFromString(string input)
         {
-#if NETCOREAPP
+#if NET5_0
+            return System.Text.Json.JsonSerializer.Deserialize<ThemeGeneratorParameters>(input) ?? new ThemeGeneratorParameters();
+#elif NETCOREAPP
             return System.Text.Json.JsonSerializer.Deserialize<ThemeGeneratorParameters>(input);
 #else
             return new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<ThemeGeneratorParameters>(input);

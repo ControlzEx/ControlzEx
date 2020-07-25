@@ -42,9 +42,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Reference Include="System.Web" Condition="$(DefineConstants.Contains(NETCOREAPP)) == false" />
-      <Reference Include="System.Web.Extensions" Condition="$(DefineConstants.Contains(NETCOREAPP)) == false" />
-      <PackageReference Include="System.Text.Json" Version="4.*" Condition="$(DefineConstants.Contains(NETCOREAPP))" />
+      <Reference Include="System.Web" Condition="!($(DefineConstants.Contains(NETCOREAPP)) or $(DefineConstants.Contains(NET5_0)))" />
+      <Reference Include="System.Web.Extensions" Condition="!($(DefineConstants.Contains(NETCOREAPP)) or $(DefineConstants.Contains(NET5_0)))" />
+      <PackageReference Include="System.Text.Json" Version="4.*" Condition="$(DefineConstants.Contains(NETCOREAPP)) or $(DefineConstants.Contains(NET5_0))" />
     </ItemGroup>
 
     <!-- reference includes -->

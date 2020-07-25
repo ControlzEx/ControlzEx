@@ -7,7 +7,7 @@
 
     <!-- Project properties -->
     <PropertyGroup>
-        <TargetFrameworks>net45;net462;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
+        <TargetFrameworks>net45;net462;netcoreapp3.0;netcoreapp3.1;net5.0</TargetFrameworks>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <OutputPath Condition="$(IsBuildingWpfTempProj) != 'true'">$(MSBuildThisFileDirectory)\bin\$(Configuration)\$(MSBuildProjectName)</OutputPath>
         <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
