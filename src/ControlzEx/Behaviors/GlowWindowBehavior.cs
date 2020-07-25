@@ -345,8 +345,8 @@ namespace ControlzEx.Behaviors
             {
                 foreach (var loadedGlowWindow in this.LoadedGlowWindows)
                 {
-                    loadedGlowWindow.ActiveGlowColor = ((SolidColorBrush)this.GlowBrush).Color;
-                    loadedGlowWindow.InactiveGlowColor = ((SolidColorBrush)this.NonActiveGlowBrush).Color;
+                    loadedGlowWindow.ActiveGlowColor = ((SolidColorBrush)this.GlowBrush)?.Color ?? Colors.Transparent;
+                    loadedGlowWindow.InactiveGlowColor = ((SolidColorBrush)this.NonActiveGlowBrush)?.Color ?? Colors.Transparent;
                 }
             }
         }
