@@ -3497,7 +3497,7 @@ namespace ControlzEx.Standard
         public static IntPtr GetStockObject(StockObject fnObject)
         {
             IntPtr retPtr = _GetStockObject(fnObject);
-            if (retPtr == null)
+            if (retPtr == IntPtr.Zero)
             {
                 HRESULT.ThrowLastError();
             }
