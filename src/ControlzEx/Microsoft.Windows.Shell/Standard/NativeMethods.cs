@@ -3434,16 +3434,18 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("user32.dll", EntryPoint = "GetMonitorInfo", SetLastError = true, CharSet = CharSet.Auto)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool _GetMonitorInfo([In] IntPtr hMonitor, [Out] MONITORINFO lpmi);
+        private static extern bool _GetMonitorInfo([In] IntPtr hMonitor, ref MONITORINFO lpmi);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static MONITORINFO GetMonitorInfo([In] IntPtr hMonitor)
         {
-            var mi = new MONITORINFO();
-            mi.cbSize = Marshal.SizeOf(typeof(MONITORINFO));
-            if (!_GetMonitorInfo(hMonitor, mi))
+            var mi = new MONITORINFO
             {
-                throw new Win32Exception();
+                cbSize = Marshal.SizeOf(typeof(MONITORINFO))
+            };
+            if (!_GetMonitorInfo(hMonitor, ref mi))
+            {
+                HRESULT.ThrowLastError();
             }
             return mi;
         }
@@ -3451,16 +3453,18 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("user32.dll", EntryPoint = "GetMonitorInfoW", SetLastError = true, ExactSpelling = true, CharSet = CharSet.Unicode)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool _GetMonitorInfoW([In] IntPtr hMonitor, [Out] MONITORINFO lpmi);
+        private static extern bool _GetMonitorInfoW([In] IntPtr hMonitor, ref MONITORINFO lpmi);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static MONITORINFO GetMonitorInfoW([In] IntPtr hMonitor)
         {
-            var mi = new MONITORINFO();
-            mi.cbSize = Marshal.SizeOf(typeof(MONITORINFO));
-            if (!_GetMonitorInfoW(hMonitor, mi))
+            var mi = new MONITORINFO
             {
-                throw new Win32Exception();
+                cbSize = Marshal.SizeOf(typeof(MONITORINFO))
+            };
+            if (!_GetMonitorInfoW(hMonitor, ref mi))
+            {
+                HRESULT.ThrowLastError();
             }
             return mi;
         }
@@ -3493,7 +3497,7 @@ namespace ControlzEx.Standard
         public static IntPtr GetStockObject(StockObject fnObject)
         {
             IntPtr retPtr = _GetStockObject(fnObject);
-            if (retPtr == null)
+            if (retPtr == IntPtr.Zero)
             {
                 HRESULT.ThrowLastError();
             }

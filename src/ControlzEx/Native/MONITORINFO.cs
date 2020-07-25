@@ -5,11 +5,7 @@ namespace ControlzEx.Standard
 
     [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-#if NETCOREAPP5_0
     public struct MONITORINFO
-#else
-    public class MONITORINFO
-#endif
     {
         public int cbSize;
         public RECT rcMonitor;
