@@ -3445,7 +3445,7 @@ namespace ControlzEx.Standard
             };
             if (!_GetMonitorInfo(hMonitor, ref mi))
             {
-                throw new Win32Exception();
+                HRESULT.ThrowLastError();
             }
             return mi;
         }
@@ -3464,7 +3464,7 @@ namespace ControlzEx.Standard
             };
             if (!_GetMonitorInfoW(hMonitor, ref mi))
             {
-                throw new Win32Exception();
+                HRESULT.ThrowLastError();
             }
             return mi;
         }
