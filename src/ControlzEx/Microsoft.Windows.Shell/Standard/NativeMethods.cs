@@ -3439,8 +3439,10 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static MONITORINFO GetMonitorInfo([In] IntPtr hMonitor)
         {
-            var mi = new MONITORINFO();
-            mi.cbSize = Marshal.SizeOf(typeof(MONITORINFO));
+            var mi = new MONITORINFO
+            {
+                cbSize = Marshal.SizeOf(typeof(MONITORINFO))
+            };
             if (!_GetMonitorInfo(hMonitor, ref mi))
             {
                 throw new Win32Exception();
@@ -3456,8 +3458,10 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static MONITORINFO GetMonitorInfoW([In] IntPtr hMonitor)
         {
-            var mi = new MONITORINFO();
-            mi.cbSize = Marshal.SizeOf(typeof(MONITORINFO));
+            var mi = new MONITORINFO
+            {
+                cbSize = Marshal.SizeOf(typeof(MONITORINFO))
+            };
             if (!_GetMonitorInfoW(hMonitor, ref mi))
             {
                 throw new Win32Exception();
