@@ -5,6 +5,8 @@ using System.Windows.Media;
 
 namespace ControlzEx
 {
+    using System;
+
     public enum BadgePlacementMode
     {
         TopLeft,
@@ -21,6 +23,7 @@ namespace ControlzEx
     public class BadgedEx : ContentControl
     {
         public const string BadgeContainerPartName = "PART_BadgeContainer";
+        [CLSCompliant(false)]
         protected FrameworkElement _badgeContainer;
 
         /// <summary>Identifies the <see cref="Badge"/> dependency property.</summary>

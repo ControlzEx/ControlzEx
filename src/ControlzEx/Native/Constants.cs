@@ -6,6 +6,7 @@ namespace ControlzEx.Native
     public static class Constants
     {
         [Flags()]
+        [CLSCompliant(false)]
         public enum RedrawWindowFlags : uint
         {
             /// <summary>
@@ -57,9 +58,12 @@ namespace ControlzEx.Native
 
         public const int GCLP_HBRBACKGROUND = -0x0A;
 
+        [CLSCompliant(false)]
         public const uint TPM_RETURNCMD = 0x0100;        
+        [CLSCompliant(false)]
         public const uint TPM_LEFTBUTTON = 0x0;
 
+        [CLSCompliant(false)]
         public const uint SYSCOMMAND = 0x0112;
 
         public const int MF_GRAYED = 0x00000001;
@@ -71,10 +75,15 @@ namespace ControlzEx.Native
         public const int VK_MENU = 0x12;
 
         /* used by UnsafeNativeMethods.MapVirtualKey */
+        [CLSCompliant(false)]
         public const uint MAPVK_VK_TO_VSC = 0x00;
+        [CLSCompliant(false)]
         public const uint MAPVK_VSC_TO_VK = 0x01;
+        [CLSCompliant(false)]
         public const uint MAPVK_VK_TO_CHAR = 0x02;
+        [CLSCompliant(false)]
         public const uint MAPVK_VSC_TO_VK_EX = 0x03;
+        [CLSCompliant(false)]
         public const uint MAPVK_VK_TO_VSC_EX = 0x04;
         /* used by UnsafeNativeMethods.MapVirtualKey (end) */
 

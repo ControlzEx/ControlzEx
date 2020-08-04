@@ -1,6 +1,8 @@
-﻿using System.Reflection;
+﻿using System;
 using System.Windows;
 using System.Windows.Markup;
+
+[assembly: CLSCompliant(true)]
 
 [assembly: XmlnsPrefix("urn:controlzex", "controlzex")]
 [assembly: XmlnsDefinition("urn:controlzex", "ControlzEx")]

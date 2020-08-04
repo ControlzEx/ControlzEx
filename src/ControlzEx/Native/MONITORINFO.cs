@@ -10,10 +10,12 @@ namespace ControlzEx.Standard
         public int cbSize;
         public RECT rcMonitor;
         public RECT rcWork;
+        [CLSCompliant(false)]
         public uint dwFlags;
     }
 
     [Obsolete(DesignerConstants.Win32ElementWarning)]
+    [CLSCompliant(false)]
     public enum MonitorOptions : uint
     {
         MONITOR_DEFAULTTONULL = 0x00000000,
