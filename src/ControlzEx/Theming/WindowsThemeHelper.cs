@@ -37,6 +37,29 @@ namespace ControlzEx.Theming
             return true;
         }
 
+        // Titlebars and window borders = HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\DWM\ColorPrevalence = 0 (no), 1 = yes
+        [MustUseReturnValue]
+        public static bool ShowAccentColorOnTitleBarsAndWindowBorders()
+        {
+            try
+            {
+                var registryValue = Registry.GetValue(@"HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\DWM", "ColorPrevalence", null);
+
+                if (registryValue is null)
+                {
+                    return true;
+                }
+
+                return Convert.ToBoolean(registryValue);
+            }
+            catch (Exception exception)
+            {
+                Trace.TraceError(exception.ToString());
+            }
+
+            return true;
+        }
+
         [NotNull]
         [MustUseReturnValue]
         public static string GetWindowsBaseColor()
