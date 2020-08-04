@@ -14,7 +14,7 @@
                           Height="600"
                           MinWidth="80"
                           MinHeight="60"
-                          Background="{Binding Source={x:Static SystemColors.WindowBrush}}"
+                          Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
                           FlowDirection="LeftToRight"
                           GlowBrush="Navy"
                           NonActiveGlowBrush="Crimson"

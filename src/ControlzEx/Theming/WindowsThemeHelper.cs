@@ -41,9 +41,24 @@ namespace ControlzEx.Theming
         [MustUseReturnValue]
         public static string GetWindowsBaseColor()
         {
-            var baseColor = AppsUseLightTheme()
-                ? ThemeManager.BaseColorLight
-                : ThemeManager.BaseColorDark;
+            string baseColor;
+
+            var isHighContrast = IsHighContrastEnabled();
+            if (isHighContrast)
+            {
+                var windowColor = (SystemColors.WindowBrush).Color;
+                var brightness = System.Drawing.Color.FromArgb(windowColor.R, windowColor.G, windowColor.B).GetBrightness();
+
+                baseColor = brightness < .5
+                    ? ThemeManager.BaseColorDark
+                    : ThemeManager.BaseColorLight;
+            }
+            else
+            {
+                baseColor = AppsUseLightTheme()
+                    ? ThemeManager.BaseColorLight
+                    : ThemeManager.BaseColorDark;
+            }
 
             return baseColor;
         }
