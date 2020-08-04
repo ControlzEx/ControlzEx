@@ -25,7 +25,7 @@
             this.InitializeBehaviors();
 
             // Using Loaded causes the glow to show and then window window startup animation renders into that "frame"
-            //this.Loaded += WindowChromeWindow_Loaded;
+            //this.Loaded += this.WindowChromeWindow_Loaded;
 
             // Using ContentRendered causes the window startup animation to show and then shows the glow
             this.ContentRendered += this.WindowChromeWindow_ContentRendered;
@@ -145,8 +145,8 @@
         /// </summary>
         public bool ShowMinButton
         {
-            get { return (bool)GetValue(ShowMinButtonProperty); }
-            set { SetValue(ShowMinButtonProperty, value); }
+            get { return (bool)this.GetValue(ShowMinButtonProperty); }
+            set { this.SetValue(ShowMinButtonProperty, value); }
         }
 
         public static readonly DependencyProperty ShowMaxRestoreButtonProperty = DependencyProperty.Register(nameof(ShowMaxRestoreButton), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(true));
@@ -156,8 +156,8 @@
         /// </summary>
         public bool ShowMaxRestoreButton
         {
-            get { return (bool)GetValue(ShowMaxRestoreButtonProperty); }
-            set { SetValue(ShowMaxRestoreButtonProperty, value); }
+            get { return (bool)this.GetValue(ShowMaxRestoreButtonProperty); }
+            set { this.SetValue(ShowMaxRestoreButtonProperty, value); }
         }
 
         /// <summary>
@@ -217,8 +217,8 @@
 
         public Brush NCCurrentBrush
         {
-            get { return (Brush)GetValue(NCCurrentBrushProperty); }
-            set { SetValue(NCCurrentBrushProperty, value); }
+            get { return (Brush)this.GetValue(NCCurrentBrushProperty); }
+            set { this.SetValue(NCCurrentBrushProperty, value); }
         }
     }
 }

@@ -633,7 +633,7 @@ namespace ControlzEx.Behaviors
                 var monitor = NativeMethods.MonitorFromWindow(this.windowHandle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
                 if (monitor != IntPtr.Zero)
                 {
-                    var monitorInfo = NativeMethods.GetMonitorInfoW(monitor);
+                    var monitorInfo = NativeMethods.GetMonitorInfo(monitor);
                     var rcWorkArea = monitorInfo.rcWork;
                     var rcMonitorArea = monitorInfo.rcMonitor;
 
@@ -722,7 +722,7 @@ namespace ControlzEx.Behaviors
                 if (monitorFromWindow != IntPtr.Zero)
                 {
                     var ignoreTaskBar = this.IgnoreTaskbarOnMaximize;
-                    var monitorInfo = NativeMethods.GetMonitorInfoW(monitorFromWindow);
+                    var monitorInfo = NativeMethods.GetMonitorInfo(monitorFromWindow);
                     var rcMonitorArea = ignoreTaskBar ? monitorInfo.rcMonitor : monitorInfo.rcWork;
                     /*
                      * ASYNCWINDOWPOS

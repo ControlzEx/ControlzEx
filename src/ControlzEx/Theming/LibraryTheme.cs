@@ -4,6 +4,7 @@ namespace ControlzEx.Theming
     using System;
     using System.Windows;
     using System.Windows.Media;
+    using ControlzEx.Internal;
     using JetBrains.Annotations;
 
     /// <summary>
@@ -156,13 +157,13 @@ namespace ControlzEx.Theming
         public static bool IsThemeDictionary([NotNull] ResourceDictionary resourceDictionary)
         {
             return Theme.IsThemeDictionary(resourceDictionary)
-                || Theme.ContainsKey(resourceDictionary, LibraryThemeInstanceKey);
+                || ResourceDictionaryHelper.ContainsKey(resourceDictionary, LibraryThemeInstanceKey);
         }
 
         public static bool IsRuntimeGeneratedThemeDictionary([NotNull] ResourceDictionary resourceDictionary)
         {
             return Theme.IsRuntimeGeneratedThemeDictionary(resourceDictionary)
-                || (Theme.ContainsKey(resourceDictionary, LibraryThemeInstanceKey) && ((LibraryTheme)resourceDictionary[LibraryThemeInstanceKey]).IsRuntimeGenerated);
+                || (ResourceDictionaryHelper.ContainsKey(resourceDictionary, LibraryThemeInstanceKey) && ((LibraryTheme)resourceDictionary[LibraryThemeInstanceKey]).IsRuntimeGenerated);
         }
 
         private static ResourceDictionary CreateResourceDictionary(Uri resourceAddress)

@@ -34,6 +34,8 @@ namespace ControlzEx.Controls
 
         private readonly Window owner;
 
+        private RECT lastUpdateCoreRect;
+
         #region PInvoke
         
         [DllImport("user32.dll")]
@@ -193,9 +195,9 @@ namespace ControlzEx.Controls
                     break;
             }
 
-            owner.Activated += OnOwnerActivated;
-            owner.Deactivated += OnOwnerDeactivated;
-            owner.IsVisibleChanged += OnOwnerIsVisibleChanged;
+            owner.Activated += this.OnOwnerActivated;
+            owner.Deactivated += this.OnOwnerDeactivated;
+            owner.IsVisibleChanged += this.OnOwnerIsVisibleChanged;
             owner.Closed += (sender, e) => this.InternalClose();
         }
 
@@ -390,6 +392,13 @@ namespace ControlzEx.Controls
 
         internal void UpdateCore(RECT rect)
         {
+            if (this.lastUpdateCoreRect.Equals(rect))
+            {
+                return;
+            }
+
+            this.lastUpdateCoreRect = rect;
+
             if (this.CanUpdateCore() == false)
             {
                 return;
@@ -427,9 +436,9 @@ namespace ControlzEx.Controls
         {
             this.closing = true;
 
-            owner.Activated -= OnOwnerActivated;
-            owner.Deactivated -= OnOwnerDeactivated;
-            owner.IsVisibleChanged -= OnOwnerIsVisibleChanged;
+            this.owner.Activated -= this.OnOwnerActivated;
+            this.owner.Deactivated -= this.OnOwnerDeactivated;
+            this.owner.IsVisibleChanged -= this.OnOwnerIsVisibleChanged;
 
             if (this.resizeModeChangeNotifier != null)
             {

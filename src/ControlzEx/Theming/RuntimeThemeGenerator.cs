@@ -116,6 +116,11 @@ namespace ControlzEx.Theming
 
             var runtimeThemeColorValues = this.GetColors(accentColor, this.Options.CreateRuntimeThemeOptions(isHighContrast, generatorParameters, baseColorScheme));
 
+            return this.GenerateRuntimeLibraryTheme(libraryThemeProvider, values, runtimeThemeColorValues, themeTemplateContent!, themeName, themeDisplayName, baseColorScheme, colorScheme, generatorParameters);
+        }
+
+        public virtual LibraryTheme GenerateRuntimeLibraryTheme(LibraryThemeProvider libraryThemeProvider, Dictionary<string, string> values, RuntimeThemeColorValues runtimeThemeColorValues, string themeTemplateContent, string themeName, string themeDisplayName, ThemeGenerator.ThemeGeneratorBaseColorScheme baseColorScheme, ThemeGenerator.ThemeGeneratorColorScheme colorScheme, ThemeGenerator.ThemeGeneratorParameters generatorParameters)
+        {
             values.Add("ThemeGenerator.Colors.PrimaryAccentColor", runtimeThemeColorValues.PrimaryAccentColor.ToString());
             values.Add("ThemeGenerator.Colors.AccentBaseColor", runtimeThemeColorValues.AccentBaseColor.ToString());
             values.Add("ThemeGenerator.Colors.AccentColor80", runtimeThemeColorValues.AccentColor80.ToString());
@@ -128,13 +133,13 @@ namespace ControlzEx.Theming
 
             libraryThemeProvider.FillColorSchemeValues(values, runtimeThemeColorValues);
 
-            var xamlContent = ThemeGenerator.Current.GenerateColorSchemeFileContent(themeTemplateContent!, themeName, themeDisplayName, baseColorScheme.Name, colorScheme.Name, colorScheme.Name, isHighContrast, colorScheme.Values, baseColorScheme.Values, generatorParameters.DefaultValues);
+            var xamlContent = ThemeGenerator.Current.GenerateColorSchemeFileContent(themeTemplateContent!, themeName, themeDisplayName, baseColorScheme.Name, colorScheme.Name, colorScheme.Name, runtimeThemeColorValues.Options.IsHighContrast, colorScheme.Values, baseColorScheme.Values, generatorParameters.DefaultValues);
 
             var preparedXamlContent = libraryThemeProvider.PrepareXamlContent(this, xamlContent, runtimeThemeColorValues);
 
             var resourceDictionary = (ResourceDictionary)XamlReader.Parse(preparedXamlContent);
             resourceDictionary.Add(Theme.ThemeIsRuntimeGeneratedKey, true);
-            resourceDictionary[Theme.ThemeIsHighContrastKey] = isHighContrast;
+            resourceDictionary[Theme.ThemeIsHighContrastKey] = runtimeThemeColorValues.Options.IsHighContrast;
             resourceDictionary[LibraryTheme.RuntimeThemeColorValuesKey] = runtimeThemeColorValues;
 
             libraryThemeProvider.PrepareRuntimeThemeResourceDictionary(this, resourceDictionary, runtimeThemeColorValues);

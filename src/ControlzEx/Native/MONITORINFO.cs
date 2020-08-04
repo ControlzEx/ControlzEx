@@ -1,17 +1,16 @@
-using System.Runtime.InteropServices;
-
 namespace ControlzEx.Standard
 {
     using System;
+    using System.Runtime.InteropServices;
 
     [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-    public class MONITORINFO
+    public struct MONITORINFO
     {
-        public int cbSize = Marshal.SizeOf(typeof(MONITORINFO));
-        public RECT rcMonitor = new RECT();
-        public RECT rcWork = new RECT();
-        public int dwFlags = 0;
+        public int cbSize;
+        public RECT rcMonitor;
+        public RECT rcWork;
+        public uint dwFlags;
     }
 
     [Obsolete(DesignerConstants.Win32ElementWarning)]

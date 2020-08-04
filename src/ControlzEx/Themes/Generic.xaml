@@ -1,6 +1,15 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="clr-namespace:ControlzEx"
+                    xmlns:controls1="clr-namespace:ControlzEx.Controls">
+
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/ControlzEx;component/Themes/Glow.xaml" />
         <ResourceDictionary Source="pack://application:,,,/ControlzEx;component/Themes/TabControlEx.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/ControlzEx;component/Themes/BadgedEx.xaml" />
     </ResourceDictionary.MergedDictionaries>
+
+    <Style BasedOn="{StaticResource ControlzEx.Styles.TabControlEx}" TargetType="{x:Type controls1:TabControlEx}" />
+    <Style BasedOn="{StaticResource ControlzEx.Styles.BadgedEx}" TargetType="{x:Type controls:BadgedEx}" />
+
 </ResourceDictionary>

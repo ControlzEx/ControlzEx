@@ -1,4 +1,4 @@
-﻿#pragma warning disable 1591, 618
+#pragma warning disable 1591, 618
 namespace ControlzEx.Standard
 {
     using System;
@@ -1163,23 +1163,84 @@ namespace ControlzEx.Standard
     /// SetWindowPos options
     /// </summary>
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "Original API names are used for consistency")]
+    [SuppressMessage("ReSharper", "IdentifierTypo", Justification = "Original API names are used for consistency")]
     [Flags]
-    public enum SWP
+    public enum SWP : uint
     {
+        /// <summary>
+        /// If the calling thread and the thread that owns the window are attached to different input queues, the system posts the request to the thread that owns the window. This prevents the calling thread from blocking its execution while other threads process the request.
+        /// </summary>
         ASYNCWINDOWPOS = 0x4000,
+
+        /// <summary>
+        /// Prevents generation of the WM_SYNCPAINT message.
+        /// </summary>
         DEFERERASE = 0x2000,
+
+        /// <summary>
+        /// Draws a frame (defined in the window's class description) around the window.
+        /// </summary>
         DRAWFRAME = 0x0020,
+
+        /// <summary>
+        /// Applies new frame styles set using the SetWindowLong function. Sends a WM_NCCALCSIZE message to the window, even if the window's size is not being changed. If this flag is not specified, WM_NCCALCSIZE is sent only when the window's size is being changed.
+        /// </summary>
         FRAMECHANGED = 0x0020,
+
+        /// <summary>
+        /// Hides the window.
+        /// </summary>
         HIDEWINDOW = 0x0080,
+
+        /// <summary>
+        /// Does not activate the window. If this flag is not set, the window is activated and moved to the top of either the topmost or non-topmost group (depending on the setting of the hWndInsertAfter parameter).
+        /// </summary>
         NOACTIVATE = 0x0010,
+
+        /// <summary>
+        /// Discards the entire contents of the client area. If this flag is not specified, the valid contents of the client area are saved and copied back into the client area after the window is sized or repositioned.
+        /// </summary>
         NOCOPYBITS = 0x0100,
+
+        /// <summary>
+        /// Retains the current position (ignores X and Y parameters).
+        /// </summary>
         NOMOVE = 0x0002,
+
+        /// <summary>
+        /// Does not change the owner window's position in the Z order.
+        /// </summary>
         NOOWNERZORDER = 0x0200,
+
+        /// <summary>
+        /// Does not redraw changes. If this flag is set, no repainting of any kind occurs. This applies to the client area, the nonclient area (including the title bar and scroll bars), and any part of the parent window uncovered as a result of the window being moved. When this flag is set, the application must explicitly invalidate or redraw any parts of the window and parent window that need redrawing.
+        /// </summary>
         NOREDRAW = 0x0008,
+
+        /// <summary>
+        /// Same as the SWP_NOOWNERZORDER flag.
+        /// </summary>
         NOREPOSITION = 0x0200,
+
+        /// <summary>
+        /// Prevents the window from receiving the WM_WINDOWPOSCHANGING message.
+        /// </summary>
         NOSENDCHANGING = 0x0400,
+
+        /// <summary>
+        /// Retains the current size (ignores the cx and cy parameters).
+        /// </summary>
         NOSIZE = 0x0001,
+
+        /// <summary>
+        /// Retains the current Z order (ignores the hWndInsertAfter parameter).
+        /// </summary>
         NOZORDER = 0x0004,
+
+        /// <summary>
+        /// Displays the window.
+        /// </summary>
         SHOWWINDOW = 0x0040,
 
         TOPMOST = NOACTIVATE | NOOWNERZORDER | NOSIZE | NOMOVE | NOREDRAW | NOSENDCHANGING
@@ -2217,91 +2278,52 @@ namespace ControlzEx.Standard
 
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential, Pack = 0)]
-    public struct RECT
+    public struct RECT : IEquatable<RECT>
     {
-        private int _left;
-        private int _top;
-        private int _right;
-        private int _bottom;
-
         public static readonly RECT Empty = new RECT();
 
         public RECT(int left, int top, int right, int bottom)
         {
-            this._left = left;
-            this._top = top;
-            this._right = right;
-            this._bottom = bottom;
+            this.Left = left;
+            this.Top = top;
+            this.Right = right;
+            this.Bottom = bottom;
         }
 
         public RECT(RECT rcSrc)
         {
-            _left = rcSrc.Left;
-            _top = rcSrc.Top;
-            _right = rcSrc.Right;
-            _bottom = rcSrc.Bottom;
+            this.Left = rcSrc.Left;
+            this.Top = rcSrc.Top;
+            this.Right = rcSrc.Right;
+            this.Bottom = rcSrc.Bottom;
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public void Offset(int dx, int dy)
         {
-            _left += dx;
-            _top += dy;
-            _right += dx;
-            _bottom += dy;
+            this.Left += dx;
+            this.Top += dy;
+            this.Right += dx;
+            this.Bottom += dy;
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public int Left
-        {
-            get { return _left; }
-            set { _left = value; }
-        }
+        public int Left { get; set; }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public int Right
-        {
-            get { return _right; }
-            set { _right = value; }
-        }
+        public int Top { get; set; }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public int Top
-        {
-            get { return _top; }
-            set { _top = value; }
-        }
+        public int Right { get; set; }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public int Bottom
-        {
-            get { return _bottom; }
-            set { _bottom = value; }
-        }
+        public int Bottom { get; set; }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public int Width
-        {
-            get { return _right - _left; }
-        }
+        public int Width => this.Right - this.Left;
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public int Height
-        {
-            get { return _bottom - _top; }
-        }
-
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public POINT Position
-        {
-            get { return new POINT { X = _left, Y = _top }; }
-        }
-
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public SIZE Size
-        {
-            get { return new SIZE { cx = Width, cy = Height }; }
-        }
+        public int Height => this.Bottom - this.Top;
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static RECT Union(RECT rect1, RECT rect2)
@@ -2317,49 +2339,51 @@ namespace ControlzEx.Standard
 
         public override bool Equals(object obj)
         {
-            try
-            {
-                var rc = (RECT)obj;
-                return rc._bottom == _bottom
-                    && rc._left == _left
-                    && rc._right == _right
-                    && rc._top == _top;
-            }
-            catch (InvalidCastException)
-            {
-                return false;
-            }
+            return obj is RECT rect && this.Equals(rect);
         }
 
-        public bool IsEmpty
+        public bool Equals(RECT other)
         {
-            get
-            {
-                // BUGBUG : On Bidi OS (hebrew arabic) left > right
-                return Left >= Right || Top >= Bottom;
-            }
+            return other.Bottom == this.Bottom
+                   && other.Left == this.Left
+                   && other.Right == this.Right
+                   && other.Top == this.Top;
         }
+
+        public bool IsEmpty =>
+            // BUG : On Bidi OS (hebrew arabic) left > right
+            this.Left >= this.Right || this.Top >= this.Bottom;
 
         public override string ToString()
         {
             if (this == Empty)
+            {
                 return "RECT {Empty}";
-            return "RECT { left : " + Left + " / top : " + Top + " / right : " + Right + " / bottom : " + Bottom + " }";
+            }
+
+            return "RECT { left : " + this.Left + " / top : " + this.Top + " / right : " + this.Right + " / bottom : " + this.Bottom + " }";
         }
 
         public override int GetHashCode()
         {
-            return (_left << 16 | Utility.LOWORD(_right)) ^ (_top << 16 | Utility.LOWORD(_bottom));
+            if (this.IsEmpty)
+            {
+                return 0;
+            }
+            else
+            {
+                return (this.Left << 16 | Utility.LOWORD(this.Right)) ^ (this.Top << 16 | Utility.LOWORD(this.Bottom));
+            }
         }
 
         public static bool operator ==(RECT rect1, RECT rect2)
         {
-            return (rect1.Left == rect2.Left && rect1.Top == rect2.Top && rect1.Right == rect2.Right && rect1.Bottom == rect2.Bottom);
+            return rect1.Equals(rect2);
         }
 
         public static bool operator !=(RECT rect1, RECT rect2)
         {
-            return !(rect1 == rect2);
+            return !rect1.Equals(rect2);
         }
     }
 
@@ -2492,7 +2516,7 @@ namespace ControlzEx.Standard
 
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
-    public struct WINDOWPOS
+    public struct WINDOWPOS : IEquatable<WINDOWPOS>
     {
         public IntPtr hwnd;
         public IntPtr hwndInsertAfter;
@@ -2522,6 +2546,48 @@ namespace ControlzEx.Standard
                    && this.y == 0 
                    && this.cx == 0 
                    && this.cy == 0;
+        }
+
+        public bool Equals(WINDOWPOS other)
+        {
+            return this.hwnd.Equals(other.hwnd) 
+                   && this.hwndInsertAfter.Equals(other.hwndInsertAfter) 
+                   && this.x == other.x 
+                   && this.y == other.y 
+                   && this.cx == other.cx 
+                   && this.cy == other.cy 
+                   && this.flags == other.flags;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is WINDOWPOS other 
+                   && this.Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = this.hwnd.GetHashCode();
+                hashCode = (hashCode * 397) ^ this.hwndInsertAfter.GetHashCode();
+                hashCode = (hashCode * 397) ^ this.x;
+                hashCode = (hashCode * 397) ^ this.y;
+                hashCode = (hashCode * 397) ^ this.cx;
+                hashCode = (hashCode * 397) ^ this.cy;
+                hashCode = (hashCode * 397) ^ (int)this.flags;
+                return hashCode;
+            }
+        }
+
+        public static bool operator ==(WINDOWPOS left, WINDOWPOS right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(WINDOWPOS left, WINDOWPOS right)
+        {
+            return !left.Equals(right);
         }
     }
 
@@ -3366,17 +3432,20 @@ namespace ControlzEx.Standard
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        [DllImport("user32.dll", EntryPoint = "GetMonitorInfo", SetLastError = true)]
+        [DllImport("user32.dll", EntryPoint = "GetMonitorInfo", SetLastError = true, CharSet = CharSet.Auto)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool _GetMonitorInfo(IntPtr hMonitor, [In, Out] MONITORINFO lpmi);
+        private static extern bool _GetMonitorInfo([In] IntPtr hMonitor, ref MONITORINFO lpmi);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public static MONITORINFO GetMonitorInfo(IntPtr hMonitor)
+        public static MONITORINFO GetMonitorInfo([In] IntPtr hMonitor)
         {
-            var mi = new MONITORINFO();
-            if (!_GetMonitorInfo(hMonitor, mi))
+            var mi = new MONITORINFO
             {
-                throw new Win32Exception();
+                cbSize = Marshal.SizeOf(typeof(MONITORINFO))
+            };
+            if (!_GetMonitorInfo(hMonitor, ref mi))
+            {
+                HRESULT.ThrowLastError();
             }
             return mi;
         }
@@ -3384,15 +3453,18 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("user32.dll", EntryPoint = "GetMonitorInfoW", SetLastError = true, ExactSpelling = true, CharSet = CharSet.Unicode)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool _GetMonitorInfoW([In] IntPtr hMonitor, [Out] MONITORINFO lpmi);
+        private static extern bool _GetMonitorInfoW([In] IntPtr hMonitor, ref MONITORINFO lpmi);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public static MONITORINFO GetMonitorInfoW(IntPtr hMonitor)
+        public static MONITORINFO GetMonitorInfoW([In] IntPtr hMonitor)
         {
-            var mi = new MONITORINFO();
-            if (!_GetMonitorInfoW(hMonitor, mi))
+            var mi = new MONITORINFO
             {
-                throw new Win32Exception();
+                cbSize = Marshal.SizeOf(typeof(MONITORINFO))
+            };
+            if (!_GetMonitorInfoW(hMonitor, ref mi))
+            {
+                HRESULT.ThrowLastError();
             }
             return mi;
         }
@@ -3425,7 +3497,7 @@ namespace ControlzEx.Standard
         public static IntPtr GetStockObject(StockObject fnObject)
         {
             IntPtr retPtr = _GetStockObject(fnObject);
-            if (retPtr == null)
+            if (retPtr == IntPtr.Zero)
             {
                 HRESULT.ThrowLastError();
             }
@@ -3656,6 +3728,44 @@ namespace ControlzEx.Standard
             }
             return rc;
         }
+
+        /// <summary>
+        /// Retrieves the length, in characters, of the specified window's title bar text (if the window has a title bar).
+        /// If the specified window is a control, the function retrieves the length of the text within the control. However,
+        /// GetWindowTextLength cannot retrieve the length of the text of an edit control in another application.
+        /// </summary>
+        /// <param name="hWnd">A handle to the window or control.</param>
+        /// <returns>
+        /// If the function succeeds, the return value is the length, in characters, of the text. Under certain
+        /// conditions, this value may actually be greater than the length of the text. For more information, see the following
+        /// Remarks section.
+        /// <para>If the window has no text, the return value is zero. To get extended error information, call GetLastError.</para>
+        /// </returns>
+        [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        public static extern int GetWindowTextLength(IntPtr hWnd);
+
+        /// <summary>
+        /// Copies the text of the specified window's title bar (if it has one) into a buffer. If the specified window is
+        /// a control, the text of the control is copied. However, GetWindowText cannot retrieve the text of a control in another
+        /// application.
+        /// </summary>
+        /// <param name="hWnd">A handle to the window or control containing the text.</param>
+        /// <param name="strText">
+        /// The buffer that will receive the text. If the string is as long or longer than the buffer, the
+        /// string is truncated and terminated with a null character.
+        /// </param>
+        /// <param name="maxCount">
+        /// The maximum number of characters to copy to the buffer, including the null character. If the
+        /// text exceeds this limit, it is truncated.
+        /// </param>
+        /// <returns>
+        /// If the function succeeds, the return value is the length, in characters, of the copied string, not including
+        /// the terminating null character. If the window has no title bar or text, if the title bar is empty, or if the window or
+        /// control handle is invalid, the return value is zero. To get extended error information, call GetLastError.
+        /// <para>This function cannot retrieve the text of an edit control in another application.</para>
+        /// </returns>
+        [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        public static extern int GetWindowText(IntPtr hWnd, StringBuilder strText, int maxCount);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("gdiplus.dll")]
@@ -4008,14 +4118,14 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("user32.dll", EntryPoint = "SetWindowPos", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool _SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, SWP uFlags);
+        private static extern bool _SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, SWP uFlags);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public static void SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, SWP uFlags)
+        public static void SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, SWP uFlags)
         {
-            if (!_SetWindowPos(hWnd, hWndInsertAfter, x, y, cx, cy, uFlags))
+            if (!_SetWindowPos(hWnd, hWndInsertAfter, X, Y, cx, cy, uFlags))
             {
-                throw new Win32Exception();
+                HRESULT.ThrowLastError();
             }
         }
 

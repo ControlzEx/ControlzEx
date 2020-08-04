@@ -6,6 +6,7 @@
         <RootNamespace>ControlzEx.Showcase</RootNamespace>
         <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
         <IsPackable>false</IsPackable>
+        <ApplicationIcon>..\..\logo.ico</ApplicationIcon>
     </PropertyGroup>
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
