@@ -342,7 +342,16 @@ namespace ControlzEx.Theming
                 throw new ArgumentNullException(nameof(colorScheme));
             }
 
-            return this.Themes.FirstOrDefault(x => x.BaseColorScheme == baseColorScheme && x.ColorScheme == colorScheme && x.IsHighContrast == highContrast);
+            var theme = this.Themes.FirstOrDefault(x => x.BaseColorScheme == baseColorScheme && x.ColorScheme == colorScheme && x.IsHighContrast == highContrast);
+
+            if (theme is null
+                && highContrast)
+            {
+                theme = this.Themes.FirstOrDefault(x => x.BaseColorScheme == baseColorScheme && x.ColorScheme == "Generic" && x.IsHighContrast == highContrast)
+                        ?? this.Themes.FirstOrDefault(x => x.BaseColorScheme == baseColorScheme && x.IsHighContrast == highContrast);
+            }
+
+            return theme;
         }
 
         /// <summary>
