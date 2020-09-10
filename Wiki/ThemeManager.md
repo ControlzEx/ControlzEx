@@ -3,36 +3,39 @@
 > **Please Note:** All code surrounded by `[ ]` needs to be replaced with the correct value by you.  
 
 ## What is the ThemeManager
-The `ThemeManager` provides several options to provide Themes for your application or control library. For example [MahApps.Metro](https://github.com/MahApps/MahApps.Metro) and [Fluent.Ribbon](https://github.com/fluentribbon/Fluent.Ribbon) uses it to provide different themes to the user.
+The `ThemeManager` provides several options to provide themes for your application or control library. For example [MahApps.Metro](https://github.com/MahApps/MahApps.Metro) and [Fluent.Ribbon](https://github.com/fluentribbon/Fluent.Ribbon) use it to provide different themes to the user.
 
 In the following sections the usage will be described by the sample usage at [MahApps.Metro](https://github.com/MahApps/MahApps.Metro).
 
-## Create build in Themes
+## Create built in themes
 
-### Using the XamlColorSchemeGenerator
-You can provide build in themes in your `App` or `Controls Library` by running the [XamlColorSchemeGenerator](https://github.com/batzen/XamlColorSchemeGenerator) while building or via command line. For detailed information about the usage, please visit the [XamlColorSchemeGenerator site](https://github.com/batzen/XamlColorSchemeGenerator).
+### Using XamlColorSchemeGenerator
+You can provide built in themes in your application or library by running the [XamlColorSchemeGenerator](https://github.com/batzen/XamlColorSchemeGenerator) while building or via command line. For detailed information about the usage, please visit the [XamlColorSchemeGenerator site](https://github.com/batzen/XamlColorSchemeGenerator).
 
-### Providing ResourceDicitionaries
-You may also provide a custom `ResourceDicitionary` with all the needed Resources. 
-1. Get your self a Copy of the needed `Template`
+### Using ResourceDicitionaries
+> **Please note:** It is not recommended to use this approach as you might miss the addition of new required resources when new versions of libraries are released.
+
+You may also provide a custom `ResourceDictionary` with all the needed resources.
+1. Get yourself a copy of the required `Template`
     * **MahApps.Metro**: https://github.com/MahApps/MahApps.Metro/blob/main/src/MahApps.Metro/Styles/Themes/Theme.Template.xaml
     * **Fluent.Ribbon**: https://github.com/fluentribbon/Fluent.Ribbon/blob/master/Fluent.Ribbon/Themes/Themes/Theme.Template.xaml
 2. Replace all items surrounded by double curly braces `{{ Content to Replace }}`
-3. Remember to create all needed variants. E.g.: If you want to support light and dark Themes you will need to implement both.
+3. Remember to create all needed variants. E.g.: If you want to support light and dark themes you will need to implement both.
   
     
-## Changing the Theme at run-time
+## Changing the theme at runtime
 
-### Change the Theme using a build in Theme
+### Change the theme using a built in theme
 First of all you need to add the following namespace in your using section: 
 ```c#
 using ControlzEx.Theming;
 ```
 
-now you can apply the theme of your choice to your `App`, to a specific `Window` or any `Control`. Just call this line in your code: 
+now you can apply the `Theme` of your choice to your `App`, to a specific `Window` or any `FrameworkElement`. Just call this line in your code: 
 ```c#
 ThemeManager.Current.ChangeTheme([Affected item], "[Name of the theme]");
 ```
+
 Where `[Affected item]` may be:
 - `Applictaion.Current`
 - `this`
@@ -47,26 +50,25 @@ The `ThemeManager` can be called from different locations, for example:
 - Inside the constructor of your `Window`
 - In a `Click-Event` of a `Button`
 - In your `ViewModel`
-- ...
 
 **Example** 
 
-If you want, for example, set your Application Theme to `Dark.Red`, when the user clicks a Button called "ButtonChangeTheme" you can do this: 
-```
+If you want, for example, set your application theme to `Dark.Red`, when the user clicks a button called "ButtonChangeTheme" you can do this: 
+```c#
 private void ButtonChangeTheme_Click(object sender, RoutedEventArgs e)
 {
     ThemeManager.Current.ChangeTheme(App.Current, "Dark.Red");
 }
 ```
 
-### Sync your Theme with the Windows Theme
-It is also possible to sync your `Theme` with the users Windows Theme. The first step is again to add the following line namespace in your using section: 
+### Sync your theme with the Windows theme
+It is also possible to sync your `Theme` with the users Windows theme. The first step is again to add the following namespace in your using section: 
 ```c#
 using ControlzEx.Theming;
 ```
 
-Now you need to define if you want to sync the `BaseTheme`, the `Accent` or both: 
-```
+Now you need to define if you want to sync the `BaseColor`, the `Accent` or both: 
+```c#
 ThemeManager.Current.ThemeSyncMode = ThemeSyncMode.[DoNotSync|SyncAll|SyncWithAccent|SyncWithAppMode|SyncWithHighContrast];
 ```
 
@@ -80,14 +82,18 @@ The table below explains the available `ThemeSyncModes`:
 | SyncWithAccent       | Gets or sets whether changes to the accent color settings from windows should be detected at runtime and the current Theme be changed accordingly. |
 | SyncWithHighContrast | Gets or sets whether changes to the high contrast setting from windows should be detected at runtime and the current Theme be changed accordingly. |
 
+> Explanation: "app mode" is the windows terminology for base color like "dark" or "light".
+
+> ***Please note:*** Once you enable theme sync you should not change the theme manually as manual changes would be overwritten as soon as some event occurs that triggers a theme sync. Such events could be triggered by various things like changes to display settings, connecting/disconnecting via RDP etc.. 
+
 To actually sync the `Theme` call this line: 
 ```c#
 ThemeManager.Current.SyncTheme();
 ```
 
-> Note: If you want to sync just a part of the `Theme` and use a custom `Theme` make sure that the `Theme` is correctlyy added to the `ThemeManager`. 
+> Note: If you want to sync just a part of the `Theme` and use a custom `Theme` make sure that the `Theme` is correctly added to the `ThemeManager`. 
 
-### Change the Theme by creating a custom one
+### Change the theme by creating a custom one
 First of all you need to add the following namespace in your using section: 
 ```c#
 using ControlzEx.Theming;
@@ -100,8 +106,8 @@ using ControlzEx.Theming;
 
 2. Now you can create a new `Theme` by providing the `Color` you wish:
     ```c#
-    Theme newTheme = new Theme("[Name of the generated Theme]",
-                               "[DisplayName of the generated Theme]",
+    Theme newTheme = new Theme("[Name of the generated theme]",
+                               "[DisplayName of the generated theme]",
                                [ThemeManager.BaseColorLight or ThemeManager.BaseColorDark],
                                "[AccentName]",
                                [AccentColor],
@@ -109,7 +115,7 @@ using ControlzEx.Theming;
                                true,
                                [IsHighContast: false/true]);
     ```
-    Modify all parameters surrounded by `[]` in the above snipped with your needs.
+    Adjust all parameters surrounded by `[]` in the above snipped to your needs.
     
 3. Optional: Add or override any `Resources` in the new `Theme` if needed, e.g.:
     ```c# 
@@ -134,7 +140,7 @@ using ControlzEx.Theming;
     - any `FrameworkElement`
 
     
-### Override the RuntimeThemeGenerator
+### Override the LibraryThemeProvider
 If you want to have even more control about the theme generation you can override the `LibraryThemeProvider` with your own provider. In the following sample we will show how to do this for MahApps.Metro.
 
 1. Create a new `class` which derives from a `LibaryThemeProvider`, in our case `MahAppsLibraryThemeProvider`
@@ -143,7 +149,7 @@ If you want to have even more control about the theme generation you can overrid
     ```
 2. Override the `static DefaultInstance`
     ```c#
-    public static new readonly MyLibraryThemeProvider DefaultInstance = new BiaLibraryThemeProvider();
+    public static new readonly MyLibraryThemeProvider DefaultInstance = new MyLibraryThemeProvider();
     ```
 3. Override the Methods you like (most likely you want to override this):
     ```c#
@@ -175,8 +181,8 @@ If you want to have even more control about the theme generation you can overrid
     ```
     
 Below is a complete sample with some customization:
-- If the user selects the `Light` Theme, the accent colors have the same appearance as the transparent ones, but they are solid.
-- If the user selects the `Dark` Theme, the accent colors are a bit brighter than in the original implementation.
+- If the user selects the `Light` theme, the accent colors have the same appearance as the transparent ones, but they are solid.
+- If the user selects the `Dark` theme, the accent colors are a bit brighter than in the original implementation.
 - The `HighlightColor` is calculated differently
 - The gray shades are calculated to be equally distributed from black to white
 
@@ -192,7 +198,7 @@ public class MyLibraryThemeProvider : MahAppsLibraryThemeProvider
         if (values is null) throw new ArgumentNullException(nameof(values));
         if (colorValues is null) throw new ArgumentNullException(nameof(colorValues));
 
-        bool isDarkMode = colorValues.Options.BaseColorScheme.Name == "Dark";
+        bool isDarkMode = colorValues.Options.BaseColorScheme.Name == ThemeManager.BaseColorDark;
         Color baseColor = (Color)ColorConverter.ConvertFromString(colorValues.Options.BaseColorScheme.Values["MahApps.Colors.ThemeBackground"]);
         Color accent = colorValues.AccentBaseColor;
         double factor = isDarkMode ? 0.1 : 0.2;
@@ -214,26 +220,26 @@ public class MyLibraryThemeProvider : MahAppsLibraryThemeProvider
         }
     }
 
-    private static Color GetShadedGray(double Percentage, bool Inverse = false)
+    private static Color GetShadedGray(double percentage, bool inverse = false)
     {
-        if (Inverse)
+        if (inverse)
         {
-            Percentage = 1 - Percentage;
+            percentage = 1 - percentage;
         }
 
-        return Color.FromRgb((byte)(Percentage * 255), (byte)(Percentage * 255), (byte)(Percentage * 255));
+        return Color.FromRgb((byte)(percentage * 255), (byte)(percentage * 255), (byte)(percentage * 255));
     }
 
-    private static Color AddColor(Color baseColor, Color ColorToAdd, double? Factor)
+    private static Color AddColor(Color baseColor, Color colorToAdd, double? factor)
     {
         byte firstColorAlpha = baseColor.A;
-        byte secondColorAlpha = Factor.HasValue ? (byte)(Factor * 255) : ColorToAdd.A;
+        byte secondColorAlpha = factor.HasValue ? (byte)(factor * 255) : colorToAdd.A;
 
         byte alpha = CompositeAlpha(firstColorAlpha, secondColorAlpha);
 
-        byte r = CompositeColorComponent(baseColor.R, firstColorAlpha, ColorToAdd.R, secondColorAlpha, alpha);
-        byte g = CompositeColorComponent(baseColor.G, firstColorAlpha, ColorToAdd.G, secondColorAlpha, alpha);
-        byte b = CompositeColorComponent(baseColor.B, firstColorAlpha, ColorToAdd.B, secondColorAlpha, alpha);
+        byte r = CompositeColorComponent(baseColor.R, firstColorAlpha, colorToAdd.R, secondColorAlpha, alpha);
+        byte g = CompositeColorComponent(baseColor.G, firstColorAlpha, colorToAdd.G, secondColorAlpha, alpha);
+        byte b = CompositeColorComponent(baseColor.B, firstColorAlpha, colorToAdd.B, secondColorAlpha, alpha);
 
         return Color.FromArgb(255, r, g, b);
     }
@@ -259,13 +265,13 @@ public class MyLibraryThemeProvider : MahAppsLibraryThemeProvider
 }
 ``` 
 
-## Detect the current Theme
-You can get the current applied Theme of the entire `App`, a single `Window` or any `FrameworkElement`. To do so import this namespace to your usings:
+## Detect the current theme
+You can get the current applied theme of the entire `App`, a single `Window` or any `FrameworkElement`. To do so import this namespace to your usings:
 ```c#
 using ControlzEx.Theming;
 ```
 
-Now you can call this statement to get the current Theme:
+Now you can call this statement to get the current theme:
 ```c#
 Theme currentTheme = ThemeManager.Current.DetectTheme([ThemedItem]);
 ```
