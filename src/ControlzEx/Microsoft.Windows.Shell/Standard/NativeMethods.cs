@@ -1568,6 +1568,7 @@ namespace ControlzEx.Standard
         private IntPtr? _hwnd;
         private bool _created;
 
+#pragma warning disable CA1044
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public IntPtr Hwnd
         {
@@ -1577,6 +1578,7 @@ namespace ControlzEx.Standard
                 _hwnd = value;
             }
         }
+#pragma warning restore CA1044
 
         private SafeDC() : base(true) { }
 
