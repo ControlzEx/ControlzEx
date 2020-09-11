@@ -401,9 +401,14 @@ namespace ControlzEx.Standard
         /// </summary>
         public static explicit operator int(HRESULT hr)
         {
+            return hr.ToInt32();
+        }
+
+        public int ToInt32()
+        {
             unchecked
             {
-                return (int)hr._value;
+                return (int)this._value;
             }
         }
 

@@ -16,8 +16,14 @@
         <LangVersion>latest</LangVersion>
         <DebugSymbols>true</DebugSymbols>
         <DebugType>full</DebugType>
-        <NoWarn>$(NoWarn);CS1591</NoWarn>
-        <NoError>$(NoError);CS1591</NoError>
+        <!-- CA1021: Avoid out parameters -->
+        <!-- CA1045: Do not pass types by reference -->
+        <!-- CA1051: Do not declare visible instance fields -->
+        <!-- CA1307: Specify StringComparison for clarity -->
+        <!-- CA1401: P/Invokes should not be visible -->
+        <!-- CS1591: -->
+        <NoWarn>$(NoWarn);CA1021;CA1045;CA1051;CA1307;CA1401;CS1591;</NoWarn>
+        <NoError>$(NoError);</NoError>
         <UseWPF>true</UseWPF>
         <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\ControlzEx.ruleset</CodeAnalysisRuleSet>
     </PropertyGroup>

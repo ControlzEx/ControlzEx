@@ -1,4 +1,5 @@
-#pragma warning disable 618
+#pragma warning disable 618, CA1001, CA1060
+
 namespace ControlzEx.Controls
 {
     using System;
@@ -37,7 +38,7 @@ namespace ControlzEx.Controls
         private RECT lastUpdateCoreRect;
 
         #region PInvoke
-        
+       
         [DllImport("user32.dll")]
         private static extern IntPtr LoadCursor(IntPtr hInstance, IDC_SIZE_CURSORS cursor);
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿#pragma warning disable 1591, 618, CA1815, CA1028, CA1008
+using System;
 
 namespace ControlzEx.Native
 {

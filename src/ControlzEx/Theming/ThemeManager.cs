@@ -1298,6 +1298,7 @@ namespace ControlzEx.Theming
         }
     }
 
+#pragma warning disable CA1008
     [Flags]
     public enum ThemeSyncMode
     {
@@ -1320,4 +1321,5 @@ namespace ControlzEx.Theming
 
         SyncAll = SyncWithAppMode | SyncWithAccent | SyncWithHighContrast
     }
+#pragma warning restore CA1008
 }
