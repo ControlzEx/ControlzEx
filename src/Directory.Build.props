@@ -22,7 +22,8 @@
         <!-- CA1307: Specify StringComparison for clarity -->
         <!-- CA1401: P/Invokes should not be visible -->
         <!-- CS1591: -->
-        <NoWarn>$(NoWarn);CA1021;CA1045;CA1051;CA1307;CA1401;CS1591;</NoWarn>
+        <!-- AD0001: Disabled because it throws an NRE -->
+        <NoWarn>$(NoWarn);CA1021;CA1045;CA1051;CA1307;CA1401;CS1591;AD0001</NoWarn>
         <NoError>$(NoError);</NoError>
         <UseWPF>true</UseWPF>
         <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\ControlzEx.ruleset</CodeAnalysisRuleSet>
