@@ -814,7 +814,7 @@ namespace ControlzEx.Theming
         /// <param name="oldTheme">The old/current theme.</param>
         /// <param name="baseColor">The base color to apply to the ResourceDictionary.</param>
         [SecurityCritical]
-        public Theme? ChangeThemeBaseColor(object? target, [NotNull] ResourceDictionary resourceDictionary, [CanBeNull] Theme oldTheme, [NotNull] string baseColor)
+        public Theme? ChangeThemeBaseColor(object? target, [NotNull] ResourceDictionary resourceDictionary, Theme? oldTheme, [NotNull] string baseColor)
         {
             if (resourceDictionary is null)
             {
@@ -913,7 +913,7 @@ namespace ControlzEx.Theming
         /// <param name="oldTheme">The old/current theme.</param>
         /// <param name="colorScheme">The color scheme to apply to the ResourceDictionary.</param>
         [SecurityCritical]
-        public Theme? ChangeThemeColorScheme(object? target, [NotNull] ResourceDictionary resourceDictionary, [CanBeNull] Theme oldTheme, [NotNull] string colorScheme)
+        public Theme? ChangeThemeColorScheme(object? target, [NotNull] ResourceDictionary resourceDictionary, Theme? oldTheme, [NotNull] string colorScheme)
         {
             if (resourceDictionary is null)
             {
