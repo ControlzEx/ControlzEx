@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 namespace ControlzEx.Theming
 {
     using System;
@@ -633,19 +633,19 @@ namespace ControlzEx.Theming
         /// Change base color and color scheme of for the given application.
         /// </summary>
         /// <param name="app">The application to modify.</param>
-        /// <param name="baseColor">The base color to apply to the ResourceDictionary.</param>
+        /// <param name="baseColorScheme">The base color to apply to the ResourceDictionary.</param>
         /// <param name="colorScheme">The color scheme to apply to the ResourceDictionary.</param>
         [SecurityCritical]
-        public Theme? ChangeTheme([NotNull] Application app, [NotNull] string baseColor, [NotNull] string colorScheme)
+        public Theme? ChangeTheme([NotNull] Application app, [NotNull] string baseColorScheme, [NotNull] string colorScheme)
         {
             if (app is null)
             {
                 throw new ArgumentNullException(nameof(app));
             }
 
-            if (string.IsNullOrEmpty(baseColor))
+            if (string.IsNullOrEmpty(baseColorScheme))
             {
-                throw new ArgumentNullException(nameof(baseColor));
+                throw new ArgumentNullException(nameof(baseColorScheme));
             }
 
             if (string.IsNullOrEmpty(colorScheme))
@@ -660,15 +660,7 @@ namespace ControlzEx.Theming
                 return null;
             }
 
-            var newTheme = this.Themes.FirstOrDefault(x => x.BaseColorScheme == baseColor && x.ColorScheme == colorScheme);
-
-            if (newTheme is null)
-            {
-                Trace.TraceError($"Could not find a theme with base color scheme '{baseColor}' and color scheme '{colorScheme}'.");
-                return null;
-            }
-
-            return this.ChangeTheme(app, app.Resources, currentTheme, newTheme);
+            return this.ChangeTheme(app, app.Resources, currentTheme, baseColorScheme, colorScheme);
         }
 
         /// <summary>
@@ -702,15 +694,7 @@ namespace ControlzEx.Theming
                 return null;
             }
 
-            var newTheme = this.Themes.FirstOrDefault(x => x.BaseColorScheme == baseColor && x.ColorScheme == colorScheme);
-
-            if (newTheme is null)
-            {
-                Trace.TraceError($"Could not find a theme with base color scheme '{baseColor}' and color scheme '{colorScheme}'.");
-                return null;
-            }
-
-            return this.ChangeTheme(frameworkElement, frameworkElement.Resources, currentTheme, newTheme);
+            return this.ChangeTheme(frameworkElement, frameworkElement.Resources, currentTheme, baseColorScheme, colorScheme);
         }
 
         /// <summary>
@@ -739,11 +723,11 @@ namespace ControlzEx.Theming
                 throw new ArgumentNullException(nameof(colorScheme));
             }
 
-            var newTheme = this.Themes.FirstOrDefault(x => x.BaseColorScheme == baseColor && x.ColorScheme == colorScheme);
+            var newTheme = this.GetTheme(baseColorScheme, colorScheme, oldTheme.IsHighContrast);
 
             if (newTheme is null)
             {
-                Trace.TraceError($"Could not find a theme with base color scheme '{baseColor}' and color scheme '{colorScheme}'.");
+                Trace.TraceError($"Could not find a theme with base color scheme '{baseColorScheme}', color scheme '{colorScheme}' and high contrast equals {oldTheme.IsHighContrast}.");
                 return null;
             }
 
