@@ -344,7 +344,6 @@ namespace ControlzEx.Theming
             }
 
             var builtInTheme = this.Themes.FirstOrDefault(x => x.Name == Theme.GetThemeName(resourceDictionary));
-            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             if (!(builtInTheme is null))
             {
                 return builtInTheme;
@@ -376,7 +375,6 @@ namespace ControlzEx.Theming
 
                 return new Theme(new LibraryTheme(resourceDictionary, null));
             }
-            // ReSharper restore HeuristicUnreachableCode
 
             return null;
         }
