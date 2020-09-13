@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 namespace ControlzEx.Theming
 {
     using System;
@@ -261,29 +261,6 @@ namespace ControlzEx.Theming
         {
             this.themesInternal.Clear();
         }
-
-        ///// <summary>
-        ///// Adds an theme.
-        ///// </summary>
-        ///// <returns>true if the app theme does not exists and can be added.</returns>
-        //public Theme AddTheme([NotNull] Uri resourceAddress)
-        //{
-        //    var theme = new Theme(resourceAddress);
-
-        //    return AddTheme(theme);
-        //}
-
-        ///// <summary>
-        ///// Adds an theme.
-        ///// </summary>
-        ///// <param name="resourceDictionary">The ResourceDictionary of the theme.</param>
-        ///// <returns>true if the app theme does not exists and can be added.</returns>
-        //public Theme AddTheme([NotNull] ResourceDictionary resourceDictionary)
-        //{
-        //    var theme = new Theme(resourceDictionary);
-
-        //    return AddTheme(theme);
-        //}
 
         public Theme AddLibraryTheme([NotNull] LibraryTheme libraryTheme)
         {
@@ -1170,46 +1147,6 @@ namespace ControlzEx.Theming
         private void OnThemeChanged(object? target, ResourceDictionary targetResourceDictionary, Theme? oldTheme, Theme newTheme)
         {
             this.ThemeChanged?.Invoke(Application.Current, new ThemeChangedEventArgs(target, targetResourceDictionary, oldTheme, newTheme));
-        }
-
-        private bool AreResourceDictionarySourcesEqual(ResourceDictionary first, ResourceDictionary second)
-        {
-            if (first is null
-                || second is null)
-            {
-                return false;
-            }
-
-            // If RD does not have a source, but both have keys and the first one has at least as many keys as the second,
-            // then compares their values.
-            if ((first.Source is null
-                || second.Source is null)
-                && first.Keys.Count > 0
-                && second.Keys.Count > 0
-                && first.Keys.Count >= second.Keys.Count)
-            {
-                try
-                {
-                    foreach (var key in first.Keys)
-                    {
-                        var isTheSame = second.Contains(key)
-                                        && Equals(first[key], second[key]);
-                        if (!isTheSame)
-                        {
-                            return false;
-                        }
-                    }
-                }
-                catch (Exception exception)
-                {
-                    Trace.TraceError($"Could not compare resource dictionaries: {exception} {Environment.NewLine} {exception.StackTrace}");
-                    return false;
-                }
-
-                return true;
-            }
-
-            return Uri.Compare(first.Source, second.Source, UriComponents.Host | UriComponents.Path, UriFormat.SafeUnescaped, StringComparison.OrdinalIgnoreCase) == 0;
         }
 
         public void SyncTheme()
