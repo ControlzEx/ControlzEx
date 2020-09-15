@@ -37,7 +37,7 @@ ThemeManager.Current.ChangeTheme([Affected item], "[Name of the theme]");
 ```
 
 Where `[Affected item]` may be:
-- `Applictaion.Current`
+- `Application.Current`
 - `this`
 - any `Window`
 - any `Control`
@@ -133,7 +133,7 @@ using ControlzEx.Theming;
     ThemeManager.Current.ChangeTheme([Affected item], newTheme);
     ```
     Where `[Affected item]` may be:
-    - `Applictaion.Current`
+    - `Application.Current`
     - `this`
     - any `Window`
     - any `Control`
@@ -276,7 +276,7 @@ Now you can call this statement to get the current theme:
 Theme currentTheme = ThemeManager.Current.DetectTheme([ThemedItem]);
 ```
 where `ThemedItem` may be:
-- `Applictaion.Current`
+- `Application.Current`
 - `this`
 - any `Window`
 - any `Control`
