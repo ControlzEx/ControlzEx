@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 namespace ControlzEx.Theming
 {
     using System;
@@ -341,6 +341,13 @@ namespace ControlzEx.Theming
             if (resourceDictionary is null)
             {
                 throw new ArgumentNullException(nameof(resourceDictionary));
+            }
+
+            var themeInstance = Theme.GetThemeInstance(resourceDictionary);
+
+            if (!(themeInstance is null))
+            {
+                return themeInstance;
             }
 
             var builtInTheme = this.Themes.FirstOrDefault(x => x.Name == Theme.GetThemeName(resourceDictionary));
