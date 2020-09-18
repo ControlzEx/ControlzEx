@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 namespace ControlzEx.Theming
 {
     using System;
@@ -1157,6 +1157,10 @@ namespace ControlzEx.Theming
                         this.SyncThemeColorSchemeWithWindowsAccentColor(syncMode);
                         break;
 
+                    case ThemeSyncMode.SyncWithHighContrast:
+                        this.SyncThemeWithHighContrastMode(syncMode);
+                        break;
+
                     case ThemeSyncMode.SyncAll:
                         this.SyncThemeColorSchemeWithWindowsAccentColor(syncMode, WindowsThemeHelper.GetWindowsBaseColor());
                         break;
@@ -1189,7 +1193,56 @@ namespace ControlzEx.Theming
             }
             else
             {
-                this.ChangeThemeBaseColor(Application.Current, baseColor);   
+                var detectedTheme = this.DetectTheme();
+
+                if (detectedTheme is null)
+                {
+                    return;
+                }
+
+                var colorScheme = detectedTheme.ColorScheme;
+
+                var isHighContrast = syncModeToUse.HasFlag(ThemeSyncMode.SyncWithHighContrast)
+                                     && WindowsThemeHelper.IsHighContrastEnabled();
+                var theme = this.GetTheme(baseColor, colorScheme, isHighContrast)
+                            ?? RuntimeThemeGenerator.Current.GenerateRuntimeTheme(baseColor, detectedTheme.PrimaryAccentColor, isHighContrast, this.libraryThemeProvidersInternal);
+
+                // Only change the theme if it's not the current already
+                if (!(theme is null)
+                    && theme != detectedTheme)
+                {
+                    this.ChangeTheme(Application.Current, theme);
+                }
+            }
+        }
+
+        public void SyncThemeWithHighContrastMode()
+        {
+            this.SyncThemeWithHighContrastMode(this.ThemeSyncMode);
+        }
+
+        public void SyncThemeWithHighContrastMode(ThemeSyncMode syncModeToUse)
+        {
+            var detectedTheme = this.DetectTheme();
+
+            if (detectedTheme is null)
+            {
+                return;
+            }
+
+            var baseColor = detectedTheme.BaseColorScheme;
+            var colorScheme = detectedTheme.ColorScheme;
+
+            var isHighContrast = syncModeToUse.HasFlag(ThemeSyncMode.SyncWithHighContrast)
+                                 && WindowsThemeHelper.IsHighContrastEnabled();
+            var theme = this.GetTheme(baseColor, colorScheme, isHighContrast)
+                ?? RuntimeThemeGenerator.Current.GenerateRuntimeTheme(baseColor, detectedTheme.PrimaryAccentColor, isHighContrast, this.libraryThemeProvidersInternal);
+
+            // Only change the theme if it's not the current already
+            if (!(theme is null)
+                && theme != detectedTheme)
+            {
+                this.ChangeTheme(Application.Current, theme);
             }
         }
 
