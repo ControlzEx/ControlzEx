@@ -594,6 +594,7 @@
             }
         }
 
+        [CLSCompliant(false)]
         protected override ushort CreateWindowClassCore()
         {
             return SharedWindowClassAtom;
