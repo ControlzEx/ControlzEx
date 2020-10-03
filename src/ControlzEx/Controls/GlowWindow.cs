@@ -324,7 +324,6 @@
 
         private static Uri MakePackUri(Assembly assembly, string path)
         {
-            System.Diagnostics.Trace.WriteLine(nameof(MakePackUri));
             var name = assembly.GetName().Name;
             return new Uri($"pack://application:,,,/{name};component/{path}", UriKind.Absolute);
         }
