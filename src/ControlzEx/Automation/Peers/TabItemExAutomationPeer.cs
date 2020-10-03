@@ -37,7 +37,7 @@
                 return headerChildren;
             }
 
-            var contentHost = parentTabControl.FindChildContentPresenter(tabItem.Content);
+            var contentHost = parentTabControl.FindChildContentPresenter(tabItem.Content, tabItem);
 
             if (contentHost != null)
             {

@@ -2,6 +2,7 @@ namespace ControlzEx.Tests.Theming
 {
     using System;
     using System.Linq;
+    using System.Security.Cryptography;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Data;
@@ -333,6 +334,167 @@ namespace ControlzEx.Tests.Theming
 
             Assert.NotNull(theme);
             Assert.That(theme.Name, Is.EqualTo("Dark.Blue"));
+        }
+
+        [Test]
+        public void GetThemeWithEmptyThemeManager()
+        {
+            var themeManager = new ThemeManager();
+            var theme = themeManager.GetTheme("Test");
+
+            Assert.That(theme, Is.Null);
+        }
+
+        [Test]
+        public void HighContrastScenarios()
+        {
+            var themeManager = new ThemeManager();
+
+            {
+                var resource = new ResourceDictionary
+                {
+                    {
+                        Theme.ThemeNameKey, "Theme 1"
+                    },
+                    {
+                        Theme.ThemeDisplayNameKey, "Theme 1"
+                    },
+                    {
+                        Theme.ThemeBaseColorSchemeKey, ThemeManager.BaseColorDark
+                    },
+                    {
+                        Theme.ThemeColorSchemeKey, "Bar"
+                    },
+                    {
+                        Theme.ThemePrimaryAccentColorKey, Colors.Blue
+                    },
+                    {
+                        Theme.ThemeIsHighContrastKey, false
+                    }
+                };
+
+                var newTheme = new Theme(new LibraryTheme(resource, null));
+
+                themeManager.AddTheme(newTheme);
+            }
+
+            {
+                var resource = new ResourceDictionary
+                {
+                    {
+                        Theme.ThemeNameKey, "Theme 2"
+                    },
+                    {
+                        Theme.ThemeDisplayNameKey, "Theme 2"
+                    },
+                    {
+                        Theme.ThemeBaseColorSchemeKey, ThemeManager.BaseColorLight
+                    },
+                    {
+                        Theme.ThemeColorSchemeKey, "Bar"
+                    },
+                    {
+                        Theme.ThemePrimaryAccentColorKey, Colors.Blue
+                    },
+                    {
+                        Theme.ThemeIsHighContrastKey, false
+                    }
+                };
+
+                var newTheme = new Theme(new LibraryTheme(resource, null));
+
+                themeManager.AddTheme(newTheme);
+            }
+
+            {
+                var resource = new ResourceDictionary
+                {
+                    {
+                        Theme.ThemeNameKey, "Theme 1"
+                    },
+                    {
+                        Theme.ThemeDisplayNameKey, "Theme 1"
+                    },
+                    {
+                        Theme.ThemeBaseColorSchemeKey, ThemeManager.BaseColorDark
+                    },
+                    {
+                        Theme.ThemeColorSchemeKey, "Bar"
+                    },
+                    {
+                        Theme.ThemePrimaryAccentColorKey, Colors.Blue
+                    },
+                    {
+                        Theme.ThemeIsHighContrastKey, true
+                    }
+                };
+
+                var newTheme = new Theme(new LibraryTheme(resource, null));
+
+                themeManager.AddTheme(newTheme);
+            }
+
+            {
+                var resource = new ResourceDictionary
+                {
+                    {
+                        Theme.ThemeNameKey, "Theme 2"
+                    },
+                    {
+                        Theme.ThemeDisplayNameKey, "Theme 2"
+                    },
+                    {
+                        Theme.ThemeBaseColorSchemeKey, ThemeManager.BaseColorLight
+                    },
+                    {
+                        Theme.ThemeColorSchemeKey, "Bar"
+                    },
+                    {
+                        Theme.ThemePrimaryAccentColorKey, Colors.Blue
+                    },
+                    {
+                        Theme.ThemeIsHighContrastKey, true
+                    }
+                };
+
+                var newTheme = new Theme(new LibraryTheme(resource, null));
+
+                themeManager.AddTheme(newTheme);
+            }
+
+            {
+                var theme = themeManager.GetTheme(ThemeManager.BaseColorDark, "Bar");
+
+                Assert.That(theme, Is.Not.Null);
+                Assert.That(theme.IsHighContrast, Is.False);
+            }
+
+            {
+                var theme = themeManager.GetTheme(ThemeManager.BaseColorDark, "Bar", true);
+
+                Assert.That(theme, Is.Not.Null);
+                Assert.That(theme.IsHighContrast, Is.True);
+
+                var inverseTheme = themeManager.GetInverseTheme(theme);
+
+                Assert.That(inverseTheme, Is.Not.Null);
+                Assert.That(inverseTheme, Is.Not.EqualTo(theme));
+                Assert.That(inverseTheme.IsHighContrast, Is.True);
+            }
+
+            {
+                var frameworkElement = new FrameworkElement();
+                var theme = themeManager.GetTheme(ThemeManager.BaseColorDark, "Bar", true);
+                var changeTheme = themeManager.ChangeTheme(frameworkElement, theme!);
+
+                Assert.That(changeTheme, Is.EqualTo(theme));
+
+                var changeThemeBaseColor = themeManager.ChangeThemeBaseColor(frameworkElement, ThemeManager.BaseColorLight);
+
+                Assert.That(changeThemeBaseColor, Is.Not.Null);
+                Assert.That(changeThemeBaseColor, Is.Not.EqualTo(changeTheme));
+                Assert.That(changeThemeBaseColor.IsHighContrast, Is.True);
+            }
         }
 
         [Test]

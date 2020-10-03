@@ -53,6 +53,11 @@ namespace ControlzEx.Theming
                 this.H = 60 * (((double)(r - g) / delta) + 4);
             }
 
+            if (this.H < 0)
+            {
+                this.H += 360;
+            }
+
             // Calculate L 
             this.L = (1d / 2d * (max + min)) / 255d;
 
@@ -158,38 +163,6 @@ namespace ControlzEx.Theming
             double k = (n + H / 30) % 12;
 
             return (byte)Math.Round (255 * (L - a * Math.Max(-1, Math.Min(k - 3, Math.Min(9 - k, 1)))));
-
-
-            //if (t3 < 0)
-            //{
-            //    t3 += 1.0;
-            //}
-
-            //if (t3 > 1)
-            //{
-            //    t3 -= 1.0;
-            //}
-
-            //double colorComponent;
-
-            //if (6.0 * t3 < 1)
-            //{
-            //    colorComponent = t2 + (t1 - t2) * 6.0 * t3;
-            //}
-            //else if (2.0 * t3 < 1)
-            //{
-            //    colorComponent = t1;
-            //}
-            //else if (3.0 * t3 < 2)
-            //{
-            //    colorComponent = t2 + (t1 - t2) * (2.0 / 3.0 - t3) * 6.0;
-            //}
-            //else
-            //{
-            //    colorComponent = t2;
-            //}
-
-            //return (byte)Math.Round(255 * colorComponent);
         }
     }
 }

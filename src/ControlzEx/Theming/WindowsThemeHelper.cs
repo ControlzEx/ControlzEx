@@ -37,13 +37,51 @@ namespace ControlzEx.Theming
             return true;
         }
 
+        // Titlebars and window borders = HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\DWM\ColorPrevalence = 0 (no), 1 = yes
+        [MustUseReturnValue]
+        public static bool ShowAccentColorOnTitleBarsAndWindowBorders()
+        {
+            try
+            {
+                var registryValue = Registry.GetValue(@"HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\DWM", "ColorPrevalence", null);
+
+                if (registryValue is null)
+                {
+                    return true;
+                }
+
+                return Convert.ToBoolean(registryValue);
+            }
+            catch (Exception exception)
+            {
+                Trace.TraceError(exception.ToString());
+            }
+
+            return true;
+        }
+
         [NotNull]
         [MustUseReturnValue]
         public static string GetWindowsBaseColor()
         {
-            var baseColor = AppsUseLightTheme()
-                ? ThemeManager.BaseColorLight
-                : ThemeManager.BaseColorDark;
+            string baseColor;
+
+            var isHighContrast = IsHighContrastEnabled();
+            if (isHighContrast)
+            {
+                var windowColor = (SystemColors.WindowBrush).Color;
+                var brightness = System.Drawing.Color.FromArgb(windowColor.R, windowColor.G, windowColor.B).GetBrightness();
+
+                baseColor = brightness < .5
+                    ? ThemeManager.BaseColorDark
+                    : ThemeManager.BaseColorLight;
+            }
+            else
+            {
+                baseColor = AppsUseLightTheme()
+                    ? ThemeManager.BaseColorLight
+                    : ThemeManager.BaseColorDark;
+            }
 
             return baseColor;
         }
