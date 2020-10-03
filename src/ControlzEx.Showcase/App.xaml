@@ -10,7 +10,7 @@
             <theming:SecondShowcaseLibraryThemeProvider x:Key="{x:Static theming:SecondShowcaseLibraryThemeProvider.DefaultInstance}" />
 
             <Style x:Key="{x:Type local:WindowChromeWindow}" TargetType="{x:Type local:WindowChromeWindow}">
-                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="BorderThickness" Value="0" />
                 <Setter Property="NCActiveBrush" Value="{Binding Background, RelativeSource={RelativeSource Self}}" />
                 <Setter Property="NCCurrentBrush" Value="{Binding NCActiveBrush, RelativeSource={RelativeSource Self}}" />
                 <Setter Property="NCNonActiveBrush" Value="{Binding Source={x:Static SystemColors.WindowFrameBrush}}" />

@@ -428,6 +428,7 @@
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
                                         <RowDefinition />
                                     </Grid.RowDefinitions>
 
@@ -482,9 +483,19 @@
                                     </StackPanel>
 
                                     <Label Grid.Row="3" Grid.Column="0">
-                                        ResizeBorderThickness
+                                        BorderThickness
                                     </Label>
                                     <TextBox Grid.Row="3"
+                                             Grid.Column="1"
+                                             Margin="4"
+                                             Padding="2"
+                                             VerticalAlignment="Center"
+                                             Text="{Binding ElementName=Window, Path=BorderThickness, Mode=TwoWay}" />
+                                    
+                                    <Label Grid.Row="4" Grid.Column="0">
+                                        ResizeBorderThickness
+                                    </Label>
+                                    <TextBox Grid.Row="4"
                                              Grid.Column="1"
                                              Margin="4"
                                              Padding="2"
