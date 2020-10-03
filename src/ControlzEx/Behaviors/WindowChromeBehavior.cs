@@ -5,7 +5,6 @@ namespace ControlzEx.Behaviors
     using System;
     using System.Collections.Generic;
     using System.Security;
-    using System.Security.Permissions;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Interop;
@@ -344,7 +343,6 @@ namespace ControlzEx.Behaviors
         }
 
         [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         private void Cleanup(bool isClosing)
         {
             if (this.isCleanedUp)

@@ -1725,7 +1725,6 @@ namespace ControlzEx.Standard
             handle = ptr;
         }
 
-        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         protected override bool ReleaseHandle()
         {
             Status s = NativeMethods.GdiplusShutdown(this.handle);
@@ -1791,7 +1790,6 @@ namespace ControlzEx.Standard
         }
 
         [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         protected override bool ReleaseHandle()
         {
             try

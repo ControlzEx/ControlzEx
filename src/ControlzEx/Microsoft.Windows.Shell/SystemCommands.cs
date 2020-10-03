@@ -3,7 +3,6 @@ namespace ControlzEx.Windows.Shell
 {
     using System;
     using System.Security;
-    using System.Security.Permissions;
     using System.Windows;
     using System.Windows.Input;
     using System.Windows.Interop;
@@ -43,7 +42,6 @@ namespace ControlzEx.Windows.Shell
         }
 
         [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         public static void CloseWindow(Window window)
         {
             Verify.IsNotNull(window, "window");
@@ -51,7 +49,6 @@ namespace ControlzEx.Windows.Shell
         }
 
         [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         public static void MaximizeWindow(Window window)
         {
             Verify.IsNotNull(window, "window");
@@ -59,7 +56,6 @@ namespace ControlzEx.Windows.Shell
         }
 
         [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         public static void MinimizeWindow(Window window)
         {
             Verify.IsNotNull(window, "window");
@@ -67,7 +63,6 @@ namespace ControlzEx.Windows.Shell
         }
 
         [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         public static void RestoreWindow(Window window)
         {
             Verify.IsNotNull(window, "window");
@@ -80,7 +75,6 @@ namespace ControlzEx.Windows.Shell
         /// <param name="window">The window for which the system menu should be shown.</param>
         /// <param name="e">The mouse event args.</param>
         [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         public static void ShowSystemMenu(Window window, MouseButtonEventArgs e)
         {
             var mousePosition = e.GetPosition(window);
@@ -95,7 +89,6 @@ namespace ControlzEx.Windows.Shell
         /// <param name="visual">The visual for which the system menu should be displayed.</param>
         /// <param name="elementPoint">The location to display the system menu, in logical screen coordinates.</param>
         [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         public static void ShowSystemMenu(Visual visual, Point elementPoint)
         {
             Verify.IsNotNull(visual, "visual");
