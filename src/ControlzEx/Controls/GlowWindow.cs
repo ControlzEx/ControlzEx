@@ -1,4 +1,7 @@
-﻿namespace ControlzEx.Controls
+﻿#nullable enable
+
+// ReSharper disable once CheckNamespace
+namespace ControlzEx.Controls.Internal
 {
     using System;
     using System.Reflection;
@@ -21,7 +24,7 @@
 
         private ushort wndClassAtom;
 
-        private Delegate wndProc;
+        private Delegate? wndProc;
 
         private static long failedDestroyWindows;
 
@@ -163,7 +166,7 @@
 
     public class DisposableObject : IDisposable
     {
-        private EventHandler disposing;
+        private EventHandler? disposing;
 
         public bool IsDisposed { get; private set; }
 
@@ -174,7 +177,7 @@
                 this.ThrowIfDisposed();
                 this.disposing = (EventHandler)Delegate.Combine(this.disposing, value);
             }
-            remove => this.disposing = (EventHandler)Delegate.Remove(this.disposing, value);
+            remove => this.disposing = (EventHandler?)Delegate.Remove(this.disposing, value);
         }
 
         ~DisposableObject()
@@ -251,7 +254,7 @@
 
         private const int BytesPerPixelBgra32 = 4;
 
-        private static readonly CachedBitmapInfo[] transparencyMasks = new CachedBitmapInfo[GlowBitmapPartCount];
+        private static readonly CachedBitmapInfo?[] transparencyMasks = new CachedBitmapInfo[GlowBitmapPartCount];
 
         private readonly IntPtr pbits;
 
@@ -288,8 +291,13 @@
             return (byte)(channel * alpha / 255.0);
         }
 
-        public static GlowBitmap Create(GlowDrawingContext drawingContext, GlowBitmapPart bitmapPart, Color color)
+        public static GlowBitmap? Create(GlowDrawingContext drawingContext, GlowBitmapPart bitmapPart, Color color)
         {
+            if (drawingContext.ScreenDc is null)
+            {
+                return null;
+            }
+
             var orCreateAlphaMask = GetOrCreateAlphaMask(bitmapPart);
             var glowBitmap = new GlowBitmap(drawingContext.ScreenDc, orCreateAlphaMask.width, orCreateAlphaMask.height);
             for (var i = 0; i < orCreateAlphaMask.diBits.Length; i += BytesPerPixelBgra32)
@@ -319,7 +327,7 @@
                 transparencyMasks[num] = new CachedBitmapInfo(array, bitmapImage.PixelWidth, bitmapImage.PixelHeight);
             }
 
-            return transparencyMasks[num];
+            return transparencyMasks[num]!;
         }
 
         private static Uri MakePackUri(Assembly assembly, string path)
@@ -353,15 +361,15 @@
     {
         public BLENDFUNCTION blend;
 
-        private readonly GlowBitmap windowBitmap;
+        private readonly GlowBitmap? windowBitmap;
 
         public bool IsInitialized
         {
             get
             {
-                if (this.ScreenDc.DangerousGetHandle() != IntPtr.Zero
-                    && this.WindowDc.DangerousGetHandle() != IntPtr.Zero
-                    && this.BackgroundDc.DangerousGetHandle() != IntPtr.Zero)
+                if (this.ScreenDc!.DangerousGetHandle() != IntPtr.Zero
+                    && this.WindowDc!.DangerousGetHandle() != IntPtr.Zero
+                    && this.BackgroundDc!.DangerousGetHandle() != IntPtr.Zero)
                 {
                     return this.windowBitmap != null;
                 }
@@ -370,11 +378,11 @@
             }
         }
 
-        public SafeDC ScreenDc { get; }
+        public SafeDC? ScreenDc { get; }
 
-        public SafeDC WindowDc { get; }
+        public SafeDC? WindowDc { get; }
 
-        public SafeDC BackgroundDc { get; }
+        public SafeDC? BackgroundDc { get; }
 
         public int Width => this.windowBitmap?.Width ?? 0;
 
@@ -417,11 +425,11 @@
 
         protected override void DisposeNativeResources()
         {
-            this.ScreenDc.Dispose();
+            this.ScreenDc?.Dispose();
 
-            this.WindowDc.Dispose();
+            this.WindowDc?.Dispose();
 
-            this.BackgroundDc.Dispose();
+            this.BackgroundDc?.Dispose();
         }
     }
 
@@ -459,7 +467,7 @@
         // Member to keep reference alive
         // ReSharper disable NotAccessedField.Local
 #pragma warning disable IDE0052 // Remove unread private members
-        private static WndProc sharedWndProc;
+        private static WndProc? sharedWndProc;
 
         // For diagnostics
         private static long createdGlowWindows;
@@ -637,7 +645,7 @@
 
                 case WM.WINDOWPOSCHANGING:
                 {
-                    var windowpos = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
+                    var windowpos = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS))!;
                     windowpos.flags |= SWP.NOACTIVATE;
                     Marshal.StructureToPtr(windowpos, lParam, true);
                     break;
@@ -807,7 +815,7 @@
             }
         }
 
-        private void CommitDelayedRender(object sender, EventArgs e)
+        private void CommitDelayedRender(object? sender, EventArgs e)
         {
             this.CancelDelayedRender();
 
@@ -857,9 +865,14 @@
             }
         }
 
-        private GlowBitmap GetOrCreateBitmap(GlowDrawingContext drawingContext, GlowBitmapPart bitmapPart)
+        private GlowBitmap? GetOrCreateBitmap(GlowDrawingContext drawingContext, GlowBitmapPart bitmapPart)
         {
-            GlowBitmap[] array;
+            if (drawingContext.ScreenDc is null)
+            {
+                return null;
+            }
+
+            GlowBitmap?[] array;
             Color color;
 
             if (this.IsActive)
@@ -876,7 +889,7 @@
             return array[(int)bitmapPart] ?? (array[(int)bitmapPart] = GlowBitmap.Create(drawingContext, bitmapPart, color));
         }
 
-        private static void ClearCache(GlowBitmap[] cache)
+        private static void ClearCache(GlowBitmap?[] cache)
         {
             for (var i = 0; i < cache.Length; i++)
             {
@@ -901,11 +914,18 @@
 
         private void DrawLeft(GlowDrawingContext drawingContext)
         {
-            var orCreateBitmap = this.GetOrCreateBitmap(drawingContext, GlowBitmapPart.CornerTopLeft);
-            var orCreateBitmap2 = this.GetOrCreateBitmap(drawingContext, GlowBitmapPart.LeftTop);
-            var orCreateBitmap3 = this.GetOrCreateBitmap(drawingContext, GlowBitmapPart.Left);
-            var orCreateBitmap4 = this.GetOrCreateBitmap(drawingContext, GlowBitmapPart.LeftBottom);
-            var orCreateBitmap5 = this.GetOrCreateBitmap(drawingContext, GlowBitmapPart.CornerBottomLeft);
+            if (drawingContext.ScreenDc is null
+                || drawingContext.WindowDc is null
+                || drawingContext.BackgroundDc is null)
+            {
+                return;
+            }
+
+            var orCreateBitmap = this.GetOrCreateBitmap(drawingContext, GlowBitmapPart.CornerTopLeft)!;
+            var orCreateBitmap2 = this.GetOrCreateBitmap(drawingContext, GlowBitmapPart.LeftTop)!;
+            var orCreateBitmap3 = this.GetOrCreateBitmap(drawingContext, GlowBitmapPart.Left)!;
+            var orCreateBitmap4 = this.GetOrCreateBitmap(drawingContext, GlowBitmapPart.LeftBottom)!;
+            var orCreateBitmap5 = this.GetOrCreateBitmap(drawingContext, GlowBitmapPart.CornerBottomLeft)!;
 
             var bitmapHeight = orCreateBitmap.Height;
             var num = bitmapHeight + orCreateBitmap2.Height;
@@ -932,11 +952,18 @@
 
         private void DrawRight(GlowDrawingContext drawingContext)
         {
-            var orCreateBitmap = this.GetOrCreateBitmap(drawingContext, GlowBitmapPart.CornerTopRight);
-            var orCreateBitmap2 = this.GetOrCreateBitmap(drawingContext, GlowBitmapPart.RightTop);
-            var orCreateBitmap3 = this.GetOrCreateBitmap(drawingContext, GlowBitmapPart.Right);
-            var orCreateBitmap4 = this.GetOrCreateBitmap(drawingContext, GlowBitmapPart.RightBottom);
-            var orCreateBitmap5 = this.GetOrCreateBitmap(drawingContext, GlowBitmapPart.CornerBottomRight);
+            if (drawingContext.ScreenDc is null
+                || drawingContext.WindowDc is null
+                || drawingContext.BackgroundDc is null)
+            {
+                return;
+            }
+
+            var orCreateBitmap = this.GetOrCreateBitmap(drawingContext, GlowBitmapPart.CornerTopRight)!;
+            var orCreateBitmap2 = this.GetOrCreateBitmap(drawingContext, GlowBitmapPart.RightTop)!;
+            var orCreateBitmap3 = this.GetOrCreateBitmap(drawingContext, GlowBitmapPart.Right)!;
+            var orCreateBitmap4 = this.GetOrCreateBitmap(drawingContext, GlowBitmapPart.RightBottom)!;
+            var orCreateBitmap5 = this.GetOrCreateBitmap(drawingContext, GlowBitmapPart.CornerBottomRight)!;
 
             var bitmapHeight = orCreateBitmap.Height;
             var num = bitmapHeight + orCreateBitmap2.Height;
@@ -963,9 +990,16 @@
 
         private void DrawTop(GlowDrawingContext drawingContext)
         {
-            var orCreateBitmap = this.GetOrCreateBitmap(drawingContext, GlowBitmapPart.TopLeft);
-            var orCreateBitmap2 = this.GetOrCreateBitmap(drawingContext, GlowBitmapPart.Top);
-            var orCreateBitmap3 = this.GetOrCreateBitmap(drawingContext, GlowBitmapPart.TopRight);
+            if (drawingContext.ScreenDc is null
+                || drawingContext.WindowDc is null
+                || drawingContext.BackgroundDc is null)
+            {
+                return;
+            }
+
+            var orCreateBitmap = this.GetOrCreateBitmap(drawingContext, GlowBitmapPart.TopLeft)!;
+            var orCreateBitmap2 = this.GetOrCreateBitmap(drawingContext, GlowBitmapPart.Top)!;
+            var orCreateBitmap3 = this.GetOrCreateBitmap(drawingContext, GlowBitmapPart.TopRight)!;
 
             var num = GlowDepth;
             var num2 = num + orCreateBitmap.Width;
@@ -987,9 +1021,16 @@
 
         private void DrawBottom(GlowDrawingContext drawingContext)
         {
-            var orCreateBitmap = this.GetOrCreateBitmap(drawingContext, GlowBitmapPart.BottomLeft);
-            var orCreateBitmap2 = this.GetOrCreateBitmap(drawingContext, GlowBitmapPart.Bottom);
-            var orCreateBitmap3 = this.GetOrCreateBitmap(drawingContext, GlowBitmapPart.BottomRight);
+            if (drawingContext.ScreenDc is null
+                || drawingContext.WindowDc is null
+                || drawingContext.BackgroundDc is null)
+            {
+                return;
+            }
+
+            var orCreateBitmap = this.GetOrCreateBitmap(drawingContext, GlowBitmapPart.BottomLeft)!;
+            var orCreateBitmap2 = this.GetOrCreateBitmap(drawingContext, GlowBitmapPart.Bottom)!;
+            var orCreateBitmap3 = this.GetOrCreateBitmap(drawingContext, GlowBitmapPart.BottomRight)!;
 
             var num = GlowDepth;
             var num2 = num + orCreateBitmap.Width;

@@ -1,4 +1,6 @@
-﻿#pragma warning disable 618
+﻿#nullable enable
+
+#pragma warning disable 618
 namespace ControlzEx.Behaviors
 {
     using System;
@@ -10,19 +12,21 @@ namespace ControlzEx.Behaviors
     using System.Windows.Interop;
     using System.Windows.Media;
     using System.Windows.Threading;
-    using ControlzEx.Controls;
+    using ControlzEx.Controls.Internal;
     using ControlzEx.Standard;
     using Microsoft.Xaml.Behaviors;
 
     public class GlowWindowBehavior : Behavior<Window>
     {
         private static readonly TimeSpan glowTimerDelay = TimeSpan.FromMilliseconds(200); //200 ms delay, the same as in visual studio
-        private DispatcherTimer makeGlowVisibleTimer;
+        private DispatcherTimer? makeGlowVisibleTimer;
+#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
         private WindowInteropHelper windowHelper;
-        private HwndSource hwndSource;
+#pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
+        private HwndSource? hwndSource;
 
-        private readonly GlowWindow[] glowWindows = new GlowWindow[4];
-        private IEnumerable<GlowWindow> LoadedGlowWindows => this.glowWindows.Where(w => w != null);
+        private readonly GlowWindow?[] glowWindows = new GlowWindow[4];
+        private IEnumerable<GlowWindow> LoadedGlowWindows => this.glowWindows.Where(w => w != null)!;
 
         /// <summary>
         /// <see cref="DependencyProperty"/> for <see cref="GlowBrush"/>.
@@ -124,12 +128,12 @@ namespace ControlzEx.Behaviors
             base.OnDetaching();
         }
 
-        private void AssociatedObjectActivatedOrDeactivated(object sender, EventArgs e)
+        private void AssociatedObjectActivatedOrDeactivated(object? sender, EventArgs e)
         {
             this.UpdateGlowActiveState();
         }
 
-        private void AssociatedObjectSourceInitialized(object sender, EventArgs e)
+        private void AssociatedObjectSourceInitialized(object? sender, EventArgs e)
         {
             this.windowHelper = new WindowInteropHelper(this.AssociatedObject);
             this.hwndSource = HwndSource.FromHwnd(this.windowHelper.Handle);
@@ -143,7 +147,7 @@ namespace ControlzEx.Behaviors
             this.CreateGlowWindowHandles();
         }
 
-        private void AssociatedObjectOnClosed(object o, EventArgs args)
+        private void AssociatedObjectOnClosed(object? o, EventArgs args)
         {
             this.AssociatedObject.Closed -= this.AssociatedObjectOnClosed;
 
@@ -170,12 +174,12 @@ namespace ControlzEx.Behaviors
             {
                 // Z-Index must be updated when WINDOWPOSCHANGED
                 case WM.WINDOWPOSCHANGED:
-                {
-                    var wp = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
-                    this.UpdateGlowWindowPositions((wp.flags & SWP.SHOWWINDOW) == 0);
+                    {
+                        var wp = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS))!;
+                        this.UpdateGlowWindowPositions((wp.flags & SWP.SHOWWINDOW) == 0);
 
-                    this.UpdateZOrderOfThisAndOwner();
-                }
+                        this.UpdateZOrderOfThisAndOwner();
+                    }
                     break;
             }
 
@@ -186,33 +190,35 @@ namespace ControlzEx.Behaviors
 
         private void UpdateZOrderOfThisAndOwner()
         {
-            if (!this.updatingZOrder)
+            if (this.updatingZOrder)
             {
-                try
-                {
-                    this.updatingZOrder = true;
-                    var handle = this.windowHelper.Handle;
-                    foreach (var loadedGlowWindow in this.LoadedGlowWindows)
-                    {
-                        var window = NativeMethods.GetWindow(loadedGlowWindow.Handle, GW.HWNDPREV);
-                        if (window != handle)
-                        {
-                            NativeMethods.SetWindowPos(loadedGlowWindow.Handle, handle, 0, 0, 0, 0, SWP.NOSIZE | SWP.NOMOVE | SWP.NOACTIVATE);
-                        }
+                return;
+            }
 
-                        handle = loadedGlowWindow.Handle;
+            try
+            {
+                this.updatingZOrder = true;
+                var handle = this.windowHelper.Handle;
+                foreach (var loadedGlowWindow in this.LoadedGlowWindows)
+                {
+                    var window = NativeMethods.GetWindow(loadedGlowWindow.Handle, GW.HWNDPREV);
+                    if (window != handle)
+                    {
+                        NativeMethods.SetWindowPos(loadedGlowWindow.Handle, handle, 0, 0, 0, 0, SWP.NOSIZE | SWP.NOMOVE | SWP.NOACTIVATE);
                     }
 
-                    var owner = this.windowHelper.Owner;
-                    if (owner != IntPtr.Zero)
-                    {
-                        this.UpdateZOrderOfOwner(owner);
-                    }
+                    handle = loadedGlowWindow.Handle;
                 }
-                finally
+
+                var owner = this.windowHelper.Owner;
+                if (owner != IntPtr.Zero)
                 {
-                    this.updatingZOrder = false;
+                    this.UpdateZOrderOfOwner(owner);
                 }
+            }
+            finally
+            {
+                this.updatingZOrder = false;
             }
         }
 
@@ -229,21 +235,23 @@ namespace ControlzEx.Behaviors
                 return true;
             }, IntPtr.Zero);
 
-            if (!(lastOwnedWindow == IntPtr.Zero)
-                && NativeMethods.GetWindow(hwndOwner, GW.HWNDPREV) != lastOwnedWindow)
+            if (lastOwnedWindow == IntPtr.Zero
+                || NativeMethods.GetWindow(hwndOwner, GW.HWNDPREV) == lastOwnedWindow)
             {
-                if (this.IsGlowVisible
-                    && lastOwnedWindow == this.windowHelper.Handle)
-                {
-                    var glowWindow = this.LoadedGlowWindows.LastOrDefault();
-                    if (glowWindow != null)
-                    {
-                        lastOwnedWindow = glowWindow.Handle;
-                    }
-                }
-
-                NativeMethods.SetWindowPos(hwndOwner, lastOwnedWindow, 0, 0, 0, 0, SWP.NOSIZE | SWP.NOMOVE | SWP.NOACTIVATE);
+                return;
             }
+
+            if (this.IsGlowVisible
+                && lastOwnedWindow == this.windowHelper.Handle)
+            {
+                var glowWindow = this.LoadedGlowWindows.LastOrDefault();
+                if (glowWindow != null)
+                {
+                    lastOwnedWindow = glowWindow.Handle;
+                }
+            }
+
+            NativeMethods.SetWindowPos(hwndOwner, lastOwnedWindow, 0, 0, 0, 0, SWP.NOSIZE | SWP.NOMOVE | SWP.NOACTIVATE);
         }
 
         #endregion
@@ -273,13 +281,13 @@ namespace ControlzEx.Behaviors
             {
                 this.glowWindows[index] = new GlowWindow(this.AssociatedObject, this, (Dock)index)
                 {
-                    ActiveGlowColor = ((SolidColorBrush)this.GlowBrush).Color,
-                    InactiveGlowColor = ((SolidColorBrush)this.NonActiveGlowBrush).Color,
+                    ActiveGlowColor = ((SolidColorBrush?)this.GlowBrush)?.Color ?? Colors.Transparent,
+                    InactiveGlowColor = ((SolidColorBrush?)this.NonActiveGlowBrush)?.Color ?? Colors.Transparent,
                     IsActive = this.AssociatedObject.IsActive
                 };
             }
 
-            return this.glowWindows[index];
+            return this.glowWindows[index]!;
         }
 
         private void CreateGlowWindowHandles()
@@ -345,8 +353,8 @@ namespace ControlzEx.Behaviors
             {
                 foreach (var loadedGlowWindow in this.LoadedGlowWindows)
                 {
-                    loadedGlowWindow.ActiveGlowColor = ((SolidColorBrush)this.GlowBrush)?.Color ?? Colors.Transparent;
-                    loadedGlowWindow.InactiveGlowColor = ((SolidColorBrush)this.NonActiveGlowBrush)?.Color ?? Colors.Transparent;
+                    loadedGlowWindow.ActiveGlowColor = ((SolidColorBrush?)this.GlowBrush)?.Color ?? Colors.Transparent;
+                    loadedGlowWindow.InactiveGlowColor = ((SolidColorBrush?)this.NonActiveGlowBrush)?.Color ?? Colors.Transparent;
                 }
             }
         }
@@ -377,17 +385,17 @@ namespace ControlzEx.Behaviors
 
             if ((SystemParameters.MinimizeAnimation && shouldShowGlow) & delayIfNecessary)
             {
-                if (this.makeGlowVisibleTimer != null)
+                if (this.makeGlowVisibleTimer is null)
                 {
-                    this.makeGlowVisibleTimer.Stop();
+                    this.makeGlowVisibleTimer = new DispatcherTimer
+                    {
+                        Interval = glowTimerDelay
+                    };
+                    this.makeGlowVisibleTimer.Tick += this.OnDelayedVisibilityTimerTick;
                 }
                 else
                 {
-                    this.makeGlowVisibleTimer = new DispatcherTimer 
-                        { 
-                            Interval = glowTimerDelay 
-                        };
-                    this.makeGlowVisibleTimer.Tick += this.OnDelayedVisibilityTimerTick;
+                    this.makeGlowVisibleTimer.Stop();
                 }
 
                 this.makeGlowVisibleTimer.Start();
@@ -411,7 +419,7 @@ namespace ControlzEx.Behaviors
             this.makeGlowVisibleTimer = null;
         }
 
-        private void OnDelayedVisibilityTimerTick(object sender, EventArgs e)
+        private void OnDelayedVisibilityTimerTick(object? sender, EventArgs e)
         {
             this.StopTimer();
             this.UpdateGlowWindowPositions(false);
