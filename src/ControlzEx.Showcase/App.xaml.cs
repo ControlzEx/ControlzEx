@@ -11,7 +11,7 @@ namespace ControlzEx.Showcase
 
             ThemeManager.Current.ThemeSyncMode = ThemeSyncMode.SyncAll;
 
-            ThemeManager.Current.SyncThemeColorSchemeWithWindowsAccentColor();
+            ThemeManager.Current.SyncTheme();
         }
     }
 }
