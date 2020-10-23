@@ -5,11 +5,13 @@ namespace ControlzEx.Standard
     using System.ComponentModel;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
+    using System.Runtime.CompilerServices;
     using System.Runtime.ConstrainedExecution;
     using System.Runtime.InteropServices;
     using System.Runtime.InteropServices.ComTypes;
     using System.Security;
     using System.Text;
+    using JetBrains.Annotations;
     using Microsoft.Win32.SafeHandles;
 
     // Some COM interfaces and Win32 structures are already declared in the framework.
@@ -2863,6 +2865,7 @@ namespace ControlzEx.Standard
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static void AllowSetForegroundWindow(int dwProcessId)
         {
             if (!_AllowSetForegroundWindow(dwProcessId))
@@ -3020,12 +3023,13 @@ namespace ControlzEx.Standard
         private static extern IntPtr _CreateRectRgn(int nLeftRect, int nTopRect, int nRightRect, int nBottomRect);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static IntPtr CreateRectRgn(int nLeftRect, int nTopRect, int nRightRect, int nBottomRect)
         {
             IntPtr ret = _CreateRectRgn(nLeftRect, nTopRect, nRightRect, nBottomRect);
             if (IntPtr.Zero == ret)
             {
-                throw new Win32Exception();
+                HRESULT.ThrowLastError();
             }
             return ret;
         }
@@ -3035,12 +3039,13 @@ namespace ControlzEx.Standard
         private static extern IntPtr _CreateRectRgnIndirect([In] ref RECT lprc);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static IntPtr CreateRectRgnIndirect(RECT lprc)
         {
             IntPtr ret = _CreateRectRgnIndirect(ref lprc);
             if (IntPtr.Zero == ret)
             {
-                throw new Win32Exception();
+                HRESULT.ThrowLastError();
             }
             return ret;
         }
@@ -3067,6 +3072,7 @@ namespace ControlzEx.Standard
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [CLSCompliant(false)]
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static IntPtr CreateWindowEx(
             WS_EX dwExStyle,
             string lpClassName,
@@ -3279,6 +3285,7 @@ namespace ControlzEx.Standard
         private static extern bool _GetClientRect(IntPtr hwnd, [Out] out RECT lpRect);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static RECT GetClientRect(IntPtr hwnd)
         {
             RECT rc;
@@ -3297,6 +3304,7 @@ namespace ControlzEx.Standard
 
         [SecurityCritical]
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static POINT GetCursorPos()
         {
             POINT pt;
@@ -3391,6 +3399,7 @@ namespace ControlzEx.Standard
             int cchMaxSizeChars);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static void GetCurrentThemeName(out string themeFileName, out string color, out string size)
         {
             // Not expecting strings longer than MAX_PATH.  We will return the error 
@@ -3456,6 +3465,7 @@ namespace ControlzEx.Standard
         private static extern IntPtr _GetModuleHandle([MarshalAs(UnmanagedType.LPWStr)] string lpModuleName);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static IntPtr GetModuleHandle(string lpModuleName)
         {
             IntPtr retPtr = _GetModuleHandle(lpModuleName);
@@ -3472,6 +3482,7 @@ namespace ControlzEx.Standard
         private static extern bool _GetMonitorInfo([In] IntPtr hMonitor, ref MONITORINFO lpmi);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static MONITORINFO GetMonitorInfo([In] IntPtr hMonitor)
         {
             var mi = new MONITORINFO
@@ -3529,6 +3540,7 @@ namespace ControlzEx.Standard
         private static extern IntPtr _GetStockObject(StockObject fnObject);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static IntPtr GetStockObject(StockObject fnObject)
         {
             IntPtr retPtr = _GetStockObject(fnObject);
@@ -3610,17 +3622,12 @@ namespace ControlzEx.Standard
 
         // This is aliased as a macro in 32bit Windows.
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static IntPtr GetWindowLongPtr(IntPtr hwnd, GWL nIndex)
         {
-            IntPtr ret = IntPtr.Zero;
-            if (8 == IntPtr.Size)
-            {
-                ret = GetWindowLongPtr64(hwnd, nIndex);
-            }
-            else
-            {
-                ret = GetWindowLongPtr32(hwnd, nIndex);
-            }
+            var ret = 8 == IntPtr.Size
+                ? GetWindowLongPtr64(hwnd, nIndex)
+                : GetWindowLongPtr32(hwnd, nIndex);
 
             if (IntPtr.Zero == ret)
             {
@@ -3730,6 +3737,7 @@ namespace ControlzEx.Standard
         private static extern bool GetWindowPlacement(IntPtr hwnd, [In, Out] WINDOWPLACEMENT lpwndpl);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static WINDOWPLACEMENT GetWindowPlacement(IntPtr hwnd)
         {
             WINDOWPLACEMENT wndpl = new WINDOWPLACEMENT();
@@ -3761,6 +3769,7 @@ namespace ControlzEx.Standard
         private static extern bool _GetWindowRect(IntPtr hWnd, out RECT lpRect);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static RECT GetWindowRect(IntPtr hwnd)
         {
             RECT rc;
@@ -3806,6 +3815,7 @@ namespace ControlzEx.Standard
         /// control handle is invalid, the return value is zero. To get extended error information, call GetLastError.
         /// <para>This function cannot retrieve the text of an edit control in another application.</para>
         /// </returns>
+        [PublicAPI]
         [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern int GetWindowText(IntPtr hWnd, StringBuilder strText, int maxCount);
 
@@ -3929,11 +3939,12 @@ namespace ControlzEx.Standard
         private static extern bool _PostMessage(IntPtr hWnd, WM Msg, IntPtr wParam, IntPtr lParam);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static void PostMessage(IntPtr hWnd, WM Msg, IntPtr wParam, IntPtr lParam)
         {
             if (!_PostMessage(hWnd, Msg, wParam, lParam))
             {
-                throw new Win32Exception();
+                HRESULT.ThrowLastError();
             }
         }
 
@@ -3945,6 +3956,7 @@ namespace ControlzEx.Standard
         // If needed, consider adding a Try* version of this function that returns the error code since that
         // may be ignorable.
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static short RegisterClassEx(ref WNDCLASSEX lpwcx)
         {
             short ret = _RegisterClassEx(ref lpwcx);
@@ -4081,6 +4093,7 @@ namespace ControlzEx.Standard
 
         // This is aliased as a macro in 32bit Windows.
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static IntPtr SetWindowLongPtr(IntPtr hwnd, GWL nIndex, IntPtr dwNewLong)
         {
             if (8 == IntPtr.Size)
@@ -4105,6 +4118,7 @@ namespace ControlzEx.Standard
         private static extern int _SetWindowRgn(IntPtr hWnd, IntPtr hRgn, [MarshalAs(UnmanagedType.Bool)] bool bRedraw);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static void SetWindowRgn(IntPtr hWnd, IntPtr hRgn, bool bRedraw)
         {
             int err = _SetWindowRgn(hWnd, hRgn, bRedraw);
@@ -4121,6 +4135,7 @@ namespace ControlzEx.Standard
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [CLSCompliant(false)]
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static void SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, SWP uFlags)
         {
             if (!_SetWindowPos(hWnd, hWndInsertAfter, X, Y, cx, cy, uFlags))
@@ -4176,6 +4191,7 @@ namespace ControlzEx.Standard
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static HIGHCONTRAST SystemParameterInfo_GetHIGHCONTRAST()
         {
             var hc = new HIGHCONTRAST { cbSize = Marshal.SizeOf(typeof(HIGHCONTRAST)) };
@@ -4259,6 +4275,7 @@ namespace ControlzEx.Standard
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static void UnregisterClass(string lpClassName, IntPtr hInstance)
         {
             if (!_UnregisterClassName(lpClassName, hInstance))
