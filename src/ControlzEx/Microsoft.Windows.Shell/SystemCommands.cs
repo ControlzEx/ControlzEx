@@ -8,6 +8,7 @@ namespace ControlzEx.Windows.Shell
     using System.Windows.Input;
     using System.Windows.Interop;
     using System.Windows.Media;
+    using ControlzEx.Internal;
     using ControlzEx.Native;
     using ControlzEx.Standard;
 
@@ -33,7 +34,7 @@ namespace ControlzEx.Windows.Shell
         private static void _PostSystemCommand(Window window, SC command)
         {
             var hwnd = new WindowInteropHelper(window).Handle;
-            if (hwnd == IntPtr.Zero || !NativeMethods.IsWindow(hwnd))
+            if (WindowHelper.IsWindowHandleValid(hwnd) == false)
             {
                 return;
             }
@@ -133,7 +134,7 @@ namespace ControlzEx.Windows.Shell
 
             var hwnd = source.Handle;
 
-            if (hwnd == IntPtr.Zero || !NativeMethods.IsWindow(hwnd))
+            if (WindowHelper.IsWindowHandleValid(hwnd) == false)
             {
                 return;
             }
