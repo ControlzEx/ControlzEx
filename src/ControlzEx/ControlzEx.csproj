@@ -27,6 +27,7 @@
         <PackagePath></PackagePath>
       </None>
     </ItemGroup>
+
     <!-- Sign assembly -->
     <PropertyGroup>
         <SignAssembly>True</SignAssembly>
@@ -34,6 +35,7 @@
         <DelaySign>false</DelaySign>
         <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
     </PropertyGroup>
+
     <ItemGroup>
         <Compile DependentUpon="%(Filename)" SubType="Code" Update="**\obj\**\*.g$(DefaultLanguageSourceExtension)" />
         <Compile DependentUpon="%(Filename)" SubType="Designer" Update="**\*.xaml$(DefaultLanguageSourceExtension)" />

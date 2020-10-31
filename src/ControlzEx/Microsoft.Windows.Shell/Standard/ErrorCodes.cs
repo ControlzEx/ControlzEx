@@ -385,6 +385,7 @@ namespace ControlzEx.Standard
         /// Create an HRESULT from an integer value.
         /// </summary>
         /// <param name="i"></param>
+        [CLSCompliant(false)]
         public HRESULT(uint i)
         {
             _value = i;

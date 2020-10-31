@@ -8,7 +8,6 @@
 
 #tool GitVersion.CommandLine&version=5.3.7
 #tool gitreleasemanager
-#tool vswhere
 #addin Cake.Figlet
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -39,15 +38,6 @@ var isDevelopBranch = StringComparer.OrdinalIgnoreCase.Equals("develop", branchN
 var isReleaseBranch = StringComparer.OrdinalIgnoreCase.Equals("main", branchName);
 var isTagged = AppVeyor.Environment.Repository.Tag.IsTag;
 
-var latestInstallationPath = VSWhereLatest(new VSWhereLatestSettings { IncludePrerelease = true });
-var msBuildPath = latestInstallationPath.Combine("./MSBuild/Current/Bin");
-var msBuildPathExe = msBuildPath.CombineWithFilePath("./MSBuild.exe");
-
-if (FileExists(msBuildPathExe) == false)
-{
-    throw new NotImplementedException("You need at least Visual Studio 2019 to build this project.");
-}
-
 // Directories and Paths
 var solution = "src/ControlzEx.sln";
 var publishDir = "./src/bin";
@@ -74,7 +64,6 @@ Setup(ctx =>
     Information("IsLocalBuild           : {0}", isLocal);
     Information("Branch                 : {0}", branchName);
     Information("Configuration          : {0}", configuration);
-    Information("MSBuildPath            : {0}", msBuildPath);
 });
 
 Teardown(ctx =>
@@ -96,25 +85,24 @@ Task("Clean")
 Task("Restore")
     .Does(() =>
 {
-    NuGetRestore(solution, new NuGetRestoreSettings { MSBuildPath = msBuildPath.ToString() });
+    DotNetCoreRestore(solution);
 });
 
 Task("Build")
     .IsDependentOn("Restore")
     .Does(() =>
 {
-    var msBuildSettings = new MSBuildSettings {
-        Verbosity = verbosity
-        , ToolPath = msBuildPathExe
-        , Configuration = configuration
-        , ArgumentCustomization = args => args.Append("/m").Append("/nr:false") // The /nr switch tells msbuild to quit once it's done
+    var msBuildSettings = new DotNetCoreMSBuildSettings {
+        //Verbosity = (DotNetCoreVerbosity)verbosity
     };
-    MSBuild(solution, msBuildSettings
+    DotNetCoreMSBuild(solution, msBuildSettings
             .SetMaxCpuCount(0)
+            .SetConfiguration(configuration)
             .WithProperty("Version", isReleaseBranch ? gitVersion.MajorMinorPatch : gitVersion.NuGetVersion)
             .WithProperty("AssemblyVersion", gitVersion.AssemblySemVer)
             .WithProperty("FileVersion", gitVersion.AssemblySemFileVer)
             .WithProperty("InformationalVersion", gitVersion.InformationalVersion)
+            .WithProperty("ContinuousIntegrationBuild", isReleaseBranch ? "true" : "false")
             );
 });
 
@@ -122,14 +110,13 @@ Task("Pack")
     .IsDependentOn("Build")
     .Does(() =>
 {
-    var msBuildSettings = new MSBuildSettings {
-        Verbosity = verbosity
-        , ToolPath = msBuildPathExe
-        , Configuration = configuration
+    var msBuildSettings = new DotNetCoreMSBuildSettings {
+        //Verbosity = (DotNetCoreVerbosity)verbosity
     };
     var project = "./src/ControlzEx/ControlzEx.csproj";
-    MSBuild(project, msBuildSettings
+    DotNetCoreMSBuild(project, msBuildSettings
       .WithTarget("pack")
+      .SetConfiguration(configuration)
       .WithProperty("NoBuild", "true")
       .WithProperty("IncludeBuildOutput", "true")
       .WithProperty("PackageOutputPath", "../bin")

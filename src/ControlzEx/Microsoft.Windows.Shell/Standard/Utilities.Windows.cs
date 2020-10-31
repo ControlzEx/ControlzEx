@@ -4,6 +4,7 @@ namespace ControlzEx.Standard
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Runtime.InteropServices;
+    using ControlzEx.Internal;
 
     internal static partial class Utility
     {
@@ -37,7 +38,7 @@ namespace ControlzEx.Standard
         {
             IntPtr p = hwnd;
             hwnd = IntPtr.Zero;
-            if (NativeMethods.IsWindow(p))
+            if (WindowHelper.IsWindowHandleValid(p))
             {
                 NativeMethods.DestroyWindow(p);
             }

@@ -262,29 +262,6 @@ namespace ControlzEx.Theming
             this.themesInternal.Clear();
         }
 
-        ///// <summary>
-        ///// Adds an theme.
-        ///// </summary>
-        ///// <returns>true if the app theme does not exists and can be added.</returns>
-        //public Theme AddTheme([NotNull] Uri resourceAddress)
-        //{
-        //    var theme = new Theme(resourceAddress);
-
-        //    return AddTheme(theme);
-        //}
-
-        ///// <summary>
-        ///// Adds an theme.
-        ///// </summary>
-        ///// <param name="resourceDictionary">The ResourceDictionary of the theme.</param>
-        ///// <returns>true if the app theme does not exists and can be added.</returns>
-        //public Theme AddTheme([NotNull] ResourceDictionary resourceDictionary)
-        //{
-        //    var theme = new Theme(resourceDictionary);
-
-        //    return AddTheme(theme);
-        //}
-
         public Theme AddLibraryTheme([NotNull] LibraryTheme libraryTheme)
         {
             var theme = this.GetTheme(libraryTheme.Name, libraryTheme.IsHighContrast);
@@ -342,7 +319,16 @@ namespace ControlzEx.Theming
                 throw new ArgumentNullException(nameof(colorScheme));
             }
 
-            return this.Themes.FirstOrDefault(x => x.BaseColorScheme == baseColorScheme && x.ColorScheme == colorScheme && x.IsHighContrast == highContrast);
+            var theme = this.Themes.FirstOrDefault(x => x.BaseColorScheme == baseColorScheme && x.ColorScheme == colorScheme && x.IsHighContrast == highContrast);
+
+            if (theme is null
+                && highContrast)
+            {
+                theme = this.Themes.FirstOrDefault(x => x.BaseColorScheme == baseColorScheme && x.ColorScheme == "Generic" && x.IsHighContrast == highContrast)
+                        ?? this.Themes.FirstOrDefault(x => x.BaseColorScheme == baseColorScheme && x.IsHighContrast == highContrast);
+            }
+
+            return theme;
         }
 
         /// <summary>
@@ -357,8 +343,14 @@ namespace ControlzEx.Theming
                 throw new ArgumentNullException(nameof(resourceDictionary));
             }
 
+            var themeInstance = Theme.GetThemeInstance(resourceDictionary);
+
+            if (!(themeInstance is null))
+            {
+                return themeInstance;
+            }
+
             var builtInTheme = this.Themes.FirstOrDefault(x => x.Name == Theme.GetThemeName(resourceDictionary));
-            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             if (!(builtInTheme is null))
             {
                 return builtInTheme;
@@ -390,7 +382,6 @@ namespace ControlzEx.Theming
 
                 return new Theme(new LibraryTheme(resourceDictionary, null));
             }
-            // ReSharper restore HeuristicUnreachableCode
 
             return null;
         }
@@ -649,19 +640,19 @@ namespace ControlzEx.Theming
         /// Change base color and color scheme of for the given application.
         /// </summary>
         /// <param name="app">The application to modify.</param>
-        /// <param name="baseColor">The base color to apply to the ResourceDictionary.</param>
+        /// <param name="baseColorScheme">The base color to apply to the ResourceDictionary.</param>
         /// <param name="colorScheme">The color scheme to apply to the ResourceDictionary.</param>
         [SecurityCritical]
-        public Theme? ChangeTheme([NotNull] Application app, [NotNull] string baseColor, [NotNull] string colorScheme)
+        public Theme? ChangeTheme([NotNull] Application app, [NotNull] string baseColorScheme, [NotNull] string colorScheme)
         {
             if (app is null)
             {
                 throw new ArgumentNullException(nameof(app));
             }
 
-            if (string.IsNullOrEmpty(baseColor))
+            if (string.IsNullOrEmpty(baseColorScheme))
             {
-                throw new ArgumentNullException(nameof(baseColor));
+                throw new ArgumentNullException(nameof(baseColorScheme));
             }
 
             if (string.IsNullOrEmpty(colorScheme))
@@ -676,34 +667,26 @@ namespace ControlzEx.Theming
                 return null;
             }
 
-            var newTheme = this.Themes.FirstOrDefault(x => x.BaseColorScheme == baseColor && x.ColorScheme == colorScheme);
-
-            if (newTheme is null)
-            {
-                Trace.TraceError($"Could not find a theme with base color scheme '{baseColor}' and color scheme '{colorScheme}'.");
-                return null;
-            }
-
-            return this.ChangeTheme(app, app.Resources, currentTheme, newTheme);
+            return this.ChangeTheme(app, app.Resources, currentTheme, baseColorScheme, colorScheme);
         }
 
         /// <summary>
         /// Change base color and color scheme of for the given window.
         /// </summary>
         /// <param name="frameworkElement">The FrameworkElement to modify.</param>
-        /// <param name="baseColor">The base color to apply to the ResourceDictionary.</param>
+        /// <param name="baseColorScheme">The base color to apply to the ResourceDictionary.</param>
         /// <param name="colorScheme">The color scheme to apply to the ResourceDictionary.</param>
         [SecurityCritical]
-        public Theme? ChangeTheme([NotNull] FrameworkElement frameworkElement, [NotNull] string baseColor, [NotNull] string colorScheme)
+        public Theme? ChangeTheme([NotNull] FrameworkElement frameworkElement, [NotNull] string baseColorScheme, [NotNull] string colorScheme)
         {
             if (frameworkElement is null)
             {
                 throw new ArgumentNullException(nameof(frameworkElement));
             }
 
-            if (string.IsNullOrEmpty(baseColor))
+            if (string.IsNullOrEmpty(baseColorScheme))
             {
-                throw new ArgumentNullException(nameof(baseColor));
+                throw new ArgumentNullException(nameof(baseColorScheme));
             }
 
             if (string.IsNullOrEmpty(colorScheme))
@@ -718,15 +701,7 @@ namespace ControlzEx.Theming
                 return null;
             }
 
-            var newTheme = this.Themes.FirstOrDefault(x => x.BaseColorScheme == baseColor && x.ColorScheme == colorScheme);
-
-            if (newTheme is null)
-            {
-                Trace.TraceError($"Could not find a theme with base color scheme '{baseColor}' and color scheme '{colorScheme}'.");
-                return null;
-            }
-
-            return this.ChangeTheme(frameworkElement, frameworkElement.Resources, currentTheme, newTheme);
+            return this.ChangeTheme(frameworkElement, frameworkElement.Resources, currentTheme, baseColorScheme, colorScheme);
         }
 
         /// <summary>
@@ -735,19 +710,19 @@ namespace ControlzEx.Theming
         /// <param name="target">The target object for which the theme change should be made. This is optional an can be <c>null</c>.</param>
         /// <param name="resourceDictionary">The ResourceDictionary to modify.</param>
         /// <param name="oldTheme">The old/current theme.</param>
-        /// <param name="baseColor">The base color to apply to the ResourceDictionary.</param>
+        /// <param name="baseColorScheme">The base color to apply to the ResourceDictionary.</param>
         /// <param name="colorScheme">The color scheme to apply to the ResourceDictionary.</param>
         [SecurityCritical]
-        public Theme? ChangeTheme(object? target, [NotNull] ResourceDictionary resourceDictionary, Theme oldTheme, [NotNull] string baseColor, [NotNull] string colorScheme)
+        public Theme? ChangeTheme(object? target, [NotNull] ResourceDictionary resourceDictionary, Theme oldTheme, [NotNull] string baseColorScheme, [NotNull] string colorScheme)
         {
             if (resourceDictionary is null)
             {
                 throw new ArgumentNullException(nameof(resourceDictionary));
             }
 
-            if (string.IsNullOrEmpty(baseColor))
+            if (string.IsNullOrEmpty(baseColorScheme))
             {
-                throw new ArgumentNullException(nameof(baseColor));
+                throw new ArgumentNullException(nameof(baseColorScheme));
             }
 
             if (string.IsNullOrEmpty(colorScheme))
@@ -755,11 +730,11 @@ namespace ControlzEx.Theming
                 throw new ArgumentNullException(nameof(colorScheme));
             }
 
-            var newTheme = this.Themes.FirstOrDefault(x => x.BaseColorScheme == baseColor && x.ColorScheme == colorScheme);
+            var newTheme = this.GetTheme(baseColorScheme, colorScheme, oldTheme.IsHighContrast);
 
             if (newTheme is null)
             {
-                Trace.TraceError($"Could not find a theme with base color scheme '{baseColor}' and color scheme '{colorScheme}'.");
+                Trace.TraceError($"Could not find a theme with base color scheme '{baseColorScheme}', color scheme '{colorScheme}' and high contrast equals {oldTheme.IsHighContrast}.");
                 return null;
             }
 
@@ -770,18 +745,18 @@ namespace ControlzEx.Theming
         /// Change base color for the given application.
         /// </summary>
         /// <param name="app">The application to change.</param>
-        /// <param name="baseColor">The base color to apply to the ResourceDictionary.</param>
+        /// <param name="baseColorScheme">The base color to apply to the ResourceDictionary.</param>
         [SecurityCritical]
-        public Theme? ChangeThemeBaseColor([NotNull] Application app, [NotNull] string baseColor)
+        public Theme? ChangeThemeBaseColor([NotNull] Application app, [NotNull] string baseColorScheme)
         {
             if (app is null)
             {
                 throw new ArgumentNullException(nameof(app));
             }
 
-            if (string.IsNullOrEmpty(baseColor))
+            if (string.IsNullOrEmpty(baseColorScheme))
             {
-                throw new ArgumentNullException(nameof(baseColor));
+                throw new ArgumentNullException(nameof(baseColorScheme));
             }
 
             var currentTheme = this.DetectTheme(app);
@@ -791,25 +766,25 @@ namespace ControlzEx.Theming
                 return null;
             }
 
-            return this.ChangeThemeBaseColor(app, app.Resources, currentTheme, baseColor);
+            return this.ChangeThemeBaseColor(app, app.Resources, currentTheme, baseColorScheme);
         }
 
         /// <summary>
         /// Change base color for the given window.
         /// </summary>
         /// <param name="frameworkElement">The FrameworkElement to change.</param>
-        /// <param name="baseColor">The base color to apply to the ResourceDictionary.</param>
+        /// <param name="baseColorScheme">The base color to apply to the ResourceDictionary.</param>
         [SecurityCritical]
-        public Theme? ChangeThemeBaseColor([NotNull] FrameworkElement frameworkElement, [NotNull] string baseColor)
+        public Theme? ChangeThemeBaseColor([NotNull] FrameworkElement frameworkElement, [NotNull] string baseColorScheme)
         {
             if (frameworkElement is null)
             {
                 throw new ArgumentNullException(nameof(frameworkElement));
             }
 
-            if (string.IsNullOrEmpty(baseColor))
+            if (string.IsNullOrEmpty(baseColorScheme))
             {
-                throw new ArgumentNullException(nameof(baseColor));
+                throw new ArgumentNullException(nameof(baseColorScheme));
             }
 
             var currentTheme = this.DetectTheme(frameworkElement);
@@ -819,7 +794,7 @@ namespace ControlzEx.Theming
                 return null;
             }
 
-            return this.ChangeThemeBaseColor(frameworkElement, frameworkElement.Resources, currentTheme, baseColor);
+            return this.ChangeThemeBaseColor(frameworkElement, frameworkElement.Resources, currentTheme, baseColorScheme);
         }
 
         /// <summary>
@@ -828,18 +803,18 @@ namespace ControlzEx.Theming
         /// <param name="target">The target object for which the theme change should be made. This is optional an can be <c>null</c>.</param>
         /// <param name="resourceDictionary">The ResourceDictionary to modify.</param>
         /// <param name="oldTheme">The old/current theme.</param>
-        /// <param name="baseColor">The base color to apply to the ResourceDictionary.</param>
+        /// <param name="baseColorScheme">The base color to apply to the ResourceDictionary.</param>
         [SecurityCritical]
-        public Theme? ChangeThemeBaseColor(object? target, [NotNull] ResourceDictionary resourceDictionary, [CanBeNull] Theme oldTheme, [NotNull] string baseColor)
+        public Theme? ChangeThemeBaseColor(object? target, [NotNull] ResourceDictionary resourceDictionary, Theme? oldTheme, [NotNull] string baseColorScheme)
         {
             if (resourceDictionary is null)
             {
                 throw new ArgumentNullException(nameof(resourceDictionary));
             }
 
-            if (string.IsNullOrEmpty(baseColor))
+            if (string.IsNullOrEmpty(baseColorScheme))
             {
-                throw new ArgumentNullException(nameof(baseColor));
+                throw new ArgumentNullException(nameof(baseColorScheme));
             }
 
             var currentTheme = oldTheme ?? this.DetectTheme(resourceDictionary);
@@ -849,12 +824,12 @@ namespace ControlzEx.Theming
                 return null;
             }
 
-            var newTheme = this.ChangeTheme(target, resourceDictionary, currentTheme, baseColor, currentTheme.ColorScheme);
+            var newTheme = this.ChangeTheme(target, resourceDictionary, currentTheme, baseColorScheme, currentTheme.ColorScheme);
 
             if (newTheme is null
                 && currentTheme.IsRuntimeGenerated)
             {
-                var runtimeTheme = RuntimeThemeGenerator.Current.GenerateRuntimeTheme(baseColor, currentTheme.PrimaryAccentColor, currentTheme.IsHighContrast);
+                var runtimeTheme = RuntimeThemeGenerator.Current.GenerateRuntimeTheme(baseColorScheme, currentTheme.PrimaryAccentColor, currentTheme.IsHighContrast);
 
                 if (!(runtimeTheme is null))
                 {
@@ -929,7 +904,7 @@ namespace ControlzEx.Theming
         /// <param name="oldTheme">The old/current theme.</param>
         /// <param name="colorScheme">The color scheme to apply to the ResourceDictionary.</param>
         [SecurityCritical]
-        public Theme? ChangeThemeColorScheme(object? target, [NotNull] ResourceDictionary resourceDictionary, [CanBeNull] Theme oldTheme, [NotNull] string colorScheme)
+        public Theme? ChangeThemeColorScheme(object? target, [NotNull] ResourceDictionary resourceDictionary, Theme? oldTheme, [NotNull] string colorScheme)
         {
             if (resourceDictionary is null)
             {
@@ -1163,68 +1138,62 @@ namespace ControlzEx.Theming
             this.ThemeChanged?.Invoke(Application.Current, new ThemeChangedEventArgs(target, targetResourceDictionary, oldTheme, newTheme));
         }
 
-        private bool AreResourceDictionarySourcesEqual(ResourceDictionary first, ResourceDictionary second)
-        {
-            if (first is null
-                || second is null)
-            {
-                return false;
-            }
-
-            // If RD does not have a source, but both have keys and the first one has at least as many keys as the second,
-            // then compares their values.
-            if ((first.Source is null
-                || second.Source is null)
-                && first.Keys.Count > 0
-                && second.Keys.Count > 0
-                && first.Keys.Count >= second.Keys.Count)
-            {
-                try
-                {
-                    foreach (var key in first.Keys)
-                    {
-                        var isTheSame = second.Contains(key)
-                                        && Equals(first[key], second[key]);
-                        if (!isTheSame)
-                        {
-                            return false;
-                        }
-                    }
-                }
-                catch (Exception exception)
-                {
-                    Trace.TraceError($"Could not compare resource dictionaries: {exception} {Environment.NewLine} {exception.StackTrace}");
-                    return false;
-                }
-
-                return true;
-            }
-
-            return Uri.Compare(first.Source, second.Source, UriComponents.Host | UriComponents.Path, UriFormat.SafeUnescaped, StringComparison.OrdinalIgnoreCase) == 0;
-        }
-
         public void SyncTheme()
         {
             this.SyncTheme(this.ThemeSyncMode);
         }
 
-        public void SyncTheme(ThemeSyncMode syncMode)
+        public void SyncTheme(ThemeSyncMode? syncMode)
         {
             try
             {
-                switch (syncMode)
+                var syncModeToUse = syncMode ?? this.themeSyncMode;
+
+                if (syncModeToUse == ThemeSyncMode.DoNotSync)
                 {
-                    case ThemeSyncMode.SyncWithAppMode:
-                        this.SyncThemeBaseColorWithWindowsAppModeSetting(syncMode);
-                        break;
+                    return;
+                }
 
-                    case ThemeSyncMode.SyncWithAccent:
-                        this.SyncThemeColorSchemeWithWindowsAccentColor(syncMode);
-                        break;
+                if (Application.Current is null)
+                {
+                    return;
+                }
 
-                    case ThemeSyncMode.SyncAll:
-                        this.SyncThemeColorSchemeWithWindowsAccentColor(syncMode, WindowsThemeHelper.GetWindowsBaseColor());
-                        break;
+                var detectedTheme = this.DetectTheme();
+
+                string? baseColor = null;
+                if (syncModeToUse.HasFlag(ThemeSyncMode.SyncWithAppMode))
+                {
+                    baseColor = WindowsThemeHelper.GetWindowsBaseColor();
+                }
+                else
+                {
+                    baseColor ??= detectedTheme?.BaseColorScheme ?? BaseColorLight;
+                }
+
+                string? accentColor = null;
+                if (syncModeToUse.HasFlag(ThemeSyncMode.SyncWithAccent))
+                {
+                    accentColor = WindowsThemeHelper.GetWindowsAccentColor().ToString();
+                }
+                else
+                {
+                    // If there was no detected Theme just use the windows accent color.
+                    accentColor ??= detectedTheme?.ColorScheme ?? WindowsThemeHelper.GetWindowsAccentColor().ToString();
+                }
+
+                var isHighContrast = syncModeToUse.HasFlag(ThemeSyncMode.SyncWithHighContrast)
+                                     && WindowsThemeHelper.IsHighContrastEnabled();
+
+                // Check if we previously generated a theme matching the desired settings
+                var theme = this.GetTheme(baseColor, accentColor!, isHighContrast) 
+                            ?? RuntimeThemeGenerator.Current.GenerateRuntimeThemeFromWindowsSettings(baseColor, isHighContrast, this.libraryThemeProvidersInternal);
+
+                // Only change the theme if it's not the current already
+                if (!(theme is null)
+                    && theme != detectedTheme)
+                {
+                    this.ChangeTheme(Application.Current, theme);
                 }
             }
             finally
@@ -1234,88 +1203,6 @@ namespace ControlzEx.Theming
         }
 
         #region Windows-Settings
-
-        /// <summary>
-        /// Synchronizes the current <see cref="Theme"/> with the "app mode" setting from windows.
-        /// </summary>
-        public void SyncThemeBaseColorWithWindowsAppModeSetting(ThemeSyncMode? syncMode = null)
-        {
-            if (Application.Current is null)
-            {
-                return;
-            }
-
-            var baseColor = WindowsThemeHelper.GetWindowsBaseColor();
-            var syncModeToUse = syncMode ?? this.themeSyncMode;
-
-            if (syncModeToUse.HasFlag(ThemeSyncMode.SyncWithAccent))
-            {
-                this.SyncThemeColorSchemeWithWindowsAccentColor(syncMode, baseColor);
-            }
-            else
-            {
-                this.ChangeThemeBaseColor(Application.Current, baseColor);   
-            }
-        }
-
-        public void SyncThemeColorSchemeWithWindowsAccentColor()
-        {
-            this.SyncThemeColorSchemeWithWindowsAccentColor(this.ThemeSyncMode, null);
-        }
-
-        public void SyncThemeColorSchemeWithWindowsAccentColor(string baseColor)
-        {
-            this.SyncThemeColorSchemeWithWindowsAccentColor(this.ThemeSyncMode, baseColor);
-        }
-
-        public void SyncThemeColorSchemeWithWindowsAccentColor(ThemeSyncMode syncMode)
-        {
-            this.SyncThemeColorSchemeWithWindowsAccentColor(syncMode, null);
-        }
-
-        public void SyncThemeColorSchemeWithWindowsAccentColor(ThemeSyncMode? syncMode, string? baseColor)
-        {
-            if (Application.Current is null)
-            {
-                return;
-            }
-
-            var accentColor = WindowsThemeHelper.GetWindowsAccentColor();
-
-            if (accentColor is null)
-            {
-                return;
-            }
-
-            var detectedTheme = this.DetectTheme();
-            var syncModeToUse = syncMode ?? this.themeSyncMode;
-
-            if (baseColor == null
-                && syncModeToUse.HasFlag(ThemeSyncMode.SyncWithAppMode))
-            {
-                baseColor = WindowsThemeHelper.GetWindowsBaseColor();
-            }
-            else
-            {
-                baseColor ??= detectedTheme?.BaseColorScheme ?? BaseColorLight;
-            }
-
-            var isHighContrast = syncModeToUse.HasFlag(ThemeSyncMode.SyncWithHighContrast)
-                                 && WindowsThemeHelper.IsHighContrastEnabled();
-
-            var accentColorAsString = accentColor.ToString();
-
-            // Check if we previously generated a theme matching the desired settings
-            var theme = this.GetTheme(baseColor, accentColorAsString!, isHighContrast) 
-                        ?? RuntimeThemeGenerator.Current.GenerateRuntimeThemeFromWindowsSettings(baseColor, isHighContrast, this.libraryThemeProvidersInternal);
-
-            // Only change the theme if it's not the current already
-            if (!(theme is null)
-                && theme != detectedTheme)
-            {
-                this.ChangeTheme(Application.Current, theme);
-            }
-        }
 
         private ThemeSyncMode themeSyncMode;
 

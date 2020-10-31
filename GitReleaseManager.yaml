@@ -17,15 +17,22 @@ issue-labels-include:
 - Feature
 - Feature Request
 - Enhancement
+- Improvement
+- Hacktoberfest
 issue-labels-exclude:
 - Internal Refactoring
 - Build
 - Question
 - WontFix
 - Duplicate
+- Housekeeping
+- Documentation
 - Help wanted
 - Invalid
 issue-labels-alias:
     - name:    Documentation
       header:  Documentation
       plural:  Documentation
+    - name:    Hacktoberfest
+      header:  Hacktoberfest
+      plural:  Hacktoberfest

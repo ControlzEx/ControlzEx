@@ -334,28 +334,31 @@
             {
                 this.updatingZOrder = true;
                 var windowInteropHelper = new WindowInteropHelper(this.AssociatedObject);
-                var handle = windowInteropHelper.Handle;
+                var currentHandle = windowInteropHelper.Handle;
+
+                if (currentHandle != this.windowHandle
+                    || WindowHelper.IsWindowHandleValid(currentHandle) == false)
+                {
+                    return;
+                }
+
                 foreach (var loadedGlowWindow in this.loadedGlowWindows)
                 {
                     var glowWindowHandle = new WindowInteropHelper(loadedGlowWindow).Handle;
 
                     var window = NativeMethods.GetWindow(glowWindowHandle, GW.HWNDPREV);
-                    if (window != handle)
+                    if (window != currentHandle)
                     {
                         if (WindowHelper.IsWindowHandleValid(glowWindowHandle)
-                            && WindowHelper.IsWindowHandleValid(handle))
+                            && WindowHelper.IsWindowHandleValid(currentHandle))
                         {
-                            NativeMethods.SetWindowPos(glowWindowHandle, handle, 0, 0, 0, 0, SWP.NOSIZE | SWP.NOMOVE | SWP.NOACTIVATE);
+                            NativeMethods.SetWindowPos(glowWindowHandle, currentHandle, 0, 0, 0, 0, SWP.NOSIZE | SWP.NOMOVE | SWP.NOACTIVATE);
                         }
                     }
-                    handle = glowWindowHandle;
+                    currentHandle = glowWindowHandle;
                 }
 
-                var owner = windowInteropHelper.Owner;
-                if (owner != IntPtr.Zero)
-                {
-                    this.UpdateZOrderOfOwner(owner);
-                }
+                this.UpdateZOrderOfOwner(currentHandle, windowInteropHelper.Owner);
             }
             finally
             {
@@ -363,9 +366,10 @@
             }
         }
 
-        private void UpdateZOrderOfOwner(IntPtr hwndOwner)
+        private void UpdateZOrderOfOwner(IntPtr hwndWindow, IntPtr hwndOwner)
         {
-            if (WindowHelper.IsWindowHandleValid(hwndOwner) == false)
+            if (WindowHelper.IsWindowHandleValid(hwndWindow) == false
+                || WindowHelper.IsWindowHandleValid(hwndOwner) == false)
             {
                 return;
             }
@@ -380,14 +384,11 @@
 
                                                                                     return true;
                                                                                 }, IntPtr.Zero);
-            if (lastOwnedWindow != IntPtr.Zero
+            if (WindowHelper.IsWindowHandleValid(hwndOwner)
+                && WindowHelper.IsWindowHandleValid(lastOwnedWindow)
                 && NativeMethods.GetWindow(hwndOwner, GW.HWNDPREV) != lastOwnedWindow)
             {
-                if (WindowHelper.IsWindowHandleValid(hwndOwner)
-                    && WindowHelper.IsWindowHandleValid(lastOwnedWindow))
-                {
-                    NativeMethods.SetWindowPos(hwndOwner, lastOwnedWindow, 0, 0, 0, 0, SWP.NOSIZE | SWP.NOMOVE | SWP.NOACTIVATE);
-                }
+                NativeMethods.SetWindowPos(hwndOwner, lastOwnedWindow, 0, 0, 0, 0, SWP.NOSIZE | SWP.NOMOVE | SWP.NOACTIVATE);
             }
         }
 #pragma warning restore 618
@@ -426,10 +427,9 @@
 #pragma warning disable 618
         private void UpdateCore()
         {
-            if (this.windowHandle == IntPtr.Zero
-                || (this.IsActiveGlowDisabled && this.AssociatedObject.IsActive)
+            if ((this.IsActiveGlowDisabled && this.AssociatedObject.IsActive)
                 || (this.IsNoneActiveGlowDisabled && this.AssociatedObject.IsActive == false)
-                || UnsafeNativeMethods.IsWindow(this.windowHandle) == false
+                || WindowHelper.IsWindowHandleValid(this.windowHandle) == false
                 || NativeMethods.IsWindowVisible(this.windowHandle) == false)
             {
                 return;
