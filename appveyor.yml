@@ -21,9 +21,9 @@ image: Visual Studio 2019 Preview
 test: off
 
 install:
-  #- cinst dotnetcore-sdk --version=3.1.100
-  - ps: Invoke-WebRequest 'https://dot.net/v1/dotnet-install.ps1' -OutFile 'dotnet-install.ps1'
-  - ps: ./dotnet-install.ps1 -Version 5.0.100-preview.8.20417.9 -InstallDir "C:\Program Files\dotnet"
+  - cinst dotnet-5.0-sdk
+  # - ps: Invoke-WebRequest 'https://dotnet.microsoft.com/download/dotnet-core/scripts/v1/dotnet-install.ps1' -OutFile 'dotnet-install.ps1'
+  # - ps: ./dotnet-install.ps1 -Version 5.0.100 -InstallDir "C:\Program Files\dotnet"
 
 pull_requests:
   do_not_increment_build_number: false
