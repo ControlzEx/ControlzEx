@@ -1,5 +1,5 @@
 <Project>
-    <PropertyGroup Condition=" '$(TargetFramework)' == 'net45' ">
+    <PropertyGroup Condition=" '$(TargetFramework)' == 'net452' ">
         <DefineConstants>$(DefineConstants);OWNDPISCALE</DefineConstants>
     </PropertyGroup>
 

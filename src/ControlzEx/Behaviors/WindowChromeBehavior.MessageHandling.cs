@@ -6,7 +6,6 @@ namespace ControlzEx.Behaviors
     using System.Diagnostics.CodeAnalysis;
     using System.Runtime.InteropServices;
     using System.Security;
-    using System.Security.Permissions;
     using System.Windows;
     using System.Windows.Data;
     using ControlzEx.Standard;
@@ -35,7 +34,6 @@ namespace ControlzEx.Behaviors
         ///   Safe     : Demands full trust permissions
         /// </SecurityNote>
         [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         public WindowChromeBehavior()
         {
             // Effective default values for some of these properties are set to be bindings
@@ -86,7 +84,6 @@ namespace ControlzEx.Behaviors
         ///   Safe     : Demands full trust permissions
         /// </SecurityNote>
         [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         private void _OnChromePropertyChangedThatRequiresRepaint()
         {
             this._UpdateFrameState(true);

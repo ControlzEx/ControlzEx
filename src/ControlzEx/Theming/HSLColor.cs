@@ -164,5 +164,34 @@ namespace ControlzEx.Theming
 
             return (byte)Math.Round (255 * (L - a * Math.Max(-1, Math.Min(k - 3, Math.Min(9 - k, 1)))));
         }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is HSLColor color 
+                && A == color.A
+                && H == color.H
+                && S == color.S
+                && L == color.L;
+        }
+
+        public override int GetHashCode()
+        {
+            int hashCode = -1795249040;
+            hashCode = hashCode * -1521134295 + A.GetHashCode();
+            hashCode = hashCode * -1521134295 + H.GetHashCode();
+            hashCode = hashCode * -1521134295 + S.GetHashCode();
+            hashCode = hashCode * -1521134295 + L.GetHashCode();
+            return hashCode;
+        }
+
+        public static bool operator ==(HSLColor x, HSLColor y)
+        {
+            return x.Equals(y);
+        }
+
+        public static bool operator !=(HSLColor x, HSLColor y)
+        {
+            return !(x == y);
+        }
     }
 }

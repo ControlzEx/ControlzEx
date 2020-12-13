@@ -1,4 +1,4 @@
-#pragma warning disable 1591, 618
+#pragma warning disable 1591, 618, CA1815, CA1028, CA1008
 namespace ControlzEx.Standard
 {
     using System;
@@ -1568,6 +1568,7 @@ namespace ControlzEx.Standard
         private IntPtr? _hwnd;
         private bool _created;
 
+#pragma warning disable CA1044
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public IntPtr Hwnd
         {
@@ -1577,6 +1578,7 @@ namespace ControlzEx.Standard
                 _hwnd = value;
             }
         }
+#pragma warning restore CA1044
 
         private SafeDC() : base(true) { }
 
@@ -1723,7 +1725,6 @@ namespace ControlzEx.Standard
             handle = ptr;
         }
 
-        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         protected override bool ReleaseHandle()
         {
             Status s = NativeMethods.GdiplusShutdown(this.handle);
@@ -1789,7 +1790,6 @@ namespace ControlzEx.Standard
         }
 
         [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         protected override bool ReleaseHandle()
         {
             try
@@ -2299,6 +2299,7 @@ namespace ControlzEx.Standard
 
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential, Pack = 0)]
+    [Serializable]
     public struct RECT : IEquatable<RECT>
     {
         public static readonly RECT Empty = new RECT();
@@ -4344,7 +4345,7 @@ namespace ControlzEx.Standard
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        [DllImport("user32.dll", SetLastError = true)]
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]

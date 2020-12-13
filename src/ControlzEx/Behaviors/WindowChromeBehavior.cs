@@ -1,10 +1,10 @@
-﻿#pragma warning disable 618
+﻿#pragma warning disable 618, CA1001
+
 namespace ControlzEx.Behaviors
 {
     using System;
     using System.Collections.Generic;
     using System.Security;
-    using System.Security.Permissions;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Interop;
@@ -343,7 +343,6 @@ namespace ControlzEx.Behaviors
         }
 
         [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         private void Cleanup(bool isClosing)
         {
             if (this.isCleanedUp)
@@ -423,6 +422,8 @@ namespace ControlzEx.Behaviors
             this.HandleMaximize();
         }
 
+#pragma warning disable CA2109
+
         /// <summary>
         /// Is called when the associated object of this instance is loaded
         /// </summary>
@@ -430,6 +431,8 @@ namespace ControlzEx.Behaviors
         {
             //this._UpdateFrameState(true);
         }
+
+#pragma warning restore CA2109
 
         private void AssociatedObject_Unloaded(object sender, RoutedEventArgs e)
         {

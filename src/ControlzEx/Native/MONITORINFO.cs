@@ -1,3 +1,4 @@
+#pragma warning disable 1591, 618, CA1815, CA1028
 namespace ControlzEx.Standard
 {
     using System;
