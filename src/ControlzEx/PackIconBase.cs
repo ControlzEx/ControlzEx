@@ -17,8 +17,9 @@ namespace ControlzEx
     /// </summary>
     /// <typeparam name="TKind"></typeparam>
     public abstract class PackIconBase<TKind> : PackIconBase
+        where TKind : notnull
     {
-        private static Lazy<IDictionary<TKind, string>> _dataIndex;
+        private static Lazy<IDictionary<TKind, string>>? _dataIndex;
 
         /// <param name="dataIndexFactory">
         /// Inheritors should provide a factory for setting up the path data index (per icon kind).
@@ -26,9 +27,9 @@ namespace ControlzEx
         /// </param>
         protected PackIconBase(Func<IDictionary<TKind, string>> dataIndexFactory)
         {
-            if (dataIndexFactory == null) throw new ArgumentNullException(nameof(dataIndexFactory));
+            if (dataIndexFactory is null) throw new ArgumentNullException(nameof(dataIndexFactory));
 
-            if (_dataIndex == null)
+            if (_dataIndex is null)
                 _dataIndex = new Lazy<IDictionary<TKind, string>>(dataIndexFactory);
         }
 
@@ -67,7 +68,7 @@ namespace ControlzEx
         /// Gets the icon path data for the current <see cref="Kind"/>.
         /// </summary>
         [TypeConverter(typeof(GeometryConverter))]
-        public string Data
+        public string? Data
         {
             get { return (string)this.GetValue(DataProperty); }
             private set { this.SetValue(DataPropertyKey, value); }
@@ -82,8 +83,8 @@ namespace ControlzEx
 
         internal override void UpdateData()
         {
-            string data = null;
-            _dataIndex.Value?.TryGetValue(this.Kind, out data);
+            string? data = null;
+            _dataIndex?.Value?.TryGetValue(this.Kind, out data);
             this.Data = data;
         }
     }

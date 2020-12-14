@@ -17,13 +17,6 @@ namespace ControlzEx.Standard
     using System.Security.Cryptography;
     using System.Text;
 
-    internal enum SafeCopyFileOptions
-    {
-        PreserveOriginal,
-        Overwrite,
-        FindBetterName,
-    }
-
     internal static partial class Utility
     {
         private static readonly Random _randomNumberGenerator = new Random();
@@ -59,7 +52,7 @@ namespace ControlzEx.Standard
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public static Exception FailableFunction<T>(Func<T> function, out T result)
+        public static Exception? FailableFunction<T>(Func<T> function, out T result)
         {
             return FailableFunction(5, function, out result);
         }
@@ -68,7 +61,7 @@ namespace ControlzEx.Standard
         public static T FailableFunction<T>(Func<T> function)
         {
             T result;
-            Exception e = FailableFunction(function, out result);
+            var e = FailableFunction(function, out result);
             if (e != null)
             {
                 throw e;
@@ -80,7 +73,7 @@ namespace ControlzEx.Standard
         public static T FailableFunction<T>(int maxRetries, Func<T> function)
         {
             T result;
-            Exception e = FailableFunction(maxRetries, function, out result);
+            var e = FailableFunction(maxRetries, function, out result);
             if (e != null)
             {
                 throw e;
@@ -90,7 +83,7 @@ namespace ControlzEx.Standard
 
         [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public static Exception FailableFunction<T>(int maxRetries, Func<T> function, out T result)
+        public static Exception? FailableFunction<T>(int maxRetries, Func<T> function, out T result)
         {
             Assert.IsNotNull(function);
             Assert.BoundedInteger(1, maxRetries, 100);
@@ -106,24 +99,11 @@ namespace ControlzEx.Standard
                 {
                     if (i == maxRetries)
                     {
-                        result = default(T);
+                        result = default(T)!;
                         return e;
                     }
                 }
                 ++i;
-            }
-        }
-
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public static string GetHashString(string value)
-        {
-            using (MD5 md5 = MD5.Create())
-            {
-                byte[] signatureHash = md5.ComputeHash(Encoding.UTF8.GetBytes(value));
-                string signature = signatureHash.Aggregate(
-                    new StringBuilder(),
-                    (sb, b) => sb.Append(b.ToString("x2", CultureInfo.InvariantCulture))).ToString();
-                return signature;
             }
         }
 
@@ -161,119 +141,6 @@ namespace ControlzEx.Standard
             return (short)(i & 0xFFFF);
         }
 
-        public static IntPtr MakeLParam(int LoWord, int HiWord) 
-        { 
-            int i = (HiWord << 16) | (LoWord & 0xffff); 
-            return new IntPtr(i); 
-        } 
-
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        [SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
-        public static bool AreStreamsEqual(Stream left, Stream right)
-        {
-            if (null == left)
-            {
-                return right == null;
-            }
-            if (null == right)
-            {
-                return false;
-            }
-
-            if (!left.CanRead || !right.CanRead)
-            {
-                throw new NotSupportedException("The streams can't be read for comparison");
-            }
-
-            if (left.Length != right.Length)
-            {
-                return false;
-            }
-
-            var length = (int)left.Length;
-
-            // seek to beginning
-            left.Position = 0;
-            right.Position = 0;
-
-            // total bytes read
-            int totalReadLeft = 0;
-            int totalReadRight = 0;
-
-            // bytes read on this iteration
-            int cbReadLeft = 0;
-            int cbReadRight = 0;
-
-            // where to store the read data
-            var leftBuffer = new byte[512];
-            var rightBuffer = new byte[512];
-
-            // pin the left buffer
-            GCHandle handleLeft = GCHandle.Alloc(leftBuffer, GCHandleType.Pinned);
-            IntPtr ptrLeft = handleLeft.AddrOfPinnedObject();
-
-            // pin the right buffer
-            GCHandle handleRight = GCHandle.Alloc(rightBuffer, GCHandleType.Pinned);
-            IntPtr ptrRight = handleRight.AddrOfPinnedObject();
-
-            try
-            {
-                while (totalReadLeft < length)
-                {
-                    Assert.AreEqual(totalReadLeft, totalReadRight);
-
-                    cbReadLeft = left.Read(leftBuffer, 0, leftBuffer.Length);
-                    cbReadRight = right.Read(rightBuffer, 0, rightBuffer.Length);
-
-                    // verify the contents are an exact match
-                    if (cbReadLeft != cbReadRight)
-                    {
-                        return false;
-                    }
-
-                    if (!_MemCmp(ptrLeft, ptrRight, cbReadLeft))
-                    {
-                        return false;
-                    }
-
-                    totalReadLeft += cbReadLeft;
-                    totalReadRight += cbReadRight;
-                }
-
-                Assert.AreEqual(cbReadLeft, cbReadRight);
-                Assert.AreEqual(totalReadLeft, totalReadRight);
-                Assert.AreEqual(length, totalReadLeft);
-
-                return true;
-            }
-            finally
-            {
-                handleLeft.Free();
-                handleRight.Free();
-            }
-        }
-
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public static bool GuidTryParse(string guidString, out Guid guid)
-        {
-            Verify.IsNeitherNullNorEmpty(guidString, "guidString");
-
-            try
-            {
-                guid = new Guid(guidString);
-                return true;
-            }
-            catch (FormatException)
-            {
-            }
-            catch (OverflowException)
-            {
-            }
-            // Doesn't seem to be a valid guid.
-            guid = default(Guid);
-            return false;
-        }
-
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static bool IsFlagSet(int value, int mask)
         {
@@ -281,223 +148,12 @@ namespace ControlzEx.Standard
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public static bool IsFlagSet(uint value, uint mask)
-        {
-            return 0 != (value & mask);
-        }
-
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public static bool IsFlagSet(long value, long mask)
-        {
-            return 0 != (value & mask);
-        }
-
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public static bool IsFlagSet(ulong value, ulong mask)
-        {
-            return 0 != (value & mask);
-        }
-
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public static bool IsInterfaceImplemented(Type objectType, Type interfaceType)
-        {
-            Assert.IsNotNull(objectType);
-            Assert.IsNotNull(interfaceType);
-            Assert.IsTrue(interfaceType.IsInterface);
-
-            return objectType.GetInterfaces().Any(type => type == interfaceType);
-        }
-
-        /// <summary>
-        /// Wrapper around File.Copy to provide feedback as to whether the file wasn't copied because it didn't exist.
-        /// </summary>
-        /// <returns></returns>
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public static string SafeCopyFile(string sourceFileName, string destFileName, SafeCopyFileOptions options)
-        {
-            switch (options)
-            {
-                case SafeCopyFileOptions.PreserveOriginal:
-                    if (!File.Exists(destFileName))
-                    {
-                        File.Copy(sourceFileName, destFileName);
-                        return destFileName;
-                    }
-                    return null;
-                case SafeCopyFileOptions.Overwrite:
-                    File.Copy(sourceFileName, destFileName, true);
-                    return destFileName;
-                case SafeCopyFileOptions.FindBetterName:
-                    string directoryPart = Path.GetDirectoryName(destFileName);
-                    string fileNamePart = Path.GetFileNameWithoutExtension(destFileName);
-                    string extensionPart = Path.GetExtension(destFileName);
-                    foreach (string path in GenerateFileNames(directoryPart, fileNamePart, extensionPart))
-                    {
-                        if (!File.Exists(path))
-                        {
-                            File.Copy(sourceFileName, path);
-                            return path;
-                        }
-                    }
-                    return null;
-            }
-            throw new ArgumentException("Invalid enumeration value", "options");
-        }
-
-        /// <summary>
-        /// Simple guard against the exceptions that File.Delete throws on null and empty strings.
-        /// </summary>
-        /// <param name="path">The path to delete.  Unlike File.Delete, this can be null or empty.</param>
-        /// <remarks>
-        /// Note that File.Delete, and by extension SafeDeleteFile, does not throw an exception
-        /// if the file does not exist.
-        /// </remarks>
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public static void SafeDeleteFile(string path)
-        {
-            if (!string.IsNullOrEmpty(path))
-            {
-                File.Delete(path);
-            }
-        }
-
-
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public static void SafeDispose<T>(ref T disposable) where T : IDisposable
+        public static void SafeDispose<T>(ref T? disposable) where T : class, IDisposable
         {
             // Dispose can safely be called on an object multiple times.
-            IDisposable t = disposable;
-            disposable = default(T);
-            if (null != t)
-            {
-                t.Dispose();
-            }
-        }
-
-        /// <summary>
-        /// Utility to help classes catenate their properties for implementing ToString().
-        /// </summary>
-        /// <param name="source">The StringBuilder to catenate the results into.</param>
-        /// <param name="propertyName">The name of the property to be catenated.</param>
-        /// <param name="value">The value of the property to be catenated.</param>
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public static void GeneratePropertyString(StringBuilder source, string propertyName, string value)
-        {
-            Assert.IsNotNull(source);
-            Assert.IsFalse(string.IsNullOrEmpty(propertyName));
-
-            if (0 != source.Length)
-            {
-                source.Append(' ');
-            }
-
-            source.Append(propertyName);
-            source.Append(": ");
-            if (string.IsNullOrEmpty(value))
-            {
-                source.Append("<null>");
-            }
-            else
-            {
-                source.Append('\"');
-                source.Append(value);
-                source.Append('\"');
-            }
-        }
-
-        /// <summary>
-        /// Generates ToString functionality for a struct.  This is an expensive way to do it,
-        /// it exists for the sake of debugging while classes are in flux.
-        /// Eventually this should just be removed and the classes should
-        /// do this without reflection.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="object"></param>
-        /// <returns></returns>
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        [Obsolete]
-        public static string GenerateToString<T>(T @object) where T : struct
-        {
-            var sbRet = new StringBuilder();
-            foreach (PropertyInfo property in typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance))
-            {
-                if (0 != sbRet.Length)
-                {
-                    sbRet.Append(", ");
-                }
-                Assert.AreEqual(0, property.GetIndexParameters().Length);
-                object value = property.GetValue(@object, null);
-                string format = null == value ? "{0}: <null>" : "{0}: \"{1}\"";
-                sbRet.AppendFormat(format, property.Name, value);
-            }
-            return sbRet.ToString();
-        }
-
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public static void CopyStream(Stream destination, Stream source)
-        {
-            Assert.IsNotNull(source);
-            Assert.IsNotNull(destination);
-
-            destination.Position = 0;
-
-            // If we're copying from, say, a web stream, don't fail because of this.
-            if (source.CanSeek)
-            {
-                source.Position = 0;
-
-                // Consider that this could throw because 
-                // the source stream doesn't know it's size...
-                destination.SetLength(source.Length);
-            }
-
-            var buffer = new byte[4096];
-            int cbRead;
-
-            do
-            {
-                cbRead = source.Read(buffer, 0, buffer.Length);
-                if (0 != cbRead)
-                {
-                    destination.Write(buffer, 0, cbRead);
-                }
-            }
-            while (buffer.Length == cbRead);
-
-            // Reset the Seek pointer before returning.
-            destination.Position = 0;
-        }
-
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public static string HashStreamMD5(Stream stm)
-        {
-            stm.Position = 0;
-            var hashBuilder = new StringBuilder();
-            using (MD5 md5 = MD5.Create())
-            {
-                foreach (byte b in md5.ComputeHash(stm))
-                {
-                    hashBuilder.Append(b.ToString("x2", CultureInfo.InvariantCulture));
-                }
-            }
-
-            return hashBuilder.ToString();
-        }
-
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public static void EnsureDirectory(string path)
-        {
-            if (!path.EndsWith(@"\", StringComparison.Ordinal))
-            {
-                path += @"\";
-            }
-
-            path = Path.GetDirectoryName(path);
-
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-            }
+            var t = disposable;
+            disposable = null;
+            t?.Dispose();
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
@@ -576,9 +232,9 @@ namespace ControlzEx.Standard
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public static string UrlDecode(string url)
+        public static string? UrlDecode(string? url)
         {
-            if (url == null)
+            if (url is null)
             {
                 return null;
             }
@@ -655,9 +311,9 @@ namespace ControlzEx.Standard
         /// This implementation does not treat '~' as a safe character to be consistent with the System.Web version.
         /// </remarks>
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public static string UrlEncode(string url)
+        public static string? UrlEncode(string? url)
         {
-            if (url == null)
+            if (url is null)
             {
                 return null;
             }
@@ -809,7 +465,7 @@ namespace ControlzEx.Standard
                 }
                 else if (40 >= i)
                 {
-                    yield return Path.Combine(directory, primaryFileName) + " (" + i.ToString((IFormatProvider)null) + ")" + extension;
+                    yield return Path.Combine(directory, primaryFileName) + " (" + i + ")" + extension;
                 }
                 else
                 {

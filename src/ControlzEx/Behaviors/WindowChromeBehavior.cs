@@ -32,11 +32,11 @@ namespace ControlzEx.Behaviors
         ///   Critical : Critical member provides access to HWND's window messages which are critical
         /// </SecurityNote>
         [SecurityCritical]
-        private HwndSource hwndSource;
+        private HwndSource? hwndSource;
 
-        private PropertyChangeNotifier topMostChangeNotifier;
-        private PropertyChangeNotifier borderThicknessChangeNotifier;
-        private PropertyChangeNotifier resizeBorderThicknessChangeNotifier;
+        private PropertyChangeNotifier? topMostChangeNotifier;
+        private PropertyChangeNotifier? borderThicknessChangeNotifier;
+        private PropertyChangeNotifier? resizeBorderThicknessChangeNotifier;
         private Thickness? savedBorderThickness;
         private Thickness? savedResizeBorderThickness;
         private bool savedTopMost;
@@ -267,7 +267,7 @@ namespace ControlzEx.Behaviors
         {
             if (this.AssociatedObject.Topmost)
             {
-                var raiseValueChanged = this.topMostChangeNotifier.RaiseValueChanged;
+                var raiseValueChanged = this.topMostChangeNotifier!.RaiseValueChanged;
                 this.topMostChangeNotifier.RaiseValueChanged = false;
                 this.AssociatedObject.SetCurrentValue(Window.TopmostProperty, false);
                 this.AssociatedObject.SetCurrentValue(Window.TopmostProperty, true);
@@ -283,7 +283,7 @@ namespace ControlzEx.Behaviors
             return SystemParameters.WindowResizeBorderThickness;
         }
 
-        private void BorderThicknessChangeNotifierOnValueChanged(object sender, EventArgs e)
+        private void BorderThicknessChangeNotifierOnValueChanged(object? sender, EventArgs e)
         {
             // It's bad if the window is null at this point, but we check this here to prevent the possible occurred exception
             var window = this.AssociatedObject;
@@ -293,12 +293,12 @@ namespace ControlzEx.Behaviors
             }
         }
 
-        private void ResizeBorderThicknessChangeNotifierOnValueChanged(object sender, EventArgs e)
+        private void ResizeBorderThicknessChangeNotifierOnValueChanged(object? sender, EventArgs e)
         {
             this.savedResizeBorderThickness = this.ResizeBorderThickness;
         }
 
-        private void TopMostChangeNotifierOnValueChanged(object sender, EventArgs e)
+        private void TopMostChangeNotifierOnValueChanged(object? sender, EventArgs e)
         {
             // It's bad if the window is null at this point, but we check this here to prevent the possible occurred exception
             var window = this.AssociatedObject;
@@ -384,7 +384,7 @@ namespace ControlzEx.Behaviors
             base.OnDetaching();
         }
 
-        private void AssociatedObject_SourceInitialized(object sender, EventArgs e)
+        private void AssociatedObject_SourceInitialized(object? sender, EventArgs e)
         {
             this.windowHandle = new WindowInteropHelper(this.AssociatedObject).Handle;
 
@@ -427,41 +427,41 @@ namespace ControlzEx.Behaviors
         /// <summary>
         /// Is called when the associated object of this instance is loaded
         /// </summary>
-        protected virtual void AssociatedObject_Loaded(object sender, RoutedEventArgs e)
+        protected virtual void AssociatedObject_Loaded(object? sender, RoutedEventArgs e)
         {
             //this._UpdateFrameState(true);
         }
 
 #pragma warning restore CA2109
 
-        private void AssociatedObject_Unloaded(object sender, RoutedEventArgs e)
+        private void AssociatedObject_Unloaded(object? sender, RoutedEventArgs e)
         {
             this.Cleanup(false);
         }
 
-        private void AssociatedObject_Closed(object sender, EventArgs e)
+        private void AssociatedObject_Closed(object? sender, EventArgs e)
         {
             this.Cleanup(true);
         }
 
-        private void AssociatedObject_StateChanged(object sender, EventArgs e)
+        private void AssociatedObject_StateChanged(object? sender, EventArgs e)
         {
             this.HandleMaximize();
         }
 
-        private void AssociatedObject_Deactivated(object sender, EventArgs e)
+        private void AssociatedObject_Deactivated(object? sender, EventArgs e)
         {
             this.TopMostHack();
         }
 
-        private void AssociatedObject_LostFocus(object sender, RoutedEventArgs e)
+        private void AssociatedObject_LostFocus(object? sender, RoutedEventArgs e)
         {
             this.TopMostHack();
         }
 
         private void HandleMaximize()
         {
-            var raiseValueChanged = this.topMostChangeNotifier.RaiseValueChanged;
+            var raiseValueChanged = this.topMostChangeNotifier!.RaiseValueChanged;
             this.topMostChangeNotifier.RaiseValueChanged = false;
 
             this.HandleBorderAndResizeBorderThicknessDuringMaximize();
@@ -522,8 +522,8 @@ namespace ControlzEx.Behaviors
         /// </summary>
         private void HandleBorderAndResizeBorderThicknessDuringMaximize()
         {
-            this.borderThicknessChangeNotifier.RaiseValueChanged = false;
-            this.resizeBorderThicknessChangeNotifier.RaiseValueChanged = false;
+            this.borderThicknessChangeNotifier!.RaiseValueChanged = false;
+            this.resizeBorderThicknessChangeNotifier!.RaiseValueChanged = false;
 
             if (this.AssociatedObject.WindowState == WindowState.Maximized)
             {

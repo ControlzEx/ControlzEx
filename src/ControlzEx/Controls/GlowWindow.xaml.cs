@@ -30,8 +30,8 @@ namespace ControlzEx.Controls
         private IntPtr windowHandle;
         private IntPtr ownerWindowHandle;
         private bool closing;
-        private HwndSource hwndSource;
-        private PropertyChangeNotifier resizeModeChangeNotifier;
+        private HwndSource? hwndSource;
+        private PropertyChangeNotifier? resizeModeChangeNotifier;
 
         private readonly Window owner;
 
@@ -74,7 +74,7 @@ namespace ControlzEx.Controls
             this.Name = this.Title;
 
             // We have to set the owner to fix #92
-            this.Owner = owner;
+            this.Owner = owner ?? throw new ArgumentNullException(nameof(owner));
             this.owner = owner;
 
             this.IsGlowing = true;
@@ -194,6 +194,9 @@ namespace ControlzEx.Controls
                             ? HT.BOTTOMRIGHT
                             : HT.BOTTOM;
                     break;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(direction), direction, "Invalid direction.");
             }
 
             owner.Activated += this.OnOwnerActivated;
@@ -204,7 +207,7 @@ namespace ControlzEx.Controls
 
         public bool IsGlowing { set; get; }
 
-        public Storyboard OpacityStoryboard { get; set; }
+        public Storyboard? OpacityStoryboard { get; set; }
 
         public static readonly DependencyProperty ResizeBorderThicknessProperty = DependencyProperty.Register(nameof(ResizeBorderThickness), typeof(Thickness), typeof(GlowWindow), new PropertyMetadata(WindowChromeBehavior.GetDefaultResizeBorderThickness(), OnResizeBorderThicknessChanged));
 
@@ -289,7 +292,7 @@ namespace ControlzEx.Controls
             this.resizeModeChangeNotifier.ValueChanged += this.ResizeModeChanged;
         }
 
-        private void ResizeModeChanged(object sender, EventArgs e)
+        private void ResizeModeChanged(object? sender, EventArgs e)
         {
             var wsex = NativeMethods.GetWindowStyleEx(this.windowHandle);
 
@@ -416,19 +419,19 @@ namespace ControlzEx.Controls
                                        SWP.NOACTIVATE | SWP.NOZORDER);
         }
 
-        private void OnOwnerActivated(object sender, EventArgs e)
+        private void OnOwnerActivated(object? sender, EventArgs e)
         {
             this.Update();
 
             this.glow.IsGlow = true;
         }
 
-        private void OnOwnerDeactivated(object sender, EventArgs e)
+        private void OnOwnerDeactivated(object? sender, EventArgs e)
         {
             this.glow.IsGlow = false;
         }
 
-        private void OnOwnerIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        private void OnOwnerIsVisibleChanged(object? sender, DependencyPropertyChangedEventArgs e)
         {
             this.Update();
         }
@@ -475,7 +478,7 @@ namespace ControlzEx.Controls
 
                 case WM.WINDOWPOSCHANGED:
                 case WM.WINDOWPOSCHANGING:
-                    var wp = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
+                    var wp = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS))!;
                     wp.flags |= SWP.NOACTIVATE; // We always have to add SWP.NOACTIVATE to prevent accidental activation of this window
                     // todo: direct z-order
                     //wp.hwndInsertAfter = this.ownerWindowHandle;

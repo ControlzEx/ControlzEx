@@ -112,7 +112,7 @@ namespace ControlzEx.Standard
 
             s_windowLookup.Remove(hwnd);
 
-            _className = null;
+            _className = null!;
             Handle = IntPtr.Zero;
         }
 
@@ -120,13 +120,13 @@ namespace ControlzEx.Standard
         private static IntPtr _WndProc(IntPtr hwnd, WM msg, IntPtr wParam, IntPtr lParam)
         {
             IntPtr ret = IntPtr.Zero;
-            MessageWindow hwndWrapper = null;
+            MessageWindow? hwndWrapper = null;
 
             if (msg == WM.CREATE)
             {
-                var createStruct = (CREATESTRUCT)Marshal.PtrToStructure(lParam, typeof(CREATESTRUCT));
+                var createStruct = (CREATESTRUCT)Marshal.PtrToStructure(lParam, typeof(CREATESTRUCT))!;
                 GCHandle gcHandle = GCHandle.FromIntPtr(createStruct.lpCreateParams);
-                hwndWrapper = (MessageWindow)gcHandle.Target;
+                hwndWrapper = (MessageWindow)gcHandle.Target!;
                 s_windowLookup.Add(hwnd, hwndWrapper);
             }
             else
@@ -157,7 +157,7 @@ namespace ControlzEx.Standard
             return ret;
         }
 
-        private static object _DestroyWindow(IntPtr hwnd, string className)
+        private static object? _DestroyWindow(IntPtr hwnd, string className)
         {
             Utility.SafeDestroyWindow(ref hwnd);
             NativeMethods.UnregisterClass(className, NativeMethods.GetModuleHandle(null));

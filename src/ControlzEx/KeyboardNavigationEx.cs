@@ -15,9 +15,9 @@ namespace ControlzEx
     /// </summary>
     public sealed class KeyboardNavigationEx
     {
-        private static KeyboardNavigationEx _instance;
-        private readonly PropertyInfo _alwaysShowFocusVisual; // internal static bool AlwaysShowFocusVisual
-        private readonly MethodInfo _showFocusVisual; // internal static void ShowFocusVisual()
+        private static KeyboardNavigationEx? _instance;
+        private readonly PropertyInfo? _alwaysShowFocusVisual; // internal static bool AlwaysShowFocusVisual
+        private readonly MethodInfo? _showFocusVisual; // internal static void ShowFocusVisual()
 
         // Explicit static constructor to tell C# compiler
         // not to mark type as beforefieldinit
@@ -43,20 +43,20 @@ namespace ControlzEx
         /// </summary>
         internal void ShowFocusVisualInternal()
         {
-            this._showFocusVisual.Invoke(null, null);
+            this._showFocusVisual?.Invoke(null, null);
         }
 
         internal bool AlwaysShowFocusVisualInternal
         {
-            get { return (bool)this._alwaysShowFocusVisual.GetValue(null, null); }
-            set { this._alwaysShowFocusVisual.SetValue(null, value, null); }
+            get { return (bool?)this._alwaysShowFocusVisual?.GetValue(null, null) ?? false; }
+            set { this._alwaysShowFocusVisual?.SetValue(null, value, null); }
         }
 
         /// <summary>
         /// Focuses the specified element and shows the focus visual style.
         /// </summary>
         /// <param name="element">The element which will be focused.</param>
-        public static void Focus(UIElement element)
+        public static void Focus(UIElement? element)
         {
             element?.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
             {
@@ -96,7 +96,7 @@ namespace ControlzEx
             }
         }
 
-        private static void FrameworkElementGotFocus(object sender, RoutedEventArgs e)
+        private static void FrameworkElementGotFocus(object? sender, RoutedEventArgs e)
         {
             Focus(sender as UIElement);
         }

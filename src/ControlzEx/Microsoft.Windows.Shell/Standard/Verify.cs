@@ -171,7 +171,7 @@ namespace ControlzEx.Standard
         /// <param name="message">The message to include in the ArgumentException.</param>
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DebuggerStepThrough]
-        public static void IsTrue(bool statement, string name, string message = null)
+        public static void IsTrue(bool statement, string name, string? message = null)
         {
             if (!statement)
             {
@@ -182,7 +182,7 @@ namespace ControlzEx.Standard
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DebuggerStepThrough]
-        public static void IsFalse(bool statement, string name, string message = null)
+        public static void IsFalse(bool statement, string name, string? message = null)
         {
             if (statement)
             {

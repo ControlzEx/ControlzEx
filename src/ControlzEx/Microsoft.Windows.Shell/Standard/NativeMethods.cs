@@ -1553,7 +1553,7 @@ namespace ControlzEx.Standard
             // Weird legacy function, documentation is unclear about how to use it...
             [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
             [DllImport("gdi32.dll", CharSet = CharSet.Unicode)]
-            public static extern SafeDC CreateDC([MarshalAs(UnmanagedType.LPWStr)] string lpszDriver, [MarshalAs(UnmanagedType.LPWStr)] string lpszDevice, IntPtr lpszOutput, IntPtr lpInitData);
+            public static extern SafeDC CreateDC([MarshalAs(UnmanagedType.LPWStr)] string lpszDriver, [MarshalAs(UnmanagedType.LPWStr)] string? lpszDevice, IntPtr lpszOutput, IntPtr lpInitData);
 
             [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
             [DllImport("gdi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
@@ -1601,7 +1601,7 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Usage", "CA2201:DoNotRaiseReservedExceptionTypes"), SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static SafeDC CreateDC(string deviceName)
         {
-            SafeDC dc = null;
+            SafeDC? dc = null;
             try
             {
                 // Should this really be on the driver parameter?
@@ -1615,9 +1615,10 @@ namespace ControlzEx.Standard
                 }
             }
 
-            if (dc.IsInvalid)
+            if (dc is null
+                || dc.IsInvalid)
             {
-                dc.Dispose();
+                dc?.Dispose();
                 throw new SystemException("Unable to create a device context from the specified device information.");
             }
 
@@ -1627,7 +1628,7 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Usage", "CA2201:DoNotRaiseReservedExceptionTypes"), SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static SafeDC CreateCompatibleDC(SafeDC hdc)
         {
-            SafeDC dc = null;
+            SafeDC? dc = null;
             try
             {
                 IntPtr hPtr = IntPtr.Zero;
@@ -1649,9 +1650,10 @@ namespace ControlzEx.Standard
                 }
             }
 
-            if (dc.IsInvalid)
+            if (dc is null 
+                || dc.IsInvalid)
             {
-                dc.Dispose();
+                dc?.Dispose();
                 throw new SystemException("Unable to create a device context from the specified device information.");
             }
 
@@ -1661,7 +1663,7 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static SafeDC GetDC(IntPtr hwnd)
         {
-            SafeDC dc = null;
+            SafeDC? dc = null;
             try
             {
                 dc = NativeMethods.GetDC(hwnd);
@@ -1674,13 +1676,14 @@ namespace ControlzEx.Standard
                 }
             }
 
-            if (dc.IsInvalid)
+            if (dc is null 
+                || dc.IsInvalid)
             {
                 // GetDC does not set the last error...
                 HRESULT.E_FAIL.ThrowIfFailed();
             }
 
-            return dc;
+            return dc!;
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
@@ -1749,7 +1752,7 @@ namespace ControlzEx.Standard
 
     internal sealed class SafeConnectionPointCookie : SafeHandleZeroOrMinusOneIsInvalid
     {
-        private IConnectionPoint _cp;
+        private IConnectionPoint? _cp;
         // handle holds the cookie value.
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
@@ -1763,12 +1766,12 @@ namespace ControlzEx.Standard
 
             handle = IntPtr.Zero;
 
-            IConnectionPoint cp = null;
+            IConnectionPoint? cp = null;
             try
             {
                 int dwCookie;
                 target.FindConnectionPoint(ref eventId, out cp);
-                cp.Advise(sink, out dwCookie);
+                cp!.Advise(sink, out dwCookie);
                 if (dwCookie == 0)
                 {
                     throw new InvalidOperationException("IConnectionPoint::Advise returned an invalid cookie.");
@@ -1802,7 +1805,7 @@ namespace ControlzEx.Standard
                     Assert.IsNotNull(_cp);
                     try
                     {
-                        _cp.Unadvise(dwCookie);
+                        _cp!.Unadvise(dwCookie);
                     }
                     finally
                     {
@@ -2031,7 +2034,7 @@ namespace ControlzEx.Standard
 
         // Right now only using this for strings.
         [SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
-        public string GetValue()
+        public string? GetValue()
         {
             if (vt == (ushort)VarEnum.VT_LPWSTR)
             {
@@ -2090,9 +2093,9 @@ namespace ControlzEx.Standard
     public class SHARDAPPIDINFO
     {
         [MarshalAs(UnmanagedType.Interface)]
-        object psi;    // The namespace location of the the item that should be added to the recent docs folder.
+        object? psi;    // The namespace location of the the item that should be added to the recent docs folder.
         [MarshalAs(UnmanagedType.LPWStr)]
-        string pszAppID;  // The id of the application that should be associated with this recent doc.
+        string? pszAppID;  // The id of the application that should be associated with this recent doc.
     }
 
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
@@ -2104,7 +2107,7 @@ namespace ControlzEx.Standard
         IntPtr pidl;
         /// <summary>The id of the application that should be associated with this recent doc.</summary>
         [MarshalAs(UnmanagedType.LPWStr)]
-        string pszAppID;
+        string? pszAppID;
     }
 
     [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses")]
@@ -2115,7 +2118,7 @@ namespace ControlzEx.Standard
         // application. This link is not added to the recent docs folder, but will be added to the
         // specified application's destination list.
         [MarshalAs(UnmanagedType.LPWStr)]
-        string pszAppID;  // The id of the application that should be associated with this recent doc.
+        string? pszAppID;  // The id of the application that should be associated with this recent doc.
     }
 
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
@@ -2262,7 +2265,7 @@ namespace ControlzEx.Standard
             set { _y = value; }
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is POINT)
             {
@@ -2359,7 +2362,7 @@ namespace ControlzEx.Standard
             };
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is RECT rect && this.Equals(rect);
         }
@@ -2518,9 +2521,9 @@ namespace ControlzEx.Standard
         public int dwReserved0;
         public int dwReserved1;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
-        public string cFileName;
+        public string? cFileName;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 14)]
-        public string cAlternateFileName;
+        public string? cAlternateFileName;
     }
 
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
@@ -2582,7 +2585,7 @@ namespace ControlzEx.Standard
                    && this.flags == other.flags;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is WINDOWPOS other 
                    && this.Equals(other);
@@ -2960,7 +2963,7 @@ namespace ControlzEx.Standard
                 for (int i = 0; i < numArgs; i++)
                 {
                     IntPtr currArg = Marshal.ReadIntPtr(argv, i * Marshal.SizeOf(typeof(IntPtr)));
-                    result[i] = Marshal.PtrToStringUni(currArg);
+                    result[i] = Marshal.PtrToStringUni(currArg) ?? string.Empty;
                 }
 
                 return result;
@@ -2983,10 +2986,10 @@ namespace ControlzEx.Standard
         private static extern SafeHBITMAP _CreateDIBSectionIntPtr(IntPtr hdc, [In] ref BITMAPINFO bitmapInfo, int iUsage, [Out] out IntPtr ppvBits, IntPtr hSection, int dwOffset);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public static SafeHBITMAP CreateDIBSection(SafeDC hdc, ref BITMAPINFO bitmapInfo, out IntPtr ppvBits, IntPtr hSection, int dwOffset)
+        public static SafeHBITMAP CreateDIBSection(SafeDC? hdc, ref BITMAPINFO bitmapInfo, out IntPtr ppvBits, IntPtr hSection, int dwOffset)
         {
             const int DIB_RGB_COLORS = 0;
-            SafeHBITMAP hBitmap = null;
+            SafeHBITMAP? hBitmap = null;
             if (hdc == null)
             {
                 hBitmap = _CreateDIBSectionIntPtr(IntPtr.Zero, ref bitmapInfo, DIB_RGB_COLORS, out ppvBits, hSection, dwOffset);
@@ -3463,11 +3466,11 @@ namespace ControlzEx.Standard
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("kernel32.dll", EntryPoint = "GetModuleHandleW", CharSet = CharSet.Unicode, SetLastError = true)]
-        private static extern IntPtr _GetModuleHandle([MarshalAs(UnmanagedType.LPWStr)] string lpModuleName);
+        private static extern IntPtr _GetModuleHandle([MarshalAs(UnmanagedType.LPWStr)] string? lpModuleName);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public static IntPtr GetModuleHandle(string lpModuleName)
+        public static IntPtr GetModuleHandle(string? lpModuleName)
         {
             IntPtr retPtr = _GetModuleHandle(lpModuleName);
             if (retPtr == IntPtr.Zero)
@@ -4346,7 +4349,7 @@ namespace ControlzEx.Standard
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+        public static extern IntPtr FindWindow(string lpClassName, string? lpWindowName);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("shell32.dll", CallingConvention = CallingConvention.StdCall)]

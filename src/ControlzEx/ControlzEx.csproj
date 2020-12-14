@@ -6,6 +6,7 @@
         <RootNamespace>ControlzEx</RootNamespace>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <Description>ControlzEx is a library with some shared Controls for WPF.</Description>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <!-- NuGet -->

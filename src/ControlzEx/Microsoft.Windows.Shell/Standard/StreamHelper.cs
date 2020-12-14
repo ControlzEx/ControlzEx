@@ -55,7 +55,7 @@ namespace ControlzEx.Standard
             Verify.IsNotNull(stream, "stream");
             _source = stream;
             // Zero out caller's reference to this.  The object now owns the memory.
-            stream = null;
+            stream = null!;
         }
 
         #region Overridden Stream Methods
@@ -69,7 +69,7 @@ namespace ControlzEx.Standard
 #if FEATURE_MUTABLE_COM_STREAMS
                 Flush();
 #endif
-                Utility.SafeRelease(ref _source);
+                Utility.SafeRelease(ref _source!);
             }
         }
 

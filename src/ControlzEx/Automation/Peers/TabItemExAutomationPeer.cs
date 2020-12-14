@@ -63,13 +63,13 @@
         /// <summary>
         ///     Gets the real tab item.
         /// </summary>
-        private UIElement GetWrapper()
+        private UIElement? GetWrapper()
         {
             var itemsControlAutomationPeer = this.ItemsControlAutomationPeer;
 
-            var owner = (TabControlEx)itemsControlAutomationPeer?.Owner;
+            var owner = (TabControlEx?)itemsControlAutomationPeer?.Owner;
 
-            if (owner == null)
+            if (owner is null)
             {
                 return null;
             }

@@ -70,7 +70,7 @@ namespace ControlzEx
             this.SetCurrentValue(HorizontalOffsetProperty, offset);
         }
 
-        private void PopupEx_Loaded(object sender, RoutedEventArgs e)
+        private void PopupEx_Loaded(object? sender, RoutedEventArgs e)
         {
             var target = this.PlacementTarget as FrameworkElement;
             if (target == null)
@@ -101,22 +101,22 @@ namespace ControlzEx
             this.Unloaded += this.PopupEx_Unloaded;
         }
 
-        private void PopupEx_Opened(object sender, EventArgs e)
+        private void PopupEx_Opened(object? sender, EventArgs e)
         {
             this.SetTopmostState(this.hostWindow?.IsActive ?? true);
         }
 
-        private void hostWindow_Activated(object sender, EventArgs e)
+        private void hostWindow_Activated(object? sender, EventArgs e)
         {
             this.SetTopmostState(true);
         }
 
-        private void hostWindow_Deactivated(object sender, EventArgs e)
+        private void hostWindow_Deactivated(object? sender, EventArgs e)
         {
             this.SetTopmostState(false);
         }
 
-        private void PopupEx_Unloaded(object sender, RoutedEventArgs e)
+        private void PopupEx_Unloaded(object? sender, RoutedEventArgs e)
         {
             var target = this.PlacementTarget as FrameworkElement;
             if (target != null)
@@ -138,7 +138,7 @@ namespace ControlzEx
             this.hostWindow = null;
         }
 
-        private void hostWindow_StateChanged(object sender, EventArgs e)
+        private void hostWindow_StateChanged(object? sender, EventArgs e)
         {
             if (this.hostWindow != null && this.hostWindow.WindowState != WindowState.Minimized)
             {
@@ -156,7 +156,7 @@ namespace ControlzEx
             }
         }
 
-        private void hostWindow_SizeOrLocationChanged(object sender, EventArgs e)
+        private void hostWindow_SizeOrLocationChanged(object? sender, EventArgs e)
         {
             this.RefreshPosition();
         }
@@ -221,7 +221,7 @@ namespace ControlzEx
             }
         }
 
-        private Window hostWindow;
+        private Window? hostWindow;
         private bool? appliedTopMost;
         static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
         static readonly IntPtr HWND_NOTOPMOST = new IntPtr(-2);
@@ -352,11 +352,11 @@ namespace ControlzEx
                 };
             }
 
-            public override bool Equals(object obj)
+            public override bool Equals(object? obj)
             {
                 try
                 {
-                    var rc = (RECT)obj;
+                    var rc = (RECT)obj!;
                     return rc._bottom == this._bottom
                            && rc._left == this._left
                            && rc._right == this._right

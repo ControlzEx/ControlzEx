@@ -22,9 +22,11 @@ namespace ControlzEx.Windows.Shell
         private delegate void _SystemMetricUpdate(IntPtr wParam, IntPtr lParam);
 
         [ThreadStatic]
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         private static SystemParameters2 _threadLocalSingleton;
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-        private MessageWindow _messageHwnd;
+        private MessageWindow? _messageHwnd;
 
         private bool _isGlassEnabled;
         private Color _glassColor;
@@ -171,13 +173,13 @@ namespace ControlzEx.Windows.Shell
                 // This might flash a window in the taskbar while being calculated.
                 // WM_GETTITLEBARINFOEX doesn't work correctly unless the window is visible while processing.
                 // use SW.SHOWNA instead SW.SHOW to avoid some brief flashing when launched the window
-                NativeMethods.ShowWindow(_messageHwnd.Handle, SW.SHOWNA);
+                NativeMethods.ShowWindow(_messageHwnd!.Handle, SW.SHOWNA);
                 NativeMethods.SendMessage(_messageHwnd.Handle, WM.GETTITLEBARINFOEX, IntPtr.Zero, lParam);
-                tbix = (TITLEBARINFOEX)Marshal.PtrToStructure(lParam, typeof(TITLEBARINFOEX));
+                tbix = (TITLEBARINFOEX)Marshal.PtrToStructure(lParam, typeof(TITLEBARINFOEX))!;
             }
             finally
             {
-                NativeMethods.ShowWindow(_messageHwnd.Handle, SW.HIDE);
+                NativeMethods.ShowWindow(_messageHwnd!.Handle, SW.HIDE);
                 Utility.SafeFreeHGlobal(ref lParam);
             }
 
@@ -310,7 +312,9 @@ namespace ControlzEx.Windows.Shell
         /// <summary>
         /// Private constructor.  The public way to access this class is through the static Current property.
         /// </summary>
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         private SystemParameters2()
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
             // This window gets used for calculations about standard caption button locations
             // so it has WS_OVERLAPPEDWINDOW as a style to give it normal caption buttons.
@@ -372,7 +376,7 @@ namespace ControlzEx.Windows.Shell
             // Don't do this if called within the SystemParameters2 constructor
             if (_UpdateTable != null)
             {
-                List<_SystemMetricUpdate> handlers;
+                List<_SystemMetricUpdate>? handlers;
                 if (_UpdateTable.TryGetValue(msg, out handlers))
                 {
                     Assert.IsNotNull(handlers);
@@ -653,7 +657,7 @@ namespace ControlzEx.Windows.Shell
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         #endregion
     }

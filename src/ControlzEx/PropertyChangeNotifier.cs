@@ -36,12 +36,12 @@ namespace ControlzEx
 
         public PropertyChangeNotifier([NotNull] DependencyObject propertySource, [NotNull] PropertyPath property)
         {
-            if (null == propertySource)
+            if (propertySource is null)
             {
                 throw new ArgumentNullException(nameof(propertySource));
             }
 
-            if (null == property)
+            if (property is null)
             {
                 throw new ArgumentNullException(nameof(property));
             }
@@ -51,7 +51,7 @@ namespace ControlzEx
             BindingOperations.SetBinding(this, ValueProperty, binding);
         }
 
-        public DependencyObject PropertySource
+        public DependencyObject? PropertySource
         {
             get
             {
@@ -98,7 +98,7 @@ namespace ControlzEx
             }
         }
 
-        public event EventHandler ValueChanged;
+        public event EventHandler? ValueChanged;
 
         public bool RaiseValueChanged { get; set; } = true;
 

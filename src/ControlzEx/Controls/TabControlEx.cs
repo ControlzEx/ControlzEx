@@ -41,9 +41,9 @@ namespace ControlzEx.Controls
     [TemplatePart(Name = "PART_ItemsHolder", Type = typeof(Panel))]
     public class TabControlEx : TabControl
     {
-        private static readonly MethodInfo updateSelectedContentMethodInfo = typeof(TabControl).GetMethod("UpdateSelectedContent", BindingFlags.NonPublic | BindingFlags.Instance);
+        private static readonly MethodInfo? updateSelectedContentMethodInfo = typeof(TabControl).GetMethod("UpdateSelectedContent", BindingFlags.NonPublic | BindingFlags.Instance);
 
-        private Panel itemsHolder;
+        private Panel? itemsHolder;
 
         /// <summary>Identifies the <see cref="ChildContentVisibility"/> dependency property.</summary>
         public static readonly DependencyProperty ChildContentVisibilityProperty
@@ -292,7 +292,7 @@ namespace ControlzEx.Controls
         /// <summary>
         /// Copied from <see cref="TabControl"/>. wish it were protected in that class instead of private.
         /// </summary>
-        public TabItem GetSelectedTabItem()
+        public TabItem? GetSelectedTabItem()
         {
             var selectedItem = this.SelectedItem;
             if (selectedItem is null)
@@ -344,17 +344,17 @@ namespace ControlzEx.Controls
             this.UpdateSelectedContent();
         }
 
-        private void HandleTabControlExLoaded(object sender, RoutedEventArgs e)
+        private void HandleTabControlExLoaded(object? sender, RoutedEventArgs e)
         {
             this.RefreshItemsHolder();
         }
 
-        private void HandleTabControlExUnloaded(object sender, RoutedEventArgs e)
+        private void HandleTabControlExUnloaded(object? sender, RoutedEventArgs e)
         {
             this.ClearItemsHolder();
         }
 
-        private void OnGeneratorStatusChanged(object sender, EventArgs e)
+        private void OnGeneratorStatusChanged(object? sender, EventArgs e)
         {
             if (this.ItemContainerGenerator.Status != GeneratorStatus.ContainersGenerated)
             {
@@ -364,7 +364,7 @@ namespace ControlzEx.Controls
             this.UpdateSelectedContent();
         }
 
-        private void OnGeneratorItemsChanged(object sender, ItemsChangedEventArgs e)
+        private void OnGeneratorItemsChanged(object? sender, ItemsChangedEventArgs e)
         {
             // We only care about reset.
             // Reset, in case of ItemContainerGenerator, is generated when it's refreshed.
@@ -385,7 +385,7 @@ namespace ControlzEx.Controls
                 return;
             }
 
-            updateSelectedContentMethodInfo.Invoke(this, null);
+            updateSelectedContentMethodInfo?.Invoke(this, null);
 
             var selectedTabItem = this.GetSelectedTabItem();
 
@@ -396,9 +396,14 @@ namespace ControlzEx.Controls
             }
 
             // show the right child
-            foreach (ContentPresenter contentPresenter in this.itemsHolder.Children)
+            foreach (ContentPresenter? contentPresenter in this.itemsHolder.Children)
             {
-                var tabItem = (TabItem)this.ItemContainerGenerator.ContainerFromItem(GetOwningItem(contentPresenter)) ?? GetOwningTabItem(contentPresenter);
+                if (contentPresenter is null)
+                {
+                    continue;
+                }
+
+                var tabItem = (TabItem?)this.ItemContainerGenerator.ContainerFromItem(GetOwningItem(contentPresenter)) ?? GetOwningTabItem(contentPresenter);
 
                 // Hide all non selected items and show the selected item
                 if (tabItem.IsSelected)
@@ -438,7 +443,7 @@ namespace ControlzEx.Controls
         /// <summary>
         /// Create the child ContentPresenter for the given item (could be data or a TabItem) if none exists.
         /// </summary>
-        private void CreateChildContentPresenterIfRequired(object item, TabItem tabItem)
+        private void CreateChildContentPresenterIfRequired(object? item, TabItem tabItem)
         {
             if (item is null)
             {
@@ -468,13 +473,13 @@ namespace ControlzEx.Controls
             SetOwningItem(contentPresenter, item);
             SetOwningTabItem(contentPresenter, owningTabItem);
 
-            this.itemsHolder.Children.Add(contentPresenter);
+            this.itemsHolder?.Children.Add(contentPresenter);
         }
 
         /// <summary>
         /// Find the <see cref="ContentPresenter"/> for the given object. Data could be a TabItem or a piece of data.
         /// </summary>
-        public ContentPresenter FindChildContentPresenter(object item, TabItem tabItem)
+        public ContentPresenter? FindChildContentPresenter(object? item, TabItem? tabItem)
         {
             if (item is null)
             {

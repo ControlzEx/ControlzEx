@@ -83,11 +83,11 @@ namespace ControlzEx.Standard
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
-        public static void SafeRelease<T>(ref T comObject) where T : class
+        public static void SafeRelease<T>(ref T? comObject) where T : class
         {
-            T t = comObject;
-            comObject = default(T);
-            if (null != t)
+            var t = comObject;
+            comObject = null;
+            if (t is not null)
             {
                 Assert.IsTrue(Marshal.IsComObject(t));
                 Marshal.ReleaseComObject(t);

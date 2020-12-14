@@ -133,11 +133,11 @@ namespace ControlzEx
             MoveToolTip(sender as IInputElement, toolTip);
         }
 
-        private static void MoveToolTip(IInputElement target, ToolTip toolTip)
+        private static void MoveToolTip(IInputElement? target, ToolTip? toolTip)
         {
-            if (toolTip == null
-                || target == null
-                || toolTip.PlacementTarget == null)
+            if (toolTip is null
+                || target is null
+                || toolTip.PlacementTarget is null)
             {
                 return;
             }

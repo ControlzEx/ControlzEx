@@ -125,11 +125,11 @@ namespace ControlzEx.Standard
             return new Win32Error(Marshal.GetLastWin32Error());
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             try
             {
-                return ((Win32Error)obj)._value == _value;
+                return ((Win32Error)obj!)._value == _value;
             }
             catch (InvalidCastException)
             {
@@ -487,7 +487,7 @@ namespace ControlzEx.Standard
             {
                 if (publicStaticField.FieldType == typeof(HRESULT))
                 {
-                    var hr = (HRESULT)publicStaticField.GetValue(null);
+                    var hr = (HRESULT)publicStaticField.GetValue(null)!;
                     if (hr == this)
                     {
                         return publicStaticField.Name;
@@ -502,7 +502,7 @@ namespace ControlzEx.Standard
                 {
                     if (publicStaticField.FieldType == typeof(Win32Error))
                     {
-                        var error = (Win32Error)publicStaticField.GetValue(null);
+                        var error = (Win32Error)publicStaticField.GetValue(null)!;
                         if ((HRESULT)error == this)
                         {
                             return "HRESULT_FROM_WIN32(" + publicStaticField.Name + ")";
@@ -516,11 +516,11 @@ namespace ControlzEx.Standard
             return string.Format(CultureInfo.InvariantCulture, "0x{0:X8}", _value);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             try
             {
-                return ((HRESULT)obj)._value == _value;
+                return ((HRESULT)obj!)._value == _value;
             }
             catch (InvalidCastException)
             {
@@ -569,7 +569,7 @@ namespace ControlzEx.Standard
                 "Microsoft.Security",
                 "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")
         ]
-        public void ThrowIfFailed(string message)
+        public void ThrowIfFailed(string? message)
         {
             if (Failed)
             {
@@ -594,7 +594,7 @@ namespace ControlzEx.Standard
                 // the process of implementing an IErrorInfo and then use that.  There's no stock
                 // implementations of IErrorInfo available and I don't think it's worth the maintenance
                 // overhead of doing it, nor would it have significant value over this approach.
-                Exception e = Marshal.GetExceptionForHR((int)_value, new IntPtr(-1));
+                var e = Marshal.GetExceptionForHR((int)_value, new IntPtr(-1));
                 Assert.IsNotNull(e);
                 // ArgumentNullException doesn't have the right constructor parameters,
                 // (nor does Win32Exception...)
@@ -604,7 +604,7 @@ namespace ControlzEx.Standard
 
                 // If we're not getting anything better than a COMException from Marshal,
                 // then at least check the facility and attempt to do better ourselves.
-                if (e.GetType() == typeof(COMException))
+                if (e!.GetType() == typeof(COMException))
                 {
                     switch (Facility)
                     {
@@ -618,14 +618,14 @@ namespace ControlzEx.Standard
                 }
                 else
                 {
-                    ConstructorInfo cons = e.GetType().GetConstructor(new[] { typeof(string) });
+                    var cons = e!.GetType().GetConstructor(new[] { typeof(string) });
                     if (null != cons)
                     {
                         e = cons.Invoke(new object[] { message }) as Exception;
                         Assert.IsNotNull(e);
                     }
                 }
-                throw e;
+                throw e!;
             }
         }
 

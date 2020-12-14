@@ -24,7 +24,7 @@ namespace ControlzEx
     {
         public const string BadgeContainerPartName = "PART_BadgeContainer";
         [CLSCompliant(false)]
-        protected FrameworkElement _badgeContainer;
+        protected FrameworkElement? _badgeContainer;
 
         /// <summary>Identifies the <see cref="Badge"/> dependency property.</summary>
         public static readonly DependencyProperty BadgeProperty
@@ -273,7 +273,7 @@ namespace ControlzEx
             = DependencyProperty.Register(nameof(BadgeStringFormat),
                                           typeof(string),
                                           typeof(BadgedEx),
-                                          new FrameworkPropertyMetadata((string)null));
+                                          new FrameworkPropertyMetadata(default(string)));
 
         /// <summary>
         /// Gets or sets a composite string that specifies how to format the Badge property if it is displayed as a string.
@@ -323,7 +323,7 @@ namespace ControlzEx
 
             instance.IsBadgeSet = !string.IsNullOrWhiteSpace(e.NewValue as string) || (e.NewValue != null && !(e.NewValue is string));
 
-            var args = new RoutedPropertyChangedEventArgs<object>(e.OldValue, e.NewValue) { RoutedEvent = BadgeChangedEvent };
+            var args = new RoutedPropertyChangedEventArgs<object?>(e.OldValue, e.NewValue) { RoutedEvent = BadgeChangedEvent };
             instance.RaiseEvent(args);
         }
 

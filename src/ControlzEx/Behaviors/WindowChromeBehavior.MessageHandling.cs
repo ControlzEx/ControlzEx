@@ -96,6 +96,7 @@ namespace ControlzEx.Behaviors
         private void _ApplyNewCustomChrome()
         {
             if (this.windowHandle == IntPtr.Zero 
+                || this.hwndSource is null
                 || this.hwndSource.IsDisposed)
             {
                 // Not yet hooked.
@@ -333,7 +334,7 @@ namespace ControlzEx.Behaviors
                 var monitorInfo = NativeMethods.GetMonitorInfo(monitor);
                 var monitorRect = this.IgnoreTaskbarOnMaximize ? monitorInfo.rcMonitor : monitorInfo.rcWork;
 
-                var rc = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT));
+                var rc = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT))!;
                 rc.Left = monitorRect.Left;
                 rc.Top = monitorRect.Top;
                 rc.Right = monitorRect.Right;
@@ -352,7 +353,7 @@ namespace ControlzEx.Behaviors
                      && this._GetHwndState() == WindowState.Normal
                      && wParam.ToInt32() != 0)
             {
-                var rc = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT));
+                var rc = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT))!;
 
                 // We have to add or remove one pixel on any side of the window to force a flicker free resize.
                 // Removing pixels would result in a smaller client area.
@@ -516,7 +517,7 @@ namespace ControlzEx.Behaviors
         private IntPtr _HandleWINDOWPOSCHANGING(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
             Assert.IsNotDefault(lParam);
-            var wp = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
+            var wp = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS))!;
 
             // we don't do bitwise operations cuz we're checking for this flag being the only one there
             // I have no clue why this works, I tried this because VS2013 has this flag removed on fullscreen window movws
@@ -588,7 +589,7 @@ namespace ControlzEx.Behaviors
             this._UpdateSystemMenu(null);
 
             Assert.IsNotDefault(lParam);
-            var wp = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
+            var wp = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS))!;
 
             if (wp.Equals(this.previousWp) == false)
             {
@@ -626,7 +627,7 @@ namespace ControlzEx.Behaviors
             if (this.IgnoreTaskbarOnMaximize 
                 && NativeMethods.IsZoomed(this.windowHandle))
             {
-                var mmi = (MINMAXINFO)Marshal.PtrToStructure(lParam, typeof(MINMAXINFO));
+                var mmi = (MINMAXINFO)Marshal.PtrToStructure(lParam, typeof(MINMAXINFO))!;
                 var monitor = NativeMethods.MonitorFromWindow(this.windowHandle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
                 if (monitor != IntPtr.Zero)
                 {
@@ -755,7 +756,7 @@ namespace ControlzEx.Behaviors
 
             if (this._GetHwndState() == WindowState.Normal)
             {
-                var rect = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT));
+                var rect = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT))!;
                 rect.Bottom += 1;
                 Marshal.StructureToPtr(rect, lParam, true);
             }
@@ -896,6 +897,7 @@ namespace ControlzEx.Behaviors
         private void _UpdateFrameState(bool force)
         {
             if (IntPtr.Zero == this.windowHandle 
+                || this.hwndSource is null
                 || this.hwndSource.IsDisposed)
             {
                 return;
@@ -1148,8 +1150,9 @@ namespace ControlzEx.Behaviors
         {
             this.VerifyAccess();
 
-            if (isClosing == true
-                || this.hwndSource.IsDisposed == true
+            if (isClosing
+                || this.hwndSource is null
+                || this.hwndSource.IsDisposed
                 || this.hwndSource.RootVisual is null)
             {
                 return;

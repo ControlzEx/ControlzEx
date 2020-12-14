@@ -15,7 +15,7 @@ namespace ControlzEx.Behaviors
     /// </summary>
     public class TextBoxInputMaskBehavior : Behavior<TextBox>
     {
-        private PropertyChangeNotifier textPropertyNotifier;
+        private PropertyChangeNotifier? textPropertyNotifier;
 
         #region DependencyProperties
 
@@ -57,7 +57,7 @@ namespace ControlzEx.Behaviors
 
         #endregion
 
-        public MaskedTextProvider Provider { get; private set; }
+        public MaskedTextProvider? Provider { get; private set; }
 
         protected override void OnAttached()
         {
@@ -109,7 +109,7 @@ namespace ControlzEx.Behaviors
             |  Terminates a previous &amp;lt; or &amp;gt;  
             \  Escape: treat the next character in the mask as literal text rather than a mask symbol  
         */
-        private void AssociatedObjectLoaded(object sender, System.Windows.RoutedEventArgs e)
+        private void AssociatedObjectLoaded(object? sender, RoutedEventArgs e)
         {
             if (string.IsNullOrEmpty(this.InputMask))
             {
@@ -132,9 +132,9 @@ namespace ControlzEx.Behaviors
             this.textPropertyNotifier.ValueChanged += this.UpdateText;
         }
 
-        private void AssociatedObjectPreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        private void AssociatedObjectPreviewTextInput(object? sender, TextCompositionEventArgs e)
         {
-            if (this.Provider == null)
+            if (this.Provider is null)
             {
                 return;
             }
@@ -168,7 +168,7 @@ namespace ControlzEx.Behaviors
             this.RefreshText(nextCharacterPosition);
         }
 
-        private void AssociatedObjectPreviewKeyDown(object sender, KeyEventArgs e)
+        private void AssociatedObjectPreviewKeyDown(object? sender, KeyEventArgs e)
         {
             if (this.Provider == null)
             {
@@ -263,9 +263,9 @@ namespace ControlzEx.Behaviors
         /// <summary>
         /// Pasting prüft ob korrekte Daten reingepastet werden
         /// </summary>
-        private void Pasting(object sender, DataObjectPastingEventArgs e)
+        private void Pasting(object? sender, DataObjectPastingEventArgs e)
         {
-            if (this.Provider == null)
+            if (this.Provider is null)
             {
                 return;
             }
@@ -292,8 +292,13 @@ namespace ControlzEx.Behaviors
             e.CancelCommand();
         }
 
-        private void UpdateText(object sender, EventArgs eventArgs)
+        private void UpdateText(object? sender, EventArgs eventArgs)
         {
+            if (this.Provider is null)
+            {
+                return;
+            }
+
             Debug("UpdateText");
 
 #pragma warning disable CA1309
@@ -329,7 +334,8 @@ namespace ControlzEx.Behaviors
         /// </summary>
         private bool TreatSelectedText()
         {
-            if (AssociatedObject.SelectionLength > 0)
+            if (AssociatedObject.SelectionLength > 0
+                && this.Provider is not null)
             {
                 this.Provider.RemoveAt(AssociatedObject.SelectionStart, AssociatedObject.SelectionStart + AssociatedObject.SelectionLength - 1);
                 return true;
@@ -345,15 +351,15 @@ namespace ControlzEx.Behaviors
             AssociatedObject.CaretIndex = position;
         }
 
-        private void SetText(string text)
+        private void SetText(string? text)
         {
-            AssociatedObject.Text = String.IsNullOrWhiteSpace(text) ? String.Empty : text;
+            AssociatedObject.Text = string.IsNullOrWhiteSpace(text) ? string.Empty : text;
         }
 
         private int GetNextCharacterPosition(int caretIndex)
         {
             var start = caretIndex + GetAnzahlIncludeLiterals(caretIndex);
-            var position = this.Provider.FindEditPositionFrom(start, true);
+            var position = this.Provider!.FindEditPositionFrom(start, true);
 
             if (position == -1)
             {
@@ -365,8 +371,13 @@ namespace ControlzEx.Behaviors
             }
         }
 
-        private string GetProviderText()
+        private string? GetProviderText()
         {
+            if (this.Provider is null)
+            {
+                return null;
+            }
+
             // wenn noch gar kein Zeichen eingeben wurde, soll auch nix drin stehen
             // könnte man noch anpassen wenn man masken in der Oberfläche vllt doch haben will bei nem leeren feld
             return this.Provider.AssignedEditPositionCount > 0

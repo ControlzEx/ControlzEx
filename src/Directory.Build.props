@@ -13,7 +13,7 @@
         <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
         <GenerateDocumentationFile>false</GenerateDocumentationFile>
         <AutoGenerateBindingRedirects Condition=" $(TargetFramework.StartsWith('net4')) ">true</AutoGenerateBindingRedirects>
-        <LangVersion>latest</LangVersion>
+        <LangVersion>9.0</LangVersion>
         <DebugSymbols>true</DebugSymbols>
         <DebugType>full</DebugType>
         <!-- CA1021: Avoid out parameters -->

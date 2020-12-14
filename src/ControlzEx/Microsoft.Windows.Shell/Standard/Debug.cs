@@ -208,7 +208,7 @@ namespace ControlzEx.Standard
         /// <param name="value">The value to check for nullness.</param>
         /// <remarks>This breaks into the debugger in the case of a failed assertion.</remarks>
         [Conditional("DEBUG")]
-        public static void IsNotNull<T>(T value) where T : class
+        public static void IsNotNull<T>(T? value) where T : class
         {
             if (null == value)
             {
