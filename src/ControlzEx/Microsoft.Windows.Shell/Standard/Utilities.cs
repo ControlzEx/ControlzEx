@@ -62,7 +62,7 @@ namespace ControlzEx.Standard
         {
             T result;
             var e = FailableFunction(function, out result);
-            if (e != null)
+            if (e is not null)
             {
                 throw e;
             }
@@ -74,7 +74,7 @@ namespace ControlzEx.Standard
         {
             T result;
             var e = FailableFunction(maxRetries, function, out result);
-            if (e != null)
+            if (e is not null)
             {
                 throw e;
             }

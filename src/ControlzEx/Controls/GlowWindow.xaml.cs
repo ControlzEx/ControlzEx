@@ -444,13 +444,13 @@ namespace ControlzEx.Controls
             this.owner.Deactivated -= this.OnOwnerDeactivated;
             this.owner.IsVisibleChanged -= this.OnOwnerIsVisibleChanged;
 
-            if (this.resizeModeChangeNotifier != null)
+            if (this.resizeModeChangeNotifier is not null)
             {
                 this.resizeModeChangeNotifier.ValueChanged -= this.ResizeModeChanged;
                 this.resizeModeChangeNotifier.Dispose();
             }
 
-            if (this.hwndSource != null)
+            if (this.hwndSource is not null)
             {
                 this.hwndSource.RemoveHook(this.WndProc);
                 this.hwndSource.Dispose();

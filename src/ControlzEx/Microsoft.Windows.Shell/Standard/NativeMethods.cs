@@ -1609,7 +1609,7 @@ namespace ControlzEx.Standard
             }
             finally
             {
-                if (dc != null)
+                if (dc is not null)
                 {
                     dc._created = true;
                 }
@@ -1632,19 +1632,19 @@ namespace ControlzEx.Standard
             try
             {
                 IntPtr hPtr = IntPtr.Zero;
-                if (hdc != null)
+                if (hdc is not null)
                 {
                     hPtr = hdc.handle;
                 }
                 dc = NativeMethods.CreateCompatibleDC(hPtr);
-                if (dc == null)
+                if (dc is null)
                 {
                     HRESULT.ThrowLastError();
                 }
             }
             finally
             {
-                if (dc != null)
+                if (dc is not null)
                 {
                     dc._created = true;
                 }
@@ -1670,7 +1670,7 @@ namespace ControlzEx.Standard
             }
             finally
             {
-                if (dc != null)
+                if (dc is not null)
                 {
                     dc.Hwnd = hwnd;
                 }
@@ -2990,7 +2990,7 @@ namespace ControlzEx.Standard
         {
             const int DIB_RGB_COLORS = 0;
             SafeHBITMAP? hBitmap = null;
-            if (hdc == null)
+            if (hdc is null)
             {
                 hBitmap = _CreateDIBSectionIntPtr(IntPtr.Zero, ref bitmapInfo, DIB_RGB_COLORS, out ppvBits, hSection, dwOffset);
             }

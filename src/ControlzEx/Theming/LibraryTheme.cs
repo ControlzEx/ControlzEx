@@ -168,7 +168,7 @@ namespace ControlzEx.Theming
 
         private static ResourceDictionary CreateResourceDictionary(Uri resourceAddress)
         {
-            if (resourceAddress == null)
+            if (resourceAddress is null)
             {
                 throw new ArgumentNullException(nameof(resourceAddress));
             }

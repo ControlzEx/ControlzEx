@@ -287,7 +287,7 @@ namespace ControlzEx.Behaviors
         {
             // It's bad if the window is null at this point, but we check this here to prevent the possible occurred exception
             var window = this.AssociatedObject;
-            if (window != null)
+            if (window is not null)
             {
                 this.savedBorderThickness = window.BorderThickness;
             }
@@ -302,7 +302,7 @@ namespace ControlzEx.Behaviors
         {
             // It's bad if the window is null at this point, but we check this here to prevent the possible occurred exception
             var window = this.AssociatedObject;
-            if (window != null)
+            if (window is not null)
             {
                 this.savedTopMost = window.Topmost;
             }

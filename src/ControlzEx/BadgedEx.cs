@@ -321,7 +321,7 @@ namespace ControlzEx
         {
             var instance = (BadgedEx)d;
 
-            instance.IsBadgeSet = !string.IsNullOrWhiteSpace(e.NewValue as string) || (e.NewValue != null && !(e.NewValue is string));
+            instance.IsBadgeSet = !string.IsNullOrWhiteSpace(e.NewValue as string) || (e.NewValue is not null && !(e.NewValue is string));
 
             var args = new RoutedPropertyChangedEventArgs<object?>(e.OldValue, e.NewValue) { RoutedEvent = BadgeChangedEvent };
             instance.RaiseEvent(args);
@@ -343,7 +343,7 @@ namespace ControlzEx
         {
             var result = base.ArrangeOverride(arrangeBounds);
 
-            if (_badgeContainer == null) return result;
+            if (_badgeContainer is null) return result;
 
             var containerDesiredSize = _badgeContainer.DesiredSize;
             if ((containerDesiredSize.Width <= 0.0 || containerDesiredSize.Height <= 0.0)

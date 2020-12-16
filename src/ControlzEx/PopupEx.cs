@@ -73,13 +73,13 @@ namespace ControlzEx
         private void PopupEx_Loaded(object? sender, RoutedEventArgs e)
         {
             var target = this.PlacementTarget as FrameworkElement;
-            if (target == null)
+            if (target is null)
             {
                 return;
             }
 
             this.hostWindow = Window.GetWindow(target);
-            if (this.hostWindow == null)
+            if (this.hostWindow is null)
             {
                 return;
             }
@@ -119,12 +119,12 @@ namespace ControlzEx
         private void PopupEx_Unloaded(object? sender, RoutedEventArgs e)
         {
             var target = this.PlacementTarget as FrameworkElement;
-            if (target != null)
+            if (target is not null)
             {
                 target.SizeChanged -= this.hostWindow_SizeOrLocationChanged;
             }
 
-            if (this.hostWindow != null)
+            if (this.hostWindow is not null)
             {
                 this.hostWindow.LocationChanged -= this.hostWindow_SizeOrLocationChanged;
                 this.hostWindow.SizeChanged -= this.hostWindow_SizeOrLocationChanged;
@@ -140,12 +140,12 @@ namespace ControlzEx
 
         private void hostWindow_StateChanged(object? sender, EventArgs e)
         {
-            if (this.hostWindow != null && this.hostWindow.WindowState != WindowState.Minimized)
+            if (this.hostWindow is not null && this.hostWindow.WindowState != WindowState.Minimized)
             {
                 // special handling for validation popup
                 var holder = this.PlacementTarget is FrameworkElement target ? target.DataContext as AdornedElementPlaceholder : null;
                 var adornedElement = holder?.AdornedElement;
-                if (adornedElement != null)
+                if (adornedElement is not null)
                 {
                     this.SetCurrentValue(PopupAnimationProperty, PopupAnimation.None);
                     this.SetCurrentValue(IsOpenProperty, false);
@@ -171,13 +171,13 @@ namespace ControlzEx
                 return;
             }
 
-            if (this.Child == null)
+            if (this.Child is null)
             {
                 return;
             }
 
             var hwndSource = (PresentationSource.FromVisual(this.Child)) as HwndSource;
-            if (hwndSource == null)
+            if (hwndSource is null)
             {
                 return;
             }

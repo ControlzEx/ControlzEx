@@ -166,7 +166,7 @@ namespace ControlzEx.Theming
             {
                 var libraryTheme = libraryThemeProvider?.ProvideMissingLibraryTheme(this);
 
-                if (libraryTheme == null)
+                if (libraryTheme is null)
                 {
                     continue;
                 }
@@ -206,7 +206,7 @@ namespace ControlzEx.Theming
                 throw new ArgumentNullException(nameof(libraryTheme));
             }
 
-            if (!(libraryTheme.ParentTheme is null))
+            if (libraryTheme.ParentTheme is not null)
             {
                 throw new ArgumentException("The theme already has a parent.");
             }
@@ -266,7 +266,7 @@ namespace ControlzEx.Theming
             }
 
             var source = resourceDictionary.Source;
-            if (!(source is null))
+            if (source is not null)
             {
                 if (ThemeDictionaryCache.TryGetValue(source, out var existingValue))
                 {
@@ -278,7 +278,7 @@ namespace ControlzEx.Theming
             var result = ResourceDictionaryHelper.ContainsKey(resourceDictionary, ThemeInstanceKey)
                          || string.IsNullOrEmpty(ResourceDictionaryHelper.GetValueFromKey(resourceDictionary, ThemeNameKey) as string) == false;
 
-            if (!(source is null))
+            if (source is not null)
             {
                 ThemeDictionaryCache[source] = result;
             }

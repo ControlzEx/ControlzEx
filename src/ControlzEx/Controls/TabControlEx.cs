@@ -181,13 +181,13 @@ namespace ControlzEx.Controls
 
                 case NotifyCollectionChangedAction.Add:
                 case NotifyCollectionChangedAction.Remove:
-                    if (e.OldItems is null == false)
+                    if (e.OldItems is not null)
                     {
                         foreach (var item in e.OldItems)
                         {
                             var contentPresenter = this.FindChildContentPresenter(item, null);
 
-                            if (contentPresenter is null == false)
+                            if (contentPresenter is not null)
                             {
                                 this.itemsHolder.Children.Remove(contentPresenter);
                             }
@@ -389,7 +389,7 @@ namespace ControlzEx.Controls
 
             var selectedTabItem = this.GetSelectedTabItem();
 
-            if (selectedTabItem is null == false)
+            if (selectedTabItem is not null)
             {
                 // generate a ContentPresenter if necessary
                 this.CreateChildContentPresenterIfRequired(this.SelectedItem, selectedTabItem);
@@ -451,7 +451,7 @@ namespace ControlzEx.Controls
             }
 
             // Jump out if we already created a ContentPresenter for this item
-            if (this.FindChildContentPresenter(item, tabItem) is null == false)
+            if (this.FindChildContentPresenter(item, tabItem) is not null)
             {
                 return;
             }
@@ -495,7 +495,7 @@ namespace ControlzEx.Controls
                 .OfType<ContentPresenter>()
                 .ToList();
 
-            if (tabItem is null == false)
+            if (tabItem is not null)
             {
                 return contentPresenters
                     .FirstOrDefault(contentPresenter => ReferenceEquals(GetOwningTabItem(contentPresenter), tabItem))

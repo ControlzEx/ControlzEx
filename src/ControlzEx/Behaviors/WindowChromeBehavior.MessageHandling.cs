@@ -450,7 +450,7 @@ namespace ControlzEx.Behaviors
                 // This allows apps to set the glass frame to be non-empty, still cover it with WPF content to hide all the glass,
                 // yet still get DWM to draw a drop shadow.
                 var inputElement = this.AssociatedObject.InputHitTest(mousePosWindow);
-                if (inputElement != null)
+                if (inputElement is not null)
                 {
                     if (WindowChrome.GetIsHitTestVisibleInChrome(inputElement))
                     {

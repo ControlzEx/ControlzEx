@@ -170,7 +170,7 @@ namespace ControlzEx.Behaviors
 
         private void AssociatedObjectPreviewKeyDown(object? sender, KeyEventArgs e)
         {
-            if (this.Provider == null)
+            if (this.Provider is null)
             {
                 return;
             }

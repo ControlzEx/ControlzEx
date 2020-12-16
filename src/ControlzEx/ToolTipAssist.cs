@@ -87,7 +87,7 @@ namespace ControlzEx
         {
             var toolTip = (ToolTip)dependencyObject;
             if (eventArgs.OldValue != eventArgs.NewValue
-                && eventArgs.NewValue != null)
+                && eventArgs.NewValue is not null)
             {
                 var autoMove = (bool)eventArgs.NewValue;
                 if (autoMove)

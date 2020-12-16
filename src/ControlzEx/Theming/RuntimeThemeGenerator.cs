@@ -61,12 +61,12 @@ namespace ControlzEx.Theming
             {
                 var libraryTheme = this.GenerateRuntimeLibraryTheme(baseColor, accentColor, isHighContrast, libraryThemeProvider);
 
-                if (libraryTheme == null)
+                if (libraryTheme is null)
                 {
                     continue;
                 }
 
-                if (theme == null)
+                if (theme is null)
                 {
                     theme = new Theme(libraryTheme);
                 }

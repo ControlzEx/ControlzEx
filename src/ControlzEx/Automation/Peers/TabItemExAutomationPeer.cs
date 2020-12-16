@@ -39,14 +39,14 @@
 
             var contentHost = parentTabControl.FindChildContentPresenter(tabItem.Content, tabItem);
 
-            if (contentHost != null)
+            if (contentHost is not null)
             {
                 var contentHostPeer = new FrameworkElementAutomationPeer(contentHost);
                 var contentChildren = contentHostPeer.GetChildren();
 
-                if (contentChildren != null)
+                if (contentChildren is not null)
                 {
-                    if (headerChildren == null)
+                    if (headerChildren is null)
                     {
                         headerChildren = contentChildren;
                     }

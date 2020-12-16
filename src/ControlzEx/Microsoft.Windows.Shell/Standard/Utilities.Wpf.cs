@@ -198,7 +198,7 @@ namespace ControlzEx.Standard
         {
             if (null == left)
             {
-                return right == null;
+                return right is null;
             }
             if (null == right)
             {
@@ -222,7 +222,7 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static void AddDependencyPropertyChangeListener(object component, DependencyProperty property, EventHandler listener)
         {
-            if (component == null)
+            if (component is null)
             {
                 return;
             }
@@ -236,7 +236,7 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static void RemoveDependencyPropertyChangeListener(object component, DependencyProperty property, EventHandler listener)
         {
-            if (component == null)
+            if (component is null)
             {
                 return;
             }

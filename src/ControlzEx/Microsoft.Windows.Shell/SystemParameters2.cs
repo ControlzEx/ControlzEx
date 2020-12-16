@@ -363,7 +363,7 @@ namespace ControlzEx.Windows.Shell
         {
             get
             {
-                if (_threadLocalSingleton == null)
+                if (_threadLocalSingleton is null)
                 {
                     _threadLocalSingleton = new SystemParameters2();
                 }
@@ -374,7 +374,7 @@ namespace ControlzEx.Windows.Shell
         private IntPtr _WndProc(IntPtr hwnd, WM msg, IntPtr wParam, IntPtr lParam)
         {
             // Don't do this if called within the SystemParameters2 constructor
-            if (_UpdateTable != null)
+            if (_UpdateTable is not null)
             {
                 List<_SystemMetricUpdate>? handlers;
                 if (_UpdateTable.TryGetValue(msg, out handlers))
@@ -429,7 +429,7 @@ namespace ControlzEx.Windows.Shell
             {
                 Assert.IsNotNull(value);
                 Assert.IsTrue(value.IsFrozen);
-                if (_glassColorBrush == null || value.Color != _glassColorBrush.Color)
+                if (_glassColorBrush is null || value.Color != _glassColorBrush.Color)
                 {
                     _glassColorBrush = value;
                     _NotifyPropertyChanged("WindowGlassBrush");
@@ -651,7 +651,7 @@ namespace ControlzEx.Windows.Shell
         {
             Assert.IsNeitherNullNorEmpty(propertyName);
             var handler = PropertyChanged;
-            if (handler != null)
+            if (handler is not null)
             {
                 handler(this, new PropertyChangedEventArgs(propertyName));
             }

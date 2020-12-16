@@ -280,7 +280,7 @@ namespace ControlzEx.Standard
             Verify.IsNotNull(type, "type");
             Verify.IsNotNull(interfaceType, "interfaceType");
 
-            if (type.GetInterface(interfaceType.Name) == null)
+            if (type.GetInterface(interfaceType.Name) is null)
             {
                 Assert.Fail();
                 throw new ArgumentException("The type of this parameter does not support a required interface", parameterName);

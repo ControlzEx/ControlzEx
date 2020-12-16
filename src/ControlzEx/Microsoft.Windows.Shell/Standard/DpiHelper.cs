@@ -80,7 +80,7 @@ namespace ControlzEx.Standard
         public static double TransformToDeviceY(Visual visual, double y, double dpiScaleY)
         {
             var source = PresentationSource.FromVisual(visual);
-            if (source?.CompositionTarget != null)
+            if (source?.CompositionTarget is not null)
             {
                 return y * source.CompositionTarget.TransformToDevice.M22;
             }
@@ -91,7 +91,7 @@ namespace ControlzEx.Standard
         public static double TransformToDeviceX(Visual visual, double x, double dpiScaleX)
         {
             var source = PresentationSource.FromVisual(visual);
-            if (source?.CompositionTarget != null)
+            if (source?.CompositionTarget is not null)
             {
                 return x * source.CompositionTarget.TransformToDevice.M11;
             }
