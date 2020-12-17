@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
-
 namespace ControlzEx
 {
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Media;
+
     public abstract class PackIconBase : Control
     {
         internal abstract void UpdateData();
@@ -68,9 +68,11 @@ namespace ControlzEx
         /// Gets the icon path data for the current <see cref="Kind"/>.
         /// </summary>
         [TypeConverter(typeof(GeometryConverter))]
+#pragma warning disable WPF0012 // CLR property type should match registered type.
         public string? Data
+#pragma warning restore WPF0012 // CLR property type should match registered type.
         {
-            get { return (string)this.GetValue(DataProperty); }
+            get { return (string?)this.GetValue(DataProperty); }
             private set { this.SetValue(DataPropertyKey, value); }
         }
 

@@ -17,7 +17,10 @@
     public class GlowWindowBehavior : Behavior<Window>
     {
         private static readonly TimeSpan glowTimerDelay = TimeSpan.FromMilliseconds(200); //200 ms delay, the same as in visual studio
-        private GlowWindow? left, right, top, bottom;
+        private GlowWindow? left;
+        private GlowWindow? right;
+        private GlowWindow? top;
+        private GlowWindow? bottom;
         private DispatcherTimer? makeGlowVisibleTimer;
         private IntPtr windowHandle;
         private HwndSource? hwndSource;
@@ -39,9 +42,9 @@
         /// <summary>
         /// Gets or sets a brush which is used as the glow when the window is active.
         /// </summary>
-        public Brush GlowBrush
+        public Brush? GlowBrush
         {
-            get => (Brush)this.GetValue(GlowBrushProperty);
+            get => (Brush?)this.GetValue(GlowBrushProperty);
             set => this.SetValue(GlowBrushProperty, value);
         }
 
@@ -53,9 +56,9 @@
         /// <summary>
         /// Gets or sets a brush which is used as the glow when the window is not active.
         /// </summary>
-        public Brush NonActiveGlowBrush
+        public Brush? NonActiveGlowBrush
         {
-            get => (Brush)this.GetValue(NonActiveGlowBrushProperty);
+            get => (Brush?)this.GetValue(NonActiveGlowBrushProperty);
             set => this.SetValue(NonActiveGlowBrushProperty, value);
         }
 
@@ -139,7 +142,7 @@
         {
             this.makeGlowVisibleTimer?.Stop();
 
-            if(this.AssociatedObject.WindowState == WindowState.Normal)
+            if (this.AssociatedObject.WindowState == WindowState.Normal)
             {
                 var ignoreTaskBar = Interaction.GetBehaviors(this.AssociatedObject).OfType<WindowChromeBehavior>().FirstOrDefault()?.IgnoreTaskbarOnMaximize == true;
                 if (this.makeGlowVisibleTimer is not null
@@ -184,20 +187,50 @@
 
         private void RestoreGlow()
         {
-            if (this.left is not null) this.left.IsGlowing = true;
-            if (this.top is not null) this.top.IsGlowing = true;
-            if (this.right is not null) this.right.IsGlowing = true;
-            if (this.bottom is not null) this.bottom.IsGlowing = true;
+            if (this.left != null)
+            {
+                this.left.IsGlowing = true;
+            }
+
+            if (this.top != null)
+            {
+                this.top.IsGlowing = true;
+            }
+
+            if (this.right != null)
+            {
+                this.right.IsGlowing = true;
+            }
+
+            if (this.bottom != null)
+            {
+                this.bottom.IsGlowing = true;
+            }
 
             this.Update();
         }
 
         private void HideGlow()
         {
-            if (this.left is not null) this.left.IsGlowing = false;
-            if (this.top is not null) this.top.IsGlowing = false;
-            if (this.right is not null) this.right.IsGlowing = false;
-            if (this.bottom is not null) this.bottom.IsGlowing = false;
+            if (this.left != null)
+            {
+                this.left.IsGlowing = false;
+            }
+
+            if (this.top != null)
+            {
+                this.top.IsGlowing = false;
+            }
+
+            if (this.right != null)
+            {
+                this.right.IsGlowing = false;
+            }
+
+            if (this.bottom != null)
+            {
+                this.bottom.IsGlowing = false;
+            }
 
             this.Update();
         }
@@ -289,6 +322,7 @@
                             this.prevWindowPos = wp;
                         }
                     }
+                    
                     break;
 
                 // Z-Index must be updated when WINDOWPOSCHANGED
@@ -311,6 +345,7 @@
 
                         this.UpdateZOrderOfThisAndOwner();
                     }
+                    
                     break;
 
                 case WM.SIZE:
@@ -318,6 +353,7 @@
                     this.UpdateCore();
                     break;
             }
+            
             return IntPtr.Zero;
         }
 
@@ -355,6 +391,7 @@
                             NativeMethods.SetWindowPos(glowWindowHandle, currentHandle, 0, 0, 0, 0, SWP.NOSIZE | SWP.NOMOVE | SWP.NOACTIVATE);
                         }
                     }
+                    
                     currentHandle = glowWindowHandle;
                 }
 

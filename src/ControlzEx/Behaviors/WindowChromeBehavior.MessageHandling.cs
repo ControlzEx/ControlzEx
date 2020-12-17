@@ -41,7 +41,7 @@ namespace ControlzEx.Behaviors
             // A more correct way to do this would be to Coerce the value iff the source of the DP was the default value.
             // Unfortunately with the current property system we can't detect whether the value being applied at the time
             // of the coersion is the default.
-            foreach (var bp in _BoundProperties)
+            foreach (var bp in boundProperties)
             {
                 // This list must be declared after the DP's are assigned.
                 Assert.IsNotNull(bp.DependencyProperty);
@@ -105,8 +105,8 @@ namespace ControlzEx.Behaviors
 
             // Force this the first time.
             this._UpdateSystemMenu(this.AssociatedObject.WindowState);
-            this._UpdateMinimizeSystemMenu(this.EnableMinimize);
-            this._UpdateMaxRestoreSystemMenu(this.EnableMaxRestore);
+            this.UpdateMinimizeSystemMenu(this.EnableMinimize);
+            this.UpdateMaxRestoreSystemMenu(this.EnableMaxRestore);
             this._UpdateFrameState(true);
 
             if (this.hwndSource.IsDisposed)

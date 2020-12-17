@@ -59,15 +59,15 @@ namespace ControlzEx.Controls
         /// <param name="element"><see cref="DependencyObject"/> to read <see cref="OwningTabItemProperty"/> from.</param>
         /// <returns>OwningTabItem property value.</returns>
         [AttachedPropertyBrowsableForType(typeof(ContentPresenter))]
-        public static TabItem GetOwningTabItem(DependencyObject element)
+        public static TabItem? GetOwningTabItem(DependencyObject element)
         {
-            return (TabItem)element.GetValue(OwningTabItemProperty);
+            return (TabItem?)element.GetValue(OwningTabItemProperty);
         }
 
         /// <summary>Helper for setting <see cref="OwningTabItemProperty"/> on <paramref name="element"/>.</summary>
         /// <param name="element"><see cref="DependencyObject"/> to set <see cref="OwningTabItemProperty"/> on.</param>
         /// <param name="value">OwningTabItem property value.</param>
-        public static void SetOwningTabItem(DependencyObject element, TabItem value)
+        public static void SetOwningTabItem(DependencyObject element, TabItem? value)
         {
             element.SetValue(OwningTabItemProperty, value);
         }
@@ -77,7 +77,7 @@ namespace ControlzEx.Controls
         /// <summary>Helper for setting <see cref="OwningItemProperty"/> on <paramref name="element"/>.</summary>
         /// <param name="element"><see cref="DependencyObject"/> to set <see cref="OwningItemProperty"/> on.</param>
         /// <param name="value">OwningItem property value.</param>
-        public static void SetOwningItem(DependencyObject element, object value)
+        public static void SetOwningItem(DependencyObject element, object? value)
         {
             element.SetValue(OwningItemProperty, value);
         }
@@ -86,9 +86,9 @@ namespace ControlzEx.Controls
         /// <param name="element"><see cref="DependencyObject"/> to read <see cref="OwningItemProperty"/> from.</param>
         /// <returns>OwningItem property value.</returns>
         [AttachedPropertyBrowsableForType(typeof(ContentPresenter))]
-        public static object GetOwningItem(DependencyObject element)
+        public static object? GetOwningItem(DependencyObject element)
         {
-            return (object)element.GetValue(OwningItemProperty);
+            return (object?)element.GetValue(OwningItemProperty);
         }
 
         /// <summary>Identifies the <see cref="MoveFocusToContentWhenSelectionChanges"/> dependency property.</summary>
@@ -406,7 +406,7 @@ namespace ControlzEx.Controls
                 var tabItem = (TabItem?)this.ItemContainerGenerator.ContainerFromItem(GetOwningItem(contentPresenter)) ?? GetOwningTabItem(contentPresenter);
 
                 // Hide all non selected items and show the selected item
-                if (tabItem.IsSelected)
+                if (tabItem?.IsSelected == true)
                 {
                     contentPresenter.Visibility = Visibility.Visible;
 
@@ -433,7 +433,8 @@ namespace ControlzEx.Controls
                     contentPresenter.Visibility = Visibility.Collapsed;
                 }
 
-                if (this.MoveFocusToContentWhenSelectionChanges)
+                if (tabItem is not null
+                    && this.MoveFocusToContentWhenSelectionChanges)
                 {
                     this.MoveFocusToContent(contentPresenter, tabItem);
                 }

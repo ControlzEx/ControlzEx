@@ -1,6 +1,7 @@
 <Project>
     <PropertyGroup>
         <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
+        <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
         <IsBuildingWpfTempProj Condition="$(MSBuildProjectName.Contains('_wpftmp')) != 'true'">false</IsBuildingWpfTempProj>
         <IsBuildingWpfTempProj Condition="$(MSBuildProjectName.Contains('_wpftmp')) == 'true'">true</IsBuildingWpfTempProj>
     </PropertyGroup>
@@ -31,9 +32,12 @@
 
     <!-- Add the references for all projects and targets -->
     <ItemGroup>
-        <PackageReference Include="JetBrains.Annotations" Version="2020.*" PrivateAssets="All" includeAssets="build;compile" />
-        <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.*" />
-        <PackageReference Include="WpfAnalyzers" Version="2.4.*" PrivateAssets="All" />
+        <PackageReference Include="JetBrains.Annotations" PrivateAssets="All" includeAssets="build;compile" />
+        <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" />
+
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all" IncludeAssets="build;analyzers" Condition="$(DefineConstants.Contains(NETCOREAPP))" />
+        <!--<PackageReference Include="StyleCop.Analyzers" PrivateAssets="all" IncludeAssets="build;analyzers" />-->
+        <PackageReference Include="WpfAnalyzers"  PrivateAssets="all" IncludeAssets="build;analyzers" />
     </ItemGroup>
 
     <ItemGroup>

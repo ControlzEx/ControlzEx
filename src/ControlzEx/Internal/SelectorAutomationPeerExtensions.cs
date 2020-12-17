@@ -10,7 +10,7 @@
 
         internal static void RaiseSelectionEvents(this SelectorAutomationPeer selectorAutomationPeer, SelectionChangedEventArgs e)
         {
-            RaiseSelectionEventsMethodInfo?.Invoke(selectorAutomationPeer, new object[] {e});
+            RaiseSelectionEventsMethodInfo?.Invoke(selectorAutomationPeer, new object[] { e });
         }
     }
 }

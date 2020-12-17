@@ -194,7 +194,7 @@ namespace ControlzEx.Standard
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public static bool AreImageSourcesEqual(ImageSource left, ImageSource right)
+        public static bool AreImageSourcesEqual(ImageSource? left, ImageSource? right)
         {
             if (null == left)
             {
@@ -220,7 +220,7 @@ namespace ControlzEx.Standard
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public static void AddDependencyPropertyChangeListener(object component, DependencyProperty property, EventHandler listener)
+        public static void AddDependencyPropertyChangeListener(object? component, DependencyProperty property, EventHandler listener)
         {
             if (component is null)
             {
@@ -234,7 +234,7 @@ namespace ControlzEx.Standard
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public static void RemoveDependencyPropertyChangeListener(object component, DependencyProperty property, EventHandler listener)
+        public static void RemoveDependencyPropertyChangeListener(object? component, DependencyProperty property, EventHandler listener)
         {
             if (component is null)
             {
@@ -247,8 +247,9 @@ namespace ControlzEx.Standard
             dpd.RemoveValueChanged(component, listener);
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+#pragma warning disable WPF0024
         public static bool IsNonNegative(this Thickness thickness)
+#pragma warning restore WPF0024
         {
             if (!thickness.Top.IsFiniteAndNonNegative())
             {

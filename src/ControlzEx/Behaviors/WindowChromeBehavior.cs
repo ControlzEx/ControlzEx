@@ -45,9 +45,10 @@ namespace ControlzEx.Behaviors
 
         private bool dpiChanged;
 
-        private struct _SystemParameterBoundProperty
+        private struct SystemParameterBoundProperty
         {
             public string SystemParameterPropertyName { get; set; }
+            
             public DependencyProperty DependencyProperty { get; set; }
         }
 
@@ -138,11 +139,11 @@ namespace ControlzEx.Behaviors
             {
                 var behavior = (WindowChromeBehavior)d;
 
-                behavior._UpdateMinimizeSystemMenu(showMinButton);
+                behavior.UpdateMinimizeSystemMenu(showMinButton);
             }
         }
 
-        private void _UpdateMinimizeSystemMenu(bool isVisible)
+        private void UpdateMinimizeSystemMenu(bool isVisible)
         {
             if (this.windowHandle != IntPtr.Zero)
             {
@@ -169,8 +170,8 @@ namespace ControlzEx.Behaviors
         /// </summary>
         public bool EnableMinimize
         {
-            get { return (bool)GetValue(EnableMinimizeProperty); }
-            set { SetValue(EnableMinimizeProperty, value); }
+            get { return (bool)this.GetValue(EnableMinimizeProperty); }
+            set { this.SetValue(EnableMinimizeProperty, value); }
         }
 
         public static readonly DependencyProperty EnableMaxRestoreProperty = DependencyProperty.Register(nameof(EnableMaxRestore), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(true, OnEnableMaxRestoreChanged));
@@ -181,15 +182,14 @@ namespace ControlzEx.Behaviors
             {
                 var behavior = (WindowChromeBehavior)d;
 
-                behavior._UpdateMaxRestoreSystemMenu(showMaxRestoreButton);
+                behavior.UpdateMaxRestoreSystemMenu(showMaxRestoreButton);
             }
         }
 
-        private void _UpdateMaxRestoreSystemMenu(bool isVisible)
+        private void UpdateMaxRestoreSystemMenu(bool isVisible)
         {
             if (this.windowHandle != IntPtr.Zero)
             {
-
                 if (this.hwndSource?.IsDisposed == true || this.hwndSource?.RootVisual is null)
                 {
                     return;
@@ -213,8 +213,8 @@ namespace ControlzEx.Behaviors
         /// </summary>
         public bool EnableMaxRestore
         {
-            get { return (bool)GetValue(EnableMaxRestoreProperty); }
-            set { SetValue(EnableMaxRestoreProperty, value); }
+            get { return (bool)this.GetValue(EnableMaxRestoreProperty); }
+            set { this.SetValue(EnableMaxRestoreProperty, value); }
         }
 
         /// <inheritdoc />
@@ -606,9 +606,9 @@ namespace ControlzEx.Behaviors
             }
         }
 
-        private static readonly List<_SystemParameterBoundProperty> _BoundProperties = new List<_SystemParameterBoundProperty>
+        private static readonly List<SystemParameterBoundProperty> boundProperties = new()
                                                                                        {
-                                                                                           new _SystemParameterBoundProperty { DependencyProperty = ResizeBorderThicknessProperty, SystemParameterPropertyName = nameof(SystemParameters.WindowResizeBorderThickness) },
+                                                                                           new SystemParameterBoundProperty { DependencyProperty = ResizeBorderThicknessProperty, SystemParameterPropertyName = nameof(SystemParameters.WindowResizeBorderThickness) },
                                                                                        };
     }
 }

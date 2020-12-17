@@ -1,11 +1,11 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using System.Security;
-using System.Text;
-using ControlzEx.Standard;
-
-namespace ControlzEx.Native
+﻿namespace ControlzEx.Native
 {
+    using System;
+    using System.Runtime.InteropServices;
+    using System.Security;
+    using System.Text;
+    using ControlzEx.Standard;
+
     /// <devdoc>http://msdn.microsoft.com/en-us/library/ms182161.aspx</devdoc>
     [SuppressUnmanagedCodeSecurity]
     [Obsolete(DesignerConstants.Win32ElementWarning)]

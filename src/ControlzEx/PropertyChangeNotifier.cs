@@ -1,10 +1,9 @@
-﻿using System;
-using System.ComponentModel;
-using System.Windows;
-using System.Windows.Data;
-
-namespace ControlzEx
+﻿namespace ControlzEx
 {
+    using System;
+    using System.ComponentModel;
+    using System.Windows;
+    using System.Windows.Data;
     using JetBrains.Annotations;
 
     /// <summary>
@@ -83,9 +82,9 @@ namespace ControlzEx
         [Description("Gets or sets the value of the watched property.")]
         [Category("Behavior")]
         [Bindable(true)]
-        public object Value
+        public object? Value
         {
-            get { return (object)this.GetValue(ValueProperty); }
+            get { return (object?)this.GetValue(ValueProperty); }
             set { this.SetValue(ValueProperty, value); }
         }
 
