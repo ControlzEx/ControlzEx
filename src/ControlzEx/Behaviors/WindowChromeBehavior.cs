@@ -18,7 +18,7 @@ namespace ControlzEx.Behaviors
     /// <summary>
     /// With this class we can make custom window styles.
     /// </summary>
-    public partial class WindowChromeBehavior : Behavior<Window>    
+    public partial class WindowChromeBehavior : Behavior<Window>
     {
         /// <summary>Underlying HWND for the _window.</summary>
         /// <SecurityNote>
@@ -48,7 +48,7 @@ namespace ControlzEx.Behaviors
         private struct SystemParameterBoundProperty
         {
             public string SystemParameterPropertyName { get; set; }
-            
+
             public DependencyProperty DependencyProperty { get; set; }
         }
 
@@ -222,7 +222,7 @@ namespace ControlzEx.Behaviors
         {
             // no transparency, because it has more then one unwanted issues
             if (this.AssociatedObject.AllowsTransparency
-                && this.AssociatedObject.IsLoaded == false 
+                && this.AssociatedObject.IsLoaded == false
                 && new WindowInteropHelper(this.AssociatedObject).Handle == IntPtr.Zero)
             {
                 try
@@ -393,7 +393,7 @@ namespace ControlzEx.Behaviors
                 throw new Exception("Uups, at this point we really need the Handle from the associated object!");
             }
 
-            if (this.AssociatedObject.SizeToContent != SizeToContent.Manual 
+            if (this.AssociatedObject.SizeToContent != SizeToContent.Manual
                 && this.AssociatedObject.WindowState == WindowState.Normal)
             {
                 // Another try to fix SizeToContent
@@ -401,15 +401,15 @@ namespace ControlzEx.Behaviors
                 Invoke(this.AssociatedObject, () =>
                                               {
                                                   this.AssociatedObject.InvalidateMeasure();
-//                                                  if (UnsafeNativeMethods.GetWindowRect(this.windowHandle, out var rect))
-//                                                  {
-//                                                      var flags = SWP.SHOWWINDOW;
-//                                                      if (!this.AssociatedObject.ShowActivated)
-//                                                      {
-//                                                          flags |= SWP.NOACTIVATE;
-//                                                      }
-//                                                      NativeMethods.SetWindowPos(this.windowHandle, Constants.HWND_NOTOPMOST, rect.Left, rect.Top, rect.Width, rect.Height, flags);
-//                                                  }
+                                                  //                                                  if (UnsafeNativeMethods.GetWindowRect(this.windowHandle, out var rect))
+                                                  //                                                  {
+                                                  //                                                      var flags = SWP.SHOWWINDOW;
+                                                  //                                                      if (!this.AssociatedObject.ShowActivated)
+                                                  //                                                      {
+                                                  //                                                          flags |= SWP.NOACTIVATE;
+                                                  //                                                      }
+                                                  //                                                      NativeMethods.SetWindowPos(this.windowHandle, Constants.HWND_NOTOPMOST, rect.Left, rect.Top, rect.Width, rect.Height, flags);
+                                                  //                                                  }
                                               });
             }
 
@@ -422,6 +422,7 @@ namespace ControlzEx.Behaviors
             this.HandleMaximize();
         }
 
+#pragma warning disable CA2109
         /// <summary>
         /// Is called when the associated object of this instance is loaded
         /// </summary>
@@ -429,6 +430,7 @@ namespace ControlzEx.Behaviors
         {
             //this._UpdateFrameState(true);
         }
+#pragma warning restore CA2109
 
         private void AssociatedObject_Unloaded(object? sender, RoutedEventArgs e)
         {
@@ -603,8 +605,8 @@ namespace ControlzEx.Behaviors
         }
 
         private static readonly List<SystemParameterBoundProperty> boundProperties = new()
-                                                                                       {
-                                                                                           new SystemParameterBoundProperty { DependencyProperty = ResizeBorderThicknessProperty, SystemParameterPropertyName = nameof(SystemParameters.WindowResizeBorderThickness) },
-                                                                                       };
+        {
+            new SystemParameterBoundProperty { DependencyProperty = ResizeBorderThicknessProperty, SystemParameterPropertyName = nameof(SystemParameters.WindowResizeBorderThickness) },
+        };
     }
 }

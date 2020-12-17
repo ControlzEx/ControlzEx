@@ -146,7 +146,7 @@ namespace ControlzEx.Controls
 
             this.ClearItemsHolder();
 
-            this.itemsHolder = this.Template.FindName("PART_ItemsHolder", this) as Panel;            
+            this.itemsHolder = this.Template.FindName("PART_ItemsHolder", this) as Panel;
 
             this.RefreshItemsHolder();
         }
@@ -465,7 +465,7 @@ namespace ControlzEx.Controls
             };
 
             var owningTabItem = item as TabItem ?? (TabItem)this.ItemContainerGenerator.ContainerFromItem(item);
-            
+
             if (owningTabItem is null)
             {
                 throw new Exception("No owning TabItem could be found.");

@@ -4,7 +4,6 @@ namespace ControlzEx.Behaviors
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.Runtime.InteropServices;
     using System.Security;
     using System.Windows;
@@ -23,13 +22,14 @@ namespace ControlzEx.Behaviors
 
         // Keep track of this so we can detect when we need to apply changes.  Tracking these separately
         // as I've seen using just one cause things to get enough out of [....] that occasionally the caption will redraw.
-        private WindowState _lastRegionWindowState;
+        private WindowState lastRegionWindowState;
         private WindowState lastMenuState;
 
         private WINDOWPOS previousWp;
 
         #endregion
 
+        /// <summary>Create a new instance.</summary>
         /// <SecurityNote>
         ///   Critical : Store critical methods in critical callback table
         ///   Safe     : Demands full trust permissions
@@ -75,7 +75,7 @@ namespace ControlzEx.Behaviors
                                 new HANDLE_MESSAGE(WM.DWMCOMPOSITIONCHANGED,  this._HandleDWMCOMPOSITIONCHANGED),
                                 new HANDLE_MESSAGE(WM.ENTERSIZEMOVE,          this._HandleENTERSIZEMOVEForAnimation),
                                 new HANDLE_MESSAGE(WM.EXITSIZEMOVE,           this._HandleEXITSIZEMOVEForAnimation),
-                                new HANDLE_MESSAGE(WM.MOVE,                   this._HandleMOVEForRealSize),                                
+                                new HANDLE_MESSAGE(WM.MOVE,                   this._HandleMOVEForRealSize),
                                 new HANDLE_MESSAGE(WM.DPICHANGED,             this._HandleDPICHANGED)
                             };
         }
@@ -96,7 +96,7 @@ namespace ControlzEx.Behaviors
         [SecurityCritical]
         private void _ApplyNewCustomChrome()
         {
-            if (this.windowHandle == IntPtr.Zero 
+            if (this.windowHandle == IntPtr.Zero
                 || this.hwndSource is null
                 || this.hwndSource.IsDisposed)
             {
@@ -119,7 +119,7 @@ namespace ControlzEx.Behaviors
         }
 
         // A borderless window lost his animation, with this we bring it back.
-        private bool MinimizeAnimation => SystemParameters.MinimizeAnimation 
+        private bool MinimizeAnimation => SystemParameters.MinimizeAnimation
                                           && this.IgnoreTaskbarOnMaximize == false
                                           && NativeMethods.DwmIsCompositionEnabled();
 
@@ -159,7 +159,7 @@ namespace ControlzEx.Behaviors
         [SecurityCritical]
         private IntPtr _HandleNCUAHDRAWCAPTION(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
-            if (this.AssociatedObject.ShowInTaskbar == false 
+            if (this.AssociatedObject.ShowInTaskbar == false
                 && this._GetHwndState() == WindowState.Minimized)
             {
                 var modified = this._ModifyStyle(WS.VISIBLE, 0);
@@ -215,7 +215,7 @@ namespace ControlzEx.Behaviors
             var systemCommand = (SC)(Environment.Is64BitProcess ? wParam.ToInt64() : wParam.ToInt32());
 
             if (this.MinimizeAnimation
-                && systemCommand == SC.RESTORE 
+                && systemCommand == SC.RESTORE
                 && currentState == SW.SHOWMAXIMIZED)
             {
                 var modified = this._ModifyStyle(WS.SYSMENU, 0);
@@ -246,16 +246,16 @@ namespace ControlzEx.Behaviors
         {
             // Despite MSDN's documentation of lParam not being used, 
             // calling DefWindowProc with lParam set to -1 causes Windows not to draw over the caption. 
- 
+
             // Directly call DefWindowProc with a custom parameter 
             // which bypasses any other handling of the message. 
-            var lRet = NativeMethods.DefWindowProc(this.windowHandle, WM.NCACTIVATE, wParam, new IntPtr(-1)); 
+            var lRet = NativeMethods.DefWindowProc(this.windowHandle, WM.NCACTIVATE, wParam, new IntPtr(-1));
             // We don't have any non client area, so we can just discard this message by handling it 
-            handled = true; 
+            handled = true;
 
             this.IsNCActive = wParam.ToInt32() != 0;
- 
-            return lRet; 
+
+            return lRet;
         }
 
         /// <summary>
@@ -274,7 +274,7 @@ namespace ControlzEx.Behaviors
                 return area;
             }
 
-            var abd = new APPBARDATA();
+            var abd = default(APPBARDATA);
             abd.cbSize = Marshal.SizeOf(abd);
             abd.hWnd = hwnd;
             NativeMethods.SHAppBarMessage((int)ABMsg.ABM_GETTASKBARPOS, ref abd);
@@ -315,9 +315,6 @@ namespace ControlzEx.Behaviors
         //
         // At least on RTM Win7 we can avoid the problem by making the client area not extactly match the non-client
         // area, so we added the SacrificialEdge property.
-        /// <SecurityNote>
-        ///   Critical : Calls critical Marshal.PtrToStructure
-        /// </SecurityNote>
         [SecurityCritical]
         private IntPtr _HandleNCCALCSIZE(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
@@ -368,7 +365,7 @@ namespace ControlzEx.Behaviors
                 Marshal.StructureToPtr(rc, lParam, true);
             }
 
-            handled = true;            
+            handled = true;
 
             // Per MSDN for NCCALCSIZE, always return 0 when wParam == FALSE
             // 
@@ -527,8 +524,8 @@ namespace ControlzEx.Behaviors
 
             // we don't do bitwise operations cuz we're checking for this flag being the only one there
             // I have no clue why this works, I tried this because VS2013 has this flag removed on fullscreen window movws
-            if (this.IgnoreTaskbarOnMaximize 
-                && this._GetHwndState() == WindowState.Maximized 
+            if (this.IgnoreTaskbarOnMaximize
+                && this._GetHwndState() == WindowState.Maximized
                 && wp.flags == SWP.FRAMECHANGED)
             {
                 wp.flags = 0;
@@ -536,7 +533,7 @@ namespace ControlzEx.Behaviors
 
                 handled = true;
                 return IntPtr.Zero;
-            }            
+            }
 
             if ((wp.flags & SWP.NOMOVE) != 0)
             {
@@ -545,7 +542,7 @@ namespace ControlzEx.Behaviors
             }
 
             var wnd = this.AssociatedObject;
-            if (wnd is null 
+            if (wnd is null
                 || this.hwndSource?.CompositionTarget is null)
             {
                 handled = false;
@@ -650,7 +647,7 @@ namespace ControlzEx.Behaviors
              * This fix is not really a full fix. Moving the Window back gives us the wrong size, because
              * MonitorFromWindow gives us the wrong (old) monitor! This is fixed in _HandleMoveForRealSize.
              */
-            if (this.IgnoreTaskbarOnMaximize 
+            if (this.IgnoreTaskbarOnMaximize
                 && NativeMethods.IsZoomed(this.windowHandle))
             {
                 var mmi = (MINMAXINFO)Marshal.PtrToStructure(lParam, typeof(MINMAXINFO))!;
@@ -697,7 +694,7 @@ namespace ControlzEx.Behaviors
         [SecurityCritical]
         private IntPtr _HandleENTERSIZEMOVEForAnimation(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
-            if (this.MinimizeAnimation)// && _GetHwndState() != WindowState.Minimized)
+            if (this.MinimizeAnimation) // && _GetHwndState() != WindowState.Minimized)
             {
                 /* we only need to remove DLGFRAME ( CAPTION = BORDER | DLGFRAME )
                  * to prevent nasty drawing
@@ -829,10 +826,10 @@ namespace ControlzEx.Behaviors
             var wpl = NativeMethods.GetWindowPlacement(this.windowHandle);
             switch (wpl.showCmd)
             {
-                case SW.SHOWMINIMIZED: 
+                case SW.SHOWMINIMIZED:
                     return WindowState.Minimized;
 
-                case SW.SHOWMAXIMIZED: 
+                case SW.SHOWMAXIMIZED:
                     return WindowState.Maximized;
             }
 
@@ -874,7 +871,7 @@ namespace ControlzEx.Behaviors
 
             var state = assumeState ?? this._GetHwndState();
 
-            if (assumeState != null 
+            if (assumeState != null
                 || this.lastMenuState != state)
             {
                 this.lastMenuState = state;
@@ -924,7 +921,7 @@ namespace ControlzEx.Behaviors
         [SecurityCritical]
         private void _UpdateFrameState(bool force)
         {
-            if (this.windowHandle == IntPtr.Zero 
+            if (this.windowHandle == IntPtr.Zero
                 || this.hwndSource is null
                 || this.hwndSource.IsDisposed)
             {
@@ -1057,7 +1054,7 @@ namespace ControlzEx.Behaviors
                 {
                     windowSize = new Size(wp.Value.cx, wp.Value.cy);
                 }
-                else if (wp != null && (this._lastRegionWindowState == this.AssociatedObject.WindowState))
+                else if (wp != null && (this.lastRegionWindowState == this.AssociatedObject.WindowState))
                 {
                     return;
                 }
@@ -1066,8 +1063,8 @@ namespace ControlzEx.Behaviors
                     windowSize = this._GetWindowRect().Size;
                 }
 
-                var windowStateChanged = this._lastRegionWindowState != this.AssociatedObject.WindowState;
-                this._lastRegionWindowState = this.AssociatedObject.WindowState;
+                var windowStateChanged = this.lastRegionWindowState != this.AssociatedObject.WindowState;
+                this.lastRegionWindowState = this.AssociatedObject.WindowState;
 
                 var hrgn = IntPtr.Zero;
                 try
@@ -1107,9 +1104,10 @@ namespace ControlzEx.Behaviors
         /// <summary>
         /// Matrix of the HT values to return when responding to NC window messages.
         /// </summary>
-        private static readonly HT[,] hitTestBorders = {
-                                                            { HT.TOPLEFT,    HT.TOP,     HT.TOPRIGHT    },
-                                                            { HT.LEFT,       HT.CLIENT,  HT.RIGHT       },
+        private static readonly HT[,] hitTestBorders =
+                                                       {
+                                                            { HT.TOPLEFT,    HT.TOP,     HT.TOPRIGHT },
+                                                            { HT.LEFT,       HT.CLIENT,  HT.RIGHT },
                                                             { HT.BOTTOMLEFT, HT.BOTTOM,  HT.BOTTOMRIGHT },
                                                        };
 
@@ -1124,25 +1122,25 @@ namespace ControlzEx.Behaviors
             var resizeBorderThickness = this.ResizeBorderThickness;
 
             // Determine if the point is at the top or bottom of the window.
-            if (mousePosition.Y >= windowPosition.Top 
+            if (mousePosition.Y >= windowPosition.Top
                 && mousePosition.Y < windowPosition.Top + resizeBorderThickness.Top)
             {
-                onResizeBorder = (mousePosition.Y < (windowPosition.Top + resizeBorderThickness.Top));
+                onResizeBorder = mousePosition.Y < (windowPosition.Top + resizeBorderThickness.Top);
                 uRow = 0; // top (caption or resize border)
             }
-            else if (mousePosition.Y < windowPosition.Bottom 
+            else if (mousePosition.Y < windowPosition.Bottom
                      && mousePosition.Y >= windowPosition.Bottom - (int)resizeBorderThickness.Bottom)
             {
                 uRow = 2; // bottom
             }
 
             // Determine if the point is at the left or right of the window.
-            if (mousePosition.X >= windowPosition.Left 
+            if (mousePosition.X >= windowPosition.Left
                 && mousePosition.X < windowPosition.Left + (int)resizeBorderThickness.Left)
             {
                 uCol = 0; // left side
             }
-            else if (mousePosition.X < windowPosition.Right 
+            else if (mousePosition.X < windowPosition.Right
                      && mousePosition.X >= windowPosition.Right - resizeBorderThickness.Right)
             {
                 uCol = 2; // right side
@@ -1150,8 +1148,8 @@ namespace ControlzEx.Behaviors
 
             // If the cursor is in one of the top edges by the caption bar, but below the top resize border,
             // then resize left-right rather than diagonally.
-            if (uRow == 0 
-                && uCol != 1 
+            if (uRow == 0
+                && uCol != 1
                 && onResizeBorder == false)
             {
                 uRow = 1;
@@ -1159,7 +1157,7 @@ namespace ControlzEx.Behaviors
 
             var ht = hitTestBorders[uRow, uCol];
 
-            if (ht == HT.TOP 
+            if (ht == HT.TOP
                 && onResizeBorder == false)
             {
                 ht = HT.CAPTION;

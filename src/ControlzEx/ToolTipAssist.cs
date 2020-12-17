@@ -184,14 +184,14 @@
                 var rightX = locationX + newHorizontalOffset + renderDpiWidth;
                 if (rightX > monitorWorkWidth)
                 {
-                    newHorizontalOffset = position.X - toolTip.RenderSize.Width - 0.5 * hDPIOffset;
+                    newHorizontalOffset = position.X - toolTip.RenderSize.Width - (0.5 * hDPIOffset);
                 }
 
                 var renderDPIHeight = DpiHelper.TransformToDeviceY(toolTip.PlacementTarget, toolTip.RenderSize.Height, dpi.DpiScaleY);
                 var bottomY = locationY + newVerticalOffset + renderDPIHeight;
                 if (bottomY > monitorWorkHeight)
                 {
-                    newVerticalOffset = position.Y - toolTip.RenderSize.Height - 0.5 * vDPIOffset;
+                    newVerticalOffset = position.Y - toolTip.RenderSize.Height - (0.5 * vDPIOffset);
                 }
 
                 Debug.WriteLine(">>tooltip   >> bY: {0:F} \t rX: {1:F}", bottomY, rightX);

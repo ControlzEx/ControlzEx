@@ -1,4 +1,10 @@
 #pragma warning disable 1591, 618, CA1815, CA1028, CA1008
+#pragma warning disable SA1303 // Const field names should begin with upper-case letter
+#pragma warning disable SA1307 // Accessible fields should begin with upper-case letter
+#pragma warning disable SA1309 // Field names should not begin with underscore
+#pragma warning disable SA1310 // Field names should not contain underscore
+#pragma warning disable SA1401 // Fields should be private
+#pragma warning disable SA1602 // Enumeration items should be documented
 namespace ControlzEx.Standard
 {
     using System;
@@ -91,18 +97,22 @@ namespace ControlzEx.Standard
         /// Creates the intersection of the two combined regions.
         /// </summary>
         AND = 1,
+
         /// <summary>
         /// Creates the union of two combined regions.
         /// </summary>
         OR = 2,
+
         /// <summary>
         /// Creates the union of two combined regions except for any overlapping areas.
         /// </summary>
         XOR = 3,
+
         /// <summary>
         /// Combines the parts of hrgnSrc1 that are not part of hrgnSrc2.
         /// </summary>
         DIFF = 4,
+
         /// <summary>
         /// Creates a copy of the region identified by hrgnSrc1.
         /// </summary>
@@ -207,18 +217,6 @@ namespace ControlzEx.Standard
     }
 
     /// <summary>
-    /// For IWebBrowser2.  READYSTATE_*
-    /// </summary>
-    enum READYSTATE
-    {
-        UNINITIALIZED = 0,
-        LOADING = 1,
-        LOADED = 2,
-        INTERACTIVE = 3,
-        COMPLETE = 4
-    }
-
-    /// <summary>
     /// DATAOBJ_GET_ITEM_FLAGS.  DOGIF_*.
     /// </summary>
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
@@ -244,23 +242,27 @@ namespace ControlzEx.Standard
     {
         /// <summary>Use the system default, which is to display all error dialog boxes.</summary>
         Default = 0x0,
+
         /// <summary>
         /// The system does not display the critical-error-handler message box. 
         /// Instead, the system sends the error to the calling process.
         /// </summary>
         FailCriticalErrors = 0x1,
+
         /// <summary>
         /// 64-bit Windows:  The system automatically fixes memory alignment faults and makes them 
         /// invisible to the application. It does this for the calling process and any descendant processes.
         /// After this value is set for a process, subsequent attempts to clear the value are ignored.
         /// </summary>
         NoGpFaultErrorBox = 0x2,
+
         /// <summary>
         /// The system does not display the general-protection-fault message box. 
         /// This flag should only be set by debugging applications that handle general 
         /// protection (GP) faults themselves with an exception handler.
         /// </summary>
         NoAlignmentFaultExcept = 0x4,
+
         /// <summary>
         /// The system does not display a message box when it fails to find a file. 
         /// Instead, the error is returned to the calling process.
@@ -332,13 +334,13 @@ namespace ControlzEx.Standard
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     public enum GWL
     {
-        WNDPROC = (-4),
-        HINSTANCE = (-6),
-        HWNDPARENT = (-8),
-        STYLE = (-16),
-        EXSTYLE = (-20),
-        USERDATA = (-21),
-        ID = (-12)
+        WNDPROC = -4,
+        HINSTANCE = -6,
+        HWNDPARENT = -8,
+        STYLE = -16,
+        EXSTYLE = -20,
+        USERDATA = -21,
+        ID = -12
     }
 
     /// <summary>
@@ -1013,8 +1015,8 @@ namespace ControlzEx.Standard
         LAYOUTRTL = 0x00400000, // Right to left mirroring
         COMPOSITED = 0x02000000,
         NOACTIVATE = 0x08000000,
-        OVERLAPPEDWINDOW = (WINDOWEDGE | CLIENTEDGE),
-        PALETTEWINDOW = (WINDOWEDGE | TOOLWINDOW | TOPMOST),
+        OVERLAPPEDWINDOW = WINDOWEDGE | CLIENTEDGE,
+        PALETTEWINDOW = WINDOWEDGE | TOOLWINDOW | TOPMOST,
     }
 
     /// <summary>
@@ -1026,14 +1028,17 @@ namespace ControlzEx.Standard
         /// <summary>Number of bits per pixel
         /// </summary>
         BITSPIXEL = 12,
+
         /// <summary>
         /// Number of planes
         /// </summary>
         PLANES = 14,
+
         /// <summary>
         /// Logical pixels inch in X
         /// </summary>
         LOGPIXELSX = 88,
+
         /// <summary>
         /// Logical pixels inch in Y
         /// </summary>
@@ -1105,7 +1110,7 @@ namespace ControlzEx.Standard
     /// DWMFLIP3DWINDOWPOLICY.  DWMFLIP3D_*
     /// </summary>
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
-    public enum DWMFLIP3D 
+    public enum DWMFLIP3D
     {
         DEFAULT,
         EXCLUDEBELOW,
@@ -1158,12 +1163,16 @@ namespace ControlzEx.Standard
     {
         /// <summary>Prevents the window caption from being drawn.</summary>
         NODRAWCAPTION = 0x00000001,
+
         /// <summary>Prevents the system icon from being drawn.</summary>
         NODRAWICON = 0x00000002,
+
         /// <summary>Prevents the system icon menu from appearing.</summary>
         NOSYSMENU = 0x00000004,
+
         /// <summary>Prevents mirroring of the question mark, even in right-to-left (RTL) layout.</summary>
         NOMIRRORHELP = 0x00000008,
+
         /// <summary> A mask that contains all the valid bits.</summary>
         VALIDBITS = NODRAWCAPTION | NODRAWICON | NOMIRRORHELP | NOSYSMENU,
     }
@@ -1300,6 +1309,7 @@ namespace ControlzEx.Standard
         MONITORPOWER = 0xF170,
         CONTEXTHELP = 0xF180,
         SEPARATOR = 0xF00F,
+
         /// <summary>
         /// SCF_ISSECURE
         /// </summary>
@@ -1431,6 +1441,7 @@ namespace ControlzEx.Standard
         /// Vista only.
         /// </summary>
         REALTIME = 0x0040,
+
         /// <summary>
         /// Vista only.
         /// </summary>
@@ -1449,14 +1460,19 @@ namespace ControlzEx.Standard
         INFO = 0x00000001,
         WARNING = 0x00000002,
         ERROR = 0x00000003,
+
         /// <summary>XP SP2 and later.</summary>
         USER = 0x00000004,
+
         /// <summary>XP and later.</summary>
         NOSOUND = 0x00000010,
+
         /// <summary>Vista and later.</summary>
         LARGE_ICON = 0x00000020,
+
         /// <summary>Windows 7 and later</summary>
         NIIF_RESPECT_QUIET_TIME = 0x00000080,
+
         /// <summary>XP and later.  Native version called NIIF_ICON_MASK.</summary>
         XP_ICON_MASK = 0x0000000F,
     }
@@ -1527,7 +1543,10 @@ namespace ControlzEx.Standard
     public sealed class SafeFindHandle : SafeHandleZeroOrMinusOneIsInvalid
     {
         [SecurityCritical]
-        private SafeFindHandle() : base(true) { }
+        private SafeFindHandle()
+            : base(true)
+        {
+        }
 
         protected override bool ReleaseHandle()
         {
@@ -1561,6 +1580,7 @@ namespace ControlzEx.Standard
         private IntPtr? _hwnd;
         private bool _created;
 
+#pragma warning disable CA1044
         public IntPtr Hwnd
         {
             set
@@ -1569,8 +1589,12 @@ namespace ControlzEx.Standard
                 this._hwnd = value;
             }
         }
+#pragma warning restore CA1044
 
-        private SafeDC() : base(true) { }
+        private SafeDC()
+            : base(true)
+        {
+        }
 
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         protected override bool ReleaseHandle()
@@ -1588,12 +1612,12 @@ namespace ControlzEx.Standard
             return NativeMethods.ReleaseDC(this._hwnd.Value, this.handle) == 1;
         }
 
-/* Unmerged change from project 'ControlzEx (net5.0-windows)'
-Before:
-        [SuppressMessage("Microsoft.Usage", "CA2201:DoNotRaiseReservedExceptionTypes"), SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-After:
-        [SuppressMessage("Microsoft.Usage", "CA2201:DoNotRaiseReservedExceptionTypes")]
-*/
+        /* Unmerged change from project 'ControlzEx (net5.0-windows)'
+        Before:
+                [SuppressMessage("Microsoft.Usage", "CA2201:DoNotRaiseReservedExceptionTypes"), SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        After:
+                [SuppressMessage("Microsoft.Usage", "CA2201:DoNotRaiseReservedExceptionTypes")]
+        */
         public static SafeDC CreateDC(string deviceName)
         {
             SafeDC? dc = null;
@@ -1620,12 +1644,12 @@ After:
             return dc;
         }
 
-/* Unmerged change from project 'ControlzEx (net5.0-windows)'
-Before:
-        [SuppressMessage("Microsoft.Usage", "CA2201:DoNotRaiseReservedExceptionTypes"), SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-After:
-        [SuppressMessage("Microsoft.Usage", "CA2201:DoNotRaiseReservedExceptionTypes")]
-*/
+        /* Unmerged change from project 'ControlzEx (net5.0-windows)'
+        Before:
+                [SuppressMessage("Microsoft.Usage", "CA2201:DoNotRaiseReservedExceptionTypes"), SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        After:
+                [SuppressMessage("Microsoft.Usage", "CA2201:DoNotRaiseReservedExceptionTypes")]
+        */
         public static SafeDC CreateCompatibleDC(SafeDC hdc)
         {
             SafeDC? dc = null;
@@ -1651,7 +1675,7 @@ After:
                 }
             }
 
-            if (dc is null 
+            if (dc is null
                 || dc.IsInvalid)
             {
                 dc?.Dispose();
@@ -1676,7 +1700,7 @@ After:
                 }
             }
 
-            if (dc is null 
+            if (dc is null
                 || dc.IsInvalid)
             {
                 // GetDC does not set the last error...
@@ -1694,14 +1718,14 @@ After:
         // In method 'SafeDC.WrapDC(IntPtr)', object '<>g__initLocal0' is not disposed along all exception paths.
         // Call System.IDisposable.Dispose on object '<>g__initLocal0' before all references to it are out of scope.
 
-/* Unmerged change from project 'ControlzEx (net5.0-windows)'
-Before:
-        // Sure...
-        [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-After:
-        // Sure...
-*/
+        /* Unmerged change from project 'ControlzEx (net5.0-windows)'
+        Before:
+                // Sure...
+                [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+                [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        After:
+                // Sure...
+        */
         // Sure...
         public static SafeDC WrapDC(IntPtr hdc)
         {
@@ -1718,7 +1742,10 @@ After:
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     public sealed class SafeHBITMAP : SafeHandleZeroOrMinusOneIsInvalid
     {
-        private SafeHBITMAP() : base(true) { }
+        private SafeHBITMAP()
+            : base(true)
+        {
+        }
 
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         protected override bool ReleaseHandle()
@@ -1729,7 +1756,9 @@ After:
 
     internal sealed class SafeGdiplusStartupToken : SafeHandleZeroOrMinusOneIsInvalid
     {
-        private SafeGdiplusStartupToken(IntPtr ptr) : base(true) {
+        private SafeGdiplusStartupToken(IntPtr ptr)
+            : base(true)
+        {
             this.handle = ptr;
         }
 
@@ -1739,13 +1768,13 @@ After:
             return s == Status.Ok;
         }
 
-/* Unmerged change from project 'ControlzEx (net5.0-windows)'
-Before:
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        [SuppressMessage("Microsoft.Usage", "CA2201:DoNotRaiseReservedExceptionTypes")]
-After:
-        [SuppressMessage("Microsoft.Usage", "CA2201:DoNotRaiseReservedExceptionTypes")]
-*/
+        /* Unmerged change from project 'ControlzEx (net5.0-windows)'
+        Before:
+                [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+                [SuppressMessage("Microsoft.Usage", "CA2201:DoNotRaiseReservedExceptionTypes")]
+        After:
+                [SuppressMessage("Microsoft.Usage", "CA2201:DoNotRaiseReservedExceptionTypes")]
+        */
         public static SafeGdiplusStartupToken Startup()
         {
             IntPtr unsafeHandle;
@@ -1871,9 +1900,9 @@ After:
     }
 
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
-    [StructLayout(LayoutKind.Sequential, Pack=2)]
-    public struct BITMAPINFOHEADER 
-    { 
+    [StructLayout(LayoutKind.Sequential, Pack = 2)]
+    public struct BITMAPINFOHEADER
+    {
         public int biSize;
         public int biWidth;
         public int biHeight;
@@ -1890,8 +1919,8 @@ After:
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     public struct BITMAPINFO
-    { 
-        public BITMAPINFOHEADER bmiHeader; 
+    {
+        public BITMAPINFOHEADER bmiHeader;
         public RGBQUAD bmiColors;
     }
 
@@ -1903,7 +1932,7 @@ After:
         public MSGFLTINFO ExtStatus;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Unicode)]
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
     internal struct CREATESTRUCT
     {
         public IntPtr lpCreateParams;
@@ -1915,8 +1944,10 @@ After:
         public int y;
         public int x;
         public WS style;
-        [MarshalAs(UnmanagedType.LPWStr)] public string lpszName;
-        [MarshalAs(UnmanagedType.LPWStr)] public string lpszClass;
+        [MarshalAs(UnmanagedType.LPWStr)]
+        public string lpszName;
+        [MarshalAs(UnmanagedType.LPWStr)]
+        public string lpszClass;
         public WS_EX dwExStyle;
     }
 
@@ -1985,6 +2016,7 @@ After:
         public IntPtr hIcon;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
         public char[] szTip = new char[128];
+
         /// <summary>
         /// The state of the icon.  There are two flags that can be set independently.
         /// NIS_HIDDEN = 1.  The icon is hidden.
@@ -2005,123 +2037,7 @@ After:
         public uint dwInfoFlags;
         public Guid guidItem;
         // Vista only
-        IntPtr hBalloonIcon;
-    }
-
-    [StructLayout(LayoutKind.Explicit)]
-    internal class PROPVARIANT : IDisposable
-    {
-        private static class NativeMethods
-        {
-            [DllImport("ole32.dll")]
-            internal static extern HRESULT PropVariantClear(PROPVARIANT pvar);
-        }
-
-        [FieldOffset(0)]
-        private ushort vt;
-        [FieldOffset(8)]
-        private IntPtr pointerVal;
-        [FieldOffset(8)]
-        private byte byteVal;
-        [FieldOffset(8)]
-        private long longVal;
-        [FieldOffset(8)]
-        private short boolVal;
-
-        public VarEnum VarType
-        {
-            get { return (VarEnum)this.vt; }
-        }
-
-        // Right now only using this for strings.
-/* Unmerged change from project 'ControlzEx (net5.0-windows)'
-Before:
-        [SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
-        public string? GetValue()
-After:
-        public string? GetValue()
-*/
-
-        public string? GetValue()
-        {
-            if (this.vt == (ushort)VarEnum.VT_LPWSTR)
-            {
-                return Marshal.PtrToStringUni(this.pointerVal);
-            }
-
-            return null;
-        }
-
-        public void SetValue(bool f)
-        {
-            this.Clear();
-            this.vt = (ushort)VarEnum.VT_BOOL;
-            this.boolVal = (short)(f ? -1 : 0);
-        }
-
-        public void SetValue(string val)
-        {
-            this.Clear();
-            this.vt = (ushort)VarEnum.VT_LPWSTR;
-            this.pointerVal = Marshal.StringToCoTaskMemUni(val);
-        }
-
-        public void Clear()
-        {
-            HRESULT hr = NativeMethods.PropVariantClear(this);
-            Assert.IsTrue(hr.Succeeded);
-        }
-
-        #region IDisposable Pattern
-
-        public void Dispose()
-        {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        ~PROPVARIANT()
-        {
-            this.Dispose(false);
-        }
-
-        private void Dispose(bool disposing)
-        {
-            this.Clear();
-        }
-
-        #endregion
-    }
-
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
-    [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public class SHARDAPPIDINFO
-    {
-        [MarshalAs(UnmanagedType.Interface)]
-        object? psi;    // The namespace location of the the item that should be added to the recent docs folder.
-        [MarshalAs(UnmanagedType.LPWStr)]
-        string? pszAppID;  // The id of the application that should be associated with this recent doc.
-    }
-
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
-    [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public class SHARDAPPIDINFOIDLIST
-    {
-        /// <summary>The idlist for the shell item that should be added to the recent docs folder.</summary>
-        IntPtr pidl;
-        /// <summary>The id of the application that should be associated with this recent doc.</summary>
-        [MarshalAs(UnmanagedType.LPWStr)]
-        string? pszAppID;
-    }
-
-    [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    internal class SHARDAPPIDINFOLINK
-    {
-        IntPtr psl;     // An IShellLink instance that when launched opens a recently used item in the specified 
-        // application. This link is not added to the recent docs folder, but will be added to the
-        // specified application's destination list.
-        [MarshalAs(UnmanagedType.LPWStr)]
-        string? pszAppID;  // The id of the application that should be associated with this recent doc.
+        private IntPtr hBalloonIcon;
     }
 
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
@@ -2181,7 +2097,7 @@ After:
         {
             get
             {
-                var ncm = new NONCLIENTMETRICS();
+                var ncm = default(NONCLIENTMETRICS);
                 ncm.cbSize = Marshal.SizeOf(typeof(NONCLIENTMETRICS));
                 return ncm;
             }
@@ -2191,7 +2107,7 @@ After:
         {
             get
             {
-                var ncm = new NONCLIENTMETRICS();
+                var ncm = default(NONCLIENTMETRICS);
                 // Account for the missing iPaddedBorderWidth
                 ncm.cbSize = Marshal.SizeOf(typeof(NONCLIENTMETRICS)) - sizeof(int);
                 return ncm;
@@ -2232,14 +2148,16 @@ After:
     {
         /// <summary>Width of left border that retains its size.</summary>
         public int cxLeftWidth;
+
         /// <summary>Width of right border that retains its size.</summary>
         public int cxRightWidth;
+
         /// <summary>Height of top border that retains its size.</summary>
         public int cyTopHeight;
+
         /// <summary>Height of bottom border that retains its size.</summary>
         public int cyBottomHeight;
     }
-;
 
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [Serializable]
@@ -2308,7 +2226,7 @@ After:
     [Serializable]
     public struct RECT : IEquatable<RECT>
     {
-        public static readonly RECT Empty = new RECT();
+        public static readonly RECT Empty = default(RECT);
 
         public RECT(int left, int top, int right, int bottom)
         {
@@ -2407,65 +2325,6 @@ After:
         }
     }
 
-    [StructLayout(LayoutKind.Sequential)]
-    internal class RefRECT
-    {
-        private int _left;
-        private int _top;
-        private int _right;
-        private int _bottom;
-
-        public RefRECT(int left, int top, int right, int bottom)
-        {
-            this._left = left;
-            this._top = top;
-            this._right = right;
-            this._bottom = bottom;
-        }
-
-        public int Width
-        {
-            get { return this._right - this._left; }
-        }
-
-        public int Height
-        {
-            get { return this._bottom - this._top; }
-        }
-
-        public int Left
-        {
-            get { return this._left; }
-            set { this._left = value; }
-        }
-
-        public int Right
-        {
-            get { return this._right; }
-            set { this._right = value; }
-        }
-
-        public int Top
-        {
-            get { return this._top; }
-            set { this._top = value; }
-        }
-
-        public int Bottom
-        {
-            get { return this._bottom; }
-            set { this._bottom = value; }
-        }
-
-        public void Offset(int dx, int dy)
-        {
-            this._left += dx;
-            this._top += dy;
-            this._right += dx;
-            this._bottom += dy;
-        }
-    }
-
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     public struct SIZE
@@ -2545,34 +2404,34 @@ After:
 
         public bool SizeAndPositionEquals(WINDOWPOS other)
         {
-            return this.x == other.x 
-                   && this.y == other.y 
-                   && this.cx == other.cx 
+            return this.x == other.x
+                   && this.y == other.y
+                   && this.cx == other.cx
                    && this.cy == other.cy;
         }
 
         public bool IsEmpty()
         {
-            return this.x == 0 
-                   && this.y == 0 
-                   && this.cx == 0 
+            return this.x == 0
+                   && this.y == 0
+                   && this.cx == 0
                    && this.cy == 0;
         }
 
         public bool Equals(WINDOWPOS other)
         {
-            return this.hwnd.Equals(other.hwnd) 
-                   && this.hwndInsertAfter.Equals(other.hwndInsertAfter) 
-                   && this.x == other.x 
-                   && this.y == other.y 
-                   && this.cx == other.cx 
-                   && this.cy == other.cy 
+            return this.hwnd.Equals(other.hwnd)
+                   && this.hwndInsertAfter.Equals(other.hwndInsertAfter)
+                   && this.x == other.x
+                   && this.y == other.y
+                   && this.cx == other.cx
+                   && this.cy == other.cy
                    && this.flags == other.flags;
         }
 
         public override bool Equals(object? obj)
         {
-            return obj is WINDOWPOS other 
+            return obj is WINDOWPOS other
                    && this.Equals(other);
         }
 
@@ -2603,7 +2462,7 @@ After:
     }
 
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
-    [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Unicode)]
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
     public struct WNDCLASSEX
     {
         public int cbSize;
@@ -2664,7 +2523,6 @@ After:
         public uint type;
         public MOUSEINPUT mi;
     }
-;
 
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
@@ -2760,54 +2618,52 @@ After:
 
     #region Interfaces
 
-    [
-        ComImport,
-        InterfaceType(ComInterfaceType.InterfaceIsIUnknown),
-        Guid(IID.ServiceProvider)
-    ]
+    [ComImport]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [Guid(IID.ServiceProvider)]
     internal interface IServiceProvider
     {
         [return: MarshalAs(UnmanagedType.IUnknown)]
         object QueryService(ref Guid guidService, ref Guid riid);
     }
 
-    [
-        ComImport,
-        Guid(IID.DragSourceHelper),
-        InterfaceType(ComInterfaceType.InterfaceIsIUnknown)
-    ]
+    [ComImport]
+    [Guid(IID.DragSourceHelper)]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IDragSourceHelper
     {
         void InitializeFromBitmap([In] ref SHDRAGIMAGE pshdi, [In] IDataObject pDataObject);
+
         void InitializeFromWindow(IntPtr hwnd, [In] ref POINT ppt, [In] IDataObject pDataObject);
     }
 
-    [
-        ComImport,
-        Guid(IID.DragSourceHelper2),
-        InterfaceType(ComInterfaceType.InterfaceIsIUnknown)
-    ]
+    [ComImport]
+    [Guid(IID.DragSourceHelper2)]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IDragSourceHelper2 : IDragSourceHelper
     {
         #region IDragSourceHelper redeclaration
         new void InitializeFromBitmap([In] ref SHDRAGIMAGE pshdi, [In] IDataObject pDataObject);
+
         new void InitializeFromWindow(IntPtr hwnd, [In] ref POINT ppt, [In] IDataObject pDataObject);
         #endregion
 
         void SetFlags(DSH dwFlags);
     }
 
-    [
-        ComImport,
-        Guid(IID.DropTargetHelper),
-        InterfaceType(ComInterfaceType.InterfaceIsIUnknown)
-    ]
+    [ComImport]
+    [Guid(IID.DropTargetHelper)]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IDropTargetHelper
     {
         void DragEnter(IntPtr hwndTarget, IDataObject pDataObject, ref POINT ppt, int effect);
+
         void DragLeave();
+
         void DragOver(ref POINT ppt, int effect);
+
         void Drop(IDataObject dataObject, ref POINT ppt, int effect);
+
         void Show([MarshalAs(UnmanagedType.Bool)] bool fShow);
     }
 
@@ -2945,7 +2801,6 @@ After:
             }
             finally
             {
-
                 IntPtr p = _LocalFree(argv);
                 // Otherwise LocalFree failed.
                 Assert.AreEqual(IntPtr.Zero, p);
@@ -3166,7 +3021,7 @@ After:
         {
             Assert.IsTrue(Utility.IsOSVistaOrNewer);
             var dwPolicy = (int)flip3dPolicy;
-            _DwmSetWindowAttribute(hwnd, DWMWA.FLIP3D_POLICY, ref dwPolicy, sizeof(int)); 
+            _DwmSetWindowAttribute(hwnd, DWMWA.FLIP3D_POLICY, ref dwPolicy, sizeof(int));
         }
 
         public static void DwmSetWindowAttributeDisallowPeek(IntPtr hwnd, bool disallowPeek)
@@ -3218,13 +3073,13 @@ After:
         public static extern bool FindClose(IntPtr handle);
 
         // Not shimming this SetLastError=true function because callers want to evaluate the reason for failure.
-/* Unmerged change from project 'ControlzEx (net5.0-windows)'
-Before:
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-After:
-        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-*/
+        /* Unmerged change from project 'ControlzEx (net5.0-windows)'
+        Before:
+                [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+                [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        After:
+                [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        */
 
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern SafeFindHandle FindFirstFileW(string lpFileName, [In, Out, MarshalAs(UnmanagedType.LPStruct)] WIN32_FIND_DATAW lpFindFileData);
@@ -3309,7 +3164,7 @@ After:
         /// <param name="point">The relative mouse position to the given handle.</param>
         public static bool TryGetRelativeMousePosition(IntPtr hWnd, out System.Windows.Point point)
         {
-            POINT pt = new POINT();
+            POINT pt = default(POINT);
             var returnValue = hWnd != IntPtr.Zero && TryGetPhysicalCursorPos(out pt);
             if (returnValue)
             {
@@ -3318,7 +3173,7 @@ After:
             }
             else
             {
-                point = new System.Windows.Point();
+                point = default(System.Windows.Point);
             }
 
             return returnValue;
@@ -3374,7 +3229,9 @@ After:
         public static extern bool IsThemeActive();
 
         [Obsolete("Use SafeDC.GetDC instead.", true)]
-        public static void GetDC() { }
+        public static void GetDC()
+        {
+        }
 
         [DllImport("gdi32.dll")]
         public static extern int GetDeviceCaps(SafeDC hdc, DeviceCap nIndex);
@@ -3526,7 +3383,7 @@ After:
         {
             WINDOWINFO info = new WINDOWINFO()
             {
-                 cbSize = Marshal.SizeOf(typeof(WINDOWINFO))
+                cbSize = Marshal.SizeOf(typeof(WINDOWINFO))
             };
             if (!_GetWindowInfo(hWnd, ref info))
             {
@@ -3561,13 +3418,13 @@ After:
         }
 
         // This is aliased as a macro in 32bit Windows.
-/* Unmerged change from project 'ControlzEx (net5.0-windows)'
-Before:
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        [MethodImpl(MethodImplOptions.NoInlining)]
-After:
-        [MethodImpl(MethodImplOptions.NoInlining)]
-*/
+        /* Unmerged change from project 'ControlzEx (net5.0-windows)'
+        Before:
+                [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+                [MethodImpl(MethodImplOptions.NoInlining)]
+        After:
+                [MethodImpl(MethodImplOptions.NoInlining)]
+        */
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static IntPtr GetWindowLongPtr(IntPtr hwnd, GWL nIndex)
@@ -3616,7 +3473,7 @@ After:
         [DllImport("user32.dll", EntryPoint = "SetClassLongPtr")]
         private static extern IntPtr SetClassLong64(IntPtr hWnd, GCLP nIndex, IntPtr value);
 
-        [DllImport("user32.dll", EntryPoint="SetProp", CharSet=CharSet.Unicode, SetLastError=true)]
+        [DllImport("user32.dll", EntryPoint = "SetProp", CharSet = CharSet.Unicode, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool _SetProp(IntPtr hWnd, [MarshalAs(UnmanagedType.LPWStr)] string lpString, IntPtr hData);
 
@@ -3628,7 +3485,7 @@ After:
             }
         }
 
-        [DllImport("uxtheme.dll", ExactSpelling=true, CharSet=CharSet.Unicode)] 
+        [DllImport("uxtheme.dll", ExactSpelling = true, CharSet = CharSet.Unicode)]
         public static extern int SetWindowTheme(IntPtr hWnd, string pszSubAppName, string pszSubIdList);
 
         /// <summary>
@@ -3759,7 +3616,7 @@ After:
         public static extern Status GdipCreateBitmapFromStream(IStream stream, out IntPtr bitmap);
 
         [DllImport("gdiplus.dll")]
-        public static extern Status GdipCreateHBITMAPFromBitmap(IntPtr bitmap, out IntPtr hbmReturn, Int32 background);
+        public static extern Status GdipCreateHBITMAPFromBitmap(IntPtr bitmap, out IntPtr hbmReturn, int background);
 
         [DllImport("gdiplus.dll")]
         public static extern Status GdipCreateHICONFromBitmap(IntPtr bitmap, out IntPtr hbmReturn);
@@ -3838,7 +3695,7 @@ After:
 
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         [CLSCompliant(false)]
-        public static extern int ToUnicode(uint virtualKey, uint scanCode, byte[] keyStates, [MarshalAs(UnmanagedType.LPArray)] [Out] char[] chars, int charMaxCount, uint flags);
+        public static extern int ToUnicode(uint virtualKey, uint scanCode, byte[] keyStates, [MarshalAs(UnmanagedType.LPArray)][Out] char[] chars, int charMaxCount, uint flags);
 
         [DllImport("user32.dll")]
         public static extern bool GetKeyboardState(byte[] lpKeyState);
@@ -3919,13 +3776,13 @@ After:
         }
 
         // This is aliased as a macro in 32bit Windows.
-/* Unmerged change from project 'ControlzEx (net5.0-windows)'
-Before:
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public static IntPtr SetClassLongPtr(IntPtr hwnd, GCLP nIndex, IntPtr dwNewLong)
-After:
-        public static IntPtr SetClassLongPtr(IntPtr hwnd, GCLP nIndex, IntPtr dwNewLong)
-*/
+        /* Unmerged change from project 'ControlzEx (net5.0-windows)'
+        Before:
+                [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+                public static IntPtr SetClassLongPtr(IntPtr hwnd, GCLP nIndex, IntPtr dwNewLong)
+        After:
+                public static IntPtr SetClassLongPtr(IntPtr hwnd, GCLP nIndex, IntPtr dwNewLong)
+        */
 
         public static IntPtr SetClassLongPtr(IntPtr hwnd, GCLP nIndex, IntPtr dwNewLong)
         {
@@ -4108,13 +3965,13 @@ After:
 
         // This function is strange in that it returns a BOOL if TPM_RETURNCMD isn't specified, but otherwise the command Id.
 
-/* Unmerged change from project 'ControlzEx (net5.0-windows)'
-Before:
-        // Currently it's only used with TPM_RETURNCMD, so making the signature match that.
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-After:
-        // Currently it's only used with TPM_RETURNCMD, so making the signature match that.
-*/
+        /* Unmerged change from project 'ControlzEx (net5.0-windows)'
+        Before:
+                // Currently it's only used with TPM_RETURNCMD, so making the signature match that.
+                [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        After:
+                // Currently it's only used with TPM_RETURNCMD, so making the signature match that.
+        */
         // Currently it's only used with TPM_RETURNCMD, so making the signature match that.
         [DllImport("user32.dll")]
         [CLSCompliant(false)]
@@ -4187,11 +4044,11 @@ After:
         [DllImport("user32.dll", SetLastError = true, EntryPoint = "UpdateLayeredWindow")]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool _UpdateLayeredWindow(
-            IntPtr hwnd, 
-            SafeDC hdcDst, 
-            [In] ref POINT pptDst, 
-            [In] ref SIZE psize, 
-            SafeDC hdcSrc, 
+            IntPtr hwnd,
+            SafeDC hdcDst,
+            [In] ref POINT pptDst,
+            [In] ref SIZE psize,
+            SafeDC hdcSrc,
             [In] ref POINT pptSrc,
             int crKey,
             ref BLENDFUNCTION pblend,

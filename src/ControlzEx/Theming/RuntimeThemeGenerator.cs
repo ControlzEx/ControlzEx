@@ -82,7 +82,7 @@ namespace ControlzEx.Theming
         public virtual LibraryTheme? GenerateRuntimeLibraryTheme(string baseColor, Color accentColor, bool isHighContrast, LibraryThemeProvider libraryThemeProvider)
         {
             var themeGeneratorParametersContent = libraryThemeProvider.GetThemeGeneratorParametersContent();
-            
+
             if (string.IsNullOrEmpty(themeGeneratorParametersContent))
             {
                 return null;

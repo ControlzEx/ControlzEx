@@ -1,4 +1,9 @@
 ﻿#pragma warning disable 1591, 618
+#pragma warning disable CA1816
+#pragma warning disable SA1300 // Element should begin with upper-case letter
+#pragma warning disable SA1308 // Variable names should not be prefixed
+#pragma warning disable SA1309 // Field names should not begin with underscore
+#pragma warning disable SA1310 // Field names should not contain underscore
 namespace ControlzEx.Standard
 {
     using System;
@@ -33,7 +38,7 @@ namespace ControlzEx.Standard
                 lpfnWndProc = s_WndProc,
                 hInstance = NativeMethods.GetModuleHandle(null),
                 hbrBackground = NativeMethods.GetStockObject(StockObject.NULL_BRUSH),
-                lpszMenuName = "",
+                lpszMenuName = string.Empty,
                 lpszClassName = this._className,
             };
 
@@ -78,13 +83,13 @@ namespace ControlzEx.Standard
 
         // This isn't right if the Dispatcher has already started shutting down.
 
-/* Unmerged change from project 'ControlzEx (net5.0-windows)'
-Before:
-        // The HWND itself will get cleaned up on thread completion, but it will wind up leaking the class ATOM...
-        [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "disposing")]
-After:
-        // The HWND itself will get cleaned up on thread completion, but it will wind up leaking the class ATOM...
-*/
+        /* Unmerged change from project 'ControlzEx (net5.0-windows)'
+        Before:
+                // The HWND itself will get cleaned up on thread completion, but it will wind up leaking the class ATOM...
+                [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "disposing")]
+        After:
+                // The HWND itself will get cleaned up on thread completion, but it will wind up leaking the class ATOM...
+        */
         // The HWND itself will get cleaned up on thread completion, but it will wind up leaking the class ATOM...
         private void _Dispose(bool disposing, bool isHwndBeingDestroyed)
         {

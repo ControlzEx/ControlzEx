@@ -146,7 +146,7 @@
             {
                 var ignoreTaskBar = Interaction.GetBehaviors(this.AssociatedObject).OfType<WindowChromeBehavior>().FirstOrDefault()?.IgnoreTaskbarOnMaximize == true;
                 if (this.makeGlowVisibleTimer is not null
-                    && SystemParameters.MinimizeAnimation 
+                    && SystemParameters.MinimizeAnimation
                     && !ignoreTaskBar)
                 {
                     this.makeGlowVisibleTimer.Start();
@@ -300,7 +300,7 @@
 #pragma warning disable 618
         private WINDOWPOS prevWindowPos;
         private GlowWindow[] loadedGlowWindows = new GlowWindow[0];
-        private bool updatingZOrder;        
+        private bool updatingZOrder;
 
         private IntPtr AssociatedObjectWindowProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
@@ -322,7 +322,7 @@
                             this.prevWindowPos = wp;
                         }
                     }
-                    
+
                     break;
 
                 // Z-Index must be updated when WINDOWPOSCHANGED
@@ -345,7 +345,7 @@
 
                         this.UpdateZOrderOfThisAndOwner();
                     }
-                    
+
                     break;
 
                 case WM.SIZE:
@@ -353,7 +353,7 @@
                     this.UpdateCore();
                     break;
             }
-            
+
             return IntPtr.Zero;
         }
 
@@ -391,7 +391,7 @@
                             NativeMethods.SetWindowPos(glowWindowHandle, currentHandle, 0, 0, 0, 0, SWP.NOSIZE | SWP.NOMOVE | SWP.NOACTIVATE);
                         }
                     }
-                    
+
                     currentHandle = glowWindowHandle;
                 }
 
@@ -434,7 +434,7 @@
 
         private void AssociatedObjectActivatedOrDeactivated(object? sender, EventArgs e)
         {
-            this.UpdateCore();   
+            this.UpdateCore();
         }
 
         private void AssociatedObjectIsVisibleChanged(object? sender, DependencyPropertyChangedEventArgs e)
@@ -487,7 +487,7 @@
         /// </summary>
         private void SetOpacityTo(double newOpacity)
         {
-            var canSetOpacity = this.left is not null 
+            var canSetOpacity = this.left is not null
                                 && this.right is not null
                                 && this.top is not null
                                 && this.bottom is not null;

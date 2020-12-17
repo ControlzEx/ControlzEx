@@ -15,22 +15,27 @@ namespace ControlzEx
     /// <summary>
     /// Base class for creating an icon control for icon packs.
     /// </summary>
-    /// <typeparam name="TKind"></typeparam>
     public abstract class PackIconBase<TKind> : PackIconBase
         where TKind : notnull
     {
-        private static Lazy<IDictionary<TKind, string>>? _dataIndex;
+        private static Lazy<IDictionary<TKind, string>>? dataIndex;
 
+        /// <summary>Creates a new instance.</summary>
         /// <param name="dataIndexFactory">
         /// Inheritors should provide a factory for setting up the path data index (per icon kind).
         /// The factory will only be utilized once, across all closed instances (first instantiation wins).
         /// </param>
         protected PackIconBase(Func<IDictionary<TKind, string>> dataIndexFactory)
         {
-            if (dataIndexFactory is null) throw new ArgumentNullException(nameof(dataIndexFactory));
+            if (dataIndexFactory is null)
+            {
+                throw new ArgumentNullException(nameof(dataIndexFactory));
+            }
 
-            if (_dataIndex is null)
-                _dataIndex = new Lazy<IDictionary<TKind, string>>(dataIndexFactory);
+            if (dataIndex is null)
+            {
+                dataIndex = new Lazy<IDictionary<TKind, string>>(dataIndexFactory);
+            }
         }
 
         /// <summary>Identifies the <see cref="Kind"/> dependency property.</summary>
@@ -58,9 +63,10 @@ namespace ControlzEx
             = DependencyProperty.RegisterReadOnly(nameof(Data),
                                                   typeof(string),
                                                   typeof(PackIconBase<TKind>),
-                                                  new PropertyMetadata(""));
+                                                  new PropertyMetadata(string.Empty));
 
         // ReSharper disable once StaticMemberInGenericType
+
         /// <summary>Identifies the <see cref="Data"/> dependency property.</summary>
         public static readonly DependencyProperty DataProperty = DataPropertyKey.DependencyProperty;
 
@@ -86,7 +92,7 @@ namespace ControlzEx
         internal override void UpdateData()
         {
             string? data = null;
-            _dataIndex?.Value?.TryGetValue(this.Kind, out data);
+            dataIndex?.Value?.TryGetValue(this.Kind, out data);
             this.Data = data;
         }
     }

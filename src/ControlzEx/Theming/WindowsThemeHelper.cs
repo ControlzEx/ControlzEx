@@ -69,7 +69,7 @@ namespace ControlzEx.Theming
             var isHighContrast = IsHighContrastEnabled();
             if (isHighContrast)
             {
-                var windowColor = (SystemColors.WindowBrush).Color;
+                var windowColor = SystemColors.WindowBrush.Color;
                 var brightness = System.Drawing.Color.FromArgb(windowColor.R, windowColor.G, windowColor.B).GetBrightness();
 
                 baseColor = brightness < .5

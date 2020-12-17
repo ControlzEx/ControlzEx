@@ -1,3 +1,6 @@
+#pragma warning disable CA1028, CA1815
+#pragma warning disable SA1307 // Accessible fields should begin with upper-case letter
+#pragma warning disable SA1602 // Enumeration items should be documented
 namespace ControlzEx.Standard
 {
     using System;

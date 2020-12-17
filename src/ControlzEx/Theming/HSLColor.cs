@@ -68,7 +68,7 @@ namespace ControlzEx.Theming
             }
             else
             {
-                this.S = delta / (255d * (1 - Math.Abs(2 * this.L - 1)));
+                this.S = delta / (255d * (1 - Math.Abs((2 * this.L) - 1)));
             }
 
             // Calculate Alpha
@@ -116,10 +116,10 @@ namespace ControlzEx.Theming
         /// <returns>System.Windows.Media.Color</returns>
         public Color ToColor()
         {
-                var r = this.GetColorComponent(0);
-                var g = this.GetColorComponent(8);
-                var b = this.GetColorComponent(4);
-                return Color.FromArgb((byte)Math.Round(this.A * 255), r, g, b);
+            var r = this.GetColorComponent(0);
+            var g = this.GetColorComponent(8);
+            var b = this.GetColorComponent(4);
+            return Color.FromArgb((byte)Math.Round(this.A * 255), r, g, b);
         }
 
         /// <summary>
@@ -133,11 +133,11 @@ namespace ControlzEx.Theming
 
             if (tint < 0)
             {
-                lum *= (1.0 + tint);
+                lum *= 1.0 + tint;
             }
             else
             {
-                lum = lum * (1.0 - tint) + (255 - 255 * (1.0 - tint));
+                lum = (lum * (1.0 - tint)) + (255 - (255 * (1.0 - tint)));
             }
 
             return new HSLColor(this.A, this.H, this.S, lum / 255d)
@@ -159,27 +159,27 @@ namespace ControlzEx.Theming
         private byte GetColorComponent(int n)
         {
             double a = this.S * Math.Min(this.L, 1 - this.L);
-            double k = (n + this.H / 30) % 12;
+            double k = (n + (this.H / 30)) % 12;
 
-            return (byte)Math.Round (255 * (this.L - a * Math.Max(-1, Math.Min(k - 3, Math.Min(9 - k, 1)))));
+            return (byte)Math.Round(255 * (this.L - (a * Math.Max(-1, Math.Min(k - 3, Math.Min(9 - k, 1))))));
         }
 
         public override bool Equals(object? obj)
         {
-            return obj is HSLColor color 
-                && this.A == color.A
-                && this.H == color.H
-                && this.S == color.S
-                && this.L == color.L;
+            return obj is HSLColor color
+                   && DoubleUtilities.AreClose(this.A, color.A)
+                   && DoubleUtilities.AreClose(this.H, color.H)
+                   && DoubleUtilities.AreClose(this.S, color.S)
+                   && DoubleUtilities.AreClose(this.L, color.L);
         }
 
         public override int GetHashCode()
         {
             int hashCode = -1795249040;
-            hashCode = hashCode * -1521134295 + this.A.GetHashCode();
-            hashCode = hashCode * -1521134295 + this.H.GetHashCode();
-            hashCode = hashCode * -1521134295 + this.S.GetHashCode();
-            hashCode = hashCode * -1521134295 + this.L.GetHashCode();
+            hashCode = (hashCode * -1521134295) + this.A.GetHashCode();
+            hashCode = (hashCode * -1521134295) + this.H.GetHashCode();
+            hashCode = (hashCode * -1521134295) + this.S.GetHashCode();
+            hashCode = (hashCode * -1521134295) + this.L.GetHashCode();
             return hashCode;
         }
 

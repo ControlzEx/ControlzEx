@@ -1,4 +1,10 @@
 ﻿#pragma warning disable 1591, 618
+#pragma warning disable CA1001
+#pragma warning disable SA1300 // Element should begin with upper-case letter
+#pragma warning disable SA1306 // Field names should begin with lower-case letter
+#pragma warning disable SA1308 // Variable names should not be prefixed
+#pragma warning disable SA1309 // Field names should not begin with underscore
+#pragma warning disable SA1310 // Field names should not contain underscore
 /**************************************************************************\
     Copyright Microsoft Corporation. All Rights Reserved.
 \**************************************************************************/
@@ -222,7 +228,7 @@ namespace ControlzEx.Windows.Shell
             if (!NativeMethods.IsThemeActive())
             {
                 this.UxThemeName = "Classic";
-                this.UxThemeColor = "";
+                this.UxThemeColor = string.Empty;
                 return;
             }
 
@@ -244,7 +250,7 @@ namespace ControlzEx.Windows.Shell
             catch (Exception)
             {
                 this.UxThemeName = "Classic";
-                this.UxThemeColor = "";
+                this.UxThemeColor = string.Empty;
             }
         }
 
@@ -317,7 +323,7 @@ namespace ControlzEx.Windows.Shell
             // This window gets used for calculations about standard caption button locations
             // so it has WS_OVERLAPPEDWINDOW as a style to give it normal caption buttons.
             // This window may be shown during calculations of caption bar information, so create it at a location that's likely offscreen.
-            this._messageHwnd = new MessageWindow((CS)0, WS.OVERLAPPEDWINDOW | WS.DISABLED, (WS_EX)0, new Rect(-16000, -16000, 100, 100), "", this._WndProc);
+            this._messageHwnd = new MessageWindow((CS)0, WS.OVERLAPPEDWINDOW | WS.DISABLED, (WS_EX)0, new Rect(-16000, -16000, 100, 100), string.Empty, this._WndProc);
             this._messageHwnd.Dispatcher.ShutdownStarted += (sender, e) => Utility.SafeDispose(ref this._messageHwnd);
 
             // Fixup the default values of the DPs.
@@ -335,14 +341,18 @@ namespace ControlzEx.Windows.Shell
 
             this._UpdateTable = new Dictionary<WM, List<_SystemMetricUpdate>>
             {
-                { WM.THEMECHANGED,
+                {
+                    WM.THEMECHANGED,
                     new List<_SystemMetricUpdate>
                     {
-                        this._UpdateThemeInfo, 
-                        this._UpdateHighContrast, 
+                        this._UpdateThemeInfo,
+                        this._UpdateHighContrast,
                         this._UpdateWindowCornerRadius,
-                        this._UpdateCaptionButtonLocation, } },
-                { WM.SETTINGCHANGE,
+                        this._UpdateCaptionButtonLocation,
+                    }
+                },
+                {
+                    WM.SETTINGCHANGE,
                     new List<_SystemMetricUpdate>
                     {
                         this._UpdateCaptionHeight,
@@ -350,7 +360,9 @@ namespace ControlzEx.Windows.Shell
                         this._UpdateSmallIconSize,
                         this._UpdateHighContrast,
                         this._UpdateWindowNonClientFrameThickness,
-                        this._UpdateCaptionButtonLocation, } },
+                        this._UpdateCaptionButtonLocation,
+                    }
+                },
                 { WM.DWMNCRENDERINGCHANGED, new List<_SystemMetricUpdate> { this._UpdateIsGlassEnabled } },
                 { WM.DWMCOMPOSITIONCHANGED, new List<_SystemMetricUpdate> { this._UpdateIsGlassEnabled } },
                 { WM.DWMCOLORIZATIONCOLORCHANGED, new List<_SystemMetricUpdate> { this._UpdateGlassColor } },
@@ -398,6 +410,7 @@ namespace ControlzEx.Windows.Shell
                 // and the window getting updated.  It's not too expensive, just always do the check.
                 return NativeMethods.DwmIsCompositionEnabled();
             }
+            
             private set
             {
                 if (value != this._isGlassEnabled)
@@ -411,6 +424,7 @@ namespace ControlzEx.Windows.Shell
         public Color WindowGlassColor
         {
             get { return this._glassColor; }
+            
             private set
             {
                 if (value != this._glassColor)
@@ -424,6 +438,7 @@ namespace ControlzEx.Windows.Shell
         public SolidColorBrush WindowGlassBrush
         {
             get { return this._glassColorBrush; }
+            
             private set
             {
                 Assert.IsNotNull(value);
@@ -439,6 +454,7 @@ namespace ControlzEx.Windows.Shell
         public Thickness WindowResizeBorderThickness
         {
             get { return this._windowResizeBorderThickness; }
+
             private set
             {
                 if (value != this._windowResizeBorderThickness)
@@ -452,6 +468,7 @@ namespace ControlzEx.Windows.Shell
         public Thickness WindowNonClientFrameThickness
         {
             get { return this._windowNonClientFrameThickness; }
+
             private set
             {
                 if (value != this._windowNonClientFrameThickness)
@@ -465,6 +482,7 @@ namespace ControlzEx.Windows.Shell
         public double WindowCaptionHeight
         {
             get { return this._captionHeight; }
+
             private set
             {
                 if (value != this._captionHeight)
@@ -478,6 +496,7 @@ namespace ControlzEx.Windows.Shell
         public Size SmallIconSize
         {
             get { return new Size(this._smallIconSize.Width, this._smallIconSize.Height); }
+
             private set
             {
                 if (value != this._smallIconSize)
@@ -491,6 +510,7 @@ namespace ControlzEx.Windows.Shell
         public string UxThemeName
         {
             get { return this._uxThemeName; }
+
             private set
             {
                 if (value != this._uxThemeName)
@@ -504,6 +524,7 @@ namespace ControlzEx.Windows.Shell
         public string UxThemeColor
         {
             get { return this._uxThemeColor; }
+
             private set
             {
                 if (value != this._uxThemeColor)
@@ -517,6 +538,7 @@ namespace ControlzEx.Windows.Shell
         public bool HighContrast
         {
             get { return this._isHighContrast; }
+
             private set
             {
                 if (value != this._isHighContrast)
@@ -530,6 +552,7 @@ namespace ControlzEx.Windows.Shell
         public CornerRadius WindowCornerRadius
         {
             get { return this._windowCornerRadius; }
+
             private set
             {
                 if (value != this._windowCornerRadius)
@@ -543,6 +566,7 @@ namespace ControlzEx.Windows.Shell
         public Rect WindowCaptionButtonsLocation
         {
             get { return this._captionButtonLocation; }
+
             private set
             {
                 if (value != this._captionButtonLocation)
@@ -571,7 +595,8 @@ namespace ControlzEx.Windows.Shell
 
         internal static int Dpi
         {
-            [SecurityCritical, SecurityTreatAsSafe]
+            [SecurityCritical]
+            [SecurityTreatAsSafe]
             get
             {
                 if (!_dpiInitialized)
@@ -598,13 +623,15 @@ namespace ControlzEx.Windows.Shell
             }
         }
 
+        /// <summary>Gets the horizontal DPI.</summary>
         ///<SecurityNote>
         ///  Critical as this accesses Native methods.
         ///  TreatAsSafe - it would be ok to expose this information - DPI in partial trust
         ///</SecurityNote>
         internal static int DpiX
         {
-            [SecurityCritical, SecurityTreatAsSafe]
+            [SecurityCritical]
+            [SecurityTreatAsSafe]
             get
             {
                 if (_setDpiX)
@@ -629,7 +656,7 @@ namespace ControlzEx.Windows.Shell
 #pragma warning restore 6523
 
                                 _dpiX = NativeMethods.GetDeviceCaps(dc, DeviceCap.LOGPIXELSX);
-                                _cacheValid[(int) CacheSlot.DpiX] = true;
+                                _cacheValid[(int)CacheSlot.DpiX] = true;
                             }
                         }
                     }

@@ -6,6 +6,7 @@
     using System.Windows.Controls;
     using System.Windows.Media;
 
+#pragma warning disable SA1602 // Enumeration items should be documented
     public enum BadgePlacementMode
     {
         TopLeft,
@@ -17,7 +18,8 @@
         BottomLeft,
         Left
     }
-
+#pragma warning restore SA1602 // Enumeration items should be documented
+    
     [TemplatePart(Name = BadgeContainerPartName, Type = typeof(UIElement))]
     public class BadgedEx : ContentControl
     {
@@ -238,7 +240,7 @@
             get => (Thickness)this.GetValue(BadgeMarginProperty);
             set => this.SetValue(BadgeMarginProperty, value);
         }
-        
+
         /// <summary>Identifies the <see cref="BadgeTemplate"/> dependency property.</summary>
         public static readonly DependencyProperty BadgeTemplateProperty
             = DependencyProperty.Register(nameof(BadgeTemplate),

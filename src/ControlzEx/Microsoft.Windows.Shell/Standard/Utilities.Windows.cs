@@ -8,7 +8,7 @@ namespace ControlzEx.Standard
 
     internal static partial class Utility
     {
-        private static readonly Version _osVersion = Environment.OSVersion.Version;
+        private static readonly Version osVersion = Environment.OSVersion.Version;
 
         public static void SafeDestroyIcon(ref IntPtr hicon)
         {
@@ -42,7 +42,6 @@ namespace ControlzEx.Standard
         }
 
         /// <summary>GDI+'s DisposeImage</summary>
-        /// <param name="gdipImage"></param>
         public static void SafeDisposeImage(ref IntPtr gdipImage)
         {
             IntPtr p = gdipImage;
@@ -73,7 +72,8 @@ namespace ControlzEx.Standard
             }
         }
 
-        public static void SafeRelease<T>(ref T? comObject) where T : class
+        public static void SafeRelease<T>(ref T? comObject)
+            where T : class
         {
             var t = comObject;
             comObject = null;
@@ -86,12 +86,12 @@ namespace ControlzEx.Standard
 
         public static bool IsOSVistaOrNewer
         {
-            get { return new Version(6, 0) <= _osVersion; }
+            get { return new Version(6, 0) <= osVersion; }
         }
 
         public static bool IsOSWindows7OrNewer
         {
-            get { return new Version(6, 1) <= _osVersion; }
+            get { return new Version(6, 1) <= osVersion; }
         }
     }
 }

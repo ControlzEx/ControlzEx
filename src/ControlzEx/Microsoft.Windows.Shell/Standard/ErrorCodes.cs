@@ -1,3 +1,4 @@
+#pragma warning disable SA1310 // Field names should not contain underscore
 namespace ControlzEx.Standard
 {
     using System;
@@ -15,7 +16,7 @@ namespace ControlzEx.Standard
     public struct Win32Error
     {
         [FieldOffset(0)]
-        private readonly int _value;
+        private readonly int value;
 
         // NOTE: These public static field declarations are automatically
         // picked up by (HRESULT's) ToString through reflection.
@@ -89,10 +90,10 @@ namespace ControlzEx.Standard
         /// <param name="i">The integer value of the error.</param>
         public Win32Error(int i)
         {
-            this._value = i;
+            this.value = i;
         }
 
-        public int Error => this._value;
+        public int Error => this.value;
 
         /// <summary>Performs HRESULT_FROM_WIN32 conversion.</summary>
         /// <param name="error">The Win32 error being converted to an HRESULT.</param>
@@ -101,20 +102,19 @@ namespace ControlzEx.Standard
         {
             // #define __HRESULT_FROM_WIN32(x) 
             //     ((HRESULT)(x) <= 0 ? ((HRESULT)(x)) : ((HRESULT) (((x) & 0x0000FFFF) | (FACILITY_WIN32 << 16) | 0x80000000)))
-            if (error._value <= 0)
+            if (error.value <= 0)
             {
-                return new HRESULT((uint)error._value);
+                return new HRESULT((uint)error.value);
             }
 
-            return HRESULT.Make(true, Facility.Win32, error._value & 0x0000FFFF);
+            return HRESULT.Make(true, Facility.Win32, error.value & 0x0000FFFF);
         }
 
-        // Method version of the cast operation
         /// <summary>Performs HRESULT_FROM_WIN32 conversion.</summary>
         /// <returns>The equivilent HRESULT value.</returns>
         public HRESULT ToHRESULT()
         {
-            return (HRESULT)this; 
+            return (HRESULT)this;
         }
 
         /// <summary>Performs the equivalent of Win32's GetLastError()</summary>
@@ -128,7 +128,7 @@ namespace ControlzEx.Standard
         {
             try
             {
-                return ((Win32Error)obj!)._value == this._value;
+                return ((Win32Error)obj!).value == this.value;
             }
             catch (InvalidCastException)
             {
@@ -138,7 +138,7 @@ namespace ControlzEx.Standard
 
         public override int GetHashCode()
         {
-            return this._value.GetHashCode();
+            return this.value.GetHashCode();
         }
 
         /// <summary>
@@ -149,7 +149,7 @@ namespace ControlzEx.Standard
         /// <returns>Whether the two error codes are the same.</returns>
         public static bool operator ==(Win32Error errLeft, Win32Error errRight)
         {
-            return errLeft._value == errRight._value;
+            return errLeft.value == errRight.value;
         }
 
         /// <summary>
@@ -169,22 +169,31 @@ namespace ControlzEx.Standard
     {
         /// <summary>FACILITY_NULL</summary>
         Null = 0,
+
         /// <summary>FACILITY_RPC</summary>
         Rpc = 1,
+
         /// <summary>FACILITY_DISPATCH</summary>
         Dispatch = 2,
+
         /// <summary>FACILITY_STORAGE</summary>
         Storage = 3,
+
         /// <summary>FACILITY_ITF</summary>
         Itf = 4,
+
         /// <summary>FACILITY_WIN32</summary>
         Win32 = 7,
+
         /// <summary>FACILITY_WINDOWS</summary>
         Windows = 8,
+
         /// <summary>FACILITY_CONTROL</summary>
         Control = 10,
+
         /// <summary>MSDN doced facility code for ESE errors.</summary>
         Ese = 0xE5E,
+
         /// <summary>FACILITY_WINCODEC (WIC)</summary>
         WinCodec = 0x898,
     }
@@ -195,10 +204,11 @@ namespace ControlzEx.Standard
     public struct HRESULT
     {
         [FieldOffset(0)]
-        private readonly uint _value;
+        private readonly uint value;
 
         // NOTE: These public static field declarations are automatically
         // picked up by ToString through reflection.
+
         /// <summary>S_OK</summary>
         public static readonly HRESULT S_OK = new HRESULT(0x00000000);
 
@@ -260,6 +270,7 @@ namespace ControlzEx.Standard
         /// <summary>E_INVALIDARG</summary>
         /// <remarks>Win32Error ERROR_INVALID_PARAMETER.</remarks>
         public static readonly HRESULT E_INVALIDARG = new HRESULT(0x80070057);
+
         /// <summary>INTSAFE_E_ARITHMETIC_OVERFLOW</summary>
         public static readonly HRESULT INTSAFE_E_ARITHMETIC_OVERFLOW = new HRESULT(0x80070216);
 
@@ -320,16 +331,15 @@ namespace ControlzEx.Standard
         /// <summary>
         /// Create an HRESULT from an integer value.
         /// </summary>
-        /// <param name="i"></param>
         [CLSCompliant(false)]
         public HRESULT(uint i)
         {
-            this._value = i;
+            this.value = i;
         }
 
         public HRESULT(int i)
         {
-            this._value = unchecked((uint)i);
+            this.value = unchecked((uint)i);
         }
 
         /// <summary>
@@ -344,7 +354,7 @@ namespace ControlzEx.Standard
         {
             unchecked
             {
-                return (int)this._value;
+                return (int)this.value;
             }
         }
 
@@ -373,7 +383,7 @@ namespace ControlzEx.Standard
         {
             get
             {
-                return GetFacility((int)this._value);
+                return GetFacility((int)this.value);
             }
         }
 
@@ -390,7 +400,7 @@ namespace ControlzEx.Standard
         {
             get
             {
-                return GetCode((int)this._value);
+                return GetCode((int)this.value);
             }
         }
 
@@ -418,7 +428,6 @@ namespace ControlzEx.Standard
             //
             // CONSIDER: This data is static.  It could be cached 
             // after first usage for fast lookup since the keys are unique.
-            //
             foreach (FieldInfo publicStaticField in typeof(HRESULT).GetFields(BindingFlags.Static | BindingFlags.Public))
             {
                 if (publicStaticField.FieldType == typeof(HRESULT))
@@ -449,14 +458,14 @@ namespace ControlzEx.Standard
 
             // If there's no good name for this HRESULT,
             // return the string as readable hex (0x########) format.
-            return string.Format(CultureInfo.InvariantCulture, "0x{0:X8}", this._value);
+            return string.Format(CultureInfo.InvariantCulture, "0x{0:X8}", this.value);
         }
 
         public override bool Equals(object? obj)
         {
             try
             {
-                return ((HRESULT)obj!)._value == this._value;
+                return ((HRESULT)obj!).value == this.value;
             }
             catch (InvalidCastException)
             {
@@ -466,14 +475,14 @@ namespace ControlzEx.Standard
 
         public override int GetHashCode()
         {
-            return this._value.GetHashCode();
+            return this.value.GetHashCode();
         }
 
         #endregion
 
         public static bool operator ==(HRESULT hrLeft, HRESULT hrRight)
         {
-            return hrLeft._value == hrRight._value;
+            return hrLeft.value == hrRight.value;
         }
 
         public static bool operator !=(HRESULT hrLeft, HRESULT hrRight)
@@ -483,12 +492,12 @@ namespace ControlzEx.Standard
 
         public bool Succeeded
         {
-            get { return (int)this._value >= 0; }
+            get { return (int)this.value >= 0; }
         }
 
         public bool Failed
         {
-            get { return (int)this._value < 0; }
+            get { return (int)this.value < 0; }
         }
 
         public void ThrowIfFailed()
@@ -496,17 +505,17 @@ namespace ControlzEx.Standard
             this.ThrowIfFailed(null);
         }
 
-/* Unmerged change from project 'ControlzEx (net5.0-windows)'
-Before:
-                Justification="Only recreating Exceptions that were already raised."),
-            SuppressMessage(
-                "Microsoft.Security",
-                "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")
-        ]
-After:
-                Justification="Only recreating Exceptions that were already raised.")]
-*/
-public void ThrowIfFailed(string? message)
+        /* Unmerged change from project 'ControlzEx (net5.0-windows)'
+        Before:
+                        Justification="Only recreating Exceptions that were already raised."),
+                    SuppressMessage(
+                        "Microsoft.Security",
+                        "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")
+                ]
+        After:
+                        Justification="Only recreating Exceptions that were already raised.")]
+        */
+        public void ThrowIfFailed(string? message)
         {
             if (this.Failed)
             {
@@ -531,7 +540,7 @@ public void ThrowIfFailed(string? message)
                 // the process of implementing an IErrorInfo and then use that.  There's no stock
                 // implementations of IErrorInfo available and I don't think it's worth the maintenance
                 // overhead of doing it, nor would it have significant value over this approach.
-                var e = Marshal.GetExceptionForHR((int)this._value, new IntPtr(-1));
+                var e = Marshal.GetExceptionForHR((int)this.value, new IntPtr(-1));
                 Assert.IsNotNull(e);
                 // ArgumentNullException doesn't have the right constructor parameters,
                 // (nor does Win32Exception...)
@@ -549,7 +558,7 @@ public void ThrowIfFailed(string? message)
                             e = new Win32Exception(this.Code, message);
                             break;
                         default:
-                            e = new COMException(message, (int)this._value);
+                            e = new COMException(message, (int)this.value);
                             break;
                     }
                 }

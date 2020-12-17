@@ -10,6 +10,7 @@ namespace ControlzEx.Windows.Shell
     using ControlzEx;
     using ControlzEx.Standard;
 
+#pragma warning disable SA1602 // Enumeration items should be documented
     public enum ResizeGripDirection
     {
         None,
@@ -23,6 +24,7 @@ namespace ControlzEx.Windows.Shell
         Left,
         Caption,
     }
+#pragma warning restore SA1602 // Enumeration items should be documented
 
     public static class WindowChrome
     {

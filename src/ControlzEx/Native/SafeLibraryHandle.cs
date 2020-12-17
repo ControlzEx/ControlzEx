@@ -8,10 +8,12 @@ namespace ControlzEx.Native
     [Obsolete(DesignerConstants.Win32ElementWarning)]
     public sealed class SafeLibraryHandle : SafeHandleZeroOrMinusOneIsInvalid
     {
-        private SafeLibraryHandle() : base(true) 
-        {}
+        private SafeLibraryHandle()
+            : base(true)
+        { 
+        }
 
-        protected override bool ReleaseHandle() 
+        protected override bool ReleaseHandle()
         {
             return UnsafeNativeMethods.FreeLibrary(this.handle);
         }

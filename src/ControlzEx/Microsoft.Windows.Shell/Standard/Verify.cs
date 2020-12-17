@@ -60,7 +60,7 @@ namespace ControlzEx.Standard
                 throw new ArgumentNullException(name, errorMessage);
             }
 
-            if (value == "")
+            if (value == string.Empty)
             {
                 Assert.Fail();
                 throw new ArgumentException(errorMessage, name);
@@ -86,7 +86,7 @@ namespace ControlzEx.Standard
                 throw new ArgumentNullException(name, errorMessage);
             }
 
-            if (value.Trim() == "")
+            if (value.Trim() == string.Empty)
             {
                 Assert.Fail();
                 throw new ArgumentException(errorMessage, name);
@@ -98,7 +98,8 @@ namespace ControlzEx.Standard
         /// <param name="obj">The object to validate.</param>
         /// <param name="name">The name of the parameter that will be presented if an exception is thrown.</param>
         [DebuggerStepThrough]
-        public static void IsNotDefault<T>(T obj, string name) where T : struct
+        public static void IsNotDefault<T>(T obj, string name)
+            where T : struct
         {
             if (default(T).Equals(obj))
             {
@@ -112,7 +113,8 @@ namespace ControlzEx.Standard
         /// <param name="obj">The object to validate.</param>
         /// <param name="name">The name of the parameter that will be presented if an exception is thrown.</param>
         [DebuggerStepThrough]
-        public static void IsNotNull<T>(T obj, string name) where T : class
+        public static void IsNotNull<T>(T obj, string name)
+            where T : class
         {
             if (obj == null)
             {
@@ -126,7 +128,8 @@ namespace ControlzEx.Standard
         /// <param name="obj">The object to validate.</param>
         /// <param name="name">The name of the parameter that will be presented if an exception is thrown.</param>
         [DebuggerStepThrough]
-        public static void IsNull<T>(T obj, string name) where T : class
+        public static void IsNull<T>(T obj, string name)
+            where T : class
         {
             if (obj != null)
             {
@@ -136,7 +139,8 @@ namespace ControlzEx.Standard
         }
 
         [DebuggerStepThrough]
-        public static void PropertyIsNotNull<T>(T obj, string name) where T : class
+        public static void PropertyIsNotNull<T>(T obj, string name)
+            where T : class
         {
             if (obj == null)
             {
@@ -146,7 +150,8 @@ namespace ControlzEx.Standard
         }
 
         [DebuggerStepThrough]
-        public static void PropertyIsNull<T>(T obj, string name) where T : class
+        public static void PropertyIsNull<T>(T obj, string name)
+            where T : class
         {
             if (obj != null)
             {
@@ -167,7 +172,7 @@ namespace ControlzEx.Standard
             if (!statement)
             {
                 Assert.Fail();
-                throw new ArgumentException(message ?? "", name);
+                throw new ArgumentException(message ?? string.Empty, name);
             }
         }
 
@@ -177,7 +182,7 @@ namespace ControlzEx.Standard
             if (statement)
             {
                 Assert.Fail();
-                throw new ArgumentException(message ?? "", name);
+                throw new ArgumentException(message ?? string.Empty, name);
             }
         }
 

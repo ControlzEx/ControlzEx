@@ -259,7 +259,7 @@ namespace ControlzEx.Theming
                     {
                         this.colorSchemesInternal.Add(theme.ColorScheme);
                     }
-                    
+
                     break;
             }
         }
@@ -1001,6 +1001,7 @@ namespace ControlzEx.Theming
                 this.ApplyResourceDictionaryEntries(oldRd, newRdMergedDictionary);
             }
 
+#pragma warning disable CS8605
             foreach (DictionaryEntry dictionaryEntry in newRd)
             {
                 if (oldRd.Contains(dictionaryEntry.Key))
@@ -1010,6 +1011,7 @@ namespace ControlzEx.Theming
 
                 oldRd.Add(dictionaryEntry.Key, dictionaryEntry.Value);
             }
+#pragma warning restore CS8605
         }
 
         /// <summary>
@@ -1194,7 +1196,7 @@ namespace ControlzEx.Theming
                                      && WindowsThemeHelper.IsHighContrastEnabled();
 
                 // Check if we previously generated a theme matching the desired settings
-                var theme = this.GetTheme(baseColor, accentColor!, isHighContrast) 
+                var theme = this.GetTheme(baseColor, accentColor!, isHighContrast)
                             ?? RuntimeThemeGenerator.Current.GenerateRuntimeThemeFromWindowsSettings(baseColor, isHighContrast, this.libraryThemeProvidersInternal);
 
                 // Only change the theme if it's not the current already
@@ -1210,7 +1212,7 @@ namespace ControlzEx.Theming
             }
         }
 
-#region Windows-Settings
+        #region Windows-Settings
 
         private ThemeSyncMode themeSyncMode;
 
@@ -1268,7 +1270,7 @@ namespace ControlzEx.Theming
 
         private bool isSyncScheduled;
 
-#endregion WindowsAppModeSetting
+        #endregion WindowsAppModeSetting
 
         private static bool TryConvertColorFromString(string colorScheme, out Color color)
         {
@@ -1296,9 +1298,13 @@ namespace ControlzEx.Theming
         }
     }
 
+#pragma warning disable CA1008
     [Flags]
     public enum ThemeSyncMode
     {
+        /// <summary>
+        /// No synchronization will happen.
+        /// </summary>
         DoNotSync = 0,
 
         /// <summary>
@@ -1316,6 +1322,10 @@ namespace ControlzEx.Theming
         /// </summary>
         SyncWithHighContrast = 1 << 4,
 
+        /// <summary>
+        /// All synchronizations are active.
+        /// </summary>
         SyncAll = SyncWithAppMode | SyncWithAccent | SyncWithHighContrast
     }
+#pragma warning restore CA1008
 }
