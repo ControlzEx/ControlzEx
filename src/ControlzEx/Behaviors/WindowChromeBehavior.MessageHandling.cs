@@ -871,7 +871,7 @@ namespace ControlzEx.Behaviors
 
             var state = assumeState ?? this._GetHwndState();
 
-            if (assumeState != null
+            if (assumeState is not null
                 || this.lastMenuState != state)
             {
                 this.lastMenuState = state;
@@ -1050,11 +1050,11 @@ namespace ControlzEx.Behaviors
                 Size windowSize;
 
                 // Use the size if it's specified.
-                if (wp != null && !Utility.IsFlagSet((int)wp.Value.flags, (int)SWP.NOSIZE) && wp.Value.cx >= 0 && wp.Value.cy >= 0)
+                if (wp is not null && !Utility.IsFlagSet((int)wp.Value.flags, (int)SWP.NOSIZE) && wp.Value.cx >= 0 && wp.Value.cy >= 0)
                 {
                     windowSize = new Size(wp.Value.cx, wp.Value.cy);
                 }
-                else if (wp != null && (this.lastRegionWindowState == this.AssociatedObject.WindowState))
+                else if (wp is not null && (this.lastRegionWindowState == this.AssociatedObject.WindowState))
                 {
                     return;
                 }

@@ -73,10 +73,10 @@ namespace ControlzEx.Standard
         [Conditional("DEBUG")]
         public static void AreEqual<T>(T expected, T actual)
         {
-            if (expected == null)
+            if (expected is null)
             {
                 // Two nulls are considered equal, regardless of type semantics.
-                if (actual != null && !actual.Equals(expected))
+                if (actual is not null && !actual.Equals(expected))
                 {
                     Break();
                 }
@@ -96,10 +96,10 @@ namespace ControlzEx.Standard
             T actual = actualResult();
             T expected = expectedResult();
 
-            if (expected == null)
+            if (expected is null)
             {
                 // Two nulls are considered equal, regardless of type semantics.
-                if (actual != null && !actual.Equals(expected))
+                if (actual is not null && !actual.Equals(expected))
                 {
                     Break();
                 }
@@ -120,10 +120,10 @@ namespace ControlzEx.Standard
         [Conditional("DEBUG")]
         public static void AreNotEqual<T>(T notExpected, T actual)
         {
-            if (notExpected == null)
+            if (notExpected is null)
             {
                 // Two nulls are considered equal, regardless of type semantics.
-                if (actual == null || actual.Equals(notExpected))
+                if (actual is null || actual.Equals(notExpected))
                 {
                     Break();
                 }
@@ -208,7 +208,7 @@ namespace ControlzEx.Standard
         public static void IsNotNull<T>(T? value)
             where T : class
         {
-            if (value == null)
+            if (value is null)
             {
                 Break();
             }
@@ -330,7 +330,7 @@ namespace ControlzEx.Standard
         public static void IsNull<T>(T item)
             where T : class
         {
-            if (item != null)
+            if (item is not null)
             {
                 Break();
             }
@@ -386,7 +386,7 @@ namespace ControlzEx.Standard
         public static void NullableIsNotNull<T>(T? value)
             where T : struct
         {
-            if (value == null)
+            if (value is null)
             {
                 Break();
             }
@@ -396,7 +396,7 @@ namespace ControlzEx.Standard
         public static void NullableIsNull<T>(T? value)
             where T : struct
         {
-            if (value != null)
+            if (value is not null)
             {
                 Break();
             }

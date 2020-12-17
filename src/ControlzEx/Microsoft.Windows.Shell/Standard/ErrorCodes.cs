@@ -565,7 +565,7 @@ namespace ControlzEx.Standard
                 else
                 {
                     var cons = e!.GetType().GetConstructor(new[] { typeof(string) });
-                    if (cons != null)
+                    if (cons is not null)
                     {
                         e = cons.Invoke(new object[] { message }) as Exception;
                         Assert.IsNotNull(e);

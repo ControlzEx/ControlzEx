@@ -54,7 +54,7 @@ namespace ControlzEx.Standard
 
             // Notice that ArgumentNullException and ArgumentException take the parameters in opposite order :P
             const string errorMessage = "The parameter can not be either null or empty.";
-            if (value == null)
+            if (value is null)
             {
                 Assert.Fail();
                 throw new ArgumentNullException(name, errorMessage);
@@ -80,7 +80,7 @@ namespace ControlzEx.Standard
 
             // Notice that ArgumentNullException and ArgumentException take the parameters in opposite order :P
             const string errorMessage = "The parameter can not be either null or empty or consist only of white space characters.";
-            if (value == null)
+            if (value is null)
             {
                 Assert.Fail();
                 throw new ArgumentNullException(name, errorMessage);
@@ -116,7 +116,7 @@ namespace ControlzEx.Standard
         public static void IsNotNull<T>(T obj, string name)
             where T : class
         {
-            if (obj == null)
+            if (obj is null)
             {
                 Assert.Fail();
                 throw new ArgumentNullException(name);
@@ -131,7 +131,7 @@ namespace ControlzEx.Standard
         public static void IsNull<T>(T obj, string name)
             where T : class
         {
-            if (obj != null)
+            if (obj is not null)
             {
                 Assert.Fail();
                 throw new ArgumentException("The parameter must be null.", name);
@@ -142,7 +142,7 @@ namespace ControlzEx.Standard
         public static void PropertyIsNotNull<T>(T obj, string name)
             where T : class
         {
-            if (obj == null)
+            if (obj is null)
             {
                 Assert.Fail();
                 throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "The property {0} cannot be null at this time.", name));
@@ -153,7 +153,7 @@ namespace ControlzEx.Standard
         public static void PropertyIsNull<T>(T obj, string name)
             where T : class
         {
-            if (obj != null)
+            if (obj is not null)
             {
                 Assert.Fail();
                 throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "The property {0} must be null at this time.", name));
@@ -189,10 +189,10 @@ namespace ControlzEx.Standard
         [DebuggerStepThrough]
         public static void AreEqual<T>(T expected, T actual, string parameterName, string message)
         {
-            if (expected == null)
+            if (expected is null)
             {
                 // Two nulls are considered equal, regardless of type semantics.
-                if (actual != null && !actual.Equals(expected))
+                if (actual is not null && !actual.Equals(expected))
                 {
                     Assert.Fail();
                     throw new ArgumentException(message, parameterName);
@@ -208,10 +208,10 @@ namespace ControlzEx.Standard
         [DebuggerStepThrough]
         public static void AreNotEqual<T>(T notExpected, T actual, string parameterName, string message)
         {
-            if (notExpected == null)
+            if (notExpected is null)
             {
                 // Two nulls are considered equal, regardless of type semantics.
-                if (actual == null || actual.Equals(notExpected))
+                if (actual is null || actual.Equals(notExpected))
                 {
                     Assert.Fail();
                     throw new ArgumentException(message, parameterName);
