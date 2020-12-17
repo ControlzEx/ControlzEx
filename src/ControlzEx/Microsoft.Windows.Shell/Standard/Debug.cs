@@ -1,4 +1,3 @@
-#pragma warning disable 1591, 618
 // Conditional to use more aggressive fail-fast behaviors when debugging.
 #define DEV_DEBUG
 
@@ -23,7 +22,7 @@ namespace ControlzEx.Standard
         //private static readonly bool _isNotAtRuntime = (bool)System.ComponentModel.DesignerProperties.IsInDesignModeProperty.GetMetadata(typeof(System.Windows.DependencyObject)).DefaultValue;
 
         [ContractAnnotation("=>halt")]
-        private static void _Break()
+        private static void Break()
         {
             //if (!_isNotAtRuntime)
             {
@@ -57,10 +56,8 @@ namespace ControlzEx.Standard
         /// <typeparam name="T">The generic type to compare for equality.</typeparam>
         /// <param name="expected">The first generic type data to compare.  This is is the expected value.</param>
         /// <param name="actual">The second generic type data to compare.  This is the actual value.</param>
-        [
-            Obsolete("Use Assert.AreEqual instead of Assert.Equals", false),
-            Conditional("DEBUG")
-        ]
+        [Obsolete("Use Assert.AreEqual instead of Assert.Equals", false)]
+        [Conditional("DEBUG")]
         public static void Equals<T>(T expected, T actual)
         {
             AreEqual(expected, actual);
@@ -76,17 +73,17 @@ namespace ControlzEx.Standard
         [Conditional("DEBUG")]
         public static void AreEqual<T>(T expected, T actual)
         {
-            if (null == expected)
+            if (expected is null)
             {
                 // Two nulls are considered equal, regardless of type semantics.
-                if (null != actual && !actual.Equals(expected))
+                if (actual is not null && !actual.Equals(expected))
                 {
-                    _Break();
+                    Break();
                 }
             }
             else if (!expected.Equals(actual))
             {
-                _Break();
+                Break();
             }
         }
 
@@ -99,17 +96,17 @@ namespace ControlzEx.Standard
             T actual = actualResult();
             T expected = expectedResult();
 
-            if (null == expected)
+            if (expected is null)
             {
                 // Two nulls are considered equal, regardless of type semantics.
-                if (null != actual && !actual.Equals(expected))
+                if (actual is not null && !actual.Equals(expected))
                 {
-                    _Break();
+                    Break();
                 }
             }
             else if (!expected.Equals(actual))
             {
-                _Break();
+                Break();
             }
         }
 
@@ -123,17 +120,17 @@ namespace ControlzEx.Standard
         [Conditional("DEBUG")]
         public static void AreNotEqual<T>(T notExpected, T actual)
         {
-            if (null == notExpected)
+            if (notExpected is null)
             {
                 // Two nulls are considered equal, regardless of type semantics.
-                if (null == actual || actual.Equals(notExpected))
+                if (actual is null || actual.Equals(notExpected))
                 {
-                    _Break();
+                    Break();
                 }
             }
             else if (notExpected.Equals(actual))
             {
-                _Break();
+                Break();
             }
         }
 
@@ -152,7 +149,7 @@ namespace ControlzEx.Standard
         {
             if (condition && !result)
             {
-                _Break();
+                Break();
             }
         }
 
@@ -169,7 +166,7 @@ namespace ControlzEx.Standard
         {
             if (condition && !result())
             {
-                _Break();
+                Break();
             }
         }
 
@@ -192,12 +189,12 @@ namespace ControlzEx.Standard
         {
             if (string.IsNullOrEmpty(value))
             {
-                _Break();
+                Break();
             }
 
             if (value.Trim().Length == 0)
             {
-                _Break();
+                Break();
             }
         }
 
@@ -208,16 +205,18 @@ namespace ControlzEx.Standard
         /// <param name="value">The value to check for nullness.</param>
         /// <remarks>This breaks into the debugger in the case of a failed assertion.</remarks>
         [Conditional("DEBUG")]
-        public static void IsNotNull<T>(T value) where T : class
+        public static void IsNotNull<T>(T? value)
+            where T : class
         {
-            if (null == value)
+            if (value is null)
             {
-                _Break();
+                Break();
             }
         }
 
         [Conditional("DEBUG")]
-        public static void IsDefault<T>(T value) where T : struct
+        public static void IsDefault<T>(T value)
+            where T : struct
         {
             if (!value.Equals(default(T)))
             {
@@ -226,7 +225,8 @@ namespace ControlzEx.Standard
         }
 
         [Conditional("DEBUG")]
-        public static void IsNotDefault<T>(T value) where T : struct
+        public static void IsNotDefault<T>(T value)
+            where T : struct
         {
             if (value.Equals(default(T)))
             {
@@ -244,7 +244,7 @@ namespace ControlzEx.Standard
         {
             if (condition)
             {
-                _Break();
+                Break();
             }
         }
 
@@ -259,7 +259,7 @@ namespace ControlzEx.Standard
         {
             if (condition)
             {
-                _Break();
+                Break();
             }
         }
 
@@ -273,7 +273,7 @@ namespace ControlzEx.Standard
         {
             if (!condition)
             {
-                _Break();
+                Break();
             }
         }
 
@@ -282,7 +282,7 @@ namespace ControlzEx.Standard
         {
             if (!predicate(arg))
             {
-                _Break();
+                Break();
             }
         }
 
@@ -297,7 +297,7 @@ namespace ControlzEx.Standard
         {
             if (!condition)
             {
-                _Break();
+                Break();
             }
         }
 
@@ -308,7 +308,7 @@ namespace ControlzEx.Standard
         [Conditional("DEBUG")]
         public static void Fail()
         {
-            _Break();
+            Break();
         }
 
         /// <summary>
@@ -319,7 +319,7 @@ namespace ControlzEx.Standard
         [Conditional("DEBUG")]
         public static void Fail(string message)
         {
-            _Break();
+            Break();
         }
 
         /// <summary>
@@ -327,11 +327,12 @@ namespace ControlzEx.Standard
         /// </summary>
         /// <param name="item">The item to verify is null.</param>
         [Conditional("DEBUG")]
-        public static void IsNull<T>(T item) where T : class
+        public static void IsNull<T>(T item)
+            where T : class
         {
-            if (null != item)
+            if (item is not null)
             {
-                _Break();
+                Break();
             }
         }
 
@@ -346,7 +347,7 @@ namespace ControlzEx.Standard
         {
             if (value < lowerBoundInclusive || value > upperBoundInclusive)
             {
-                _Break();
+                Break();
             }
         }
 
@@ -361,7 +362,7 @@ namespace ControlzEx.Standard
         {
             if (value < lowerBoundInclusive || value >= upperBoundExclusive)
             {
-                _Break();
+                Break();
             }
         }
 
@@ -377,25 +378,27 @@ namespace ControlzEx.Standard
         {
             if (Thread.CurrentThread.GetApartmentState() != expectedState)
             {
-                _Break();
+                Break();
             }
         }
 
         [Conditional("DEBUG")]
-        public static void NullableIsNotNull<T>(T? value) where T : struct
+        public static void NullableIsNotNull<T>(T? value)
+            where T : struct
         {
-            if (null == value)
+            if (value is null)
             {
-                _Break();
+                Break();
             }
         }
 
         [Conditional("DEBUG")]
-        public static void NullableIsNull<T>(T? value) where T : struct
+        public static void NullableIsNull<T>(T? value)
+            where T : struct
         {
-            if (null != value)
+            if (value is not null)
             {
-                _Break();
+                Break();
             }
         }
     }

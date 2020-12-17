@@ -90,7 +90,6 @@ namespace ControlzEx.Showcase
                 Owner = this // for this to work we always have to set the owner
             };
 
-
             // We have to use closing, otherwise the owner window won't be activated.
             window.Closing += this.PseudoModalWindow_Closing;
 

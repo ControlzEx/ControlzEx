@@ -145,7 +145,7 @@ namespace ControlzEx.Theming
                     {
                         var theme = this.GetLibraryTheme(dictionaryEntry);
 
-                        if (!(theme is null))
+                        if (theme is not null)
                         {
                             yield return theme;
                         }

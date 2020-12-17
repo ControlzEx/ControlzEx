@@ -1,10 +1,9 @@
-﻿using System;
-using System.ComponentModel;
-using System.Windows;
-using System.Windows.Data;
-
-namespace ControlzEx
+﻿namespace ControlzEx
 {
+    using System;
+    using System.ComponentModel;
+    using System.Windows;
+    using System.Windows.Data;
     using JetBrains.Annotations;
 
     /// <summary>
@@ -36,12 +35,12 @@ namespace ControlzEx
 
         public PropertyChangeNotifier([NotNull] DependencyObject propertySource, [NotNull] PropertyPath property)
         {
-            if (null == propertySource)
+            if (propertySource is null)
             {
                 throw new ArgumentNullException(nameof(propertySource));
             }
 
-            if (null == property)
+            if (property is null)
             {
                 throw new ArgumentNullException(nameof(property));
             }
@@ -51,7 +50,7 @@ namespace ControlzEx
             BindingOperations.SetBinding(this, ValueProperty, binding);
         }
 
-        public DependencyObject PropertySource
+        public DependencyObject? PropertySource
         {
             get
             {
@@ -83,9 +82,9 @@ namespace ControlzEx
         [Description("Gets or sets the value of the watched property.")]
         [Category("Behavior")]
         [Bindable(true)]
-        public object Value
+        public object? Value
         {
-            get { return (object)this.GetValue(ValueProperty); }
+            get { return (object?)this.GetValue(ValueProperty); }
             set { this.SetValue(ValueProperty, value); }
         }
 
@@ -98,7 +97,7 @@ namespace ControlzEx
             }
         }
 
-        public event EventHandler ValueChanged;
+        public event EventHandler? ValueChanged;
 
         public bool RaiseValueChanged { get; set; } = true;
 

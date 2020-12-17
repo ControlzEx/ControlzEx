@@ -30,7 +30,7 @@
 
             var currentTheme = this.CurrentTheme;
 
-            if (currentTheme is null == false
+            if (currentTheme is not null
                 && this.CurrentThemeCollection.Contains(currentTheme) == false)
             {
                 this.CurrentThemeCollection.Clear();
@@ -44,7 +44,7 @@
         private void ThemeManager_ThemeChanged(object sender, ThemeChangedEventArgs e)
         {
             // Add the new theme first, if it's generated
-            if (e.NewTheme is null == false
+            if (e.NewTheme is not null
                 && e.NewTheme.IsRuntimeGenerated)
             {
                 this.CurrentThemeCollection.Add(e.NewTheme);
@@ -61,7 +61,7 @@
 
             // Remove the old theme, if it's generated
             // We have to do this after the notification to ensure the selection does not get reset by the removal
-            if (e.OldTheme is null == false
+            if (e.OldTheme is not null
                 && e.OldTheme.IsRuntimeGenerated)
             {
                 this.CurrentThemeCollection.Remove(e.OldTheme);

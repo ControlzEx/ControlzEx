@@ -1,11 +1,11 @@
-﻿using System;
-using System.Reflection;
-using System.Windows;
-using System.Windows.Input;
-using System.Windows.Threading;
-
-namespace ControlzEx
+﻿namespace ControlzEx
 {
+    using System;
+    using System.Reflection;
+    using System.Windows;
+    using System.Windows.Input;
+    using System.Windows.Threading;
+
     /// <summary>
     /// Helper class for a common focusing problem.
     /// The focus itself isn't the problem. If we use the common focusing methods the control get the focus
@@ -15,9 +15,9 @@ namespace ControlzEx
     /// </summary>
     public sealed class KeyboardNavigationEx
     {
-        private static KeyboardNavigationEx _instance;
-        private readonly PropertyInfo _alwaysShowFocusVisual; // internal static bool AlwaysShowFocusVisual
-        private readonly MethodInfo _showFocusVisual; // internal static void ShowFocusVisual()
+        private static KeyboardNavigationEx? instance;
+        private readonly PropertyInfo? alwaysShowFocusVisual; // internal static bool AlwaysShowFocusVisual
+        private readonly MethodInfo? showFocusVisual; // internal static void ShowFocusVisual()
 
         // Explicit static constructor to tell C# compiler
         // not to mark type as beforefieldinit
@@ -28,14 +28,14 @@ namespace ControlzEx
         private KeyboardNavigationEx()
         {
             var type = typeof(KeyboardNavigation);
-            this._alwaysShowFocusVisual = type.GetProperty("AlwaysShowFocusVisual", BindingFlags.NonPublic | BindingFlags.Static);
-            this._showFocusVisual = type.GetMethod("ShowFocusVisual", BindingFlags.NonPublic | BindingFlags.Static);
+            this.alwaysShowFocusVisual = type.GetProperty("AlwaysShowFocusVisual", BindingFlags.NonPublic | BindingFlags.Static);
+            this.showFocusVisual = type.GetMethod("ShowFocusVisual", BindingFlags.NonPublic | BindingFlags.Static);
         }
 
         /// <summary>
         /// Gets the KeyboardNavigationEx singleton instance.
         /// </summary>
-        internal static KeyboardNavigationEx Instance => _instance ?? (_instance = new KeyboardNavigationEx());
+        internal static KeyboardNavigationEx Instance => instance ??= new KeyboardNavigationEx();
 
         /// <summary>
         /// Shows the focus visual of the current focused UI element.
@@ -43,20 +43,20 @@ namespace ControlzEx
         /// </summary>
         internal void ShowFocusVisualInternal()
         {
-            this._showFocusVisual.Invoke(null, null);
+            this.showFocusVisual?.Invoke(null, null);
         }
 
         internal bool AlwaysShowFocusVisualInternal
         {
-            get { return (bool)this._alwaysShowFocusVisual.GetValue(null, null); }
-            set { this._alwaysShowFocusVisual.SetValue(null, value, null); }
+            get { return (bool?)this.alwaysShowFocusVisual?.GetValue(null, null) ?? false; }
+            set { this.alwaysShowFocusVisual?.SetValue(null, value, null); }
         }
 
         /// <summary>
         /// Focuses the specified element and shows the focus visual style.
         /// </summary>
         /// <param name="element">The element which will be focused.</param>
-        public static void Focus(UIElement element)
+        public static void Focus(UIElement? element)
         {
             element?.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
             {
@@ -96,7 +96,7 @@ namespace ControlzEx
             }
         }
 
-        private static void FrameworkElementGotFocus(object sender, RoutedEventArgs e)
+        private static void FrameworkElementGotFocus(object? sender, RoutedEventArgs e)
         {
             Focus(sender as UIElement);
         }

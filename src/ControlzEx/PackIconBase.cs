@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
-
 namespace ControlzEx
 {
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Media;
+
     public abstract class PackIconBase : Control
     {
         internal abstract void UpdateData();
@@ -15,21 +15,27 @@ namespace ControlzEx
     /// <summary>
     /// Base class for creating an icon control for icon packs.
     /// </summary>
-    /// <typeparam name="TKind"></typeparam>
     public abstract class PackIconBase<TKind> : PackIconBase
+        where TKind : notnull
     {
-        private static Lazy<IDictionary<TKind, string>> _dataIndex;
+        private static Lazy<IDictionary<TKind, string>>? dataIndex;
 
+        /// <summary>Creates a new instance.</summary>
         /// <param name="dataIndexFactory">
         /// Inheritors should provide a factory for setting up the path data index (per icon kind).
         /// The factory will only be utilized once, across all closed instances (first instantiation wins).
         /// </param>
         protected PackIconBase(Func<IDictionary<TKind, string>> dataIndexFactory)
         {
-            if (dataIndexFactory == null) throw new ArgumentNullException(nameof(dataIndexFactory));
+            if (dataIndexFactory is null)
+            {
+                throw new ArgumentNullException(nameof(dataIndexFactory));
+            }
 
-            if (_dataIndex == null)
-                _dataIndex = new Lazy<IDictionary<TKind, string>>(dataIndexFactory);
+            if (dataIndex is null)
+            {
+                dataIndex = new Lazy<IDictionary<TKind, string>>(dataIndexFactory);
+            }
         }
 
         /// <summary>Identifies the <see cref="Kind"/> dependency property.</summary>
@@ -57,9 +63,10 @@ namespace ControlzEx
             = DependencyProperty.RegisterReadOnly(nameof(Data),
                                                   typeof(string),
                                                   typeof(PackIconBase<TKind>),
-                                                  new PropertyMetadata(""));
+                                                  new PropertyMetadata(string.Empty));
 
         // ReSharper disable once StaticMemberInGenericType
+
         /// <summary>Identifies the <see cref="Data"/> dependency property.</summary>
         public static readonly DependencyProperty DataProperty = DataPropertyKey.DependencyProperty;
 
@@ -67,9 +74,11 @@ namespace ControlzEx
         /// Gets the icon path data for the current <see cref="Kind"/>.
         /// </summary>
         [TypeConverter(typeof(GeometryConverter))]
-        public string Data
+#pragma warning disable WPF0012 // CLR property type should match registered type.
+        public string? Data
+#pragma warning restore WPF0012 // CLR property type should match registered type.
         {
-            get { return (string)this.GetValue(DataProperty); }
+            get { return (string?)this.GetValue(DataProperty); }
             private set { this.SetValue(DataPropertyKey, value); }
         }
 
@@ -82,8 +91,8 @@ namespace ControlzEx
 
         internal override void UpdateData()
         {
-            string data = null;
-            _dataIndex.Value?.TryGetValue(this.Kind, out data);
+            string? data = null;
+            dataIndex?.Value?.TryGetValue(this.Kind, out data);
             this.Data = data;
         }
     }

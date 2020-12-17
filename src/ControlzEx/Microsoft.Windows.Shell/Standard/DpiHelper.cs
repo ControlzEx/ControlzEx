@@ -9,9 +9,9 @@ namespace ControlzEx.Standard
     internal static class DpiHelper
     {
         [ThreadStatic]
-        private static Matrix _transformToDevice;
+        private static Matrix transformToDevice;
         [ThreadStatic]
-        private static Matrix _transformToDip;
+        private static Matrix transformToDip;
 
         /// <summary>
         /// Convert a point in device independent pixels (1/96") to a point in the system coordinates.
@@ -20,9 +20,9 @@ namespace ControlzEx.Standard
         /// <returns>Returns the parameter converted to the system's coordinates.</returns>
         public static Point LogicalPixelsToDevice(Point logicalPoint, double dpiScaleX, double dpiScaleY)
         {
-            _transformToDevice = Matrix.Identity;
-            _transformToDevice.Scale(dpiScaleX, dpiScaleY);
-            return _transformToDevice.Transform(logicalPoint);
+            transformToDevice = Matrix.Identity;
+            transformToDevice.Scale(dpiScaleX, dpiScaleY);
+            return transformToDevice.Transform(logicalPoint);
         }
 
         /// <summary>
@@ -32,12 +32,11 @@ namespace ControlzEx.Standard
         /// <returns>Returns the parameter converted to the device independent coordinate system.</returns>
         public static Point DevicePixelsToLogical(Point devicePoint, double dpiScaleX, double dpiScaleY)
         {
-            _transformToDip = Matrix.Identity;
-            _transformToDip.Scale(1d / dpiScaleX, 1d / dpiScaleY);
-            return _transformToDip.Transform(devicePoint);
+            transformToDip = Matrix.Identity;
+            transformToDip.Scale(1d / dpiScaleX, 1d / dpiScaleY);
+            return transformToDip.Transform(devicePoint);
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static Rect LogicalRectToDevice(Rect logicalRectangle, double dpiScaleX, double dpiScaleY)
         {
             Point topLeft = LogicalPixelsToDevice(new Point(logicalRectangle.Left, logicalRectangle.Top), dpiScaleX, dpiScaleY);
@@ -54,7 +53,6 @@ namespace ControlzEx.Standard
             return new Rect(topLeft, bottomRight);
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static Size LogicalSizeToDevice(Size logicalSize, double dpiScaleX, double dpiScaleY)
         {
             Point pt = LogicalPixelsToDevice(new Point(logicalSize.Width, logicalSize.Height), dpiScaleX, dpiScaleY);
@@ -80,7 +78,7 @@ namespace ControlzEx.Standard
         public static double TransformToDeviceY(Visual visual, double y, double dpiScaleY)
         {
             var source = PresentationSource.FromVisual(visual);
-            if (source?.CompositionTarget != null)
+            if (source?.CompositionTarget is not null)
             {
                 return y * source.CompositionTarget.TransformToDevice.M22;
             }
@@ -91,7 +89,7 @@ namespace ControlzEx.Standard
         public static double TransformToDeviceX(Visual visual, double x, double dpiScaleX)
         {
             var source = PresentationSource.FromVisual(visual);
-            if (source?.CompositionTarget != null)
+            if (source?.CompositionTarget is not null)
             {
                 return x * source.CompositionTarget.TransformToDevice.M11;
             }
@@ -132,8 +130,8 @@ namespace ControlzEx.Standard
     /// <summary>Stores DPI information from which a <see cref="T:System.Windows.Media.Visual" /> or <see cref="T:System.Windows.UIElement" /> is rendered.</summary>
     public struct DpiScale
     {
-        private readonly double _dpiScaleX;
-        private readonly double _dpiScaleY;
+        private readonly double dpiScaleX;
+        private readonly double dpiScaleY;
 
         /// <summary>Gets the DPI scale on the X axis.</summary>
         /// <returns>The DPI scale for the X axis.</returns>
@@ -141,7 +139,7 @@ namespace ControlzEx.Standard
         {
             get
             {
-                return this._dpiScaleX;
+                return this.dpiScaleX;
             }
         }
 
@@ -151,7 +149,7 @@ namespace ControlzEx.Standard
         {
             get
             {
-                return this._dpiScaleY;
+                return this.dpiScaleY;
             }
         }
 
@@ -161,7 +159,7 @@ namespace ControlzEx.Standard
         {
             get
             {
-                return this._dpiScaleY;
+                return this.dpiScaleY;
             }
         }
 
@@ -171,7 +169,7 @@ namespace ControlzEx.Standard
         {
             get
             {
-                return 96.0 * this._dpiScaleX;
+                return 96.0 * this.dpiScaleX;
             }
         }
 
@@ -181,7 +179,7 @@ namespace ControlzEx.Standard
         {
             get
             {
-                return 96.0 * this._dpiScaleY;
+                return 96.0 * this.dpiScaleY;
             }
         }
 
@@ -190,8 +188,8 @@ namespace ControlzEx.Standard
         /// <param name="dpiScaleY">The DPI scale on the Y axis. </param>
         public DpiScale(double dpiScaleX, double dpiScaleY)
         {
-            this._dpiScaleX = dpiScaleX;
-            this._dpiScaleY = dpiScaleY;
+            this.dpiScaleX = dpiScaleX;
+            this.dpiScaleY = dpiScaleY;
         }
     }
 #endif

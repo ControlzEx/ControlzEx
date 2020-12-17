@@ -18,7 +18,7 @@ namespace ControlzEx.Behaviors
     /// <summary>
     /// With this class we can make custom window styles.
     /// </summary>
-    public partial class WindowChromeBehavior : Behavior<Window>    
+    public partial class WindowChromeBehavior : Behavior<Window>
     {
         /// <summary>Underlying HWND for the _window.</summary>
         /// <SecurityNote>
@@ -32,11 +32,11 @@ namespace ControlzEx.Behaviors
         ///   Critical : Critical member provides access to HWND's window messages which are critical
         /// </SecurityNote>
         [SecurityCritical]
-        private HwndSource hwndSource;
+        private HwndSource? hwndSource;
 
-        private PropertyChangeNotifier topMostChangeNotifier;
-        private PropertyChangeNotifier borderThicknessChangeNotifier;
-        private PropertyChangeNotifier resizeBorderThicknessChangeNotifier;
+        private PropertyChangeNotifier? topMostChangeNotifier;
+        private PropertyChangeNotifier? borderThicknessChangeNotifier;
+        private PropertyChangeNotifier? resizeBorderThicknessChangeNotifier;
         private Thickness? savedBorderThickness;
         private Thickness? savedResizeBorderThickness;
         private bool savedTopMost;
@@ -45,9 +45,10 @@ namespace ControlzEx.Behaviors
 
         private bool dpiChanged;
 
-        private struct _SystemParameterBoundProperty
+        private struct SystemParameterBoundProperty
         {
             public string SystemParameterPropertyName { get; set; }
+
             public DependencyProperty DependencyProperty { get; set; }
         }
 
@@ -138,11 +139,11 @@ namespace ControlzEx.Behaviors
             {
                 var behavior = (WindowChromeBehavior)d;
 
-                behavior._UpdateMinimizeSystemMenu(showMinButton);
+                behavior.UpdateMinimizeSystemMenu(showMinButton);
             }
         }
 
-        private void _UpdateMinimizeSystemMenu(bool isVisible)
+        private void UpdateMinimizeSystemMenu(bool isVisible)
         {
             if (this.windowHandle != IntPtr.Zero)
             {
@@ -169,8 +170,8 @@ namespace ControlzEx.Behaviors
         /// </summary>
         public bool EnableMinimize
         {
-            get { return (bool)GetValue(EnableMinimizeProperty); }
-            set { SetValue(EnableMinimizeProperty, value); }
+            get { return (bool)this.GetValue(EnableMinimizeProperty); }
+            set { this.SetValue(EnableMinimizeProperty, value); }
         }
 
         public static readonly DependencyProperty EnableMaxRestoreProperty = DependencyProperty.Register(nameof(EnableMaxRestore), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(true, OnEnableMaxRestoreChanged));
@@ -181,15 +182,14 @@ namespace ControlzEx.Behaviors
             {
                 var behavior = (WindowChromeBehavior)d;
 
-                behavior._UpdateMaxRestoreSystemMenu(showMaxRestoreButton);
+                behavior.UpdateMaxRestoreSystemMenu(showMaxRestoreButton);
             }
         }
 
-        private void _UpdateMaxRestoreSystemMenu(bool isVisible)
+        private void UpdateMaxRestoreSystemMenu(bool isVisible)
         {
             if (this.windowHandle != IntPtr.Zero)
             {
-
                 if (this.hwndSource?.IsDisposed == true || this.hwndSource?.RootVisual is null)
                 {
                     return;
@@ -213,8 +213,8 @@ namespace ControlzEx.Behaviors
         /// </summary>
         public bool EnableMaxRestore
         {
-            get { return (bool)GetValue(EnableMaxRestoreProperty); }
-            set { SetValue(EnableMaxRestoreProperty, value); }
+            get { return (bool)this.GetValue(EnableMaxRestoreProperty); }
+            set { this.SetValue(EnableMaxRestoreProperty, value); }
         }
 
         /// <inheritdoc />
@@ -222,7 +222,7 @@ namespace ControlzEx.Behaviors
         {
             // no transparency, because it has more then one unwanted issues
             if (this.AssociatedObject.AllowsTransparency
-                && this.AssociatedObject.IsLoaded == false 
+                && this.AssociatedObject.IsLoaded == false
                 && new WindowInteropHelper(this.AssociatedObject).Handle == IntPtr.Zero)
             {
                 try
@@ -267,7 +267,7 @@ namespace ControlzEx.Behaviors
         {
             if (this.AssociatedObject.Topmost)
             {
-                var raiseValueChanged = this.topMostChangeNotifier.RaiseValueChanged;
+                var raiseValueChanged = this.topMostChangeNotifier!.RaiseValueChanged;
                 this.topMostChangeNotifier.RaiseValueChanged = false;
                 this.AssociatedObject.SetCurrentValue(Window.TopmostProperty, false);
                 this.AssociatedObject.SetCurrentValue(Window.TopmostProperty, true);
@@ -283,26 +283,26 @@ namespace ControlzEx.Behaviors
             return SystemParameters.WindowResizeBorderThickness;
         }
 
-        private void BorderThicknessChangeNotifierOnValueChanged(object sender, EventArgs e)
+        private void BorderThicknessChangeNotifierOnValueChanged(object? sender, EventArgs e)
         {
             // It's bad if the window is null at this point, but we check this here to prevent the possible occurred exception
             var window = this.AssociatedObject;
-            if (window != null)
+            if (window is not null)
             {
                 this.savedBorderThickness = window.BorderThickness;
             }
         }
 
-        private void ResizeBorderThicknessChangeNotifierOnValueChanged(object sender, EventArgs e)
+        private void ResizeBorderThicknessChangeNotifierOnValueChanged(object? sender, EventArgs e)
         {
             this.savedResizeBorderThickness = this.ResizeBorderThickness;
         }
 
-        private void TopMostChangeNotifierOnValueChanged(object sender, EventArgs e)
+        private void TopMostChangeNotifierOnValueChanged(object? sender, EventArgs e)
         {
             // It's bad if the window is null at this point, but we check this here to prevent the possible occurred exception
             var window = this.AssociatedObject;
-            if (window != null)
+            if (window is not null)
             {
                 this.savedTopMost = window.Topmost;
             }
@@ -384,16 +384,16 @@ namespace ControlzEx.Behaviors
             base.OnDetaching();
         }
 
-        private void AssociatedObject_SourceInitialized(object sender, EventArgs e)
+        private void AssociatedObject_SourceInitialized(object? sender, EventArgs e)
         {
             this.windowHandle = new WindowInteropHelper(this.AssociatedObject).Handle;
 
-            if (IntPtr.Zero == this.windowHandle)
+            if (this.windowHandle == IntPtr.Zero)
             {
                 throw new Exception("Uups, at this point we really need the Handle from the associated object!");
             }
 
-            if (this.AssociatedObject.SizeToContent != SizeToContent.Manual 
+            if (this.AssociatedObject.SizeToContent != SizeToContent.Manual
                 && this.AssociatedObject.WindowState == WindowState.Normal)
             {
                 // Another try to fix SizeToContent
@@ -401,15 +401,15 @@ namespace ControlzEx.Behaviors
                 Invoke(this.AssociatedObject, () =>
                                               {
                                                   this.AssociatedObject.InvalidateMeasure();
-//                                                  if (UnsafeNativeMethods.GetWindowRect(this.windowHandle, out var rect))
-//                                                  {
-//                                                      var flags = SWP.SHOWWINDOW;
-//                                                      if (!this.AssociatedObject.ShowActivated)
-//                                                      {
-//                                                          flags |= SWP.NOACTIVATE;
-//                                                      }
-//                                                      NativeMethods.SetWindowPos(this.windowHandle, Constants.HWND_NOTOPMOST, rect.Left, rect.Top, rect.Width, rect.Height, flags);
-//                                                  }
+                                                  //                                                  if (UnsafeNativeMethods.GetWindowRect(this.windowHandle, out var rect))
+                                                  //                                                  {
+                                                  //                                                      var flags = SWP.SHOWWINDOW;
+                                                  //                                                      if (!this.AssociatedObject.ShowActivated)
+                                                  //                                                      {
+                                                  //                                                          flags |= SWP.NOACTIVATE;
+                                                  //                                                      }
+                                                  //                                                      NativeMethods.SetWindowPos(this.windowHandle, Constants.HWND_NOTOPMOST, rect.Left, rect.Top, rect.Width, rect.Height, flags);
+                                                  //                                                  }
                                               });
             }
 
@@ -423,45 +423,43 @@ namespace ControlzEx.Behaviors
         }
 
 #pragma warning disable CA2109
-
         /// <summary>
         /// Is called when the associated object of this instance is loaded
         /// </summary>
-        protected virtual void AssociatedObject_Loaded(object sender, RoutedEventArgs e)
+        protected virtual void AssociatedObject_Loaded(object? sender, RoutedEventArgs e)
         {
             //this._UpdateFrameState(true);
         }
-
 #pragma warning restore CA2109
 
-        private void AssociatedObject_Unloaded(object sender, RoutedEventArgs e)
+        private void AssociatedObject_Unloaded(object? sender, RoutedEventArgs e)
         {
             this.Cleanup(false);
         }
 
-        private void AssociatedObject_Closed(object sender, EventArgs e)
+        private void AssociatedObject_Closed(object? sender, EventArgs e)
         {
             this.Cleanup(true);
         }
 
-        private void AssociatedObject_StateChanged(object sender, EventArgs e)
+        private void AssociatedObject_StateChanged(object? sender, EventArgs e)
         {
             this.HandleMaximize();
         }
 
-        private void AssociatedObject_Deactivated(object sender, EventArgs e)
+        private void AssociatedObject_Deactivated(object? sender, EventArgs e)
         {
             this.TopMostHack();
         }
 
-        private void AssociatedObject_LostFocus(object sender, RoutedEventArgs e)
+        private void AssociatedObject_LostFocus(object? sender, RoutedEventArgs e)
         {
             this.TopMostHack();
         }
 
         private void HandleMaximize()
         {
-            var raiseValueChanged = this.topMostChangeNotifier.RaiseValueChanged;
+            var raiseValueChanged = this.topMostChangeNotifier!.RaiseValueChanged;
             this.topMostChangeNotifier.RaiseValueChanged = false;
 
             this.HandleBorderAndResizeBorderThicknessDuringMaximize();
@@ -522,8 +520,8 @@ namespace ControlzEx.Behaviors
         /// </summary>
         private void HandleBorderAndResizeBorderThicknessDuringMaximize()
         {
-            this.borderThicknessChangeNotifier.RaiseValueChanged = false;
-            this.resizeBorderThicknessChangeNotifier.RaiseValueChanged = false;
+            this.borderThicknessChangeNotifier!.RaiseValueChanged = false;
+            this.resizeBorderThicknessChangeNotifier!.RaiseValueChanged = false;
 
             if (this.AssociatedObject.WindowState == WindowState.Maximized)
             {
@@ -606,9 +604,9 @@ namespace ControlzEx.Behaviors
             }
         }
 
-        private static readonly List<_SystemParameterBoundProperty> _BoundProperties = new List<_SystemParameterBoundProperty>
-                                                                                       {
-                                                                                           new _SystemParameterBoundProperty { DependencyProperty = ResizeBorderThicknessProperty, SystemParameterPropertyName = nameof(SystemParameters.WindowResizeBorderThickness) },
-                                                                                       };
+        private static readonly List<SystemParameterBoundProperty> boundProperties = new()
+        {
+            new SystemParameterBoundProperty { DependencyProperty = ResizeBorderThicknessProperty, SystemParameterPropertyName = nameof(SystemParameters.WindowResizeBorderThickness) },
+        };
     }
 }

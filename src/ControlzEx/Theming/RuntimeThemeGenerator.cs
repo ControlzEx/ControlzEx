@@ -61,12 +61,12 @@ namespace ControlzEx.Theming
             {
                 var libraryTheme = this.GenerateRuntimeLibraryTheme(baseColor, accentColor, isHighContrast, libraryThemeProvider);
 
-                if (libraryTheme == null)
+                if (libraryTheme is null)
                 {
                     continue;
                 }
 
-                if (theme == null)
+                if (theme is null)
                 {
                     theme = new Theme(libraryTheme);
                 }
@@ -82,7 +82,7 @@ namespace ControlzEx.Theming
         public virtual LibraryTheme? GenerateRuntimeLibraryTheme(string baseColor, Color accentColor, bool isHighContrast, LibraryThemeProvider libraryThemeProvider)
         {
             var themeGeneratorParametersContent = libraryThemeProvider.GetThemeGeneratorParametersContent();
-            
+
             if (string.IsNullOrEmpty(themeGeneratorParametersContent))
             {
                 return null;
@@ -181,7 +181,7 @@ namespace ControlzEx.Theming
                     AccentColor80 = Color.FromArgb(204 /* 255 * 0.8 */, accentColor.R, accentColor.G, accentColor.B),
                     AccentColor60 = Color.FromArgb(153 /* 255 * 0.6 */, accentColor.R, accentColor.G, accentColor.B),
                     AccentColor40 = Color.FromArgb(102 /* 255 * 0.4 */, accentColor.R, accentColor.G, accentColor.B),
-                    AccentColor20 = Color.FromArgb(51  /* 255 * 0.2 */, accentColor.R, accentColor.G, accentColor.B),
+                    AccentColor20 = Color.FromArgb(51 /* 255 * 0.2 */, accentColor.R, accentColor.G, accentColor.B),
 
                     HighlightColor = GetHighlightColor(accentColor),
 

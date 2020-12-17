@@ -1,14 +1,14 @@
-using ControlzEx.Theming;
-using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
-
 namespace ControlzEx.Tests.Theming
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using System.Windows.Media;
+    using ControlzEx.Theming;
+    using NUnit.Framework;
+
     [TestFixture]
     public class HSLTests
     {
@@ -82,7 +82,6 @@ namespace ControlzEx.Tests.Theming
                 Assert.AreEqual(color, new HSLColor(color).ToColor());
             }
         }
-
 
         [Test]
         public void TestHslFromInput()

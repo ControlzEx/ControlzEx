@@ -1,12 +1,17 @@
-﻿#pragma warning disable 1591, 618, CA1815, CA1028, CA1008
-using System;
-
+﻿#pragma warning disable CA1028
+#pragma warning disable SA1300 // Element should begin with upper-case letter
+#pragma warning disable SA1308 // Variable names should not be prefixed
+#pragma warning disable SA1309 // Field names should not begin with underscore
+#pragma warning disable SA1310 // Field names should not contain underscore
+#pragma warning disable SA1602 // Enumeration items should be documented
 namespace ControlzEx.Native
 {
+    using System;
+
     [Obsolete(DesignerConstants.Win32ElementWarning)]
     public static class Constants
     {
-        [Flags()]
+        [Flags]
         [CLSCompliant(false)]
         public enum RedrawWindowFlags : uint
         {
@@ -60,7 +65,7 @@ namespace ControlzEx.Native
         public const int GCLP_HBRBACKGROUND = -0x0A;
 
         [CLSCompliant(false)]
-        public const uint TPM_RETURNCMD = 0x0100;        
+        public const uint TPM_RETURNCMD = 0x0100;
         [CLSCompliant(false)]
         public const uint TPM_LEFTBUTTON = 0x0;
 

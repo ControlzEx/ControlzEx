@@ -1,4 +1,9 @@
 ﻿#pragma warning disable 1591, 618
+#pragma warning disable CA1816
+#pragma warning disable SA1300 // Element should begin with upper-case letter
+#pragma warning disable SA1308 // Variable names should not be prefixed
+#pragma warning disable SA1309 // Field names should not begin with underscore
+#pragma warning disable SA1310 // Field names should not contain underscore
 namespace ControlzEx.Standard
 {
     using System;
@@ -20,13 +25,11 @@ namespace ControlzEx.Standard
 
         public IntPtr Handle { get; private set; }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        [SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
         public MessageWindow(CS classStyle, WS style, WS_EX exStyle, Rect location, string name, WndProc callback)
         {
             // A null callback means just use DefWindowProc.
-            _wndProcCallback = callback;
-            _className = "MessageWindowClass+" + Guid.NewGuid().ToString();
+            this._wndProcCallback = callback;
+            this._className = "MessageWindowClass+" + Guid.NewGuid().ToString();
 
             var wc = new WNDCLASSEX
             {
@@ -35,8 +38,8 @@ namespace ControlzEx.Standard
                 lpfnWndProc = s_WndProc,
                 hInstance = NativeMethods.GetModuleHandle(null),
                 hbrBackground = NativeMethods.GetStockObject(StockObject.NULL_BRUSH),
-                lpszMenuName = "",
-                lpszClassName = _className,
+                lpszMenuName = string.Empty,
+                lpszClassName = this._className,
             };
 
             NativeMethods.RegisterClassEx(ref wc);
@@ -47,9 +50,9 @@ namespace ControlzEx.Standard
                 gcHandle = GCHandle.Alloc(this);
                 IntPtr pinnedThisPtr = (IntPtr)gcHandle;
 
-                Handle = NativeMethods.CreateWindowEx(
+                this.Handle = NativeMethods.CreateWindowEx(
                     exStyle,
-                    _className,
+                    this._className,
                     name,
                     style,
                     (int)location.X,
@@ -69,64 +72,70 @@ namespace ControlzEx.Standard
 
         ~MessageWindow()
         {
-            _Dispose(false, false);
+            this._Dispose(false, false);
         }
 
         public void Dispose()
         {
-            _Dispose(true, false);
+            this._Dispose(true, false);
             GC.SuppressFinalize(this);
         }
 
         // This isn't right if the Dispatcher has already started shutting down.
+
+        /* Unmerged change from project 'ControlzEx (net5.0-windows)'
+        Before:
+                // The HWND itself will get cleaned up on thread completion, but it will wind up leaking the class ATOM...
+                [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "disposing")]
+        After:
+                // The HWND itself will get cleaned up on thread completion, but it will wind up leaking the class ATOM...
+        */
         // The HWND itself will get cleaned up on thread completion, but it will wind up leaking the class ATOM...
-        [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "disposing")]
         private void _Dispose(bool disposing, bool isHwndBeingDestroyed)
         {
-            if (_isDisposed)
+            if (this._isDisposed)
             {
                 // Block against reentrancy.
                 return;
             }
 
-            _isDisposed = true;
+            this._isDisposed = true;
 
-            IntPtr hwnd = Handle;
-            string className = _className;
+            IntPtr hwnd = this.Handle;
+            string className = this._className;
 
             if (isHwndBeingDestroyed)
             {
-                Dispatcher.BeginInvoke(DispatcherPriority.Normal, (DispatcherOperationCallback)(arg => _DestroyWindow(IntPtr.Zero, className)));
+                this.Dispatcher.BeginInvoke(DispatcherPriority.Normal, (DispatcherOperationCallback)(arg => _DestroyWindow(IntPtr.Zero, className)));
             }
-            else if (Handle != IntPtr.Zero)
+            else if (this.Handle != IntPtr.Zero)
             {
-                if (CheckAccess())
+                if (this.CheckAccess())
                 {
                     _DestroyWindow(hwnd, className);
                 }
                 else
                 {
-                    Dispatcher.BeginInvoke(DispatcherPriority.Normal, (DispatcherOperationCallback)(arg => _DestroyWindow(hwnd, className)));
+                    this.Dispatcher.BeginInvoke(DispatcherPriority.Normal, (DispatcherOperationCallback)(arg => _DestroyWindow(hwnd, className)));
                 }
             }
 
             s_windowLookup.Remove(hwnd);
 
-            _className = null;
-            Handle = IntPtr.Zero;
+            this._className = null!;
+            this.Handle = IntPtr.Zero;
         }
 
-        [SuppressMessage("Microsoft.Usage", "CA1816:CallGCSuppressFinalizeCorrectly")]
         private static IntPtr _WndProc(IntPtr hwnd, WM msg, IntPtr wParam, IntPtr lParam)
         {
             IntPtr ret = IntPtr.Zero;
-            MessageWindow hwndWrapper = null;
+            MessageWindow? hwndWrapper = null;
 
             if (msg == WM.CREATE)
             {
-                var createStruct = (CREATESTRUCT)Marshal.PtrToStructure(lParam, typeof(CREATESTRUCT));
+                var createStruct = (CREATESTRUCT)Marshal.PtrToStructure(lParam, typeof(CREATESTRUCT))!;
                 GCHandle gcHandle = GCHandle.FromIntPtr(createStruct.lpCreateParams);
-                hwndWrapper = (MessageWindow)gcHandle.Target;
+                hwndWrapper = (MessageWindow)gcHandle.Target!;
                 s_windowLookup.Add(hwnd, hwndWrapper);
             }
             else
@@ -136,10 +145,11 @@ namespace ControlzEx.Standard
                     return NativeMethods.DefWindowProc(hwnd, msg, wParam, lParam);
                 }
             }
+
             Assert.IsNotNull(hwndWrapper);
 
             WndProc callback = hwndWrapper._wndProcCallback;
-            if (callback != null)
+            if (callback is not null)
             {
                 ret = callback(hwnd, msg, wParam, lParam);
             }
@@ -157,7 +167,7 @@ namespace ControlzEx.Standard
             return ret;
         }
 
-        private static object _DestroyWindow(IntPtr hwnd, string className)
+        private static object? _DestroyWindow(IntPtr hwnd, string className)
         {
             Utility.SafeDestroyWindow(ref hwnd);
             NativeMethods.UnregisterClass(className, NativeMethods.GetModuleHandle(null));

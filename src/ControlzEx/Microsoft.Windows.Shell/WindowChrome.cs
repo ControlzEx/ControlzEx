@@ -1,7 +1,6 @@
 ﻿/**************************************************************************\
     Copyright Microsoft Corporation. All Rights Reserved.
 \**************************************************************************/
-#pragma warning disable 1591, 618
 namespace ControlzEx.Windows.Shell
 {
     using System;
@@ -11,6 +10,7 @@ namespace ControlzEx.Windows.Shell
     using ControlzEx;
     using ControlzEx.Standard;
 
+#pragma warning disable SA1602 // Enumeration items should be documented
     public enum ResizeGripDirection
     {
         None,
@@ -24,6 +24,7 @@ namespace ControlzEx.Windows.Shell
         Left,
         Caption,
     }
+#pragma warning restore SA1602 // Enumeration items should be documented
 
     public static class WindowChrome
     {
@@ -36,8 +37,6 @@ namespace ControlzEx.Windows.Shell
             new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.Inherits));
 
         [Category(DesignerConstants.LibraryName)]
-        [SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
-        [SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
         public static bool GetIsHitTestVisibleInChrome(IInputElement inputElement)
         {
             Verify.IsNotNull(inputElement, "inputElement");
@@ -46,11 +45,10 @@ namespace ControlzEx.Windows.Shell
             {
                 throw new ArgumentException("The element must be a DependencyObject", nameof(inputElement));
             }
+
             return (bool)dobj.GetValue(IsHitTestVisibleInChromeProperty);
         }
 
-        [SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
-        [SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
         public static void SetIsHitTestVisibleInChrome(IInputElement inputElement, bool hitTestVisible)
         {
             Verify.IsNotNull(inputElement, "inputElement");
@@ -59,6 +57,7 @@ namespace ControlzEx.Windows.Shell
             {
                 throw new ArgumentException("The element must be a DependencyObject", nameof(inputElement));
             }
+
             dobj.SetValue(IsHitTestVisibleInChromeProperty, hitTestVisible);
         }
 
@@ -69,8 +68,6 @@ namespace ControlzEx.Windows.Shell
             new FrameworkPropertyMetadata(ResizeGripDirection.None, FrameworkPropertyMetadataOptions.Inherits));
 
         [Category(DesignerConstants.LibraryName)]
-        [SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
-        [SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
         public static ResizeGripDirection GetResizeGripDirection(IInputElement inputElement)
         {
             Verify.IsNotNull(inputElement, "inputElement");
@@ -79,11 +76,10 @@ namespace ControlzEx.Windows.Shell
             {
                 throw new ArgumentException("The element must be a DependencyObject", nameof(inputElement));
             }
+
             return (ResizeGripDirection)dobj.GetValue(ResizeGripDirectionProperty);
         }
 
-        [SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
-        [SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
         public static void SetResizeGripDirection(IInputElement inputElement, ResizeGripDirection direction)
         {
             Verify.IsNotNull(inputElement, "inputElement");
@@ -92,6 +88,7 @@ namespace ControlzEx.Windows.Shell
             {
                 throw new ArgumentException("The element must be a DependencyObject", nameof(inputElement));
             }
+
             dobj.SetValue(ResizeGripDirectionProperty, direction);
         }
 
