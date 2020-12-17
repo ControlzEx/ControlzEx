@@ -187,22 +187,22 @@
 
         private void RestoreGlow()
         {
-            if (this.left != null)
+            if (this.left is not null)
             {
                 this.left.IsGlowing = true;
             }
 
-            if (this.top != null)
+            if (this.top is not null)
             {
                 this.top.IsGlowing = true;
             }
 
-            if (this.right != null)
+            if (this.right is not null)
             {
                 this.right.IsGlowing = true;
             }
 
-            if (this.bottom != null)
+            if (this.bottom is not null)
             {
                 this.bottom.IsGlowing = true;
             }
@@ -212,22 +212,22 @@
 
         private void HideGlow()
         {
-            if (this.left != null)
+            if (this.left is not null)
             {
                 this.left.IsGlowing = false;
             }
 
-            if (this.top != null)
+            if (this.top is not null)
             {
                 this.top.IsGlowing = false;
             }
 
-            if (this.right != null)
+            if (this.right is not null)
             {
                 this.right.IsGlowing = false;
             }
 
-            if (this.bottom != null)
+            if (this.bottom is not null)
             {
                 this.bottom.IsGlowing = false;
             }
