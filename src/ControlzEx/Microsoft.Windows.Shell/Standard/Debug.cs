@@ -1,4 +1,3 @@
-#pragma warning disable 1591, 618
 // Conditional to use more aggressive fail-fast behaviors when debugging.
 #define DEV_DEBUG
 

@@ -21,7 +21,6 @@ namespace ControlzEx.Standard
     {
         private static readonly Random _randomNumberGenerator = new Random();
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         private static bool _MemCmp(IntPtr left, IntPtr right, long cb)
         {
             int offset = 0;
@@ -51,13 +50,11 @@ namespace ControlzEx.Standard
             return true;
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static Exception? FailableFunction<T>(Func<T> function, out T result)
         {
             return FailableFunction(5, function, out result);
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static T FailableFunction<T>(Func<T> function)
         {
             T result;
@@ -70,7 +67,6 @@ namespace ControlzEx.Standard
             return result;
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static T FailableFunction<T>(int maxRetries, Func<T> function)
         {
             T result;
@@ -83,8 +79,6 @@ namespace ControlzEx.Standard
             return result;
         }
 
-        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static Exception? FailableFunction<T>(int maxRetries, Func<T> function, out T result)
         {
             Assert.IsNotNull(function);
@@ -111,7 +105,6 @@ namespace ControlzEx.Standard
         }
 
         // See: http://stackoverflow.com/questions/7913325/win-api-in-c-get-hi-and-low-word-from-intptr/7913393#7913393
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static System.Windows.Point GetPoint(IntPtr ptr)
         {
             var xy = unchecked(Environment.Is64BitProcess ? (uint)ptr.ToInt64() : (uint)ptr.ToInt32());
@@ -120,37 +113,31 @@ namespace ControlzEx.Standard
             return new System.Windows.Point(x, y);
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static int GET_X_LPARAM(IntPtr lParam)
         {
             return LOWORD(lParam.ToInt32());
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static int GET_Y_LPARAM(IntPtr lParam)
         {
             return HIWORD(lParam.ToInt32());
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static int HIWORD(int i)
         {
             return (short)(i >> 16);
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static int LOWORD(int i)
         {
             return (short)(i & 0xFFFF);
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static bool IsFlagSet(int value, int mask)
         {
             return (value & mask) != 0;
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static void SafeDispose<T>(ref T? disposable) where T : class, IDisposable
         {
             // Dispose can safely be called on an object multiple times.
@@ -159,7 +146,6 @@ namespace ControlzEx.Standard
             t?.Dispose();
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static bool MemCmp(byte[] left, byte[] right, int cb)
         {
             Assert.IsNotNull(left);
@@ -191,7 +177,6 @@ namespace ControlzEx.Standard
             private int _byteCount;
             private int _charCount;
 
-            [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
             public _UrlDecoder(int size, Encoding encoding)
             {
                 this._encoding = encoding;
@@ -199,20 +184,17 @@ namespace ControlzEx.Standard
                 this._byteBuffer = new byte[size];
             }
 
-            [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
             public void AddByte(byte b)
             {
                 this._byteBuffer[this._byteCount++] = b;
             }
 
-            [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
             public void AddChar(char ch)
             {
                 this._FlushBytes();
                 this._charBuffer[this._charCount++] = ch;
             }
 
-            [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
             private void _FlushBytes()
             {
                 if (this._byteCount > 0)
@@ -222,7 +204,6 @@ namespace ControlzEx.Standard
                 }
             }
 
-            [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
             public string GetString()
             {
                 this._FlushBytes();
@@ -235,7 +216,6 @@ namespace ControlzEx.Standard
             }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static string? UrlDecode(string? url)
         {
             if (url is null)
@@ -314,7 +294,6 @@ namespace ControlzEx.Standard
         /// They are the 7-bit ASCII alphanumerics and the mark characters "-_.!~*'()".
         /// This implementation does not treat '~' as a safe character to be consistent with the System.Web version.
         /// </remarks>
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static string? UrlEncode(string? url)
         {
             if (url is null)
@@ -373,7 +352,6 @@ namespace ControlzEx.Standard
         // the list "-" | "_" | "." | "!" | "~" | "*" | "'" | "(" | ")"
         // The System.Web version unnecessarily escapes '~', which should be okay...
         // Keeping that same pattern here just to be consistent.
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         private static bool _UrlEncodeIsSafe(byte b)
         {
             if (_IsAsciiAlphaNumeric(b))
@@ -398,7 +376,6 @@ namespace ControlzEx.Standard
             return false;
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         private static bool _IsAsciiAlphaNumeric(byte b)
         {
             return (b >= 'a' && b <= 'z')
@@ -406,7 +383,6 @@ namespace ControlzEx.Standard
                 || (b >= '0' && b <= '9');
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         private static byte _IntToHex(int n)
         {
             Assert.BoundedInteger(0, n, 16);
@@ -418,7 +394,6 @@ namespace ControlzEx.Standard
             return (byte)(n - 10 + 'A');
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         private static int _HexToInt(char h)
         {
             if (h >= '0' && h <= '9')
@@ -440,7 +415,6 @@ namespace ControlzEx.Standard
             return -1;
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static string MakeValidFileName(string invalidPath)
         {
             return invalidPath
@@ -455,7 +429,6 @@ namespace ControlzEx.Standard
                 .Replace('|', '_');
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static IEnumerable<string> GenerateFileNames(string directory, string primaryFileName, string extension)
         {
             Verify.IsNeitherNullNorEmpty(directory, "directory");
@@ -482,7 +455,6 @@ namespace ControlzEx.Standard
             }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static bool TryFileMove(string sourceFileName, string destFileName)
         {
             if (!File.Exists(destFileName))

@@ -996,7 +996,6 @@ namespace ControlzEx.Theming
 
         private void ApplyResourceDictionaryEntries([NotNull] ResourceDictionary oldRd, [NotNull] ResourceDictionary newRd)
         {
-#pragma warning disable CS8605
             foreach (var newRdMergedDictionary in newRd.MergedDictionaries)
             {
                 this.ApplyResourceDictionaryEntries(oldRd, newRdMergedDictionary);
@@ -1011,7 +1010,6 @@ namespace ControlzEx.Theming
 
                 oldRd.Add(dictionaryEntry.Key, dictionaryEntry.Value);
             }
-#pragma warning restore CS8605
         }
 
         /// <summary>
@@ -1298,7 +1296,6 @@ namespace ControlzEx.Theming
         }
     }
 
-#pragma warning disable CA1008
     [Flags]
     public enum ThemeSyncMode
     {
@@ -1321,5 +1318,4 @@ namespace ControlzEx.Theming
 
         SyncAll = SyncWithAppMode | SyncWithAccent | SyncWithHighContrast
     }
-#pragma warning restore CA1008
 }

@@ -24,7 +24,6 @@ namespace ControlzEx.Standard
     /// This implementation is immutable, though it's possible that the underlying
     /// stream can be changed in another context.
     /// </remarks>
-    [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses")]
     internal sealed class ComStream : Stream
     {
         private const int STATFLAG_NONAME = 1;

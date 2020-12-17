@@ -1,4 +1,5 @@
 #pragma warning disable 618
+#pragma warning disable SA1300 // Element should begin with upper-case letter
 namespace ControlzEx.Behaviors
 {
     using System;
@@ -10,7 +11,7 @@ namespace ControlzEx.Behaviors
     using System.Windows.Data;
     using ControlzEx.Standard;
     using ControlzEx.Windows.Shell;
-    using HANDLE_MESSAGE = System.Collections.Generic.KeyValuePair<Standard.WM, Standard.MessageHandler>;
+    using HANDLE_MESSAGE = System.Collections.Generic.KeyValuePair<ControlzEx.Standard.WM, ControlzEx.Standard.MessageHandler>;
 
     public partial class WindowChromeBehavior
     {
@@ -1106,7 +1107,6 @@ namespace ControlzEx.Behaviors
         /// <summary>
         /// Matrix of the HT values to return when responding to NC window messages.
         /// </summary>
-        [SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional", MessageId = "Member")]
         private static readonly HT[,] hitTestBorders = {
                                                             { HT.TOPLEFT,    HT.TOP,     HT.TOPRIGHT    },
                                                             { HT.LEFT,       HT.CLIENT,  HT.RIGHT       },

@@ -17,7 +17,6 @@ namespace ControlzEx.Standard
 
     internal static partial class Utility
     {
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static byte[] GetBytesFromBitmapSource(BitmapSource bmp)
         {
             int width = bmp.PixelWidth;
@@ -31,13 +30,11 @@ namespace ControlzEx.Standard
             return pixels;
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static BitmapSource GenerateBitmapSource(ImageSource img)
         {
             return GenerateBitmapSource(img, img.Width, img.Height);
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static BitmapSource GenerateBitmapSource(ImageSource img, double renderWidth, double renderHeight)
         {
             var dv = new DrawingVisual();
@@ -51,7 +48,6 @@ namespace ControlzEx.Standard
             return bmp;
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static BitmapSource GenerateBitmapSource(UIElement element, double renderWidth, double renderHeight, bool performLayout)
         {
             if (performLayout)
@@ -71,7 +67,6 @@ namespace ControlzEx.Standard
             return bmp;
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static void SaveToPng(BitmapSource source, string fileName)
         {
             var encoder = new PngBitmapEncoder();
@@ -86,7 +81,6 @@ namespace ControlzEx.Standard
         // This can be cached.  It's not going to change under reasonable circumstances.
         private static int s_bitDepth; // = 0;
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         private static int _GetBitDepth()
         {
             if (s_bitDepth == 0)
@@ -100,13 +94,11 @@ namespace ControlzEx.Standard
             return s_bitDepth;
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static BitmapFrame GetBestMatch(IList<BitmapFrame> frames, int width, int height)
         {
             return _GetBestMatch(frames, _GetBitDepth(), width, height);
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         private static int _MatchImage(BitmapFrame frame, int bitDepth, int width, int height, int bpp)
         {
             int score = 2 * _WeightedAbs(bpp, bitDepth, false) +
@@ -116,7 +108,6 @@ namespace ControlzEx.Standard
             return score;
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         private static int _WeightedAbs(int valueHave, int valueWant, bool fPunish)
         {
             int diff = (valueHave - valueWant);
@@ -132,7 +123,6 @@ namespace ControlzEx.Standard
         /// From a list of BitmapFrames find the one that best matches the requested dimensions.
         /// The methods used here are copied from Win32 sources.  We want to be consistent with
         /// system behaviors.
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         private static BitmapFrame _GetBestMatch(IList<BitmapFrame> frames, int bitDepth, int width, int height)
         {
             int bestScore = int.MaxValue;
@@ -171,13 +161,11 @@ namespace ControlzEx.Standard
             return frames[bestIndex];
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static int RGB(Color c)
         {
             return c.B | (c.G << 8) | (c.R << 16);
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static int AlphaRGB(Color c)
         {
             return c.B | (c.G << 8) | (c.R << 16) | (c.A << 24);
@@ -186,7 +174,6 @@ namespace ControlzEx.Standard
         /// <summary>Convert a native integer that represent a color with an alpha channel into a Color struct.</summary>
         /// <param name="color">The integer that represents the color.  Its bits are of the format 0xAARRGGBB.</param>
         /// <returns>A Color representation of the parameter.</returns>
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static Color ColorFromArgbDword(uint color)
         {
             return Color.FromArgb(
@@ -196,7 +183,6 @@ namespace ControlzEx.Standard
                 (byte)((color & 0x000000FF) >> 0));
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static bool AreImageSourcesEqual(ImageSource? left, ImageSource? right)
         {
             if (left == null)
@@ -223,7 +209,6 @@ namespace ControlzEx.Standard
             return MemCmp(leftPixels, rightPixels, leftPixels.Length);
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static void AddDependencyPropertyChangeListener(object? component, DependencyProperty property, EventHandler listener)
         {
             if (component is null)
@@ -238,7 +223,6 @@ namespace ControlzEx.Standard
             dpd.AddValueChanged(component, listener);
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static void RemoveDependencyPropertyChangeListener(object? component, DependencyProperty property, EventHandler listener)
         {
             if (component is null)
@@ -253,9 +237,7 @@ namespace ControlzEx.Standard
             dpd.RemoveValueChanged(component, listener);
         }
 
-#pragma warning disable WPF0024
         public static bool IsNonNegative(this Thickness thickness)
-#pragma warning restore WPF0024
         {
             if (!thickness.Top.IsFiniteAndNonNegative())
             {
@@ -280,7 +262,6 @@ namespace ControlzEx.Standard
             return true;
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static bool IsValid(this CornerRadius cornerRadius)
         {
             if (!cornerRadius.TopLeft.IsFiniteAndNonNegative())

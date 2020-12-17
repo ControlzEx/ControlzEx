@@ -422,8 +422,6 @@ namespace ControlzEx.Behaviors
             this.HandleMaximize();
         }
 
-#pragma warning disable CA2109
-
         /// <summary>
         /// Is called when the associated object of this instance is loaded
         /// </summary>
@@ -431,8 +429,6 @@ namespace ControlzEx.Behaviors
         {
             //this._UpdateFrameState(true);
         }
-
-#pragma warning restore CA2109
 
         private void AssociatedObject_Unloaded(object? sender, RoutedEventArgs e)
         {

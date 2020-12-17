@@ -73,7 +73,6 @@ namespace ControlzEx.Theming
 
             // Calculate Alpha
             this.A = a / 255d;
-
         }
 
         /// <summary>

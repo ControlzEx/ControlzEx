@@ -16,7 +16,6 @@ namespace ControlzEx.Windows.Shell
     using System.Windows.Media;
     using ControlzEx.Standard;
 
-    [SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable")]
     internal class SystemParameters2 : INotifyPropertyChanged
     {
         private delegate void _SystemMetricUpdate(IntPtr wParam, IntPtr lParam);
@@ -155,7 +154,6 @@ namespace ControlzEx.Windows.Shell
             this.WindowCaptionButtonsLocation = captionRect;
         }
 
-        [SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
         private void _InitializeCaptionButtonLocation()
         {
             // There is a completely different way to do this on XP.
@@ -490,8 +488,6 @@ namespace ControlzEx.Windows.Shell
             }
         }
 
-        [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Ux")]
-        [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ux")]
         public string UxThemeName
         {
             get { return this._uxThemeName; }
@@ -505,8 +501,6 @@ namespace ControlzEx.Windows.Shell
             }
         }
 
-        [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Ux")]
-        [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ux")]
         public string UxThemeColor
         {
             get { return this._uxThemeColor; }

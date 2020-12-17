@@ -20,8 +20,6 @@ namespace ControlzEx.Standard
 
         public IntPtr Handle { get; private set; }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        [SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
         public MessageWindow(CS classStyle, WS style, WS_EX exStyle, Rect location, string name, WndProc callback)
         {
             // A null callback means just use DefWindowProc.
@@ -79,8 +77,15 @@ namespace ControlzEx.Standard
         }
 
         // This isn't right if the Dispatcher has already started shutting down.
+
+/* Unmerged change from project 'ControlzEx (net5.0-windows)'
+Before:
         // The HWND itself will get cleaned up on thread completion, but it will wind up leaking the class ATOM...
         [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "disposing")]
+After:
+        // The HWND itself will get cleaned up on thread completion, but it will wind up leaking the class ATOM...
+*/
+        // The HWND itself will get cleaned up on thread completion, but it will wind up leaking the class ATOM...
         private void _Dispose(bool disposing, bool isHwndBeingDestroyed)
         {
             if (this._isDisposed)
@@ -116,7 +121,6 @@ namespace ControlzEx.Standard
             this.Handle = IntPtr.Zero;
         }
 
-        [SuppressMessage("Microsoft.Usage", "CA1816:CallGCSuppressFinalizeCorrectly")]
         private static IntPtr _WndProc(IntPtr hwnd, WM msg, IntPtr wParam, IntPtr lParam)
         {
             IntPtr ret = IntPtr.Zero;

@@ -1,6 +1,4 @@
-﻿#pragma warning disable CA1001
-
-namespace ControlzEx.Behaviors
+﻿namespace ControlzEx.Behaviors
 {
     using System;
     using System.ComponentModel;
@@ -301,13 +299,11 @@ namespace ControlzEx.Behaviors
 
             this.Debug("UpdateText");
 
-#pragma warning disable CA1309
             // check Provider.Text + TextBox.Text
             if (this.HandleCharacterCasing(this.Provider.ToDisplayString()).Equals(this.HandleCharacterCasing(this.AssociatedObject.Text)))
             {
                 return;
             }
-#pragma warning restore CA1309
 
             // use provider to format
             var success = this.Provider.Set(this.HandleCharacterCasing(this.AssociatedObject.Text));

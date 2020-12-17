@@ -10,7 +10,6 @@ namespace ControlzEx.Standard
     {
         private static readonly Version _osVersion = Environment.OSVersion.Version;
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static void SafeDestroyIcon(ref IntPtr hicon)
         {
             IntPtr p = hicon;
@@ -22,7 +21,6 @@ namespace ControlzEx.Standard
         }
 
         /// <summary>GDI's DeleteObject</summary>
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static void SafeDeleteObject(ref IntPtr gdiObject)
         {
             IntPtr p = gdiObject;
@@ -33,7 +31,6 @@ namespace ControlzEx.Standard
             }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static void SafeDestroyWindow(ref IntPtr hwnd)
         {
             IntPtr p = hwnd;
@@ -46,7 +43,6 @@ namespace ControlzEx.Standard
 
         /// <summary>GDI+'s DisposeImage</summary>
         /// <param name="gdipImage"></param>
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static void SafeDisposeImage(ref IntPtr gdipImage)
         {
             IntPtr p = gdipImage;
@@ -57,8 +53,6 @@ namespace ControlzEx.Standard
             }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        [SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
         public static void SafeCoTaskMemFree(ref IntPtr ptr)
         {
             IntPtr p = ptr;
@@ -69,8 +63,6 @@ namespace ControlzEx.Standard
             }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        [SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
         public static void SafeFreeHGlobal(ref IntPtr hglobal)
         {
             IntPtr p = hglobal;
@@ -81,8 +73,6 @@ namespace ControlzEx.Standard
             }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        [SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
         public static void SafeRelease<T>(ref T? comObject) where T : class
         {
             var t = comObject;
@@ -94,17 +84,14 @@ namespace ControlzEx.Standard
             }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static bool IsOSVistaOrNewer
         {
             get { return new Version(6, 0) <= _osVersion; }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static bool IsOSWindows7OrNewer
         {
             get { return new Version(6, 1) <= _osVersion; }
         }
-
     }
 }

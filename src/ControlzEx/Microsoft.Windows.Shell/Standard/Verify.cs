@@ -31,7 +31,6 @@ namespace ControlzEx.Standard
         /// <exception cref="InvalidOperationException">
         /// Thrown if the calling thread's apartment state is not the same as the requiredState.
         /// </exception>
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DebuggerStepThrough]
         public static void IsApartmentState(ApartmentState requiredState, string message)
         {
@@ -47,8 +46,6 @@ namespace ControlzEx.Standard
         /// </summary>
         /// <param name="value">The string to validate.</param>
         /// <param name="name">The name of the parameter that will be presented if an exception is thrown.</param>
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        [SuppressMessage("Microsoft.Performance", "CA1820:TestForEmptyStringsUsingStringLength")]
         [DebuggerStepThrough]
         public static void IsNeitherNullNorEmpty(string value, string name)
         {
@@ -75,8 +72,6 @@ namespace ControlzEx.Standard
         /// </summary>
         /// <param name="value">The string to validate.</param>
         /// <param name="name">The name of the parameter that will be presented if an exception is thrown.</param>
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        [SuppressMessage("Microsoft.Performance", "CA1820:TestForEmptyStringsUsingStringLength")]
         [DebuggerStepThrough]
         public static void IsNeitherNullNorWhitespace(string value, string name)
         {
@@ -102,7 +97,6 @@ namespace ControlzEx.Standard
         /// <typeparam name="T">Type of the object to validate.  Must be a class.</typeparam>
         /// <param name="obj">The object to validate.</param>
         /// <param name="name">The name of the parameter that will be presented if an exception is thrown.</param>
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DebuggerStepThrough]
         public static void IsNotDefault<T>(T obj, string name) where T : struct
         {
@@ -117,7 +111,6 @@ namespace ControlzEx.Standard
         /// <typeparam name="T">Type of the object to validate.  Must be a class.</typeparam>
         /// <param name="obj">The object to validate.</param>
         /// <param name="name">The name of the parameter that will be presented if an exception is thrown.</param>
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DebuggerStepThrough]
         public static void IsNotNull<T>(T obj, string name) where T : class
         {
@@ -132,7 +125,6 @@ namespace ControlzEx.Standard
         /// <typeparam name="T">Type of the object to validate.  Must be a class.</typeparam>
         /// <param name="obj">The object to validate.</param>
         /// <param name="name">The name of the parameter that will be presented if an exception is thrown.</param>
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DebuggerStepThrough]
         public static void IsNull<T>(T obj, string name) where T : class
         {
@@ -143,7 +135,6 @@ namespace ControlzEx.Standard
             }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DebuggerStepThrough]
         public static void PropertyIsNotNull<T>(T obj, string name) where T : class
         {
@@ -154,7 +145,6 @@ namespace ControlzEx.Standard
             }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DebuggerStepThrough]
         public static void PropertyIsNull<T>(T obj, string name) where T : class
         {
@@ -171,7 +161,6 @@ namespace ControlzEx.Standard
         /// <param name="statement">The statement to be verified as true.</param>
         /// <param name="name">Name of the parameter to include in the ArgumentException.</param>
         /// <param name="message">The message to include in the ArgumentException.</param>
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DebuggerStepThrough]
         public static void IsTrue(bool statement, string name, string? message = null)
         {
@@ -182,7 +171,6 @@ namespace ControlzEx.Standard
             }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DebuggerStepThrough]
         public static void IsFalse(bool statement, string name, string? message = null)
         {
@@ -193,7 +181,6 @@ namespace ControlzEx.Standard
             }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DebuggerStepThrough]
         public static void AreEqual<T>(T expected, T actual, string parameterName, string message)
         {
@@ -213,7 +200,6 @@ namespace ControlzEx.Standard
             }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DebuggerStepThrough]
         public static void AreNotEqual<T>(T notExpected, T actual, string parameterName, string message)
         {
@@ -233,7 +219,6 @@ namespace ControlzEx.Standard
             }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DebuggerStepThrough]
         public static void UriIsAbsolute(Uri uri, string parameterName)
         {
@@ -252,7 +237,6 @@ namespace ControlzEx.Standard
         /// <param name="value">The value to verify.</param>
         /// <param name="upperBoundExclusive">The upper bound exclusive value.</param>
         /// <param name="parameterName">The name of the parameter that caused the current exception.</param>
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DebuggerStepThrough]
         public static void BoundedInteger(int lowerBoundInclusive, int value, int upperBoundExclusive, string parameterName)
         {
@@ -263,7 +247,6 @@ namespace ControlzEx.Standard
             }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DebuggerStepThrough]
         public static void BoundedDoubleInc(double lowerBoundInclusive, double value, double upperBoundInclusive, string message, string parameter)
         {
@@ -274,7 +257,6 @@ namespace ControlzEx.Standard
             }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DebuggerStepThrough]
         public static void TypeSupportsInterface(Type type, Type interfaceType, string parameterName)
         {
@@ -289,7 +271,6 @@ namespace ControlzEx.Standard
             }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DebuggerStepThrough]
         public static void FileExists(string filePath, string parameterName)
         {
@@ -301,7 +282,6 @@ namespace ControlzEx.Standard
             }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DebuggerStepThrough]
         internal static void ImplementsInterface(object parameter, Type interfaceType, string parameterName)
         {
