@@ -46,6 +46,7 @@ namespace ControlzEx.Windows.Shell
             {
                 throw new ArgumentException("The element must be a DependencyObject", nameof(inputElement));
             }
+
             return (bool)dobj.GetValue(IsHitTestVisibleInChromeProperty);
         }
 
@@ -59,6 +60,7 @@ namespace ControlzEx.Windows.Shell
             {
                 throw new ArgumentException("The element must be a DependencyObject", nameof(inputElement));
             }
+
             dobj.SetValue(IsHitTestVisibleInChromeProperty, hitTestVisible);
         }
 
@@ -79,6 +81,7 @@ namespace ControlzEx.Windows.Shell
             {
                 throw new ArgumentException("The element must be a DependencyObject", nameof(inputElement));
             }
+
             return (ResizeGripDirection)dobj.GetValue(ResizeGripDirectionProperty);
         }
 
@@ -92,6 +95,7 @@ namespace ControlzEx.Windows.Shell
             {
                 throw new ArgumentException("The element must be a DependencyObject", nameof(inputElement));
             }
+
             dobj.SetValue(ResizeGripDirectionProperty, direction);
         }
 

@@ -66,6 +66,7 @@ namespace ControlzEx.Standard
             {
                 throw e;
             }
+
             return result;
         }
 
@@ -78,6 +79,7 @@ namespace ControlzEx.Standard
             {
                 throw e;
             }
+
             return result;
         }
 
@@ -103,6 +105,7 @@ namespace ControlzEx.Standard
                         return e;
                     }
                 }
+
                 ++i;
             }
         }
@@ -144,7 +147,7 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static bool IsFlagSet(int value, int mask)
         {
-            return 0 != (value & mask);
+            return (value & mask) != 0;
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
@@ -191,42 +194,43 @@ namespace ControlzEx.Standard
             [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
             public _UrlDecoder(int size, Encoding encoding)
             {
-                _encoding = encoding;
-                _charBuffer = new char[size];
-                _byteBuffer = new byte[size];
+                this._encoding = encoding;
+                this._charBuffer = new char[size];
+                this._byteBuffer = new byte[size];
             }
 
             [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
             public void AddByte(byte b)
             {
-                _byteBuffer[_byteCount++] = b;
+                this._byteBuffer[this._byteCount++] = b;
             }
 
             [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
             public void AddChar(char ch)
             {
-                _FlushBytes();
-                _charBuffer[_charCount++] = ch;
+                this._FlushBytes();
+                this._charBuffer[this._charCount++] = ch;
             }
 
             [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
             private void _FlushBytes()
             {
-                if (_byteCount > 0)
+                if (this._byteCount > 0)
                 {
-                    _charCount += _encoding.GetChars(_byteBuffer, 0, _byteCount, _charBuffer, _charCount);
-                    _byteCount = 0;
+                    this._charCount += this._encoding.GetChars(this._byteBuffer, 0, this._byteCount, this._charBuffer, this._charCount);
+                    this._byteCount = 0;
                 }
             }
 
             [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
             public string GetString()
             {
-                _FlushBytes();
-                if (_charCount > 0)
+                this._FlushBytes();
+                if (this._charCount > 0)
                 {
-                    return new string(_charBuffer, 0, _charCount);
+                    return new string(this._charBuffer, 0, this._charCount);
                 }
+
                 return "";
             }
         }
@@ -356,6 +360,7 @@ namespace ControlzEx.Standard
                         buffer[writeIndex++] = _IntToHex(b & 0xF);
                     }
                 }
+
                 bytes = buffer;
                 Assert.AreEqual(buffer.Length, writeIndex);
             }
@@ -409,6 +414,7 @@ namespace ControlzEx.Standard
             {
                 return (byte)(n + '0');
             }
+
             return (byte)(n - 10 + 'A');
         }
 
@@ -459,11 +465,11 @@ namespace ControlzEx.Standard
 
             for (int i = 0; i <= 50; ++i)
             {
-                if (0 == i)
+                if (i == 0)
                 {
                     yield return Path.Combine(directory, primaryFileName) + extension;
                 }
-                else if (40 >= i)
+                else if (i <= 40)
                 {
                     yield return Path.Combine(directory, primaryFileName) + " (" + i + ")" + extension;
                 }
@@ -489,8 +495,10 @@ namespace ControlzEx.Standard
                 {
                     return false;
                 }
+
                 return true;
             }
+
             return false;
         }
     }

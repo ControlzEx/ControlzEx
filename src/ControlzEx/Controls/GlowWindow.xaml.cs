@@ -205,7 +205,7 @@ namespace ControlzEx.Controls
             owner.Closed += (sender, e) => this.InternalClose();
         }
 
-        public bool IsGlowing { set; get; }
+        public bool IsGlowing { get; set; }
 
         public Storyboard? OpacityStoryboard { get; set; }
 
@@ -340,7 +340,6 @@ namespace ControlzEx.Controls
                                 this.SetVisibilityIfPossible(newVisibility);
                             });
 
-                
                 if (this.IsGlowing 
                     && UnsafeNativeMethods.GetWindowRect(this.ownerWindowHandle, out rect))
                 {
@@ -474,6 +473,7 @@ namespace ControlzEx.Controls
                         // this fixes #58
                         this.InvokeAsyncIfCanUpdateCore(DispatcherPriority.Send, FixWindowZOrder);
                     }
+
                     break;
 
                 case WM.WINDOWPOSCHANGED:
@@ -493,6 +493,7 @@ namespace ControlzEx.Controls
                     {
                         NativeMethods.SendMessage(this.ownerWindowHandle, WM.NCACTIVATE, wParam, lParam);
                     }
+
                     // We have to return true according to https://docs.microsoft.com/en-us/windows/win32/winmsg/wm-ncactivate
                     // If we don't do that here the owner window can't be activated.
                     return new IntPtr(1);
@@ -507,6 +508,7 @@ namespace ControlzEx.Controls
                     {
                         NativeMethods.SendMessage(this.ownerWindowHandle, WM.ACTIVATE, wParam, lParam);
                     }
+
                     return new IntPtr(3) /* MA_NOACTIVATE */;
 
                 case WM.NCLBUTTONDOWN:
@@ -525,6 +527,7 @@ namespace ControlzEx.Controls
                         // Forward message to owner
                         NativeMethods.PostMessage(this.ownerWindowHandle, (WM)msg, wParam, IntPtr.Zero);
                     }
+
                     break;
 
                 case WM.NCHITTEST:
@@ -542,6 +545,7 @@ namespace ControlzEx.Controls
                             }
                         }
                     }
+
                     break;
 
                 case WM.SETCURSOR:
@@ -571,6 +575,7 @@ namespace ControlzEx.Controls
                             SetCursor(LoadCursor(IntPtr.Zero, IDC_SIZE_CURSORS.SIZENESW));
                             break;
                     }
+
                     break;
             }
 

@@ -33,7 +33,7 @@ namespace ControlzEx.Standard
 
         private void _Validate()
         {
-            if (null == _source)
+            if (this._source == null)
             {
                 throw new ObjectDisposedException("this");
             }
@@ -53,7 +53,7 @@ namespace ControlzEx.Standard
         public ComStream(ref IStream stream)
         {
             Verify.IsNotNull(stream, "stream");
-            _source = stream;
+            this._source = stream;
             // Zero out caller's reference to this.  The object now owns the memory.
             stream = null!;
         }
@@ -64,12 +64,12 @@ namespace ControlzEx.Standard
         // Overridden implementations aren't called, but Close is as part of the Dispose call.
         public override void Close()
         {
-            if (null != _source)
+            if (this._source != null)
             {
 #if FEATURE_MUTABLE_COM_STREAMS
                 Flush();
 #endif
-                Utility.SafeRelease(ref _source!);
+                Utility.SafeRelease(ref this._source!);
             }
         }
 
@@ -120,23 +120,23 @@ namespace ControlzEx.Standard
         {
             get
             {
-                _Validate();
+                this._Validate();
 
                 STATSTG statstg;
-                _source.Stat(out statstg, STATFLAG_NONAME);
+                this._source.Stat(out statstg, STATFLAG_NONAME);
                 return statstg.cbSize;
             }
         }
 
         public override long Position
         {
-            get { return Seek(0, SeekOrigin.Current); }
-            set { Seek(value, SeekOrigin.Begin); }
+            get { return this.Seek(0, SeekOrigin.Current); }
+            set { this.Seek(value, SeekOrigin.Begin); }
         }
 
         public override int Read(byte[] buffer, int offset, int count)
         {
-            _Validate();
+            this._Validate();
 
             IntPtr pcbRead = IntPtr.Zero;
 
@@ -146,7 +146,7 @@ namespace ControlzEx.Standard
 
                 // PERFORMANCE NOTE: This buffer doesn't need to be allocated if offset == 0
                 var tempBuffer = new byte[count];
-                _source.Read(tempBuffer, count, pcbRead);
+                this._source.Read(tempBuffer, count, pcbRead);
                 Array.Copy(tempBuffer, 0, buffer, offset, Marshal.ReadInt32(pcbRead));
 
                 return Marshal.ReadInt32(pcbRead);
@@ -159,14 +159,14 @@ namespace ControlzEx.Standard
 
         public override long Seek(long offset, SeekOrigin origin)
         {
-            _Validate();
+            this._Validate();
 
             IntPtr plibNewPosition = IntPtr.Zero;
 
             try
             {
                 plibNewPosition = Marshal.AllocHGlobal(sizeof(Int64));
-                _source.Seek(offset, (int)origin, plibNewPosition);
+                this._source.Seek(offset, (int)origin, plibNewPosition);
 
                 return Marshal.ReadInt64(plibNewPosition);
             }

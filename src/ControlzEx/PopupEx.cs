@@ -189,6 +189,7 @@ namespace ControlzEx
             {
                 return;
             }
+
             //Debug.WriteLine("setting z-order " + isTop);
 
             var left = rect.Left;

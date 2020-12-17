@@ -91,10 +91,10 @@ namespace ControlzEx.Standard
         /// <param name="i">The integer value of the error.</param>
         public Win32Error(int i)
         {
-            _value = i;
+            this._value = i;
         }
 
-        public int Error => _value;
+        public int Error => this._value;
 
         /// <summary>Performs HRESULT_FROM_WIN32 conversion.</summary>
         /// <param name="error">The Win32 error being converted to an HRESULT.</param>
@@ -107,6 +107,7 @@ namespace ControlzEx.Standard
             {
                 return new HRESULT((uint)error._value);
             }
+
             return HRESULT.Make(true, Facility.Win32, error._value & 0x0000FFFF);
         }
 
@@ -129,7 +130,7 @@ namespace ControlzEx.Standard
         {
             try
             {
-                return ((Win32Error)obj!)._value == _value;
+                return ((Win32Error)obj!)._value == this._value;
             }
             catch (InvalidCastException)
             {
@@ -139,7 +140,7 @@ namespace ControlzEx.Standard
 
         public override int GetHashCode()
         {
-            return _value.GetHashCode();
+            return this._value.GetHashCode();
         }
 
         /// <summary>
@@ -388,12 +389,12 @@ namespace ControlzEx.Standard
         [CLSCompliant(false)]
         public HRESULT(uint i)
         {
-            _value = i;
+            this._value = i;
         }
 
         public HRESULT(int i)
         {
-            _value = unchecked((uint)i);
+            this._value = unchecked((uint)i);
         }
 
         /// <summary>
@@ -437,7 +438,7 @@ namespace ControlzEx.Standard
         {
             get
             {
-                return GetFacility((int)_value);
+                return GetFacility((int)this._value);
             }
         }
 
@@ -454,7 +455,7 @@ namespace ControlzEx.Standard
         {
             get
             {
-                return GetCode((int)_value);
+                return GetCode((int)this._value);
             }
         }
 
@@ -496,7 +497,7 @@ namespace ControlzEx.Standard
             }
 
             // Try Win32 error codes also
-            if (Facility == Facility.Win32)
+            if (this.Facility == Facility.Win32)
             {
                 foreach (FieldInfo publicStaticField in typeof(Win32Error).GetFields(BindingFlags.Static | BindingFlags.Public))
                 {
@@ -513,14 +514,14 @@ namespace ControlzEx.Standard
 
             // If there's no good name for this HRESULT,
             // return the string as readable hex (0x########) format.
-            return string.Format(CultureInfo.InvariantCulture, "0x{0:X8}", _value);
+            return string.Format(CultureInfo.InvariantCulture, "0x{0:X8}", this._value);
         }
 
         public override bool Equals(object? obj)
         {
             try
             {
-                return ((HRESULT)obj!)._value == _value;
+                return ((HRESULT)obj!)._value == this._value;
             }
             catch (InvalidCastException)
             {
@@ -530,7 +531,7 @@ namespace ControlzEx.Standard
 
         public override int GetHashCode()
         {
-            return _value.GetHashCode();
+            return this._value.GetHashCode();
         }
 
         #endregion
@@ -547,17 +548,17 @@ namespace ControlzEx.Standard
 
         public bool Succeeded
         {
-            get { return (int)_value >= 0; }
+            get { return (int)this._value >= 0; }
         }
 
         public bool Failed
         {
-            get { return (int)_value < 0; }
+            get { return (int)this._value < 0; }
         }
 
         public void ThrowIfFailed()
         {
-            ThrowIfFailed(null);
+            this.ThrowIfFailed(null);
         }
 
         [
@@ -571,16 +572,16 @@ namespace ControlzEx.Standard
         ]
         public void ThrowIfFailed(string? message)
         {
-            if (Failed)
+            if (this.Failed)
             {
                 if (string.IsNullOrEmpty(message))
                 {
-                    message = ToString();
+                    message = this.ToString();
                 }
 #if DEBUG
                 else
                 {
-                    message += " (" + ToString() + ")";
+                    message += " (" + this.ToString() + ")";
                 }
 #endif
                 // Wow.  Reflection in a throw call.  Later on this may turn out to have been a bad idea.
@@ -594,7 +595,7 @@ namespace ControlzEx.Standard
                 // the process of implementing an IErrorInfo and then use that.  There's no stock
                 // implementations of IErrorInfo available and I don't think it's worth the maintenance
                 // overhead of doing it, nor would it have significant value over this approach.
-                var e = Marshal.GetExceptionForHR((int)_value, new IntPtr(-1));
+                var e = Marshal.GetExceptionForHR((int)this._value, new IntPtr(-1));
                 Assert.IsNotNull(e);
                 // ArgumentNullException doesn't have the right constructor parameters,
                 // (nor does Win32Exception...)
@@ -606,25 +607,26 @@ namespace ControlzEx.Standard
                 // then at least check the facility and attempt to do better ourselves.
                 if (e!.GetType() == typeof(COMException))
                 {
-                    switch (Facility)
+                    switch (this.Facility)
                     {
                         case Facility.Win32:
-                            e = new Win32Exception(Code, message);
+                            e = new Win32Exception(this.Code, message);
                             break;
                         default:
-                            e = new COMException(message, (int)_value);
+                            e = new COMException(message, (int)this._value);
                             break;
                     }
                 }
                 else
                 {
                     var cons = e!.GetType().GetConstructor(new[] { typeof(string) });
-                    if (null != cons)
+                    if (cons != null)
                     {
                         e = cons.Invoke(new object[] { message }) as Exception;
                         Assert.IsNotNull(e);
                     }
                 }
+
                 throw e!;
             }
         }

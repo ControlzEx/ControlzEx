@@ -15,7 +15,7 @@ namespace ControlzEx.Standard
         {
             IntPtr p = hicon;
             hicon = IntPtr.Zero;
-            if (IntPtr.Zero != p)
+            if (p != IntPtr.Zero)
             {
                 NativeMethods.DestroyIcon(p);
             }
@@ -27,7 +27,7 @@ namespace ControlzEx.Standard
         {
             IntPtr p = gdiObject;
             gdiObject = IntPtr.Zero;
-            if (IntPtr.Zero != p)
+            if (p != IntPtr.Zero)
             {
                 NativeMethods.DeleteObject(p);
             }
@@ -51,7 +51,7 @@ namespace ControlzEx.Standard
         {
             IntPtr p = gdipImage;
             gdipImage = IntPtr.Zero;
-            if (IntPtr.Zero != p)
+            if (p != IntPtr.Zero)
             {
                 NativeMethods.GdipDisposeImage(p);
             }
@@ -63,7 +63,7 @@ namespace ControlzEx.Standard
         {
             IntPtr p = ptr;
             ptr = IntPtr.Zero;
-            if (IntPtr.Zero != p)
+            if (p != IntPtr.Zero)
             {
                 Marshal.FreeCoTaskMem(p);
             }
@@ -75,7 +75,7 @@ namespace ControlzEx.Standard
         {
             IntPtr p = hglobal;
             hglobal = IntPtr.Zero;
-            if (IntPtr.Zero != p)
+            if (p != IntPtr.Zero)
             {
                 Marshal.FreeHGlobal(p);
             }
@@ -97,13 +97,13 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static bool IsOSVistaOrNewer
         {
-            get { return _osVersion >= new Version(6, 0); }
+            get { return new Version(6, 0) <= _osVersion; }
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static bool IsOSWindows7OrNewer
         {
-            get { return _osVersion >= new Version(6, 1); }
+            get { return new Version(6, 1) <= _osVersion; }
         }
 
     }

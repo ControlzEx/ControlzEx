@@ -45,6 +45,7 @@ namespace ControlzEx.Standard
             {
                 dc.DrawImage(img, new Rect(0, 0, renderWidth, renderHeight));
             }
+
             var bmp = new RenderTargetBitmap((int)renderWidth, (int)renderHeight, 96, 96, PixelFormats.Pbgra32);
             bmp.Render(dv);
             return bmp;
@@ -65,6 +66,7 @@ namespace ControlzEx.Standard
             {
                 dc.DrawRectangle(new VisualBrush(element), null, new Rect(0, 0, renderWidth, renderHeight));
             }
+
             bmp.Render(dv);
             return bmp;
         }
@@ -94,6 +96,7 @@ namespace ControlzEx.Standard
                     s_bitDepth = NativeMethods.GetDeviceCaps(dc, DeviceCap.BITSPIXEL) * NativeMethods.GetDeviceCaps(dc, DeviceCap.PLANES);
                 }
             }
+
             return s_bitDepth;
         }
 
@@ -196,11 +199,12 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static bool AreImageSourcesEqual(ImageSource? left, ImageSource? right)
         {
-            if (null == left)
+            if (left == null)
             {
                 return right is null;
             }
-            if (null == right)
+
+            if (right == null)
             {
                 return false;
             }
@@ -226,6 +230,7 @@ namespace ControlzEx.Standard
             {
                 return;
             }
+
             Assert.IsNotNull(property);
             Assert.IsNotNull(listener);
 
@@ -240,6 +245,7 @@ namespace ControlzEx.Standard
             {
                 return;
             }
+
             Assert.IsNotNull(property);
             Assert.IsNotNull(listener);
 

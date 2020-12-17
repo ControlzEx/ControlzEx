@@ -297,6 +297,5 @@ namespace ControlzEx.Theming
             return false;
         }
 
-
     }
 }

@@ -299,7 +299,7 @@ namespace ControlzEx.Behaviors
                 return;
             }
 
-            Debug("UpdateText");
+            this.Debug("UpdateText");
 
 #pragma warning disable CA1309
             // check Provider.Text + TextBox.Text
@@ -334,7 +334,7 @@ namespace ControlzEx.Behaviors
         /// </summary>
         private bool TreatSelectedText()
         {
-            if (AssociatedObject.SelectionLength > 0
+            if (this.AssociatedObject.SelectionLength > 0
                 && this.Provider is not null)
             {
                 this.Provider.RemoveAt(this.AssociatedObject.SelectionStart, this.AssociatedObject.SelectionStart + this.AssociatedObject.SelectionLength - 1);
@@ -353,12 +353,12 @@ namespace ControlzEx.Behaviors
 
         private void SetText(string? text)
         {
-            AssociatedObject.Text = string.IsNullOrWhiteSpace(text) ? string.Empty : text;
+            this.AssociatedObject.Text = string.IsNullOrWhiteSpace(text) ? string.Empty : text;
         }
 
         private int GetNextCharacterPosition(int caretIndex)
         {
-            var start = caretIndex + GetAnzahlIncludeLiterals(caretIndex);
+            var start = caretIndex + this.GetAnzahlIncludeLiterals(caretIndex);
             var position = this.Provider!.FindEditPositionFrom(start, true);
 
             if (position == -1)

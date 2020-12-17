@@ -83,7 +83,6 @@ namespace ControlzEx.Tests.Theming
             }
         }
 
-
         [Test]
         public void TestHslFromInput()
         {

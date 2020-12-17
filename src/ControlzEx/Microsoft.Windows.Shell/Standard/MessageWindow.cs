@@ -25,8 +25,8 @@ namespace ControlzEx.Standard
         public MessageWindow(CS classStyle, WS style, WS_EX exStyle, Rect location, string name, WndProc callback)
         {
             // A null callback means just use DefWindowProc.
-            _wndProcCallback = callback;
-            _className = "MessageWindowClass+" + Guid.NewGuid().ToString();
+            this._wndProcCallback = callback;
+            this._className = "MessageWindowClass+" + Guid.NewGuid().ToString();
 
             var wc = new WNDCLASSEX
             {
@@ -36,7 +36,7 @@ namespace ControlzEx.Standard
                 hInstance = NativeMethods.GetModuleHandle(null),
                 hbrBackground = NativeMethods.GetStockObject(StockObject.NULL_BRUSH),
                 lpszMenuName = "",
-                lpszClassName = _className,
+                lpszClassName = this._className,
             };
 
             NativeMethods.RegisterClassEx(ref wc);
@@ -47,9 +47,9 @@ namespace ControlzEx.Standard
                 gcHandle = GCHandle.Alloc(this);
                 IntPtr pinnedThisPtr = (IntPtr)gcHandle;
 
-                Handle = NativeMethods.CreateWindowEx(
+                this.Handle = NativeMethods.CreateWindowEx(
                     exStyle,
-                    _className,
+                    this._className,
                     name,
                     style,
                     (int)location.X,
@@ -69,12 +69,12 @@ namespace ControlzEx.Standard
 
         ~MessageWindow()
         {
-            _Dispose(false, false);
+            this._Dispose(false, false);
         }
 
         public void Dispose()
         {
-            _Dispose(true, false);
+            this._Dispose(true, false);
             GC.SuppressFinalize(this);
         }
 
@@ -83,37 +83,37 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "disposing")]
         private void _Dispose(bool disposing, bool isHwndBeingDestroyed)
         {
-            if (_isDisposed)
+            if (this._isDisposed)
             {
                 // Block against reentrancy.
                 return;
             }
 
-            _isDisposed = true;
+            this._isDisposed = true;
 
-            IntPtr hwnd = Handle;
-            string className = _className;
+            IntPtr hwnd = this.Handle;
+            string className = this._className;
 
             if (isHwndBeingDestroyed)
             {
-                Dispatcher.BeginInvoke(DispatcherPriority.Normal, (DispatcherOperationCallback)(arg => _DestroyWindow(IntPtr.Zero, className)));
+                this.Dispatcher.BeginInvoke(DispatcherPriority.Normal, (DispatcherOperationCallback)(arg => _DestroyWindow(IntPtr.Zero, className)));
             }
-            else if (Handle != IntPtr.Zero)
+            else if (this.Handle != IntPtr.Zero)
             {
-                if (CheckAccess())
+                if (this.CheckAccess())
                 {
                     _DestroyWindow(hwnd, className);
                 }
                 else
                 {
-                    Dispatcher.BeginInvoke(DispatcherPriority.Normal, (DispatcherOperationCallback)(arg => _DestroyWindow(hwnd, className)));
+                    this.Dispatcher.BeginInvoke(DispatcherPriority.Normal, (DispatcherOperationCallback)(arg => _DestroyWindow(hwnd, className)));
                 }
             }
 
             s_windowLookup.Remove(hwnd);
 
-            _className = null!;
-            Handle = IntPtr.Zero;
+            this._className = null!;
+            this.Handle = IntPtr.Zero;
         }
 
         [SuppressMessage("Microsoft.Usage", "CA1816:CallGCSuppressFinalizeCorrectly")]
@@ -136,6 +136,7 @@ namespace ControlzEx.Standard
                     return NativeMethods.DefWindowProc(hwnd, msg, wParam, lParam);
                 }
             }
+
             Assert.IsNotNull(hwndWrapper);
 
             WndProc callback = hwndWrapper._wndProcCallback;

@@ -148,6 +148,7 @@ namespace ControlzEx.Behaviors
                     return handlePair.Value(message, wParam, lParam, out handled);
                 }
             }
+
             return IntPtr.Zero;
         }
 
@@ -157,7 +158,7 @@ namespace ControlzEx.Behaviors
         [SecurityCritical]
         private IntPtr _HandleNCUAHDRAWCAPTION(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
-            if (false == this.AssociatedObject.ShowInTaskbar 
+            if (this.AssociatedObject.ShowInTaskbar == false 
                 && this._GetHwndState() == WindowState.Minimized)
             {
                 var modified = this._ModifyStyle(WS.VISIBLE, 0);
@@ -172,6 +173,7 @@ namespace ControlzEx.Behaviors
                 {
                     this._ModifyStyle(0, WS.VISIBLE);
                 }
+
                 handled = true;
                 return lRet;
             }
@@ -196,6 +198,7 @@ namespace ControlzEx.Behaviors
             {
                 this._ModifyStyle(0, WS.VISIBLE);
             }
+
             handled = true;
             return lRet;
         }
@@ -298,6 +301,7 @@ namespace ControlzEx.Behaviors
                 default:
                     return area;
             }
+
             return area;
         }
 
@@ -476,11 +480,12 @@ namespace ControlzEx.Behaviors
         {
             // Emulate the system behavior of clicking the right mouse button over the caption area
             // to bring up the system menu.
-            if (HT.CAPTION == (HT)(Environment.Is64BitProcess ? wParam.ToInt64() : wParam.ToInt32()))
+            if ((HT)(Environment.Is64BitProcess ? wParam.ToInt64() : wParam.ToInt32()) == HT.CAPTION)
             {
                 //SystemCommands.ShowSystemMenuPhysicalCoordinates(_window, new Point(Utility.GET_X_LPARAM(lParam), Utility.GET_Y_LPARAM(lParam)));
                 Windows.Shell.SystemCommands.ShowSystemMenuPhysicalCoordinates(this.AssociatedObject, Utility.GetPoint(lParam));
             }
+
             handled = false;
             return IntPtr.Zero;
         }
@@ -553,13 +558,33 @@ namespace ControlzEx.Behaviors
 
             var minWidth = wnd.MinWidth * matrix.M11;
             var minHeight = wnd.MinHeight * matrix.M22;
-            if (wp.cx < minWidth) { wp.cx = (int)minWidth; changedPos = true; }
-            if (wp.cy < minHeight) { wp.cy = (int)minHeight; changedPos = true; }
+            if (wp.cx < minWidth)
+            {
+                wp.cx = (int)minWidth;
+                changedPos = true;
+            }
+
+            if (wp.cy < minHeight)
+            {
+                wp.cy = (int)minHeight;
+                changedPos = true;
+            }
 
             var maxWidth = wnd.MaxWidth * matrix.M11;
             var maxHeight = wnd.MaxHeight * matrix.M22;
-            if (wp.cx > maxWidth && maxWidth > 0) { wp.cx = (int)Math.Round(maxWidth); changedPos = true; }
-            if (wp.cy > maxHeight && maxHeight > 0) { wp.cy = (int)Math.Round(maxHeight); changedPos = true; }
+            if (wp.cx > maxWidth
+                && maxWidth > 0)
+            {
+                wp.cx = (int)Math.Round(maxWidth);
+                changedPos = true;
+            }
+
+            if (wp.cy > maxHeight
+                && maxHeight > 0)
+            {
+                wp.cy = (int)Math.Round(maxHeight);
+                changedPos = true;
+            }
 
             if (changedPos == false)
             {
@@ -643,6 +668,7 @@ namespace ControlzEx.Behaviors
                     mmi.ptMaxTrackSize.X = mmi.ptMaxSize.X;
                     mmi.ptMaxTrackSize.Y = mmi.ptMaxSize.Y;
                 }
+
                 Marshal.StructureToPtr(mmi, lParam, true);
             }
 
@@ -681,6 +707,7 @@ namespace ControlzEx.Behaviors
                  */
                 this._ModifyStyle(WS.CAPTION, 0);
             }
+
             handled = false;
             return IntPtr.Zero;
         }
@@ -846,13 +873,13 @@ namespace ControlzEx.Behaviors
 
             var state = assumeState ?? this._GetHwndState();
 
-            if (null != assumeState 
+            if (assumeState != null 
                 || this.lastMenuState != state)
             {
                 this.lastMenuState = state;
 
                 var hmenu = NativeMethods.GetSystemMenu(this.windowHandle, false);
-                if (IntPtr.Zero != hmenu)
+                if (hmenu != IntPtr.Zero)
                 {
                     var dwStyle = NativeMethods.GetWindowStyle(this.windowHandle);
 
@@ -896,7 +923,7 @@ namespace ControlzEx.Behaviors
         [SecurityCritical]
         private void _UpdateFrameState(bool force)
         {
-            if (IntPtr.Zero == this.windowHandle 
+            if (this.windowHandle == IntPtr.Zero 
                 || this.hwndSource is null
                 || this.hwndSource.IsDisposed)
             {
@@ -957,6 +984,7 @@ namespace ControlzEx.Behaviors
             {
                 clientRect.Offset(test.X - windowRect.Left, test.Y - windowRect.Top);
             }
+
             return clientRect;
         }
 
@@ -1024,11 +1052,11 @@ namespace ControlzEx.Behaviors
                 Size windowSize;
 
                 // Use the size if it's specified.
-                if (null != wp && !Utility.IsFlagSet((int)wp.Value.flags, (int)SWP.NOSIZE) && wp.Value.cx >= 0 && wp.Value.cy >= 0)
+                if (wp != null && !Utility.IsFlagSet((int)wp.Value.flags, (int)SWP.NOSIZE) && wp.Value.cx >= 0 && wp.Value.cy >= 0)
                 {
                     windowSize = new Size(wp.Value.cx, wp.Value.cy);
                 }
-                else if (null != wp && (this._lastRegionWindowState == this.AssociatedObject.WindowState))
+                else if (wp != null && (this._lastRegionWindowState == this.AssociatedObject.WindowState))
                 {
                     return;
                 }

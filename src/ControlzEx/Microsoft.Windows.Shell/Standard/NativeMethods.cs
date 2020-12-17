@@ -1533,7 +1533,7 @@ namespace ControlzEx.Standard
 
         protected override bool ReleaseHandle()
         {
-            return NativeMethods.FindClose(handle);
+            return NativeMethods.FindClose(this.handle);
         }
     }
 
@@ -1574,8 +1574,8 @@ namespace ControlzEx.Standard
         {
             set
             {
-                Assert.NullableIsNull(_hwnd);
-                _hwnd = value;
+                Assert.NullableIsNull(this._hwnd);
+                this._hwnd = value;
             }
         }
 #pragma warning restore CA1044
@@ -1585,17 +1585,17 @@ namespace ControlzEx.Standard
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         protected override bool ReleaseHandle()
         {
-            if (_created)
+            if (this._created)
             {
-                return NativeMethods.DeleteDC(handle);
+                return NativeMethods.DeleteDC(this.handle);
             }
 
-            if (!_hwnd.HasValue || _hwnd.Value == IntPtr.Zero)
+            if (!this._hwnd.HasValue || this._hwnd.Value == IntPtr.Zero)
             {
                 return true;
             }
 
-            return NativeMethods.ReleaseDC(_hwnd.Value, handle) == 1;
+            return NativeMethods.ReleaseDC(this._hwnd.Value, this.handle) == 1;
         }
 
         [SuppressMessage("Microsoft.Usage", "CA2201:DoNotRaiseReservedExceptionTypes"), SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
@@ -1636,6 +1636,7 @@ namespace ControlzEx.Standard
                 {
                     hPtr = hdc.handle;
                 }
+
                 dc = NativeMethods.CreateCompatibleDC(hPtr);
                 if (dc is null)
                 {
@@ -1717,7 +1718,7 @@ namespace ControlzEx.Standard
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         protected override bool ReleaseHandle()
         {
-            return NativeMethods.DeleteObject(handle);
+            return NativeMethods.DeleteObject(this.handle);
         }
     }
 
@@ -1725,7 +1726,7 @@ namespace ControlzEx.Standard
     {
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         private SafeGdiplusStartupToken(IntPtr ptr) : base(true) {
-            handle = ptr;
+            this.handle = ptr;
         }
 
         protected override bool ReleaseHandle()
@@ -1746,6 +1747,7 @@ namespace ControlzEx.Standard
                 SafeGdiplusStartupToken safeHandle = new SafeGdiplusStartupToken(unsafeHandle);
                 return safeHandle;
             }
+
             throw new Exception("Unable to initialize GDI+");
         }
     }
@@ -1764,7 +1766,7 @@ namespace ControlzEx.Standard
             Verify.IsNotNull(sink, "sink");
             Verify.IsNotDefault(eventId, "eventId");
 
-            handle = IntPtr.Zero;
+            this.handle = IntPtr.Zero;
 
             IConnectionPoint? cp = null;
             try
@@ -1776,8 +1778,9 @@ namespace ControlzEx.Standard
                 {
                     throw new InvalidOperationException("IConnectionPoint::Advise returned an invalid cookie.");
                 }
-                handle = new IntPtr(dwCookie);
-                _cp = cp;
+
+                this.handle = new IntPtr(dwCookie);
+                this._cp = cp;
                 cp = null;
             }
             finally
@@ -1789,7 +1792,7 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public void Disconnect()
         {
-            ReleaseHandle();
+            this.ReleaseHandle();
         }
 
         [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
@@ -1799,19 +1802,20 @@ namespace ControlzEx.Standard
             {
                 if (!this.IsInvalid)
                 {
-                    int dwCookie = handle.ToInt32();
-                    handle = IntPtr.Zero;
+                    int dwCookie = this.handle.ToInt32();
+                    this.handle = IntPtr.Zero;
 
-                    Assert.IsNotNull(_cp);
+                    Assert.IsNotNull(this._cp);
                     try
                     {
-                        _cp!.Unadvise(dwCookie);
+                        this._cp!.Unadvise(dwCookie);
                     }
                     finally
                     {
-                        Utility.SafeRelease(ref _cp);
+                        Utility.SafeRelease(ref this._cp);
                     }
                 }
+
                 return true;
             }
             catch
@@ -2029,16 +2033,16 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public VarEnum VarType
         {
-            get { return (VarEnum)vt; }
+            get { return (VarEnum)this.vt; }
         }
 
         // Right now only using this for strings.
         [SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
         public string? GetValue()
         {
-            if (vt == (ushort)VarEnum.VT_LPWSTR)
+            if (this.vt == (ushort)VarEnum.VT_LPWSTR)
             {
-                return Marshal.PtrToStringUni(pointerVal);
+                return Marshal.PtrToStringUni(this.pointerVal);
             }
 
             return null;
@@ -2046,17 +2050,17 @@ namespace ControlzEx.Standard
 
         public void SetValue(bool f)
         {
-            Clear();
-            vt = (ushort)VarEnum.VT_BOOL;
-            boolVal = (short)(f ? -1 : 0);
+            this.Clear();
+            this.vt = (ushort)VarEnum.VT_BOOL;
+            this.boolVal = (short)(f ? -1 : 0);
         }
 
         [SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
         public void SetValue(string val)
         {
-            Clear();
-            vt = (ushort)VarEnum.VT_LPWSTR;
-            pointerVal = Marshal.StringToCoTaskMemUni(val);
+            this.Clear();
+            this.vt = (ushort)VarEnum.VT_LPWSTR;
+            this.pointerVal = Marshal.StringToCoTaskMemUni(val);
         }
 
         public void Clear()
@@ -2069,19 +2073,19 @@ namespace ControlzEx.Standard
 
         public void Dispose()
         {
-            Dispose(true);
+            this.Dispose(true);
             GC.SuppressFinalize(this);
         }
 
         ~PROPVARIANT()
         {
-            Dispose(false);
+            this.Dispose(false);
         }
 
         [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "disposing")]
         private void Dispose(bool disposing)
         {
-            Clear();
+            this.Clear();
         }
 
         #endregion
@@ -2237,7 +2241,8 @@ namespace ControlzEx.Standard
         public int cyTopHeight;
         /// <summary>Height of bottom border that retains its size.</summary>
         public int cyBottomHeight;
-    };
+    }
+;
 
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [Serializable]
@@ -2249,20 +2254,20 @@ namespace ControlzEx.Standard
 
         public POINT(int x, int y)
         {
-            _x = x;
-            _y = y;
+            this._x = x;
+            this._y = y;
         }
 
         public int X
         {
-            get { return _x; }
-            set { _x = value; }
+            get { return this._x; }
+            set { this._x = value; }
         }
 
         public int Y
         {
-            get { return _y; }
-            set { _y = value; }
+            get { return this._y; }
+            set { this._y = value; }
         }
 
         public override bool Equals(object? obj)
@@ -2271,13 +2276,15 @@ namespace ControlzEx.Standard
             {
                 var point = (POINT)obj;
 
-                return point._x == _x && point._y == _y;
+                return point._x == this._x && point._y == this._y;
             }
+
             return base.Equals(obj);
         }
+
         public override int GetHashCode()
         {
-            return _x.GetHashCode() ^ _y.GetHashCode();
+            return this._x.GetHashCode() ^ this._y.GetHashCode();
         }
 
         public static bool operator ==(POINT a, POINT b)
@@ -2424,59 +2431,59 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public RefRECT(int left, int top, int right, int bottom)
         {
-            _left = left;
-            _top = top;
-            _right = right;
-            _bottom = bottom;
+            this._left = left;
+            this._top = top;
+            this._right = right;
+            this._bottom = bottom;
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public int Width
         {
-            get { return _right - _left; }
+            get { return this._right - this._left; }
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public int Height
         {
-            get { return _bottom - _top; }
+            get { return this._bottom - this._top; }
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public int Left
         {
-            get { return _left; }
-            set { _left = value; }
+            get { return this._left; }
+            set { this._left = value; }
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public int Right
         {
-            get { return _right; }
-            set { _right = value; }
+            get { return this._right; }
+            set { this._right = value; }
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public int Top
         {
-            get { return _top; }
-            set { _top = value; }
+            get { return this._top; }
+            set { this._top = value; }
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public int Bottom
         {
-            get { return _bottom; }
-            set { _bottom = value; }
+            get { return this._bottom; }
+            set { this._bottom = value; }
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public void Offset(int dx, int dy)
         {
-            _left += dx;
-            _top += dy;
-            _right += dx;
-            _bottom += dy;
+            this._left += dx;
+            this._top += dy;
+            this._right += dx;
+            this._bottom += dy;
         }
     }
 
@@ -2678,7 +2685,8 @@ namespace ControlzEx.Standard
         [CLSCompliant(false)]
         public uint type;
         public MOUSEINPUT mi;
-    };
+    }
+;
 
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
@@ -2915,6 +2923,7 @@ namespace ControlzEx.Standard
                 {
                     return (HRESULT)Win32Error.GetLastError();
                 }
+
                 return HRESULT.S_OK;
             }
 
@@ -2958,6 +2967,7 @@ namespace ControlzEx.Standard
                 {
                     throw new Win32Exception();
                 }
+
                 var result = new string[numArgs];
 
                 for (int i = 0; i < numArgs; i++)
@@ -3015,10 +3025,11 @@ namespace ControlzEx.Standard
         public static IntPtr CreateRoundRectRgn(int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nWidthEllipse, int nHeightEllipse)
         {
             IntPtr ret = _CreateRoundRectRgn(nLeftRect, nTopRect, nRightRect, nBottomRect, nWidthEllipse, nHeightEllipse);
-            if (IntPtr.Zero == ret)
+            if (ret == IntPtr.Zero)
             {
                 throw new Win32Exception();
             }
+
             return ret;
         }
 
@@ -3031,10 +3042,11 @@ namespace ControlzEx.Standard
         public static IntPtr CreateRectRgn(int nLeftRect, int nTopRect, int nRightRect, int nBottomRect)
         {
             IntPtr ret = _CreateRectRgn(nLeftRect, nTopRect, nRightRect, nBottomRect);
-            if (IntPtr.Zero == ret)
+            if (ret == IntPtr.Zero)
             {
                 HRESULT.ThrowLastError();
             }
+
             return ret;
         }
 
@@ -3047,10 +3059,11 @@ namespace ControlzEx.Standard
         public static IntPtr CreateRectRgnIndirect(RECT lprc)
         {
             IntPtr ret = _CreateRectRgnIndirect(ref lprc);
-            if (IntPtr.Zero == ret)
+            if (ret == IntPtr.Zero)
             {
                 HRESULT.ThrowLastError();
             }
+
             return ret;
         }
 
@@ -3092,7 +3105,7 @@ namespace ControlzEx.Standard
             IntPtr lpParam)
         {
             IntPtr ret = _CreateWindowEx(dwExStyle, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
-            if (IntPtr.Zero == ret)
+            if (ret == IntPtr.Zero)
             {
                 HRESULT.ThrowLastError();
             }
@@ -3178,6 +3191,7 @@ namespace ControlzEx.Standard
                 // The system isn't yet ready to respond.  Return null rather than throw.
                 return null;
             }
+
             hr.ThrowIfFailed();
 
             return dti;
@@ -3196,6 +3210,7 @@ namespace ControlzEx.Standard
             {
                 return false;
             }
+
             return _DwmIsCompositionEnabled();
         }
 
@@ -3297,6 +3312,7 @@ namespace ControlzEx.Standard
             {
                 HRESULT.ThrowLastError();
             }
+
             return rc;
         }
 
@@ -3316,6 +3332,7 @@ namespace ControlzEx.Standard
             {
                 HRESULT.ThrowLastError();
             }
+
             return pt;
         }
 
@@ -3333,6 +3350,7 @@ namespace ControlzEx.Standard
                 pt.X = 0;
                 pt.Y = 0;
             }
+
             return returnValue;
         }
 
@@ -3351,6 +3369,7 @@ namespace ControlzEx.Standard
             {
                 HRESULT.ThrowLastError();
             }
+
             return pt;
         }
 
@@ -3372,6 +3391,7 @@ namespace ControlzEx.Standard
             {
                 point = new System.Windows.Point();
             }
+
             return returnValue;
         }
 
@@ -3389,6 +3409,7 @@ namespace ControlzEx.Standard
                 pt.X = 0;
                 pt.Y = 0;
             }
+
             return returnValue;
         }
 
@@ -3477,6 +3498,7 @@ namespace ControlzEx.Standard
             {
                 HRESULT.ThrowLastError();
             }
+
             return retPtr;
         }
 
@@ -3497,6 +3519,7 @@ namespace ControlzEx.Standard
             {
                 HRESULT.ThrowLastError();
             }
+
             return mi;
         }
 
@@ -3516,6 +3539,7 @@ namespace ControlzEx.Standard
             {
                 HRESULT.ThrowLastError();
             }
+
             return mi;
         }
 
@@ -3552,6 +3576,7 @@ namespace ControlzEx.Standard
             {
                 HRESULT.ThrowLastError();
             }
+
             return retPtr;
         }
 
@@ -3597,6 +3622,7 @@ namespace ControlzEx.Standard
             {
                 HRESULT.ThrowLastError();
             }
+
             return info;
         }
 
@@ -3629,14 +3655,15 @@ namespace ControlzEx.Standard
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static IntPtr GetWindowLongPtr(IntPtr hwnd, GWL nIndex)
         {
-            var ret = 8 == IntPtr.Size
+            var ret = IntPtr.Size == 8
                 ? GetWindowLongPtr64(hwnd, nIndex)
                 : GetWindowLongPtr32(hwnd, nIndex);
 
-            if (IntPtr.Zero == ret)
+            if (ret == IntPtr.Zero)
             {
                 HRESULT.ThrowLastError();
             }
+
             return ret;
         }
 
@@ -3749,6 +3776,7 @@ namespace ControlzEx.Standard
             {
                 return wndpl;
             }
+
             throw new Win32Exception();
         }
 
@@ -3781,6 +3809,7 @@ namespace ControlzEx.Standard
             {
                 HRESULT.ThrowLastError();
             }
+
             return rc;
         }
 
@@ -3984,6 +4013,7 @@ namespace ControlzEx.Standard
             {
                 HRESULT.ThrowLastError();
             }
+
             return (WM)iRet;
         }
 
@@ -4009,10 +4039,11 @@ namespace ControlzEx.Standard
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static IntPtr SetClassLongPtr(IntPtr hwnd, GCLP nIndex, IntPtr dwNewLong)
         {
-            if (8 == IntPtr.Size)
+            if (IntPtr.Size == 8)
             {
                 return SetClassLongPtr64(hwnd, nIndex, dwNewLong);
             }
+
             return new IntPtr(SetClassLongPtr32(hwnd, nIndex, dwNewLong.ToInt32()));
         }
 
@@ -4100,10 +4131,11 @@ namespace ControlzEx.Standard
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static IntPtr SetWindowLongPtr(IntPtr hwnd, GWL nIndex, IntPtr dwNewLong)
         {
-            if (8 == IntPtr.Size)
+            if (IntPtr.Size == 8)
             {
                 return SetWindowLongPtr64(hwnd, nIndex, dwNewLong);
             }
+
             return new IntPtr(SetWindowLongPtr32(hwnd, nIndex, dwNewLong.ToInt32()));
         }
 
@@ -4126,7 +4158,7 @@ namespace ControlzEx.Standard
         public static void SetWindowRgn(IntPtr hWnd, IntPtr hRgn, bool bRedraw)
         {
             int err = _SetWindowRgn(hWnd, hRgn, bRedraw);
-            if (0 == err)
+            if (err == 0)
             {
                 throw new Win32Exception();
             }
@@ -4227,6 +4259,7 @@ namespace ControlzEx.Standard
             {
                 HRESULT.ThrowLastError();
             }
+
             return ret;
         }
 
@@ -4242,6 +4275,7 @@ namespace ControlzEx.Standard
             {
                 HRESULT.ThrowLastError();
             }
+
             return ret;
         }
 

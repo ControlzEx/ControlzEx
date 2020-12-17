@@ -57,12 +57,13 @@ namespace ControlzEx.Standard
 
             // Notice that ArgumentNullException and ArgumentException take the parameters in opposite order :P
             const string errorMessage = "The parameter can not be either null or empty.";
-            if (null == value)
+            if (value == null)
             {
                 Assert.Fail();
                 throw new ArgumentNullException(name, errorMessage);
             }
-            if ("" == value)
+
+            if (value == "")
             {
                 Assert.Fail();
                 throw new ArgumentException(errorMessage, name);
@@ -84,12 +85,13 @@ namespace ControlzEx.Standard
 
             // Notice that ArgumentNullException and ArgumentException take the parameters in opposite order :P
             const string errorMessage = "The parameter can not be either null or empty or consist only of white space characters.";
-            if (null == value)
+            if (value == null)
             {
                 Assert.Fail();
                 throw new ArgumentNullException(name, errorMessage);
             }
-            if ("" == value.Trim())
+
+            if (value.Trim() == "")
             {
                 Assert.Fail();
                 throw new ArgumentException(errorMessage, name);
@@ -119,7 +121,7 @@ namespace ControlzEx.Standard
         [DebuggerStepThrough]
         public static void IsNotNull<T>(T obj, string name) where T : class
         {
-            if (null == obj)
+            if (obj == null)
             {
                 Assert.Fail();
                 throw new ArgumentNullException(name);
@@ -134,7 +136,7 @@ namespace ControlzEx.Standard
         [DebuggerStepThrough]
         public static void IsNull<T>(T obj, string name) where T : class
         {
-            if (null != obj)
+            if (obj != null)
             {
                 Assert.Fail();
                 throw new ArgumentException("The parameter must be null.", name);
@@ -145,7 +147,7 @@ namespace ControlzEx.Standard
         [DebuggerStepThrough]
         public static void PropertyIsNotNull<T>(T obj, string name) where T : class
         {
-            if (null == obj)
+            if (obj == null)
             {
                 Assert.Fail();
                 throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "The property {0} cannot be null at this time.", name));
@@ -156,7 +158,7 @@ namespace ControlzEx.Standard
         [DebuggerStepThrough]
         public static void PropertyIsNull<T>(T obj, string name) where T : class
         {
-            if (null != obj)
+            if (obj != null)
             {
                 Assert.Fail();
                 throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "The property {0} must be null at this time.", name));
@@ -195,10 +197,10 @@ namespace ControlzEx.Standard
         [DebuggerStepThrough]
         public static void AreEqual<T>(T expected, T actual, string parameterName, string message)
         {
-            if (null == expected)
+            if (expected == null)
             {
                 // Two nulls are considered equal, regardless of type semantics.
-                if (null != actual && !actual.Equals(expected))
+                if (actual != null && !actual.Equals(expected))
                 {
                     Assert.Fail();
                     throw new ArgumentException(message, parameterName);
@@ -215,10 +217,10 @@ namespace ControlzEx.Standard
         [DebuggerStepThrough]
         public static void AreNotEqual<T>(T notExpected, T actual, string parameterName, string message)
         {
-            if (null == notExpected)
+            if (notExpected == null)
             {
                 // Two nulls are considered equal, regardless of type semantics.
-                if (null == actual || actual.Equals(notExpected))
+                if (actual == null || actual.Equals(notExpected))
                 {
                     Assert.Fail();
                     throw new ArgumentException(message, parameterName);

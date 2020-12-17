@@ -388,7 +388,7 @@ namespace ControlzEx.Behaviors
         {
             this.windowHandle = new WindowInteropHelper(this.AssociatedObject).Handle;
 
-            if (IntPtr.Zero == this.windowHandle)
+            if (this.windowHandle == IntPtr.Zero)
             {
                 throw new Exception("Uups, at this point we really need the Handle from the associated object!");
             }
