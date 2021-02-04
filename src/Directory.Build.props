@@ -30,6 +30,10 @@
         <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\ControlzEx.ruleset</CodeAnalysisRuleSet>
     </PropertyGroup>
 
+    <PropertyGroup>
+      <DefineConstants Condition="'$(TargetFramework)' == 'net5.0-windows'">$(DefineConstants);NET5_0_OR_GREATER</DefineConstants>
+    </PropertyGroup>
+
     <!-- Add the references for all projects and targets -->
     <ItemGroup>
         <PackageReference Include="JetBrains.Annotations" PrivateAssets="All" includeAssets="build;compile" />
