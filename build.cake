@@ -2,13 +2,13 @@
 // TOOLS / ADDINS
 ///////////////////////////////////////////////////////////////////////////////
 
-#module nuget:?package=Cake.DotNetTool.Module
+#module nuget:?package=Cake.DotNetTool.Module&version=0.5.0
 #tool "dotnet:?package=NuGetKeyVaultSignTool&version=1.2.28"
 #tool "dotnet:?package=AzureSignTool&version=2.0.17"
 
 #tool GitVersion.CommandLine&version=5.6.6
 #tool gitreleasemanager
-#addin Cake.Figlet
+#addin nuget:?package=Cake.Figlet&version=1.4.0
 
 ///////////////////////////////////////////////////////////////////////////////
 // ARGUMENTS
