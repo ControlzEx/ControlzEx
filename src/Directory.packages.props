@@ -1,6 +1,6 @@
 <Project>
     <ItemGroup>
-        <PackageVersion Include="XamlColorSchemeGenerator" version="4.0.0-rc0140" />
+        <PackageVersion Include="XamlColorSchemeGenerator" version="4.0.0-rc0144" />
         <PackageVersion Include="System.Text.Json" Version="5.0.1" />
         <PackageVersion Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.31" />
     </ItemGroup>
@@ -9,7 +9,7 @@
         <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="16.8.3" />
         <PackageVersion Include="NUnit3TestAdapter" Version="3.17" />
 
-        <PackageVersion Include="NUnit" version="3.13" />
+        <PackageVersion Include="NUnit" version="3.13.1" />
     </ItemGroup>
 
     <ItemGroup Label="Build">
