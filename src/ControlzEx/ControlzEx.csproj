@@ -6,6 +6,7 @@
         <RootNamespace>ControlzEx</RootNamespace>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <Description>ControlzEx is a library with some shared Controls for WPF.</Description>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <!-- NuGet -->
@@ -42,13 +43,13 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Reference Include="System.Web" Condition="$(DefineConstants.Contains(NETCOREAPP)) == false" />
-      <Reference Include="System.Web.Extensions" Condition="$(DefineConstants.Contains(NETCOREAPP)) == false" />
-      <PackageReference Include="System.Text.Json" Version="4.*" Condition="$(DefineConstants.Contains(NETCOREAPP))" />
+      <Reference Include="System.Web" Condition="!($(DefineConstants.Contains(NETCOREAPP)) or $(DefineConstants.Contains(NET5_0)))" />
+      <Reference Include="System.Web.Extensions" Condition="!($(DefineConstants.Contains(NETCOREAPP)) or $(DefineConstants.Contains(NET5_0)))" />
+      <PackageReference Include="System.Text.Json" Condition="$(DefineConstants.Contains(NETCOREAPP)) or $(DefineConstants.Contains(NET5_0))" />
     </ItemGroup>
 
     <!-- reference includes -->
     <ItemGroup>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.*" PrivateAssets="All" IncludeAssets="build; native" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" IncludeAssets="build; native" />
     </ItemGroup>
 </Project>

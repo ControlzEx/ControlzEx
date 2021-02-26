@@ -1,9 +1,7 @@
-﻿#pragma warning disable 1591, 618
-namespace ControlzEx.Windows.Shell
+﻿namespace ControlzEx.Windows.Shell
 {
     using System;
     using System.Security;
-    using System.Security.Permissions;
     using System.Windows;
     using System.Windows.Input;
     using System.Windows.Interop;
@@ -15,11 +13,15 @@ namespace ControlzEx.Windows.Shell
     [Obsolete(DesignerConstants.Win32ElementWarning)]
     public static class SystemCommands
     {
-        public static RoutedCommand CloseWindowCommand { get; private set; }
-        public static RoutedCommand MaximizeWindowCommand { get; private set; }
-        public static RoutedCommand MinimizeWindowCommand { get; private set; }
-        public static RoutedCommand RestoreWindowCommand { get; private set; }
-        public static RoutedCommand ShowSystemMenuCommand { get; private set; }
+        public static RoutedCommand CloseWindowCommand { get; }
+
+        public static RoutedCommand MaximizeWindowCommand { get; }
+
+        public static RoutedCommand MinimizeWindowCommand { get; }
+
+        public static RoutedCommand RestoreWindowCommand { get; }
+
+        public static RoutedCommand ShowSystemMenuCommand { get; }
 
         static SystemCommands()
         {
@@ -27,11 +29,11 @@ namespace ControlzEx.Windows.Shell
             MaximizeWindowCommand = new RoutedCommand("MaximizeWindow", typeof(SystemCommands));
             MinimizeWindowCommand = new RoutedCommand("MinimizeWindow", typeof(SystemCommands));
             RestoreWindowCommand = new RoutedCommand("RestoreWindow", typeof(SystemCommands));
-            ShowSystemMenuCommand = new RoutedCommand("ShowSystemMenu", typeof(SystemCommands));                 
+            ShowSystemMenuCommand = new RoutedCommand("ShowSystemMenu", typeof(SystemCommands));
         }
 
         [SecurityCritical]
-        private static void _PostSystemCommand(Window window, SC command)
+        private static void PostSystemCommand(Window window, SC command)
         {
             var hwnd = new WindowInteropHelper(window).Handle;
             if (WindowHelper.IsWindowHandleValid(hwnd) == false)
@@ -43,35 +45,31 @@ namespace ControlzEx.Windows.Shell
         }
 
         [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         public static void CloseWindow(Window window)
         {
             Verify.IsNotNull(window, "window");
-            _PostSystemCommand(window, SC.CLOSE);
+            PostSystemCommand(window, SC.CLOSE);
         }
 
         [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         public static void MaximizeWindow(Window window)
         {
             Verify.IsNotNull(window, "window");
-            _PostSystemCommand(window, SC.MAXIMIZE);
+            PostSystemCommand(window, SC.MAXIMIZE);
         }
 
         [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         public static void MinimizeWindow(Window window)
         {
             Verify.IsNotNull(window, "window");
-            _PostSystemCommand(window, SC.MINIMIZE);
+            PostSystemCommand(window, SC.MINIMIZE);
         }
 
         [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         public static void RestoreWindow(Window window)
         {
             Verify.IsNotNull(window, "window");
-            _PostSystemCommand(window, SC.RESTORE);
+            PostSystemCommand(window, SC.RESTORE);
         }
 
         /// <summary>
@@ -80,7 +78,6 @@ namespace ControlzEx.Windows.Shell
         /// <param name="window">The window for which the system menu should be shown.</param>
         /// <param name="e">The mouse event args.</param>
         [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         public static void ShowSystemMenu(Window window, MouseButtonEventArgs e)
         {
             var mousePosition = e.GetPosition(window);
@@ -95,7 +92,6 @@ namespace ControlzEx.Windows.Shell
         /// <param name="visual">The visual for which the system menu should be displayed.</param>
         /// <param name="elementPoint">The location to display the system menu, in logical screen coordinates.</param>
         [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         public static void ShowSystemMenu(Visual visual, Point elementPoint)
         {
             Verify.IsNotNull(visual, "visual");
@@ -142,7 +138,7 @@ namespace ControlzEx.Windows.Shell
             var hmenu = NativeMethods.GetSystemMenu(hwnd, false);
             var flags = NativeMethods.GetSystemMetrics(SM.MENUDROPALIGNMENT);
             var cmd = NativeMethods.TrackPopupMenuEx(hmenu, Constants.TPM_LEFTBUTTON | Constants.TPM_RETURNCMD | (uint)flags, (int)physicalScreenLocation.X, (int)physicalScreenLocation.Y, hwnd, IntPtr.Zero);
-            if (0 != cmd)
+            if (cmd != 0)
             {
                 NativeMethods.PostMessage(hwnd, WM.SYSCOMMAND, new IntPtr(cmd), IntPtr.Zero);
             }

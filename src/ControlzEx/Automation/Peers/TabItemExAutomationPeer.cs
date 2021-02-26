@@ -39,14 +39,14 @@
 
             var contentHost = parentTabControl.FindChildContentPresenter(tabItem.Content, tabItem);
 
-            if (contentHost != null)
+            if (contentHost is not null)
             {
                 var contentHostPeer = new FrameworkElementAutomationPeer(contentHost);
                 var contentChildren = contentHostPeer.GetChildren();
 
-                if (contentChildren != null)
+                if (contentChildren is not null)
                 {
-                    if (headerChildren == null)
+                    if (headerChildren is null)
                     {
                         headerChildren = contentChildren;
                     }
@@ -63,13 +63,13 @@
         /// <summary>
         ///     Gets the real tab item.
         /// </summary>
-        private UIElement GetWrapper()
+        private UIElement? GetWrapper()
         {
             var itemsControlAutomationPeer = this.ItemsControlAutomationPeer;
 
-            var owner = (TabControlEx)itemsControlAutomationPeer?.Owner;
+            var owner = (TabControlEx?)itemsControlAutomationPeer?.Owner;
 
-            if (owner == null)
+            if (owner is null)
             {
                 return null;
             }

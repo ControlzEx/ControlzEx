@@ -1,50 +1,50 @@
-#pragma warning disable 618
+#pragma warning disable 618, CA1001, CA1060
+
 namespace ControlzEx.Controls
 {
     using System;
     using System.Diagnostics;
     using System.Runtime.InteropServices;
     using System.Windows;
-    using System.Windows.Controls;
     using System.Windows.Data;
     using System.Windows.Interop;
     using System.Windows.Media;
     using System.Windows.Media.Animation;
     using System.Windows.Threading;
-    using ControlzEx.Standard;
-    using ControlzEx.Native;
     using ControlzEx.Behaviors;
     using ControlzEx.Internal;
+    using ControlzEx.Native;
+    using ControlzEx.Standard;
     using JetBrains.Annotations;
 
     [DebuggerDisplay("{" + nameof(Title) + "}")]
-    partial class GlowWindow
+    public partial class GlowWindow
     {
         private readonly Func<Point, RECT, HT> getHitTestValue;
         private readonly Func<RECT, double> getLeft;
         private readonly Func<RECT, double> getTop;
         private readonly Func<RECT, double> getWidth;
         private readonly Func<RECT, double> getHeight;
-        
+
         private IntPtr windowHandle;
         private IntPtr ownerWindowHandle;
         private bool closing;
-        private HwndSource hwndSource;
-        private PropertyChangeNotifier resizeModeChangeNotifier;
+        private HwndSource? hwndSource;
+        private PropertyChangeNotifier? resizeModeChangeNotifier;
 
         private readonly Window owner;
 
         private RECT lastUpdateCoreRect;
 
         #region PInvoke
-        
+
         [DllImport("user32.dll")]
         private static extern IntPtr LoadCursor(IntPtr hInstance, IDC_SIZE_CURSORS cursor);
 
         [DllImport("user32.dll")]
         private static extern IntPtr SetCursor(IntPtr cursor);
 
-        private enum IDC_SIZE_CURSORS 
+        private enum IDC_SIZE_CURSORS
         {
             SIZENWSE = 32642,
             SIZENESW = 32643,
@@ -73,7 +73,7 @@ namespace ControlzEx.Controls
             this.Name = this.Title;
 
             // We have to set the owner to fix #92
-            this.Owner = owner;
+            this.Owner = owner ?? throw new ArgumentNullException(nameof(owner));
             this.owner = owner;
 
             this.IsGlowing = true;
@@ -83,71 +83,71 @@ namespace ControlzEx.Controls
 
             {
                 var b = new Binding
-                        {
-                            Path = new PropertyPath(nameof(this.ActualWidth)),
-                            Source = this,
-                            Mode = BindingMode.OneWay
-                        };
+                {
+                    Path = new PropertyPath(nameof(this.ActualWidth)),
+                    Source = this,
+                    Mode = BindingMode.OneWay
+                };
                 this.glow.SetBinding(WidthProperty, b);
             }
 
             {
                 var b = new Binding
-                        {
-                            Path = new PropertyPath(nameof(this.ActualHeight)),
-                            Source = this,
-                            Mode = BindingMode.OneWay
-                        };
+                {
+                    Path = new PropertyPath(nameof(this.ActualHeight)),
+                    Source = this,
+                    Mode = BindingMode.OneWay
+                };
                 this.glow.SetBinding(HeightProperty, b);
             }
 
             {
                 var b = new Binding
-                        {
-                            Path = new PropertyPath(GlowWindowBehavior.GlowBrushProperty),
-                            Source = behavior,
-                            Mode = BindingMode.OneWay
-                        };
+                {
+                    Path = new PropertyPath(GlowWindowBehavior.GlowBrushProperty),
+                    Source = behavior,
+                    Mode = BindingMode.OneWay
+                };
                 this.glow.SetBinding(Glow.GlowBrushProperty, b);
             }
 
             {
                 var b = new Binding
-                    {
-                        Path = new PropertyPath(GlowWindowBehavior.NonActiveGlowBrushProperty),
-                        Source = behavior,
-                        Mode = BindingMode.OneWay
-                    };
+                {
+                    Path = new PropertyPath(GlowWindowBehavior.NonActiveGlowBrushProperty),
+                    Source = behavior,
+                    Mode = BindingMode.OneWay
+                };
                 this.glow.SetBinding(Glow.NonActiveGlowBrushProperty, b);
             }
 
             {
                 var b = new Binding
-                        {
-                            Path = new PropertyPath(BorderThicknessProperty),
-                            Source = owner,
-                            Mode = BindingMode.OneWay
-                        };
+                {
+                    Path = new PropertyPath(BorderThicknessProperty),
+                    Source = owner,
+                    Mode = BindingMode.OneWay
+                };
                 this.glow.SetBinding(BorderThicknessProperty, b);
             }
 
             {
                 var b = new Binding
-                        {
-                            Path = new PropertyPath(GlowWindowBehavior.ResizeBorderThicknessProperty),
-                            Source = behavior
-                        };
+                {
+                    Path = new PropertyPath(GlowWindowBehavior.ResizeBorderThicknessProperty),
+                    Source = behavior
+                };
                 this.SetBinding(ResizeBorderThicknessProperty, b);
-            }            
+            }
 
             switch (direction)
             {
                 case GlowDirection.Left:
                     this.glow.HorizontalAlignment = HorizontalAlignment.Right;
                     this.getLeft = rect => rect.Left - this.ResizeBorderThickness.Left + 1;
-                    this.getTop = rect => rect.Top - this.ResizeBorderThickness.Top / 2; 
+                    this.getTop = rect => rect.Top - (this.ResizeBorderThickness.Top / 2);
                     this.getWidth = rect => this.ResizeBorderThickness.Left;
-                    this.getHeight = rect => rect.Height + this.ResizeBorderThickness.Top; 
+                    this.getHeight = rect => rect.Height + this.ResizeBorderThickness.Top;
                     this.getHitTestValue = (p, rect) => new Rect(0, 0, rect.Width, this.ResizeBorderThickness.Top * 2).Contains(p)
                         ? HT.TOPLEFT
                         : new Rect(0, rect.Height - this.ResizeBorderThickness.Bottom, rect.Width, this.ResizeBorderThickness.Bottom * 2).Contains(p)
@@ -158,9 +158,9 @@ namespace ControlzEx.Controls
                 case GlowDirection.Right:
                     this.glow.HorizontalAlignment = HorizontalAlignment.Left;
                     this.getLeft = rect => rect.Right - 1;
-                    this.getTop = rect => rect.Top - this.ResizeBorderThickness.Top / 2; 
+                    this.getTop = rect => rect.Top - (this.ResizeBorderThickness.Top / 2);
                     this.getWidth = rect => this.ResizeBorderThickness.Right;
-                    this.getHeight = rect => rect.Height + this.ResizeBorderThickness.Top; 
+                    this.getHeight = rect => rect.Height + this.ResizeBorderThickness.Top;
                     this.getHitTestValue = (p, rect) => new Rect(0, 0, rect.Width, this.ResizeBorderThickness.Top * 2).Contains(p)
                         ? HT.TOPRIGHT
                         : new Rect(0, rect.Height - this.ResizeBorderThickness.Bottom, rect.Width, this.ResizeBorderThickness.Bottom * 2).Contains(p)
@@ -170,9 +170,9 @@ namespace ControlzEx.Controls
 
                 case GlowDirection.Top:
                     this.glow.VerticalAlignment = VerticalAlignment.Bottom;
-                    this.getLeft = rect => rect.Left - this.ResizeBorderThickness.Left / 2; 
+                    this.getLeft = rect => rect.Left - (this.ResizeBorderThickness.Left / 2);
                     this.getTop = rect => rect.Top - this.ResizeBorderThickness.Top + 1;
-                    this.getWidth = rect => rect.Width + this.ResizeBorderThickness.Left; 
+                    this.getWidth = rect => rect.Width + this.ResizeBorderThickness.Left;
                     this.getHeight = rect => this.ResizeBorderThickness.Top;
                     this.getHitTestValue = (p, rect) => new Rect(0, 0, this.ResizeBorderThickness.Left * 2, rect.Height).Contains(p)
                         ? HT.TOPLEFT
@@ -183,9 +183,9 @@ namespace ControlzEx.Controls
 
                 case GlowDirection.Bottom:
                     this.glow.VerticalAlignment = VerticalAlignment.Top;
-                    this.getLeft = rect => rect.Left - this.ResizeBorderThickness.Left / 2; 
+                    this.getLeft = rect => rect.Left - (this.ResizeBorderThickness.Left / 2);
                     this.getTop = rect => rect.Bottom - 1;
-                    this.getWidth = rect => rect.Width + this.ResizeBorderThickness.Left; 
+                    this.getWidth = rect => rect.Width + this.ResizeBorderThickness.Left;
                     this.getHeight = rect => this.ResizeBorderThickness.Bottom;
                     this.getHitTestValue = (p, rect) => new Rect(0, 0, this.ResizeBorderThickness.Left * 2, rect.Height).Contains(p)
                         ? HT.BOTTOMLEFT
@@ -193,6 +193,9 @@ namespace ControlzEx.Controls
                             ? HT.BOTTOMRIGHT
                             : HT.BOTTOM;
                     break;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(direction), direction, "Invalid direction.");
             }
 
             owner.Activated += this.OnOwnerActivated;
@@ -201,9 +204,9 @@ namespace ControlzEx.Controls
             owner.Closed += (sender, e) => this.InternalClose();
         }
 
-        public bool IsGlowing { set; get; }
+        public bool IsGlowing { get; set; }
 
-        public Storyboard OpacityStoryboard { get; set; }
+        public Storyboard? OpacityStoryboard { get; set; }
 
         public static readonly DependencyProperty ResizeBorderThicknessProperty = DependencyProperty.Register(nameof(ResizeBorderThickness), typeof(Thickness), typeof(GlowWindow), new PropertyMetadata(WindowChromeBehavior.GetDefaultResizeBorderThickness(), OnResizeBorderThicknessChanged));
 
@@ -288,7 +291,7 @@ namespace ControlzEx.Controls
             this.resizeModeChangeNotifier.ValueChanged += this.ResizeModeChanged;
         }
 
-        private void ResizeModeChanged(object sender, EventArgs e)
+        private void ResizeModeChanged(object? sender, EventArgs e)
         {
             var wsex = NativeMethods.GetWindowStyleEx(this.windowHandle);
 
@@ -314,12 +317,12 @@ namespace ControlzEx.Controls
             RECT rect;
             if (this.owner.Visibility == Visibility.Hidden)
             {
-                this.InvokeIfCanUpdateCore(() => 
+                this.InvokeIfCanUpdateCore(() =>
                             {
                                 this.SetVisibilityIfPossible(Visibility.Collapsed);
                             });
 
-                if (this.IsGlowing 
+                if (this.IsGlowing
                     && UnsafeNativeMethods.GetWindowRect(this.ownerWindowHandle, out rect))
                 {
                     this.UpdateCore(rect);
@@ -336,11 +339,10 @@ namespace ControlzEx.Controls
                                 this.SetVisibilityIfPossible(newVisibility);
                             });
 
-                
-                if (this.IsGlowing 
+                if (this.IsGlowing
                     && UnsafeNativeMethods.GetWindowRect(this.ownerWindowHandle, out rect))
                 {
-                    this.UpdateCore(rect);                    
+                    this.UpdateCore(rect);
                 }
             }
             else
@@ -348,7 +350,7 @@ namespace ControlzEx.Controls
                 this.InvokeIfCanUpdateCore(() =>
                             {
                                 this.SetVisibilityIfPossible(Visibility.Collapsed);
-                            });                
+                            });
             }
         }
 
@@ -407,7 +409,7 @@ namespace ControlzEx.Controls
             // we can handle this._owner.WindowState == WindowState.Normal
             // or use NOZORDER too
             // todo: direct z-order
-            NativeMethods.SetWindowPos(this.windowHandle, this.ownerWindowHandle, 
+            NativeMethods.SetWindowPos(this.windowHandle, this.ownerWindowHandle,
                                        (int)this.getLeft(rect),
                                        (int)this.getTop(rect),
                                        (int)this.getWidth(rect),
@@ -415,19 +417,19 @@ namespace ControlzEx.Controls
                                        SWP.NOACTIVATE | SWP.NOZORDER);
         }
 
-        private void OnOwnerActivated(object sender, EventArgs e)
+        private void OnOwnerActivated(object? sender, EventArgs e)
         {
             this.Update();
 
             this.glow.IsGlow = true;
         }
 
-        private void OnOwnerDeactivated(object sender, EventArgs e)
+        private void OnOwnerDeactivated(object? sender, EventArgs e)
         {
             this.glow.IsGlow = false;
         }
 
-        private void OnOwnerIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        private void OnOwnerIsVisibleChanged(object? sender, DependencyPropertyChangedEventArgs e)
         {
             this.Update();
         }
@@ -440,13 +442,13 @@ namespace ControlzEx.Controls
             this.owner.Deactivated -= this.OnOwnerDeactivated;
             this.owner.IsVisibleChanged -= this.OnOwnerIsVisibleChanged;
 
-            if (this.resizeModeChangeNotifier != null)
+            if (this.resizeModeChangeNotifier is not null)
             {
                 this.resizeModeChangeNotifier.ValueChanged -= this.ResizeModeChanged;
                 this.resizeModeChangeNotifier.Dispose();
             }
 
-            if (this.hwndSource != null)
+            if (this.hwndSource is not null)
             {
                 this.hwndSource.RemoveHook(this.WndProc);
                 this.hwndSource.Dispose();
@@ -470,11 +472,12 @@ namespace ControlzEx.Controls
                         // this fixes #58
                         this.InvokeAsyncIfCanUpdateCore(DispatcherPriority.Send, FixWindowZOrder);
                     }
+
                     break;
 
                 case WM.WINDOWPOSCHANGED:
                 case WM.WINDOWPOSCHANGING:
-                    var wp = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
+                    var wp = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS))!;
                     wp.flags |= SWP.NOACTIVATE; // We always have to add SWP.NOACTIVATE to prevent accidental activation of this window
                     // todo: direct z-order
                     //wp.hwndInsertAfter = this.ownerWindowHandle;
@@ -489,6 +492,7 @@ namespace ControlzEx.Controls
                     {
                         NativeMethods.SendMessage(this.ownerWindowHandle, WM.NCACTIVATE, wParam, lParam);
                     }
+
                     // We have to return true according to https://docs.microsoft.com/en-us/windows/win32/winmsg/wm-ncactivate
                     // If we don't do that here the owner window can't be activated.
                     return new IntPtr(1);
@@ -503,6 +507,7 @@ namespace ControlzEx.Controls
                     {
                         NativeMethods.SendMessage(this.ownerWindowHandle, WM.ACTIVATE, wParam, lParam);
                     }
+
                     return new IntPtr(3) /* MA_NOACTIVATE */;
 
                 case WM.NCLBUTTONDOWN:
@@ -521,13 +526,14 @@ namespace ControlzEx.Controls
                         // Forward message to owner
                         NativeMethods.PostMessage(this.ownerWindowHandle, (WM)msg, wParam, IntPtr.Zero);
                     }
+
                     break;
 
                 case WM.NCHITTEST:
-                    if (this.owner.ResizeMode == ResizeMode.CanResize 
+                    if (this.owner.ResizeMode == ResizeMode.CanResize
                         || this.owner.ResizeMode == ResizeMode.CanResizeWithGrip)
                     {
-                        if (this.IsOwnerHandleValid() 
+                        if (this.IsOwnerHandleValid()
                             && UnsafeNativeMethods.GetWindowRect(this.ownerWindowHandle, out var rect))
                         {
                             if (NativeMethods.TryGetRelativeMousePosition(this.windowHandle, out var pt))
@@ -538,6 +544,7 @@ namespace ControlzEx.Controls
                             }
                         }
                     }
+
                     break;
 
                 case WM.SETCURSOR:
@@ -561,12 +568,13 @@ namespace ControlzEx.Controls
                             SetCursor(LoadCursor(IntPtr.Zero, IDC_SIZE_CURSORS.SIZENWSE));
                             break;
 
-                        case HT.TOPRIGHT:             
-                        case HT.BOTTOMLEFT:                       
+                        case HT.TOPRIGHT:
+                        case HT.BOTTOMLEFT:
                             handled = true;
                             SetCursor(LoadCursor(IntPtr.Zero, IDC_SIZE_CURSORS.SIZENESW));
                             break;
                     }
+
                     break;
             }
 
@@ -577,7 +585,7 @@ namespace ControlzEx.Controls
             {
                 NativeMethods.SetWindowPos(this.windowHandle, this.ownerWindowHandle, 0, 0, 0, 0, SWP.NOMOVE | SWP.NOSIZE | SWP.NOACTIVATE);
             }
-        }        
+        }
 
         private void InvokeIfCanUpdateCore([NotNull] Action invokeAction)
         {

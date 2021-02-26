@@ -257,7 +257,8 @@ paket-files/
 *.sln.iml
 
 # cake
-tools/
+tools/*
+!tools/packages.config
 
 # XamlStyler
 !XamlStyler/

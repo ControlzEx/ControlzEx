@@ -200,37 +200,47 @@ namespace ControlzEx.Theming
             }
         }
 
+#if NET5_0_OR_GREATER
+        private void ThemesInternalCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+#else
         private void ThemesInternalCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+#endif
         {
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    foreach (var newItem in e.NewItems.OfType<Theme>())
+                    if (e.NewItems is not null)
                     {
-                        if (this.baseColorsInternal.Contains(newItem.BaseColorScheme) == false)
+                        foreach (var newItem in e.NewItems.OfType<Theme>())
                         {
-                            this.baseColorsInternal.Add(newItem.BaseColorScheme);
-                        }
+                            if (this.baseColorsInternal.Contains(newItem.BaseColorScheme) == false)
+                            {
+                                this.baseColorsInternal.Add(newItem.BaseColorScheme);
+                            }
 
-                        if (this.colorSchemesInternal.Contains(newItem.ColorScheme) == false)
-                        {
-                            this.colorSchemesInternal.Add(newItem.ColorScheme);
+                            if (this.colorSchemesInternal.Contains(newItem.ColorScheme) == false)
+                            {
+                                this.colorSchemesInternal.Add(newItem.ColorScheme);
+                            }
                         }
                     }
 
                     break;
 
                 case NotifyCollectionChangedAction.Remove:
-                    foreach (var oldItem in e.OldItems.OfType<Theme>())
+                    if (e.OldItems is not null)
                     {
-                        if (this.themesInternal.Any(x => x.BaseColorScheme == oldItem.BaseColorScheme) == false)
+                        foreach (var oldItem in e.OldItems.OfType<Theme>())
                         {
-                            this.baseColorsInternal.Remove(oldItem.BaseColorScheme);
-                        }
+                            if (this.themesInternal.Any(x => x.BaseColorScheme == oldItem.BaseColorScheme) == false)
+                            {
+                                this.baseColorsInternal.Remove(oldItem.BaseColorScheme);
+                            }
 
-                        if (this.themesInternal.Any(x => x.ColorScheme == oldItem.ColorScheme) == false)
-                        {
-                            this.baseColorsInternal.Remove(oldItem.ColorScheme);
+                            if (this.themesInternal.Any(x => x.ColorScheme == oldItem.ColorScheme) == false)
+                            {
+                                this.baseColorsInternal.Remove(oldItem.ColorScheme);
+                            }
                         }
                     }
 
@@ -249,7 +259,7 @@ namespace ControlzEx.Theming
                     {
                         this.colorSchemesInternal.Add(theme.ColorScheme);
                     }
-                    
+
                     break;
             }
         }
@@ -265,7 +275,7 @@ namespace ControlzEx.Theming
         public Theme AddLibraryTheme([NotNull] LibraryTheme libraryTheme)
         {
             var theme = this.GetTheme(libraryTheme.Name, libraryTheme.IsHighContrast);
-            if (!(theme is null))
+            if (theme is not null)
             {
                 theme.AddLibraryTheme(libraryTheme);
                 return theme;
@@ -280,7 +290,7 @@ namespace ControlzEx.Theming
         public Theme AddTheme([NotNull] Theme theme)
         {
             var existingTheme = this.GetTheme(theme.Name, theme.IsHighContrast);
-            if (!(existingTheme is null))
+            if (existingTheme is not null)
             {
                 return existingTheme;
             }
@@ -345,13 +355,13 @@ namespace ControlzEx.Theming
 
             var themeInstance = Theme.GetThemeInstance(resourceDictionary);
 
-            if (!(themeInstance is null))
+            if (themeInstance is not null)
             {
                 return themeInstance;
             }
 
             var builtInTheme = this.Themes.FirstOrDefault(x => x.Name == Theme.GetThemeName(resourceDictionary));
-            if (!(builtInTheme is null))
+            if (builtInTheme is not null)
             {
                 return builtInTheme;
             }
@@ -373,7 +383,7 @@ namespace ControlzEx.Theming
                     {
                         var parentTheme = ((LibraryTheme)resourceDictionary[resourceDictionaryKey]).ParentTheme;
 
-                        if (!(parentTheme is null))
+                        if (parentTheme is not null)
                         {
                             return parentTheme;
                         }
@@ -583,7 +593,7 @@ namespace ControlzEx.Theming
                     ResourceDictionary? oldThemeDictionary = null;
                     List<ResourceDictionary>? oldThemeResources = null;
 
-                    if (!(oldTheme is null))
+                    if (oldTheme is not null)
                     {
                         oldThemeDictionary = resourceDictionary.MergedDictionaries.FirstOrDefault(d => Theme.GetThemeInstance(d) == oldTheme);
 
@@ -608,11 +618,11 @@ namespace ControlzEx.Theming
                         //}
                     }
 
-                    if (!(oldThemeDictionary is null))
+                    if (oldThemeDictionary is not null)
                     {
                         resourceDictionary.MergedDictionaries.Remove(oldThemeDictionary);
                     }
-                    else if (!(oldThemeResources is null))
+                    else if (oldThemeResources is not null)
                     {
                         foreach (var themeResource in oldThemeResources)
                         {
@@ -831,7 +841,7 @@ namespace ControlzEx.Theming
             {
                 var runtimeTheme = RuntimeThemeGenerator.Current.GenerateRuntimeTheme(baseColorScheme, currentTheme.PrimaryAccentColor, currentTheme.IsHighContrast);
 
-                if (!(runtimeTheme is null))
+                if (runtimeTheme is not null)
                 {
                     newTheme = this.ChangeTheme(target, resourceDictionary, currentTheme, runtimeTheme);
                 }
@@ -931,7 +941,7 @@ namespace ControlzEx.Theming
             {
                 var runtimeTheme = RuntimeThemeGenerator.Current.GenerateRuntimeTheme(currentTheme.BaseColorScheme, color, currentTheme.IsHighContrast);
 
-                if (!(runtimeTheme is null))
+                if (runtimeTheme is not null)
                 {
                     newTheme = this.ChangeTheme(target, resourceDictionary, currentTheme, runtimeTheme);
                 }
@@ -986,12 +996,12 @@ namespace ControlzEx.Theming
 
         private void ApplyResourceDictionaryEntries([NotNull] ResourceDictionary oldRd, [NotNull] ResourceDictionary newRd)
         {
-#pragma warning disable CS8605
             foreach (var newRdMergedDictionary in newRd.MergedDictionaries)
             {
                 this.ApplyResourceDictionaryEntries(oldRd, newRdMergedDictionary);
             }
 
+#pragma warning disable CS8605
             foreach (DictionaryEntry dictionaryEntry in newRd)
             {
                 if (oldRd.Contains(dictionaryEntry.Key))
@@ -1018,13 +1028,13 @@ namespace ControlzEx.Theming
             var theme = this.DetectTheme(Application.Current);
 
             if (theme is null
-                && !(Application.Current.MainWindow is null))
+                && Application.Current.MainWindow is not null)
             {
                 try
                 {
                     theme = this.DetectTheme(Application.Current.MainWindow);
 
-                    if (!(theme is null))
+                    if (theme is not null)
                     {
                         return theme;
                     }
@@ -1065,7 +1075,7 @@ namespace ControlzEx.Theming
             }
 
             var detectedStyle = this.DetectTheme(frameworkElement.Resources)
-                                ?? (Application.Current != null
+                                ?? (Application.Current is not null
                                     ? this.DetectTheme(Application.Current.Resources)
                                     : null);
 
@@ -1105,7 +1115,7 @@ namespace ControlzEx.Theming
                     }
 
                     Theme? matched;
-                    if (!((matched = this.GetTheme(currentRd)) is null))
+                    if ((matched = this.GetTheme(currentRd)) is not null)
                     {
                         detectedTheme = matched;
                         return true;
@@ -1186,11 +1196,11 @@ namespace ControlzEx.Theming
                                      && WindowsThemeHelper.IsHighContrastEnabled();
 
                 // Check if we previously generated a theme matching the desired settings
-                var theme = this.GetTheme(baseColor, accentColor!, isHighContrast) 
+                var theme = this.GetTheme(baseColor, accentColor!, isHighContrast)
                             ?? RuntimeThemeGenerator.Current.GenerateRuntimeThemeFromWindowsSettings(baseColor, isHighContrast, this.libraryThemeProvidersInternal);
 
                 // Only change the theme if it's not the current already
-                if (!(theme is null)
+                if (theme is not null
                     && theme != detectedTheme)
                 {
                     this.ChangeTheme(Application.Current, theme);
@@ -1243,7 +1253,11 @@ namespace ControlzEx.Theming
             }
         }
 
+#if NET5_0_OR_GREATER
+        private void HandleStaticPropertyChanged(object? sender, PropertyChangedEventArgs e)
+#else
         private void HandleStaticPropertyChanged(object sender, PropertyChangedEventArgs e)
+#endif
         {
             if (e.PropertyName == nameof(SystemParameters.HighContrast)
                 && this.isSyncScheduled == false)
@@ -1284,9 +1298,13 @@ namespace ControlzEx.Theming
         }
     }
 
+#pragma warning disable CA1008
     [Flags]
     public enum ThemeSyncMode
     {
+        /// <summary>
+        /// No synchronization will happen.
+        /// </summary>
         DoNotSync = 0,
 
         /// <summary>
@@ -1304,6 +1322,10 @@ namespace ControlzEx.Theming
         /// </summary>
         SyncWithHighContrast = 1 << 4,
 
+        /// <summary>
+        /// All synchronizations are active.
+        /// </summary>
         SyncAll = SyncWithAppMode | SyncWithAccent | SyncWithHighContrast
     }
+#pragma warning restore CA1008
 }

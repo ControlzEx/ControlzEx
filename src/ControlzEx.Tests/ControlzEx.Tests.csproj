@@ -4,6 +4,7 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     
     <IsTestProject>true</IsTestProject>
+    <IsPackable>false</IsPackable>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 
     <NoWarn>$(NoWarn);SA0001</NoWarn>
@@ -23,14 +24,14 @@
     <ProjectReference Include="..\ControlzEx\ControlzEx.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.*" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.*" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="NUnit3TestAdapter" />
 
-    <PackageReference Include="NUnit" version="3.*" />
+    <PackageReference Include="NUnit" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="XamlColorSchemeGenerator" version="4-*" privateAssets="All" includeAssets="build" />
+    <PackageReference Include="XamlColorSchemeGenerator" privateAssets="All" includeAssets="build" />
   </ItemGroup>
 
   <ItemGroup>

@@ -35,7 +35,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="XamlColorSchemeGenerator" version="4-*" privateAssets="All" includeAssets="build" />
+      <PackageReference Include="XamlColorSchemeGenerator" privateAssets="All" includeAssets="build" />
     </ItemGroup>
 
     <Target Name="GenerateXamlFiles" BeforeTargets="DispatchToInnerBuilds">

@@ -4,7 +4,7 @@
     Shared Controlz for WPF
   </p>
   <p>
-    Supporting .NET Framework (4.5 and 4.6.2) and .NET Core (3.0 and 3.1)
+    Supporting .NET Framework (4.5.2, 4.6.2 and greater), .NET Core (3.1) and .NET 5 (on Windows)
   </p>
   <a href="https://github.com/ControlzEx/ControlzEx">
     <img alt="ControlzEx" with="200" height="200" src="logo-mini.png">

@@ -1,12 +1,11 @@
-﻿using System;
-using System.Diagnostics;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Input;
-
-namespace ControlzEx
+﻿namespace ControlzEx
 {
+    using System;
+    using System.Diagnostics;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Controls.Primitives;
+    using System.Windows.Input;
     using ControlzEx.Standard;
 
     public static class ToolTipAssist
@@ -87,7 +86,7 @@ namespace ControlzEx
         {
             var toolTip = (ToolTip)dependencyObject;
             if (eventArgs.OldValue != eventArgs.NewValue
-                && eventArgs.NewValue != null)
+                && eventArgs.NewValue is not null)
             {
                 var autoMove = (bool)eventArgs.NewValue;
                 if (autoMove)
@@ -133,11 +132,11 @@ namespace ControlzEx
             MoveToolTip(sender as IInputElement, toolTip);
         }
 
-        private static void MoveToolTip(IInputElement target, ToolTip toolTip)
+        private static void MoveToolTip(IInputElement? target, ToolTip? toolTip)
         {
-            if (toolTip == null
-                || target == null
-                || toolTip.PlacementTarget == null)
+            if (toolTip is null
+                || target is null
+                || toolTip.PlacementTarget is null)
             {
                 return;
             }
@@ -185,14 +184,14 @@ namespace ControlzEx
                 var rightX = locationX + newHorizontalOffset + renderDpiWidth;
                 if (rightX > monitorWorkWidth)
                 {
-                    newHorizontalOffset = position.X - toolTip.RenderSize.Width - 0.5 * hDPIOffset;
+                    newHorizontalOffset = position.X - toolTip.RenderSize.Width - (0.5 * hDPIOffset);
                 }
 
                 var renderDPIHeight = DpiHelper.TransformToDeviceY(toolTip.PlacementTarget, toolTip.RenderSize.Height, dpi.DpiScaleY);
                 var bottomY = locationY + newVerticalOffset + renderDPIHeight;
                 if (bottomY > monitorWorkHeight)
                 {
-                    newVerticalOffset = position.Y - toolTip.RenderSize.Height - 0.5 * vDPIOffset;
+                    newVerticalOffset = position.Y - toolTip.RenderSize.Height - (0.5 * vDPIOffset);
                 }
 
                 Debug.WriteLine(">>tooltip   >> bY: {0:F} \t rX: {1:F}", bottomY, rightX);

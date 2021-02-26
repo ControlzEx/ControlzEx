@@ -31,7 +31,6 @@ namespace ControlzEx.Standard
         /// <exception cref="InvalidOperationException">
         /// Thrown if the calling thread's apartment state is not the same as the requiredState.
         /// </exception>
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DebuggerStepThrough]
         public static void IsApartmentState(ApartmentState requiredState, string message)
         {
@@ -47,8 +46,6 @@ namespace ControlzEx.Standard
         /// </summary>
         /// <param name="value">The string to validate.</param>
         /// <param name="name">The name of the parameter that will be presented if an exception is thrown.</param>
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        [SuppressMessage("Microsoft.Performance", "CA1820:TestForEmptyStringsUsingStringLength")]
         [DebuggerStepThrough]
         public static void IsNeitherNullNorEmpty(string value, string name)
         {
@@ -57,12 +54,13 @@ namespace ControlzEx.Standard
 
             // Notice that ArgumentNullException and ArgumentException take the parameters in opposite order :P
             const string errorMessage = "The parameter can not be either null or empty.";
-            if (null == value)
+            if (value is null)
             {
                 Assert.Fail();
                 throw new ArgumentNullException(name, errorMessage);
             }
-            if ("" == value)
+
+            if (value == string.Empty)
             {
                 Assert.Fail();
                 throw new ArgumentException(errorMessage, name);
@@ -74,8 +72,6 @@ namespace ControlzEx.Standard
         /// </summary>
         /// <param name="value">The string to validate.</param>
         /// <param name="name">The name of the parameter that will be presented if an exception is thrown.</param>
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        [SuppressMessage("Microsoft.Performance", "CA1820:TestForEmptyStringsUsingStringLength")]
         [DebuggerStepThrough]
         public static void IsNeitherNullNorWhitespace(string value, string name)
         {
@@ -84,12 +80,13 @@ namespace ControlzEx.Standard
 
             // Notice that ArgumentNullException and ArgumentException take the parameters in opposite order :P
             const string errorMessage = "The parameter can not be either null or empty or consist only of white space characters.";
-            if (null == value)
+            if (value is null)
             {
                 Assert.Fail();
                 throw new ArgumentNullException(name, errorMessage);
             }
-            if ("" == value.Trim())
+
+            if (value.Trim() == string.Empty)
             {
                 Assert.Fail();
                 throw new ArgumentException(errorMessage, name);
@@ -100,9 +97,9 @@ namespace ControlzEx.Standard
         /// <typeparam name="T">Type of the object to validate.  Must be a class.</typeparam>
         /// <param name="obj">The object to validate.</param>
         /// <param name="name">The name of the parameter that will be presented if an exception is thrown.</param>
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DebuggerStepThrough]
-        public static void IsNotDefault<T>(T obj, string name) where T : struct
+        public static void IsNotDefault<T>(T obj, string name)
+            where T : struct
         {
             if (default(T).Equals(obj))
             {
@@ -115,11 +112,11 @@ namespace ControlzEx.Standard
         /// <typeparam name="T">Type of the object to validate.  Must be a class.</typeparam>
         /// <param name="obj">The object to validate.</param>
         /// <param name="name">The name of the parameter that will be presented if an exception is thrown.</param>
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DebuggerStepThrough]
-        public static void IsNotNull<T>(T obj, string name) where T : class
+        public static void IsNotNull<T>(T obj, string name)
+            where T : class
         {
-            if (null == obj)
+            if (obj is null)
             {
                 Assert.Fail();
                 throw new ArgumentNullException(name);
@@ -130,33 +127,33 @@ namespace ControlzEx.Standard
         /// <typeparam name="T">Type of the object to validate.  Must be a class.</typeparam>
         /// <param name="obj">The object to validate.</param>
         /// <param name="name">The name of the parameter that will be presented if an exception is thrown.</param>
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DebuggerStepThrough]
-        public static void IsNull<T>(T obj, string name) where T : class
+        public static void IsNull<T>(T obj, string name)
+            where T : class
         {
-            if (null != obj)
+            if (obj is not null)
             {
                 Assert.Fail();
                 throw new ArgumentException("The parameter must be null.", name);
             }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DebuggerStepThrough]
-        public static void PropertyIsNotNull<T>(T obj, string name) where T : class
+        public static void PropertyIsNotNull<T>(T obj, string name)
+            where T : class
         {
-            if (null == obj)
+            if (obj is null)
             {
                 Assert.Fail();
                 throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "The property {0} cannot be null at this time.", name));
             }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DebuggerStepThrough]
-        public static void PropertyIsNull<T>(T obj, string name) where T : class
+        public static void PropertyIsNull<T>(T obj, string name)
+            where T : class
         {
-            if (null != obj)
+            if (obj is not null)
             {
                 Assert.Fail();
                 throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "The property {0} must be null at this time.", name));
@@ -169,36 +166,33 @@ namespace ControlzEx.Standard
         /// <param name="statement">The statement to be verified as true.</param>
         /// <param name="name">Name of the parameter to include in the ArgumentException.</param>
         /// <param name="message">The message to include in the ArgumentException.</param>
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DebuggerStepThrough]
-        public static void IsTrue(bool statement, string name, string message = null)
+        public static void IsTrue(bool statement, string name, string? message = null)
         {
             if (!statement)
             {
                 Assert.Fail();
-                throw new ArgumentException(message ?? "", name);
+                throw new ArgumentException(message ?? string.Empty, name);
             }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DebuggerStepThrough]
-        public static void IsFalse(bool statement, string name, string message = null)
+        public static void IsFalse(bool statement, string name, string? message = null)
         {
             if (statement)
             {
                 Assert.Fail();
-                throw new ArgumentException(message ?? "", name);
+                throw new ArgumentException(message ?? string.Empty, name);
             }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DebuggerStepThrough]
         public static void AreEqual<T>(T expected, T actual, string parameterName, string message)
         {
-            if (null == expected)
+            if (expected is null)
             {
                 // Two nulls are considered equal, regardless of type semantics.
-                if (null != actual && !actual.Equals(expected))
+                if (actual is not null && !actual.Equals(expected))
                 {
                     Assert.Fail();
                     throw new ArgumentException(message, parameterName);
@@ -211,14 +205,13 @@ namespace ControlzEx.Standard
             }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DebuggerStepThrough]
         public static void AreNotEqual<T>(T notExpected, T actual, string parameterName, string message)
         {
-            if (null == notExpected)
+            if (notExpected is null)
             {
                 // Two nulls are considered equal, regardless of type semantics.
-                if (null == actual || actual.Equals(notExpected))
+                if (actual is null || actual.Equals(notExpected))
                 {
                     Assert.Fail();
                     throw new ArgumentException(message, parameterName);
@@ -231,7 +224,6 @@ namespace ControlzEx.Standard
             }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DebuggerStepThrough]
         public static void UriIsAbsolute(Uri uri, string parameterName)
         {
@@ -250,7 +242,6 @@ namespace ControlzEx.Standard
         /// <param name="value">The value to verify.</param>
         /// <param name="upperBoundExclusive">The upper bound exclusive value.</param>
         /// <param name="parameterName">The name of the parameter that caused the current exception.</param>
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DebuggerStepThrough]
         public static void BoundedInteger(int lowerBoundInclusive, int value, int upperBoundExclusive, string parameterName)
         {
@@ -261,7 +252,6 @@ namespace ControlzEx.Standard
             }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DebuggerStepThrough]
         public static void BoundedDoubleInc(double lowerBoundInclusive, double value, double upperBoundInclusive, string message, string parameter)
         {
@@ -272,7 +262,6 @@ namespace ControlzEx.Standard
             }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DebuggerStepThrough]
         public static void TypeSupportsInterface(Type type, Type interfaceType, string parameterName)
         {
@@ -280,14 +269,13 @@ namespace ControlzEx.Standard
             Verify.IsNotNull(type, "type");
             Verify.IsNotNull(interfaceType, "interfaceType");
 
-            if (type.GetInterface(interfaceType.Name) == null)
+            if (type.GetInterface(interfaceType.Name) is null)
             {
                 Assert.Fail();
                 throw new ArgumentException("The type of this parameter does not support a required interface", parameterName);
             }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DebuggerStepThrough]
         public static void FileExists(string filePath, string parameterName)
         {
@@ -299,7 +287,6 @@ namespace ControlzEx.Standard
             }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DebuggerStepThrough]
         internal static void ImplementsInterface(object parameter, Type interfaceType, string parameterName)
         {

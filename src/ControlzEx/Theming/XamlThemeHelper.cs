@@ -1,6 +1,7 @@
 ﻿#nullable enable
 namespace ControlzEx.Theming
 {
+    using System;
     using System.Linq;
     using System.Text.RegularExpressions;
 
@@ -25,7 +26,7 @@ namespace ControlzEx.Theming
         public static string FixXamlReaderXmlNsIssue(string xamlContent)
         {
             // Check if we have to fix something
-            if (xamlContent.Contains("WithAssembly=\"") == false)
+            if (xamlContent.IndexOf("WithAssembly=\"", StringComparison.Ordinal) < 0)
             {
                 return xamlContent;
             }
