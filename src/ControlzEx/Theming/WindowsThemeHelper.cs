@@ -86,7 +86,6 @@ namespace ControlzEx.Theming
             return baseColor;
         }
 
-        [CanBeNull]
         [MustUseReturnValue]
         public static Color? GetWindowsAccentColor()
         {
