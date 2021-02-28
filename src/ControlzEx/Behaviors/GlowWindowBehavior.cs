@@ -26,6 +26,7 @@ namespace ControlzEx.Behaviors
         private HwndSource? hwndSource;
 
         private readonly GlowWindow?[] glowWindows = new GlowWindow[4];
+
         private IEnumerable<GlowWindow> LoadedGlowWindows => this.glowWindows.Where(w => w != null)!;
 
         /// <summary>
@@ -157,10 +158,10 @@ namespace ControlzEx.Behaviors
             this.DestroyGlowWindows();
         }
 
-#pragma warning disable 618
+#pragma warning disable 618, SA1401
         private bool updatingZOrder;
 
-        public int deferGlowChangesCount;
+        public int DeferGlowChangesCount;
 
         private IntPtr AssociatedObjectWindowProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
@@ -180,6 +181,7 @@ namespace ControlzEx.Behaviors
 
                         this.UpdateZOrderOfThisAndOwner();
                     }
+
                     break;
             }
 
@@ -222,7 +224,7 @@ namespace ControlzEx.Behaviors
             }
         }
 
-        private void UpdateZOrderOfOwner(IntPtr hwndWindow, IntPtr hwndOwner)
+        private void UpdateZOrderOfOwner(IntPtr hwndOwner)
         {
             var lastOwnedWindow = IntPtr.Zero;
             NativeMethods.EnumThreadWindows(NativeMethods.GetCurrentThreadId(), delegate(IntPtr hwnd, IntPtr lParam)

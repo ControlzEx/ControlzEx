@@ -2482,7 +2482,7 @@ namespace ControlzEx.Standard
         public IntPtr hbrBackground;
 
         [MarshalAs(UnmanagedType.LPWStr)]
-        public string lpszMenuName;
+        public string? lpszMenuName;
 
         [MarshalAs(UnmanagedType.LPWStr)]
         public string lpszClassName;
@@ -2926,7 +2926,6 @@ namespace ControlzEx.Standard
         [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern IntPtr CreateWindowEx(int dwExStyle, IntPtr classAtom, string lpWindowName, int dwStyle, int x, int y, int nWidth, int nHeight, IntPtr hWndParent, IntPtr hMenu, IntPtr hInstance, IntPtr lpParam);
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static IntPtr CreateWindowEx(
@@ -3780,7 +3779,6 @@ namespace ControlzEx.Standard
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         public static extern ushort RegisterClass(ref WNDCLASS lpWndClass);
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("user32.dll", EntryPoint = "RegisterWindowMessage", SetLastError = true, CharSet = CharSet.Unicode)]
         private static extern uint _RegisterWindowMessage([MarshalAs(UnmanagedType.LPWStr)] string lpString);
 
@@ -4061,7 +4059,6 @@ namespace ControlzEx.Standard
         private static extern bool _UnregisterClassName(string lpClassName, IntPtr hInstance);
 
         [CLSCompliant(false)]
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static void UnregisterClass(ushort atom, IntPtr hinstance)
         {
             if (!_UnregisterClassAtom(new IntPtr(atom), hinstance))
@@ -4070,7 +4067,6 @@ namespace ControlzEx.Standard
             }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static void UnregisterClass(short atom, IntPtr hinstance)
         {
             if (!_UnregisterClassAtom(new IntPtr(atom), hinstance))

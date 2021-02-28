@@ -4,6 +4,7 @@
 namespace ControlzEx.Controls.Internal
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Reflection;
     using System.Runtime.InteropServices;
     using System.Windows;
@@ -14,7 +15,7 @@ namespace ControlzEx.Controls.Internal
     using ControlzEx.Behaviors;
     using ControlzEx.Standard;
 
-#pragma warning disable 618
+#pragma warning disable 618, SA1602, SA1401
 
     public abstract class HwndWrapper : DisposableObject
     {
@@ -151,13 +152,13 @@ namespace ControlzEx.Controls.Internal
         public ChangeScope(GlowWindowBehavior behavior)
         {
             this.behavior = behavior;
-            this.behavior.deferGlowChangesCount++;
+            this.behavior.DeferGlowChangesCount++;
         }
 
         protected override void DisposeManagedResources()
         {
-            this.behavior.deferGlowChangesCount--;
-            if (this.behavior.deferGlowChangesCount == 0)
+            this.behavior.DeferGlowChangesCount--;
+            if (this.behavior.DeferGlowChangesCount == 0)
             {
                 this.behavior.EndDeferGlowChanges();
             }
@@ -199,7 +200,7 @@ namespace ControlzEx.Controls.Internal
             }
         }
 
-        protected void Dispose(bool disposing)
+        protected virtual void Dispose(bool disposing)
         {
             if (this.IsDisposed)
             {
@@ -236,17 +237,17 @@ namespace ControlzEx.Controls.Internal
     {
         private sealed class CachedBitmapInfo
         {
-            public readonly int width;
+            public readonly int Width;
 
-            public readonly int height;
+            public readonly int Height;
 
-            public readonly byte[] diBits;
+            public readonly byte[] DiBits;
 
             public CachedBitmapInfo(byte[] diBits, int width, int height)
             {
-                this.width = width;
-                this.height = height;
-                this.diBits = diBits;
+                this.Width = width;
+                this.Height = height;
+                this.DiBits = diBits;
             }
         }
 
@@ -299,10 +300,10 @@ namespace ControlzEx.Controls.Internal
             }
 
             var orCreateAlphaMask = GetOrCreateAlphaMask(bitmapPart);
-            var glowBitmap = new GlowBitmap(drawingContext.ScreenDc, orCreateAlphaMask.width, orCreateAlphaMask.height);
-            for (var i = 0; i < orCreateAlphaMask.diBits.Length; i += BytesPerPixelBgra32)
+            var glowBitmap = new GlowBitmap(drawingContext.ScreenDc, orCreateAlphaMask.Width, orCreateAlphaMask.Height);
+            for (var i = 0; i < orCreateAlphaMask.DiBits.Length; i += BytesPerPixelBgra32)
             {
-                var b = orCreateAlphaMask.diBits[i + 3];
+                var b = orCreateAlphaMask.DiBits[i + 3];
                 var val = PremultiplyAlpha(color.R, b);
                 var val2 = PremultiplyAlpha(color.G, b);
                 var val3 = PremultiplyAlpha(color.B, b);
@@ -359,17 +360,29 @@ namespace ControlzEx.Controls.Internal
 
     public sealed class GlowDrawingContext : DisposableObject
     {
-        public BLENDFUNCTION blend;
+        public BLENDFUNCTION Blend;
 
         private readonly GlowBitmap? windowBitmap;
 
+        [MemberNotNullWhen(true, nameof(ScreenDc))]
+        [MemberNotNullWhen(true, nameof(WindowDc))]
+        [MemberNotNullWhen(true, nameof(BackgroundDc))]
+        [MemberNotNullWhen(true, nameof(windowBitmap))]
         public bool IsInitialized
         {
             get
             {
-                if (this.ScreenDc!.DangerousGetHandle() != IntPtr.Zero
-                    && this.WindowDc!.DangerousGetHandle() != IntPtr.Zero
-                    && this.BackgroundDc!.DangerousGetHandle() != IntPtr.Zero)
+                if (this.ScreenDc is null
+                    || this.WindowDc is null
+                    || this.BackgroundDc is null
+                    || this.windowBitmap is null)
+                {
+                    return false;
+                }
+
+                if (this.ScreenDc.DangerousGetHandle() != IntPtr.Zero
+                    && this.WindowDc.DangerousGetHandle() != IntPtr.Zero
+                    && this.BackgroundDc.DangerousGetHandle() != IntPtr.Zero)
                 {
                     return this.windowBitmap != null;
                 }
@@ -410,10 +423,10 @@ namespace ControlzEx.Controls.Internal
                 return;
             }
 
-            this.blend.BlendOp = 0;
-            this.blend.BlendFlags = 0;
-            this.blend.SourceConstantAlpha = byte.MaxValue;
-            this.blend.AlphaFormat = AC.SRC_ALPHA;
+            this.Blend.BlendOp = 0;
+            this.Blend.BlendFlags = 0;
+            this.Blend.SourceConstantAlpha = byte.MaxValue;
+            this.Blend.AlphaFormat = AC.SRC_ALPHA;
             this.windowBitmap = new GlowBitmap(this.ScreenDc, width, height);
             NativeMethods.SelectObject(this.WindowDc, this.windowBitmap.Handle);
         }
@@ -497,7 +510,7 @@ namespace ControlzEx.Controls.Internal
 
         private bool pendingDelayRender;
 
-        private bool IsDeferringChanges => this.behavior.deferGlowChangesCount > 0;
+        private bool IsDeferringChanges => this.behavior.DeferGlowChangesCount > 0;
 
         private static ushort SharedWindowClassAtom
         {
@@ -860,7 +873,7 @@ namespace ControlzEx.Controls.Internal
                     point.X = 0;
                     point.Y = 0;
                     var pptSrc = point;
-                    NativeMethods.UpdateLayeredWindow(this.Handle, glowDrawingContext.ScreenDc, ref pptDest, ref psize, glowDrawingContext.WindowDc, ref pptSrc, 0, ref glowDrawingContext.blend, ULW.ALPHA);
+                    NativeMethods.UpdateLayeredWindow(this.Handle, glowDrawingContext.ScreenDc, ref pptDest, ref psize, glowDrawingContext.WindowDc, ref pptSrc, 0, ref glowDrawingContext.Blend, ULW.ALPHA);
                 }
             }
         }
@@ -934,20 +947,20 @@ namespace ControlzEx.Controls.Internal
             var num4 = num3 - num;
 
             NativeMethods.SelectObject(drawingContext.BackgroundDc, orCreateBitmap.Handle);
-            NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), 0, 0, orCreateBitmap.Width, orCreateBitmap.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, orCreateBitmap.Width, orCreateBitmap.Height, drawingContext.blend);
+            NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), 0, 0, orCreateBitmap.Width, orCreateBitmap.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, orCreateBitmap.Width, orCreateBitmap.Height, drawingContext.Blend);
             NativeMethods.SelectObject(drawingContext.BackgroundDc, orCreateBitmap2.Handle);
-            NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), 0, bitmapHeight, orCreateBitmap2.Width, orCreateBitmap2.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, orCreateBitmap2.Width, orCreateBitmap2.Height, drawingContext.blend);
+            NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), 0, bitmapHeight, orCreateBitmap2.Width, orCreateBitmap2.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, orCreateBitmap2.Width, orCreateBitmap2.Height, drawingContext.Blend);
 
             if (num4 > 0)
             {
                 NativeMethods.SelectObject(drawingContext.BackgroundDc, orCreateBitmap3.Handle);
-                NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), 0, num, orCreateBitmap3.Width, num4, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, orCreateBitmap3.Width, orCreateBitmap3.Height, drawingContext.blend);
+                NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), 0, num, orCreateBitmap3.Width, num4, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, orCreateBitmap3.Width, orCreateBitmap3.Height, drawingContext.Blend);
             }
 
             NativeMethods.SelectObject(drawingContext.BackgroundDc, orCreateBitmap4.Handle);
-            NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), 0, num3, orCreateBitmap4.Width, orCreateBitmap4.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, orCreateBitmap4.Width, orCreateBitmap4.Height, drawingContext.blend);
+            NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), 0, num3, orCreateBitmap4.Width, orCreateBitmap4.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, orCreateBitmap4.Width, orCreateBitmap4.Height, drawingContext.Blend);
             NativeMethods.SelectObject(drawingContext.BackgroundDc, orCreateBitmap5.Handle);
-            NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), 0, num2, orCreateBitmap5.Width, orCreateBitmap5.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, orCreateBitmap5.Width, orCreateBitmap5.Height, drawingContext.blend);
+            NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), 0, num2, orCreateBitmap5.Width, orCreateBitmap5.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, orCreateBitmap5.Width, orCreateBitmap5.Height, drawingContext.Blend);
         }
 
         private void DrawRight(GlowDrawingContext drawingContext)
@@ -972,20 +985,20 @@ namespace ControlzEx.Controls.Internal
             var num4 = num3 - num;
 
             NativeMethods.SelectObject(drawingContext.BackgroundDc, orCreateBitmap.Handle);
-            NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), 0, 0, orCreateBitmap.Width, orCreateBitmap.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, orCreateBitmap.Width, orCreateBitmap.Height, drawingContext.blend);
+            NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), 0, 0, orCreateBitmap.Width, orCreateBitmap.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, orCreateBitmap.Width, orCreateBitmap.Height, drawingContext.Blend);
             NativeMethods.SelectObject(drawingContext.BackgroundDc, orCreateBitmap2.Handle);
-            NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), 0, bitmapHeight, orCreateBitmap2.Width, orCreateBitmap2.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, orCreateBitmap2.Width, orCreateBitmap2.Height, drawingContext.blend);
+            NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), 0, bitmapHeight, orCreateBitmap2.Width, orCreateBitmap2.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, orCreateBitmap2.Width, orCreateBitmap2.Height, drawingContext.Blend);
 
             if (num4 > 0)
             {
                 NativeMethods.SelectObject(drawingContext.BackgroundDc, orCreateBitmap3.Handle);
-                NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), 0, num, orCreateBitmap3.Width, num4, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, orCreateBitmap3.Width, orCreateBitmap3.Height, drawingContext.blend);
+                NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), 0, num, orCreateBitmap3.Width, num4, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, orCreateBitmap3.Width, orCreateBitmap3.Height, drawingContext.Blend);
             }
 
             NativeMethods.SelectObject(drawingContext.BackgroundDc, orCreateBitmap4.Handle);
-            NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), 0, num3, orCreateBitmap4.Width, orCreateBitmap4.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, orCreateBitmap4.Width, orCreateBitmap4.Height, drawingContext.blend);
+            NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), 0, num3, orCreateBitmap4.Width, orCreateBitmap4.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, orCreateBitmap4.Width, orCreateBitmap4.Height, drawingContext.Blend);
             NativeMethods.SelectObject(drawingContext.BackgroundDc, orCreateBitmap5.Handle);
-            NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), 0, num2, orCreateBitmap5.Width, orCreateBitmap5.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, orCreateBitmap5.Width, orCreateBitmap5.Height, drawingContext.blend);
+            NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), 0, num2, orCreateBitmap5.Width, orCreateBitmap5.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, orCreateBitmap5.Width, orCreateBitmap5.Height, drawingContext.Blend);
         }
 
         private void DrawTop(GlowDrawingContext drawingContext)
@@ -1007,16 +1020,16 @@ namespace ControlzEx.Controls.Internal
             var num4 = num3 - num2;
 
             NativeMethods.SelectObject(drawingContext.BackgroundDc, orCreateBitmap.Handle);
-            NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), num, 0, orCreateBitmap.Width, orCreateBitmap.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, orCreateBitmap.Width, orCreateBitmap.Height, drawingContext.blend);
+            NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), num, 0, orCreateBitmap.Width, orCreateBitmap.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, orCreateBitmap.Width, orCreateBitmap.Height, drawingContext.Blend);
 
             if (num4 > 0)
             {
                 NativeMethods.SelectObject(drawingContext.BackgroundDc, orCreateBitmap2.Handle);
-                NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), num2, 0, num4, orCreateBitmap2.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, orCreateBitmap2.Width, orCreateBitmap2.Height, drawingContext.blend);
+                NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), num2, 0, num4, orCreateBitmap2.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, orCreateBitmap2.Width, orCreateBitmap2.Height, drawingContext.Blend);
             }
 
             NativeMethods.SelectObject(drawingContext.BackgroundDc, orCreateBitmap3.Handle);
-            NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), num3, 0, orCreateBitmap3.Width, orCreateBitmap3.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, orCreateBitmap3.Width, orCreateBitmap3.Height, drawingContext.blend);
+            NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), num3, 0, orCreateBitmap3.Width, orCreateBitmap3.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, orCreateBitmap3.Width, orCreateBitmap3.Height, drawingContext.Blend);
         }
 
         private void DrawBottom(GlowDrawingContext drawingContext)
@@ -1038,16 +1051,16 @@ namespace ControlzEx.Controls.Internal
             var num4 = num3 - num2;
 
             NativeMethods.SelectObject(drawingContext.BackgroundDc, orCreateBitmap.Handle);
-            NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), num, 0, orCreateBitmap.Width, orCreateBitmap.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, orCreateBitmap.Width, orCreateBitmap.Height, drawingContext.blend);
+            NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), num, 0, orCreateBitmap.Width, orCreateBitmap.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, orCreateBitmap.Width, orCreateBitmap.Height, drawingContext.Blend);
 
             if (num4 > 0)
             {
                 NativeMethods.SelectObject(drawingContext.BackgroundDc, orCreateBitmap2.Handle);
-                NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), num2, 0, num4, orCreateBitmap2.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, orCreateBitmap2.Width, orCreateBitmap2.Height, drawingContext.blend);
+                NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), num2, 0, num4, orCreateBitmap2.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, orCreateBitmap2.Width, orCreateBitmap2.Height, drawingContext.Blend);
             }
 
             NativeMethods.SelectObject(drawingContext.BackgroundDc, orCreateBitmap3.Handle);
-            NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), num3, 0, orCreateBitmap3.Width, orCreateBitmap3.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, orCreateBitmap3.Width, orCreateBitmap3.Height, drawingContext.blend);
+            NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), num3, 0, orCreateBitmap3.Width, orCreateBitmap3.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, orCreateBitmap3.Width, orCreateBitmap3.Height, drawingContext.Blend);
         }
 
         public void UpdateWindowPos()
