@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 namespace ControlzEx.Theming
 {
     using System;
@@ -481,7 +481,14 @@ namespace ControlzEx.Theming
                 throw new ArgumentNullException(nameof(themeName));
             }
 
-            return this.ChangeTheme(app, app.Resources, this.GetTheme(themeName, highContrast)!);
+            var theme = this.GetTheme(themeName, highContrast);
+
+            if (theme is null)
+            {
+                throw new ArgumentException($"Could not find a theme matching \"{themeName}\" and high contrast = \"{highContrast}\".");
+            }
+
+            return this.ChangeTheme(app, app.Resources, theme);
         }
 
         /// <summary>
@@ -500,7 +507,14 @@ namespace ControlzEx.Theming
                 throw new ArgumentNullException(nameof(themeName));
             }
 
-            return this.ChangeTheme(frameworkElement, this.GetTheme(themeName, highContrast)!);
+            var theme = this.GetTheme(themeName, highContrast);
+
+            if (theme is null)
+            {
+                throw new ArgumentException($"Could not find a theme matching \"{themeName}\" and high contrast = \"{highContrast}\".");
+            }
+
+            return this.ChangeTheme(frameworkElement, theme);
         }
 
         /// <summary>
