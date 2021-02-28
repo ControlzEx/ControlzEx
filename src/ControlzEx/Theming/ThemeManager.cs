@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 namespace ControlzEx.Theming
 {
     using System;
@@ -1195,22 +1195,27 @@ namespace ControlzEx.Theming
                     baseColor ??= detectedTheme?.BaseColorScheme ?? BaseColorLight;
                 }
 
-                string? accentColor = null;
+                string? accentColor;
                 if (syncModeToUse.HasFlag(ThemeSyncMode.SyncWithAccent))
                 {
-                    accentColor = WindowsThemeHelper.GetWindowsAccentColor().ToString();
+                    accentColor = WindowsThemeHelper.GetWindowsAccentColor()?.ToString() ?? detectedTheme?.ColorScheme;
                 }
                 else
                 {
                     // If there was no detected Theme just use the windows accent color.
-                    accentColor ??= detectedTheme?.ColorScheme ?? WindowsThemeHelper.GetWindowsAccentColor().ToString();
+                    accentColor = detectedTheme?.ColorScheme ?? WindowsThemeHelper.GetWindowsAccentColor()?.ToString();
+                }
+
+                if (accentColor is null)
+                {
+                    throw new Exception("Accent color could not be detected.");
                 }
 
                 var isHighContrast = syncModeToUse.HasFlag(ThemeSyncMode.SyncWithHighContrast)
                                      && WindowsThemeHelper.IsHighContrastEnabled();
 
                 // Check if we previously generated a theme matching the desired settings
-                var theme = this.GetTheme(baseColor, accentColor!, isHighContrast)
+                var theme = this.GetTheme(baseColor, accentColor, isHighContrast)
                             ?? RuntimeThemeGenerator.Current.GenerateRuntimeThemeFromWindowsSettings(baseColor, isHighContrast, this.libraryThemeProvidersInternal);
 
                 // Only change the theme if it's not the current already
