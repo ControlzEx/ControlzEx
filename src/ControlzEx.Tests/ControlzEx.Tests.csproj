@@ -31,7 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="XamlColorSchemeGenerator" privateAssets="All" includeAssets="build" />
+    <PackageReference Include="XamlColorSchemeGenerator" PrivateAssets="All" IncludeAssets="build" />
   </ItemGroup>
 
   <ItemGroup>
