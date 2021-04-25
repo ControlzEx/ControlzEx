@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 
 // ReSharper disable once CheckNamespace
 namespace ControlzEx.Controls.Internal
@@ -625,7 +625,10 @@ namespace ControlzEx.Controls.Internal
 
         protected override IntPtr CreateWindowCore()
         {
-            return NativeMethods.CreateWindowEx(524416, new IntPtr(this.WindowClassAtom), string.Empty, -2046820352, 0, 0, 0, 0, new WindowInteropHelper(this.targetWindow).Owner, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
+            const WS_EX exStyle = WS_EX.TOOLWINDOW | WS_EX.LAYERED;
+            const WS style = WS.POPUP | WS.CLIPSIBLINGS | WS.CLIPCHILDREN;
+
+            return NativeMethods.CreateWindowEx(exStyle, new IntPtr(this.WindowClassAtom), string.Empty, style, 0, 0, 0, 0, new WindowInteropHelper(this.targetWindow).Owner, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
         }
 
         public void ChangeOwner(IntPtr newOwner)
@@ -638,7 +641,7 @@ namespace ControlzEx.Controls.Internal
             switch (msg)
             {
                 case WM.NCHITTEST:
-                    return new IntPtr(this.WmNcHitTest(lParam));
+                    return new IntPtr((int)this.WmNcHitTest(lParam));
 
                 case WM.NCLBUTTONDOWN:
                 case WM.NCLBUTTONDBLCLK:
@@ -678,7 +681,7 @@ namespace ControlzEx.Controls.Internal
             return base.WndProc(hwnd, msg, wParam, lParam);
         }
 
-        private int WmNcHitTest(IntPtr lParam)
+        private HT WmNcHitTest(IntPtr lParam)
         {
             var xLParam = Utility.GET_X_LPARAM(lParam);
             var yLParam = Utility.GET_Y_LPARAM(lParam);
@@ -689,54 +692,54 @@ namespace ControlzEx.Controls.Internal
                 case Dock.Left:
                     if (yLParam - CornerGripThickness < lpRect.Top)
                     {
-                        return 13;
+                        return HT.TOPLEFT;
                     }
 
                     if (yLParam + CornerGripThickness > lpRect.Bottom)
                     {
-                        return 16;
+                        return HT.BOTTOMLEFT;
                     }
 
-                    return 10;
+                    return HT.TOP;
 
                 case Dock.Right:
                     if (yLParam - CornerGripThickness < lpRect.Top)
                     {
-                        return 14;
+                        return HT.TOPRIGHT;
                     }
 
                     if (yLParam + CornerGripThickness > lpRect.Bottom)
                     {
-                        return 17;
+                        return HT.BOTTOMRIGHT;
                     }
 
-                    return 11;
+                    return HT.RIGHT;
 
                 case Dock.Top:
                     if (xLParam - CornerGripThickness < lpRect.Left)
                     {
-                        return 13;
+                        return HT.TOPLEFT;
                     }
 
                     if (xLParam + CornerGripThickness > lpRect.Right)
                     {
-                        return 14;
+                        return HT.TOPRIGHT;
                     }
 
-                    return 12;
+                    return HT.TOP;
 
                 default:
                     if (xLParam - CornerGripThickness < lpRect.Left)
                     {
-                        return 16;
+                        return HT.BOTTOMLEFT;
                     }
 
                     if (xLParam + CornerGripThickness > lpRect.Right)
                     {
-                        return 17;
+                        return HT.BOTTOMRIGHT;
                     }
 
-                    return 15;
+                    return HT.BOTTOM;
             }
         }
 
