@@ -262,10 +262,8 @@ namespace ControlzEx.Behaviors
         {
             for (var i = 0; i < this.glowWindows.Length; i++)
             {
-                using (this.glowWindows[i])
-                {
-                    this.glowWindows[i] = null;
-                }
+                this.glowWindows[i]?.Dispose();
+                this.glowWindows[i] = null;
             }
         }
 
