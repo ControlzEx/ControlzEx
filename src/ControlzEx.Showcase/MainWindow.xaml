@@ -35,7 +35,7 @@
     <Grid SnapsToDevicePixels="True">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="30" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
@@ -45,25 +45,29 @@
                   MouseLeftButtonDown="TitleBarGrid_OnMouseLeftButtonDown"
                   MouseRightButtonUp="TitleBarGrid_OnMouseRightButtonUp">
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="150" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <Border Grid.ColumnSpan="10" Background="{Binding ElementName=Window, Path=NCCurrentBrush}" />
+                
+                <ProgressBar Grid.Column="0" Width="20" IsIndeterminate="True" />
 
                 <TextBlock x:Name="TitlebarText"
-                           Grid.Column="0"
+                           Grid.Column="1"
                            Margin="4 0 0 0"
                            HorizontalAlignment="Center"
                            Text="Use GridSplitter below to move content above titlebar" />
 
                 <UniformGrid Grid.Column="2" Columns="3">
                     <Button Width="20"
+                            Height="30"
                             Click="MinimizeButton_Click"
                             Content="_" />
-                    <Button Click="RestoreOrMaximizeButton_Click" Content="[ ]" />
-                    <Button Click="CloseButton_Click" Content="X" />
-                    <ProgressBar IsIndeterminate="True" />
+                    <Button Click="RestoreOrMaximizeButton_Click" 
+                            Content="[ ]" />
+                    <Button Click="CloseButton_Click" 
+                            Content="X" />
                 </UniformGrid>
             </Grid>
 
