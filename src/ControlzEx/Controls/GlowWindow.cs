@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 
 // ReSharper disable once CheckNamespace
 namespace ControlzEx.Controls.Internal
@@ -596,8 +596,8 @@ namespace ControlzEx.Controls.Internal
             createdGlowWindows++;
         }
 
-        private void UpdateProperty<T>(ref T field, T value, FieldInvalidationTypes invalidation) 
-            where T : struct
+        private void UpdateProperty<T>(ref T field, T value, FieldInvalidationTypes invalidation)
+            where T : struct, IEquatable<T>
         {
             if (field.Equals(value))
             {
