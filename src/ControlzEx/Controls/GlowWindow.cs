@@ -700,7 +700,7 @@ namespace ControlzEx.Controls.Internal
                         return HT.BOTTOMLEFT;
                     }
 
-                    return HT.TOP;
+                    return HT.LEFT;
 
                 case Dock.Right:
                     if (yLParam - CornerGripThickness < lpRect.Top)
