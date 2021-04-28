@@ -4,7 +4,9 @@ namespace ControlzEx.Theming
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.ComponentModel;
     using System.Linq;
+    using System.Runtime.CompilerServices;
     using System.Windows;
     using System.Windows.Media;
     using ControlzEx.Internal;
@@ -13,7 +15,7 @@ namespace ControlzEx.Theming
     /// <summary>
     /// Represents a theme.
     /// </summary>
-    public class Theme
+    public class Theme : INotifyPropertyChanged
     {
         /// <summary>
         /// Gets the key for the themes name.
@@ -295,6 +297,14 @@ namespace ControlzEx.Theming
             }
 
             return false;
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
