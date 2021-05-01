@@ -70,7 +70,7 @@ namespace ControlzEx.Behaviors
         /// <summary>
         /// <see cref="DependencyProperty"/> for <see cref="IsGlowTransitionEnabled"/>.
         /// </summary>
-        public static readonly DependencyProperty IsGlowTransitionEnabledProperty = DependencyProperty.Register(nameof(IsGlowTransitionEnabled), typeof(bool), typeof(GlowWindowBehavior), new PropertyMetadata(default(bool)));
+        public static readonly DependencyProperty IsGlowTransitionEnabledProperty = DependencyProperty.Register(nameof(IsGlowTransitionEnabled), typeof(bool), typeof(GlowWindowBehavior), new PropertyMetadata(true));
 
         /// <summary>
         /// Defines whether glow transitions should be used or not.
@@ -401,7 +401,7 @@ namespace ControlzEx.Behaviors
                 return;
             }
 
-            if ((SystemParameters.MinimizeAnimation && shouldShowGlow) & delayIfNecessary)
+            if ((shouldShowGlow && this.IsGlowTransitionEnabled && SystemParameters.MinimizeAnimation) & delayIfNecessary)
             {
                 if (this.makeGlowVisibleTimer is null)
                 {
