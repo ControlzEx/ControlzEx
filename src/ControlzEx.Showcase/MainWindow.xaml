@@ -59,9 +59,10 @@
                            HorizontalAlignment="Center"
                            Text="Use GridSplitter below to move content above titlebar" />
 
-                <UniformGrid Grid.Column="2" Columns="3">
+                <UniformGrid Grid.Column="2" Columns="4">
+                    <Border Visibility="Hidden"
+                            Height="30" />
                     <Button Width="20"
-                            Height="30"
                             Click="MinimizeButton_Click"
                             Content="_" />
                     <Button Click="RestoreOrMaximizeButton_Click" 
@@ -433,6 +434,7 @@
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
                                         <RowDefinition />
                                     </Grid.RowDefinitions>
 
@@ -505,6 +507,16 @@
                                              Padding="2"
                                              VerticalAlignment="Center"
                                              Text="{Binding ElementName=Window, Path=ResizeBorderThickness, Mode=TwoWay}" />
+                                    
+                                    <Label Grid.Row="5" Grid.Column="0">
+                                        GlowDepth
+                                    </Label>
+                                    <TextBox Grid.Row="5"
+                                             Grid.Column="1"
+                                             Margin="4"
+                                             Padding="2"
+                                             VerticalAlignment="Center"
+                                             Text="{Binding ElementName=Window, Path=GlowDepth, Mode=TwoWay}" />
                                 </Grid>
                             </GroupBox>
                         </Grid>

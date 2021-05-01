@@ -4,15 +4,15 @@
 namespace ControlzEx.Controls.Internal
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
-    using System.Reflection;
     using System.Runtime.InteropServices;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Interop;
     using System.Windows.Media;
-    using System.Windows.Media.Imaging;
     using ControlzEx.Behaviors;
+    using ControlzEx.Helpers;
     using ControlzEx.Standard;
 
 #pragma warning disable 618, SA1602, SA1401
@@ -254,7 +254,7 @@ namespace ControlzEx.Controls.Internal
 
         private const int BytesPerPixelBgra32 = 4;
 
-        private static readonly CachedBitmapInfo?[] transparencyMasks = new CachedBitmapInfo[GlowBitmapPartCount];
+        private static readonly Dictionary<int, CachedBitmapInfo?[]> transparencyMasks = new();
 
         private readonly IntPtr pbits;
 
@@ -291,14 +291,14 @@ namespace ControlzEx.Controls.Internal
             return (byte)(channel * alpha / 255.0);
         }
 
-        public static GlowBitmap? Create(GlowDrawingContext drawingContext, GlowBitmapPart bitmapPart, Color color)
+        public static GlowBitmap? Create(GlowDrawingContext drawingContext, GlowBitmapPart bitmapPart, Color color, int glowDepth)
         {
             if (drawingContext.ScreenDc is null)
             {
                 return null;
             }
 
-            var alphaMask = GetOrCreateAlphaMask(bitmapPart);
+            var alphaMask = GetOrCreateAlphaMask(bitmapPart, glowDepth);
             var glowBitmap = new GlowBitmap(drawingContext.ScreenDc, alphaMask.Width, alphaMask.Height);
             for (var i = 0; i < alphaMask.DiBits.Length; i += BytesPerPixelBgra32)
             {
@@ -315,25 +315,28 @@ namespace ControlzEx.Controls.Internal
             return glowBitmap;
         }
 
-        private static CachedBitmapInfo GetOrCreateAlphaMask(GlowBitmapPart bitmapPart)
+        private static CachedBitmapInfo GetOrCreateAlphaMask(GlowBitmapPart bitmapPart, int glowDepth)
         {
-            var num = (int)bitmapPart;
-            if (transparencyMasks[num] is null)
+            if (transparencyMasks.TryGetValue(glowDepth, out var transparencyMasksForGlowDepth) == false)
             {
-                var bitmapImage = new BitmapImage(MakePackUri(typeof(GlowBitmap).Assembly, "Resources/" + bitmapPart + ".png"));
-                var array = new byte[BytesPerPixelBgra32 * bitmapImage.PixelWidth * bitmapImage.PixelHeight];
-                var stride = BytesPerPixelBgra32 * bitmapImage.PixelWidth;
-                bitmapImage.CopyPixels(array, stride, 0);
-                transparencyMasks[num] = new CachedBitmapInfo(array, bitmapImage.PixelWidth, bitmapImage.PixelHeight);
+                transparencyMasksForGlowDepth = new CachedBitmapInfo?[GlowBitmapPartCount];
+                transparencyMasks[glowDepth] = transparencyMasksForGlowDepth;
             }
 
-            return transparencyMasks[num]!;
-        }
+            var num = (int)bitmapPart;
+            if (transparencyMasksForGlowDepth[num] is { } transparencyMask)
+            {
+                return transparencyMask;
+            }
 
-        private static Uri MakePackUri(Assembly assembly, string path)
-        {
-            var name = assembly.GetName().Name;
-            return new Uri($"pack://application:,,,/{name};component/{path}", UriKind.Absolute);
+            var bitmapImage = GlowWindowBitmapGenerator.GenerateBitmapSource(bitmapPart, glowDepth);
+            var array = new byte[BytesPerPixelBgra32 * bitmapImage.PixelWidth * bitmapImage.PixelHeight];
+            var stride = BytesPerPixelBgra32 * bitmapImage.PixelWidth;
+            bitmapImage.CopyPixels(array, stride, 0);
+            var cachedBitmapInfo = new CachedBitmapInfo(array, bitmapImage.PixelWidth, bitmapImage.PixelHeight);
+            transparencyMasksForGlowDepth[num] = cachedBitmapInfo;
+
+            return cachedBitmapInfo;
         }
     }
 
@@ -450,20 +453,17 @@ namespace ControlzEx.Controls.Internal
         [Flags]
         private enum FieldInvalidationTypes
         {
-            None = 0x0,
-            Location = 0x1,
-            Size = 0x2,
-            ActiveColor = 0x4,
-            InactiveColor = 0x8,
-            Render = 0x10,
-            Visibility = 0x20
+            None = 0,
+            Location = 1 << 1,
+            Size = 1 << 2,
+            ActiveColor = 1 << 3,
+            InactiveColor = 1 << 4,
+            Render = 1 << 5,
+            Visibility = 1 << 6,
+            GlowDepth = 1 << 7
         }
 
         private const string GlowWindowClassName = "ControlzExGlowWindow";
-
-        private const int GlowDepth = 9;
-
-        private const int CornerGripThickness = 18;
 
         private readonly Window targetWindow;
         private readonly GlowWindowBehavior behavior;
@@ -496,6 +496,9 @@ namespace ControlzEx.Controls.Internal
         private int width;
 
         private int height;
+
+        private int glowDepth = 9;
+        private int cornerGripThickness = 18;
 
         private bool isVisible;
 
@@ -562,6 +565,16 @@ namespace ControlzEx.Controls.Internal
         {
             get => this.height;
             set => this.UpdateProperty(ref this.height, value, FieldInvalidationTypes.Size | FieldInvalidationTypes.Render);
+        }
+
+        public int GlowDepth
+        {
+            get => this.glowDepth;
+            set
+            {
+                this.cornerGripThickness = value * 2;
+                this.UpdateProperty(ref this.glowDepth, value, FieldInvalidationTypes.GlowDepth | FieldInvalidationTypes.Render | FieldInvalidationTypes.Location);
+            }
         }
 
         public bool IsActive
@@ -690,12 +703,12 @@ namespace ControlzEx.Controls.Internal
             switch (this.orientation)
             {
                 case Dock.Left:
-                    if (yLParam - CornerGripThickness < lpRect.Top)
+                    if (yLParam - this.cornerGripThickness < lpRect.Top)
                     {
                         return HT.TOPLEFT;
                     }
 
-                    if (yLParam + CornerGripThickness > lpRect.Bottom)
+                    if (yLParam + this.cornerGripThickness > lpRect.Bottom)
                     {
                         return HT.BOTTOMLEFT;
                     }
@@ -703,12 +716,12 @@ namespace ControlzEx.Controls.Internal
                     return HT.LEFT;
 
                 case Dock.Right:
-                    if (yLParam - CornerGripThickness < lpRect.Top)
+                    if (yLParam - this.cornerGripThickness < lpRect.Top)
                     {
                         return HT.TOPRIGHT;
                     }
 
-                    if (yLParam + CornerGripThickness > lpRect.Bottom)
+                    if (yLParam + this.cornerGripThickness > lpRect.Bottom)
                     {
                         return HT.BOTTOMRIGHT;
                     }
@@ -716,12 +729,12 @@ namespace ControlzEx.Controls.Internal
                     return HT.RIGHT;
 
                 case Dock.Top:
-                    if (xLParam - CornerGripThickness < lpRect.Left)
+                    if (xLParam - this.cornerGripThickness < lpRect.Left)
                     {
                         return HT.TOPLEFT;
                     }
 
-                    if (xLParam + CornerGripThickness > lpRect.Right)
+                    if (xLParam + this.cornerGripThickness > lpRect.Right)
                     {
                         return HT.TOPRIGHT;
                     }
@@ -729,12 +742,12 @@ namespace ControlzEx.Controls.Internal
                     return HT.TOP;
 
                 default:
-                    if (xLParam - CornerGripThickness < lpRect.Left)
+                    if (xLParam - this.cornerGripThickness < lpRect.Left)
                     {
                         return HT.BOTTOMLEFT;
                     }
 
-                    if (xLParam + CornerGripThickness > lpRect.Right)
+                    if (xLParam + this.cornerGripThickness > lpRect.Right)
                     {
                         return HT.BOTTOMRIGHT;
                     }
@@ -758,12 +771,14 @@ namespace ControlzEx.Controls.Internal
 
         private void InvalidateCachedBitmaps()
         {
-            if (this.InvalidatedValuesHasFlag(FieldInvalidationTypes.ActiveColor))
+            if (this.InvalidatedValuesHasFlag(FieldInvalidationTypes.ActiveColor)
+                || this.InvalidatedValuesHasFlag(FieldInvalidationTypes.GlowDepth))
             {
                 ClearCache(this.activeGlowBitmaps);
             }
 
-            if (this.InvalidatedValuesHasFlag(FieldInvalidationTypes.InactiveColor))
+            if (this.InvalidatedValuesHasFlag(FieldInvalidationTypes.InactiveColor)
+                || this.InvalidatedValuesHasFlag(FieldInvalidationTypes.GlowDepth))
             {
                 ClearCache(this.inactiveGlowBitmaps);
             }
@@ -901,7 +916,7 @@ namespace ControlzEx.Controls.Internal
                 color = this.InactiveGlowColor;
             }
 
-            return array[(int)bitmapPart] ?? (array[(int)bitmapPart] = GlowBitmap.Create(drawingContext, bitmapPart, color));
+            return array[(int)bitmapPart] ?? (array[(int)bitmapPart] = GlowBitmap.Create(drawingContext, bitmapPart, color, this.GlowDepth));
         }
 
         private static void ClearCache(GlowBitmap?[] cache)
@@ -1016,9 +1031,9 @@ namespace ControlzEx.Controls.Internal
             var topBitmap = this.GetOrCreateBitmap(drawingContext, GlowBitmapPart.Top)!;
             var topRightBitmap = this.GetOrCreateBitmap(drawingContext, GlowBitmapPart.TopRight)!;
 
-            var num = GlowDepth;
+            var num = this.GlowDepth;
             var num2 = num + topLeftBitmap.Width;
-            var num3 = drawingContext.Width - GlowDepth - topRightBitmap.Width;
+            var num3 = drawingContext.Width - this.GlowDepth - topRightBitmap.Width;
             var num4 = num3 - num2;
 
             NativeMethods.SelectObject(drawingContext.BackgroundDc, topLeftBitmap.Handle);
@@ -1047,9 +1062,9 @@ namespace ControlzEx.Controls.Internal
             var bottomBitmap = this.GetOrCreateBitmap(drawingContext, GlowBitmapPart.Bottom)!;
             var bottomRightBitmap = this.GetOrCreateBitmap(drawingContext, GlowBitmapPart.BottomRight)!;
 
-            var num = GlowDepth;
+            var num = this.GlowDepth;
             var num2 = num + bottomLeftBitmap.Width;
-            var num3 = drawingContext.Width - GlowDepth - bottomRightBitmap.Width;
+            var num3 = drawingContext.Width - this.GlowDepth - bottomRightBitmap.Width;
             var num4 = num3 - num2;
 
             NativeMethods.SelectObject(drawingContext.BackgroundDc, bottomLeftBitmap.Handle);
@@ -1078,31 +1093,31 @@ namespace ControlzEx.Controls.Internal
             switch (this.orientation)
             {
                 case Dock.Left:
-                    this.Left = lpRect.Left - GlowDepth;
-                    this.Top = lpRect.Top - GlowDepth;
-                    this.Width = GlowDepth;
-                    this.Height = lpRect.Height + CornerGripThickness;
+                    this.Left = lpRect.Left - this.GlowDepth;
+                    this.Top = lpRect.Top - this.GlowDepth;
+                    this.Width = this.GlowDepth;
+                    this.Height = lpRect.Height + this.GlowDepth + this.GlowDepth;
                     break;
 
                 case Dock.Top:
-                    this.Left = lpRect.Left - GlowDepth;
-                    this.Top = lpRect.Top - GlowDepth;
-                    this.Width = lpRect.Width + CornerGripThickness;
-                    this.Height = GlowDepth;
+                    this.Left = lpRect.Left - this.GlowDepth;
+                    this.Top = lpRect.Top - this.GlowDepth;
+                    this.Width = lpRect.Width + this.GlowDepth + this.GlowDepth;
+                    this.Height = this.GlowDepth;
                     break;
 
                 case Dock.Right:
                     this.Left = lpRect.Right;
-                    this.Top = lpRect.Top - GlowDepth;
-                    this.Width = GlowDepth;
-                    this.Height = lpRect.Height + CornerGripThickness;
+                    this.Top = lpRect.Top - this.GlowDepth;
+                    this.Width = this.GlowDepth;
+                    this.Height = lpRect.Height + this.GlowDepth + this.GlowDepth;
                     break;
 
                 case Dock.Bottom:
-                    this.Left = lpRect.Left - GlowDepth;
+                    this.Left = lpRect.Left - this.GlowDepth;
                     this.Top = lpRect.Bottom;
-                    this.Width = lpRect.Width + CornerGripThickness;
-                    this.Height = GlowDepth;
+                    this.Width = lpRect.Width + this.GlowDepth + this.GlowDepth;
+                    this.Height = this.GlowDepth;
                     break;
             }
         }

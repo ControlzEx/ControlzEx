@@ -82,17 +82,22 @@ namespace ControlzEx.Behaviors
         }
 
         /// <summary>
-        /// <see cref="DependencyProperty"/> for <see cref="ResizeBorderThickness"/>.
+        /// <see cref="DependencyProperty"/> for <see cref="GlowDepth"/>.
         /// </summary>
-        public static readonly DependencyProperty ResizeBorderThicknessProperty = DependencyProperty.Register(nameof(ResizeBorderThickness), typeof(Thickness), typeof(GlowWindowBehavior), new PropertyMetadata(default(Thickness)));
+        public static readonly DependencyProperty GlowDepthProperty = DependencyProperty.Register(nameof(GlowDepth), typeof(int), typeof(GlowWindowBehavior), new PropertyMetadata(9, OnGlowDepthChanged));
+
+        private static void OnGlowDepthChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((GlowWindowBehavior)d).UpdateGlowDepth();
+        }
 
         /// <summary>
         /// Gets or sets resize border thickness.
         /// </summary>
-        public Thickness ResizeBorderThickness
+        public int GlowDepth
         {
-            get => (Thickness)this.GetValue(ResizeBorderThicknessProperty);
-            set => this.SetValue(ResizeBorderThicknessProperty, value);
+            get => (int)this.GetValue(GlowDepthProperty);
+            set => this.SetValue(GlowDepthProperty, value);
         }
 
         protected override void OnAttached()
@@ -283,7 +288,8 @@ namespace ControlzEx.Behaviors
                 {
                     ActiveGlowColor = ((SolidColorBrush?)this.GlowBrush)?.Color ?? Colors.Transparent,
                     InactiveGlowColor = ((SolidColorBrush?)this.NonActiveGlowBrush)?.Color ?? Colors.Transparent,
-                    IsActive = this.AssociatedObject.IsActive
+                    IsActive = this.AssociatedObject.IsActive,
+                    GlowDepth = this.GlowDepth
                 };
             }
 
@@ -366,6 +372,18 @@ namespace ControlzEx.Behaviors
                 foreach (var loadedGlowWindow in this.LoadedGlowWindows)
                 {
                     loadedGlowWindow.IsActive = this.AssociatedObject.IsActive;
+                }
+            }
+        }
+
+        private void UpdateGlowDepth()
+        {
+            using (this.DeferGlowChanges())
+            {
+                foreach (var loadedGlowWindow in this.LoadedGlowWindows)
+                {
+                    loadedGlowWindow.GlowDepth = this.GlowDepth;
+                    loadedGlowWindow.UpdateWindowPos();
                 }
             }
         }
