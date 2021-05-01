@@ -61,7 +61,7 @@ namespace ControlzEx.Theming
             this.ColorScheme = (string)resourceDictionary[Theme.ThemeColorSchemeKey];
             this.AlternativeColorScheme = (string)resourceDictionary[LibraryTheme.LibraryThemeAlternativeColorSchemeKey];
             this.PrimaryAccentColor = resourceDictionary[Theme.ThemePrimaryAccentColorKey] as Color? ?? throw new ArgumentException($"Resource key \"{Theme.ThemePrimaryAccentColorKey}\" is missing, is null or is not a color.");
-            this.ShowcaseBrush = (Brush)resourceDictionary[Theme.ThemeShowcaseBrushKey] ?? new SolidColorBrush(this.PrimaryAccentColor);
+            this.ShowcaseBrush = (Brush?)resourceDictionary[Theme.ThemeShowcaseBrushKey] ?? new SolidColorBrush(this.PrimaryAccentColor);
 
             this.AddResource(resourceDictionary);
 
