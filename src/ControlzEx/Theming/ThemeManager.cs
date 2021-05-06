@@ -1159,7 +1159,7 @@ namespace ControlzEx.Theming
         [SecurityCritical]
         private void OnThemeChanged(object? target, ResourceDictionary targetResourceDictionary, Theme? oldTheme, Theme newTheme)
         {
-            this.ThemeChanged?.Invoke(Application.Current, new ThemeChangedEventArgs(target, targetResourceDictionary, oldTheme, newTheme));
+            this.ThemeChanged?.Invoke(this, new ThemeChangedEventArgs(target, targetResourceDictionary, oldTheme, newTheme));
         }
 
         public void SyncTheme()
