@@ -6,14 +6,16 @@ namespace ControlzEx.Helpers
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
     using ControlzEx.Controls.Internal;
+    using ControlzEx.Standard;
 
     public static class GlowWindowBitmapGenerator
     {
-        public static RenderTargetBitmap GenerateBitmapSource(GlowBitmapPart part, int glowDepth)
+        public static RenderTargetBitmap GenerateBitmapSource(GlowBitmapPart part, int glowDepth, bool useRadialGradientForCorners)
         {
             var size = GetSize(part, glowDepth);
 
-            var gradientBrush = CreateGradientBrush(part);
+            var gradientBrush = CreateGradientBrush(part, useRadialGradientForCorners);
+            gradientBrush.Freeze();
 
             var drawingVisual = new DrawingVisual();
             var drawingContext = drawingVisual.RenderOpen();
@@ -108,10 +110,48 @@ namespace ControlzEx.Helpers
             }
         }
 
-        private static GradientBrush CreateGradientBrush(GlowBitmapPart part)
+        private static GradientBrush CreateGradientBrush(GlowBitmapPart part, bool useRadialGradientForCorners)
         {
             var startAndEndPoint = GetStartAndEndPoint(part);
-            return new LinearGradientBrush(new GradientStopCollection(GetGradientStops(part)), startAndEndPoint.Start, startAndEndPoint.End);
+            var gradientStops = GetGradientStops(part, useRadialGradientForCorners);
+            var gradientStopCollection = new GradientStopCollection(gradientStops);
+
+            if (useRadialGradientForCorners == false)
+            {
+                return new LinearGradientBrush(gradientStopCollection, startAndEndPoint.Start, startAndEndPoint.End);
+            }
+
+            switch (part)
+            {
+                case GlowBitmapPart.CornerTopLeft:
+                case GlowBitmapPart.CornerTopRight:
+                case GlowBitmapPart.CornerBottomLeft:
+                case GlowBitmapPart.CornerBottomRight:
+                    return new RadialGradientBrush(gradientStopCollection)
+                        {
+                            GradientOrigin = startAndEndPoint.Start,
+                            Center = new Point(DoubleUtilities.AreClose(startAndEndPoint.Start.X, 0) ? 0.1 : 0.9, DoubleUtilities.AreClose(startAndEndPoint.Start.Y, 0) ? 0.1 : 0.9),
+                            RadiusX = 1,
+                            RadiusY = 1
+                        };
+
+                case GlowBitmapPart.TopLeft:
+                case GlowBitmapPart.Top:
+                case GlowBitmapPart.TopRight:
+                case GlowBitmapPart.LeftTop:
+                case GlowBitmapPart.Left:
+                case GlowBitmapPart.LeftBottom:
+                case GlowBitmapPart.BottomLeft:
+                case GlowBitmapPart.Bottom:
+                case GlowBitmapPart.BottomRight:
+                case GlowBitmapPart.RightTop:
+                case GlowBitmapPart.Right:
+                case GlowBitmapPart.RightBottom:
+                    return new LinearGradientBrush(gradientStopCollection, startAndEndPoint.Start, startAndEndPoint.End);
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(part), part, null);
+            }
         }
 
         private static StartAndEndPoint GetStartAndEndPoint(GlowBitmapPart part)
@@ -163,48 +203,27 @@ namespace ControlzEx.Helpers
             }
         }
 
-        private static IEnumerable<GradientStop> GetGradientStops(GlowBitmapPart part)
+        private static IEnumerable<GradientStop> GetGradientStops(GlowBitmapPart part, bool useRadialGradientForCorners)
         {
-            // yield return new GradientStop(ColorFromString("#FF000000"), 0);
-            // yield return new GradientStop(ColorFromString("#FF000000"), 0.1);
-            // yield return new GradientStop(ColorFromString("#2F838383"), 0.125);
-            // yield return new GradientStop(ColorFromString("#21838383"), 0.250);
-            // yield return new GradientStop(ColorFromString("#16838383"), 0.375);
-            // yield return new GradientStop(ColorFromString("#0C838383"), 0.5);
-            // yield return new GradientStop(ColorFromString("#07838383"), 0.625);
-            // yield return new GradientStop(ColorFromString("#05838383"), 0.75);
-            // yield return new GradientStop(ColorFromString("#03838383"), 0.875);
-            // yield return new GradientStop(ColorFromString("#01838383"), 1);
-
-            // yield return new GradientStop(ColorFromString("#FF000000"), 0);
-            // yield return new GradientStop(ColorFromString("#FF000000"), 0.125);
-            // yield return new GradientStop(ColorFromString("#41838383"), 0.13);
-            // yield return new GradientStop(ColorFromString("#2E838383"), 0.250);
-            // yield return new GradientStop(ColorFromString("#1E838383"), 0.375);
-            // yield return new GradientStop(ColorFromString("#13838383"), 0.5);
-            // yield return new GradientStop(ColorFromString("#08838383"), 0.625);
-            // yield return new GradientStop(ColorFromString("#05838383"), 0.75);
-            // yield return new GradientStop(ColorFromString("#03838383"), 0.875);
-            // yield return new GradientStop(ColorFromString("#01838383"), 1);
-
-            // yield return new GradientStop(ColorFromString("#FF000000"), 0);
-            // yield return new GradientStop(ColorFromString("#FF000000"), 0.11);
-
-            // yield return new GradientStop(ColorFromString("#55838383"), 0);
-            // yield return new GradientStop(ColorFromString("#02838383"), 0.6);
-            // yield return new GradientStop(ColorFromString("#02838383"), 1);
-
-            //yield return new GradientStop(ColorFromString("#00000000"), 1);
-
             switch (part)
             {
                 case GlowBitmapPart.CornerBottomLeft:
                 case GlowBitmapPart.CornerBottomRight:
                 case GlowBitmapPart.CornerTopLeft:
                 case GlowBitmapPart.CornerTopRight:
-                    yield return new GradientStop(ColorFromString("#55838383"), 0);
-                    yield return new GradientStop(ColorFromString("#02838383"), 0.3);
-                    yield return new GradientStop(ColorFromString("#00000000"), 1);
+                    if (useRadialGradientForCorners)
+                    {
+                        yield return new GradientStop(ColorFromString("#55838383"), 0);
+                        yield return new GradientStop(ColorFromString("#02838383"), 0.5);
+                        yield return new GradientStop(ColorFromString("#00000000"), 1);
+                    }
+                    else
+                    {
+                        yield return new GradientStop(ColorFromString("#55838383"), 0);
+                        yield return new GradientStop(ColorFromString("#02838383"), 0.3);
+                        yield return new GradientStop(ColorFromString("#00000000"), 1);
+                    }
+
                     break;
 
                 default:
@@ -220,7 +239,7 @@ namespace ControlzEx.Helpers
             return (Color)ColorConverter.ConvertFromString(input);
         }
 
-        private struct StartAndEndPoint
+        private readonly struct StartAndEndPoint
         {
             public StartAndEndPoint(Point start, Point end)
             {

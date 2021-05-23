@@ -92,12 +92,30 @@ namespace ControlzEx.Behaviors
         }
 
         /// <summary>
-        /// Gets or sets resize border thickness.
+        /// Gets or sets the glow depth.
         /// </summary>
         public int GlowDepth
         {
             get => (int)this.GetValue(GlowDepthProperty);
             set => this.SetValue(GlowDepthProperty, value);
+        }
+
+        /// <summary>Identifies the <see cref="UseRadialGradientForCorners"/> dependency property.</summary>
+        public static readonly DependencyProperty UseRadialGradientForCornersProperty = DependencyProperty.Register(
+            nameof(UseRadialGradientForCorners), typeof(bool), typeof(GlowWindowBehavior), new PropertyMetadata(true, OnUseRadialGradientForCornersChanged));
+
+        private static void OnUseRadialGradientForCornersChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((GlowWindowBehavior)d).UpdateUseRadialGradientForCorners();
+        }
+
+        /// <summary>
+        /// Gets or sets whether to use a radial gradient for the corners or not.
+        /// </summary>
+        public bool UseRadialGradientForCorners
+        {
+            get => (bool)this.GetValue(UseRadialGradientForCornersProperty);
+            set => this.SetValue(UseRadialGradientForCornersProperty, value);
         }
 
         protected override void OnAttached()
@@ -232,7 +250,7 @@ namespace ControlzEx.Behaviors
         private void UpdateZOrderOfOwner(IntPtr hwndOwner)
         {
             var lastOwnedWindow = IntPtr.Zero;
-            NativeMethods.EnumThreadWindows(NativeMethods.GetCurrentThreadId(), delegate(IntPtr hwnd, IntPtr lParam)
+            NativeMethods.EnumThreadWindows(NativeMethods.GetCurrentThreadId(), delegate(IntPtr hwnd, IntPtr _)
             {
                 if (NativeMethods.GetWindow(hwnd, GW.OWNER) == hwndOwner)
                 {
@@ -282,16 +300,14 @@ namespace ControlzEx.Behaviors
 
         private GlowWindow GetOrCreateGlowWindow(int index)
         {
-            if (this.glowWindows[index] is null)
+            this.glowWindows[index] ??= new GlowWindow(this.AssociatedObject, this, (Dock)index)
             {
-                this.glowWindows[index] = new GlowWindow(this.AssociatedObject, this, (Dock)index)
-                {
-                    ActiveGlowColor = ((SolidColorBrush?)this.GlowBrush)?.Color ?? Colors.Transparent,
-                    InactiveGlowColor = ((SolidColorBrush?)this.NonActiveGlowBrush)?.Color ?? Colors.Transparent,
-                    IsActive = this.AssociatedObject.IsActive,
-                    GlowDepth = this.GlowDepth
-                };
-            }
+                ActiveGlowColor = ((SolidColorBrush?)this.GlowBrush)?.Color ?? Colors.Transparent,
+                InactiveGlowColor = ((SolidColorBrush?)this.NonActiveGlowBrush)?.Color ?? Colors.Transparent,
+                IsActive = this.AssociatedObject.IsActive,
+                GlowDepth = this.GlowDepth,
+                UseRadialGradientForCorners = this.UseRadialGradientForCorners
+            };
 
             return this.glowWindows[index]!;
         }
@@ -384,6 +400,17 @@ namespace ControlzEx.Behaviors
                 {
                     loadedGlowWindow.GlowDepth = this.GlowDepth;
                     loadedGlowWindow.UpdateWindowPos();
+                }
+            }
+        }
+
+        private void UpdateUseRadialGradientForCorners()
+        {
+            using (this.DeferGlowChanges())
+            {
+                foreach (var loadedGlowWindow in this.LoadedGlowWindows)
+                {
+                    loadedGlowWindow.UseRadialGradientForCorners = this.UseRadialGradientForCorners;
                 }
             }
         }

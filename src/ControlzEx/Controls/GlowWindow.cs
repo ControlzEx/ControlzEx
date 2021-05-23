@@ -1,4 +1,5 @@
-﻿#nullable enable
+﻿// ReSharper disable IdentifierTypo
+#nullable enable
 
 // ReSharper disable once CheckNamespace
 namespace ControlzEx.Controls.Internal
@@ -14,9 +15,11 @@ namespace ControlzEx.Controls.Internal
     using ControlzEx.Behaviors;
     using ControlzEx.Helpers;
     using ControlzEx.Standard;
+    using JetBrains.Annotations;
 
 #pragma warning disable 618, SA1602, SA1401
 
+    [PublicAPI]
     public abstract class HwndWrapper : DisposableObject
     {
         private IntPtr handle;
@@ -27,9 +30,7 @@ namespace ControlzEx.Controls.Internal
 
         private Delegate? wndProc;
 
-        private static long failedDestroyWindows;
-
-        private static int lastDestroyWindowError;
+        public static int LastDestroyWindowError { get; private set; }
 
         [CLSCompliant(false)]
         protected ushort WindowClassAtom
@@ -59,7 +60,7 @@ namespace ControlzEx.Controls.Internal
         [CLSCompliant(false)]
         protected virtual ushort CreateWindowClassCore()
         {
-            return this.RegisterClass(Guid.NewGuid().ToString());
+            return this.RegisterClass("ControlzEx_HwndWrapper_" + Guid.NewGuid().ToString());
         }
 
         protected virtual void DestroyWindowClassCore()
@@ -102,8 +103,7 @@ namespace ControlzEx.Controls.Internal
             {
                 if (!NativeMethods.DestroyWindow(this.handle))
                 {
-                    lastDestroyWindowError = Marshal.GetLastWin32Error();
-                    failedDestroyWindows++;
+                    LastDestroyWindowError = Marshal.GetLastWin32Error();
                 }
 
                 this.handle = IntPtr.Zero;
@@ -164,9 +164,10 @@ namespace ControlzEx.Controls.Internal
         }
     }
 
+    [PublicAPI]
     public class DisposableObject : IDisposable
     {
-        private EventHandler? disposing;
+        private EventHandler? disposingEventHandlers;
 
         public bool IsDisposed { get; private set; }
 
@@ -175,9 +176,9 @@ namespace ControlzEx.Controls.Internal
             add
             {
                 this.ThrowIfDisposed();
-                this.disposing = (EventHandler)Delegate.Combine(this.disposing, value);
+                this.disposingEventHandlers = (EventHandler)Delegate.Combine(this.disposingEventHandlers, value);
             }
-            remove => this.disposing = (EventHandler?)Delegate.Remove(this.disposing, value);
+            remove => this.disposingEventHandlers = (EventHandler?)Delegate.Remove(this.disposingEventHandlers, value);
         }
 
         ~DisposableObject()
@@ -210,8 +211,8 @@ namespace ControlzEx.Controls.Internal
             {
                 if (disposing)
                 {
-                    this.disposing?.Invoke(this, EventArgs.Empty);
-                    this.disposing = null;
+                    this.disposingEventHandlers?.Invoke(this, EventArgs.Empty);
+                    this.disposingEventHandlers = null;
                     this.DisposeManagedResources();
                 }
 
@@ -232,6 +233,7 @@ namespace ControlzEx.Controls.Internal
         }
     }
 
+    [PublicAPI]
     public sealed class GlowBitmap : DisposableObject
     {
         private sealed class CachedBitmapInfo
@@ -254,7 +256,7 @@ namespace ControlzEx.Controls.Internal
 
         private const int BytesPerPixelBgra32 = 4;
 
-        private static readonly Dictionary<int, CachedBitmapInfo?[]> transparencyMasks = new();
+        private static readonly Dictionary<CachedBitmapInfoKey, CachedBitmapInfo?[]> transparencyMasks = new();
 
         private readonly IntPtr pbits;
 
@@ -291,14 +293,14 @@ namespace ControlzEx.Controls.Internal
             return (byte)(channel * alpha / 255.0);
         }
 
-        public static GlowBitmap? Create(GlowDrawingContext drawingContext, GlowBitmapPart bitmapPart, Color color, int glowDepth)
+        public static GlowBitmap? Create(GlowDrawingContext drawingContext, GlowBitmapPart bitmapPart, Color color, int glowDepth, bool useRadialGradientForCorners)
         {
             if (drawingContext.ScreenDc is null)
             {
                 return null;
             }
 
-            var alphaMask = GetOrCreateAlphaMask(bitmapPart, glowDepth);
+            var alphaMask = GetOrCreateAlphaMask(bitmapPart, glowDepth, useRadialGradientForCorners);
             var glowBitmap = new GlowBitmap(drawingContext.ScreenDc, alphaMask.Width, alphaMask.Height);
             for (var i = 0; i < alphaMask.DiBits.Length; i += BytesPerPixelBgra32)
             {
@@ -315,12 +317,13 @@ namespace ControlzEx.Controls.Internal
             return glowBitmap;
         }
 
-        private static CachedBitmapInfo GetOrCreateAlphaMask(GlowBitmapPart bitmapPart, int glowDepth)
+        private static CachedBitmapInfo GetOrCreateAlphaMask(GlowBitmapPart bitmapPart, int glowDepth, bool useRadialGradientForCorners)
         {
-            if (transparencyMasks.TryGetValue(glowDepth, out var transparencyMasksForGlowDepth) == false)
+            var cacheKey = new CachedBitmapInfoKey(glowDepth, useRadialGradientForCorners);
+            if (transparencyMasks.TryGetValue(cacheKey, out var transparencyMasksForGlowDepth) == false)
             {
                 transparencyMasksForGlowDepth = new CachedBitmapInfo?[GlowBitmapPartCount];
-                transparencyMasks[glowDepth] = transparencyMasksForGlowDepth;
+                transparencyMasks[cacheKey] = transparencyMasksForGlowDepth;
             }
 
             var num = (int)bitmapPart;
@@ -329,7 +332,7 @@ namespace ControlzEx.Controls.Internal
                 return transparencyMask;
             }
 
-            var bitmapImage = GlowWindowBitmapGenerator.GenerateBitmapSource(bitmapPart, glowDepth);
+            var bitmapImage = GlowWindowBitmapGenerator.GenerateBitmapSource(bitmapPart, glowDepth, useRadialGradientForCorners);
             var array = new byte[BytesPerPixelBgra32 * bitmapImage.PixelWidth * bitmapImage.PixelHeight];
             var stride = BytesPerPixelBgra32 * bitmapImage.PixelWidth;
             bitmapImage.CopyPixels(array, stride, 0);
@@ -337,6 +340,48 @@ namespace ControlzEx.Controls.Internal
             transparencyMasksForGlowDepth[num] = cachedBitmapInfo;
 
             return cachedBitmapInfo;
+        }
+    }
+
+    internal readonly struct CachedBitmapInfoKey : IEquatable<CachedBitmapInfoKey>
+    {
+        public CachedBitmapInfoKey(int glowDepth, bool useRadialGradientForCorners)
+        {
+            this.GlowDepth = glowDepth;
+            this.UseRadialGradientForCorners = useRadialGradientForCorners;
+        }
+
+        public int GlowDepth { get; }
+
+        public bool UseRadialGradientForCorners { get; }
+
+        public bool Equals(CachedBitmapInfoKey other)
+        {
+            return this.GlowDepth == other.GlowDepth && this.UseRadialGradientForCorners == other.UseRadialGradientForCorners;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is CachedBitmapInfoKey other 
+                   && this.Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (this.GlowDepth * 397) ^ this.UseRadialGradientForCorners.GetHashCode();
+            }
+        }
+
+        public static bool operator ==(CachedBitmapInfoKey left, CachedBitmapInfoKey right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(CachedBitmapInfoKey left, CachedBitmapInfoKey right)
+        {
+            return !left.Equals(right);
         }
     }
 
@@ -448,6 +493,7 @@ namespace ControlzEx.Controls.Internal
         }
     }
 
+    [PublicAPI]
     public sealed class GlowWindow : HwndWrapper
     {
         [Flags]
@@ -463,7 +509,7 @@ namespace ControlzEx.Controls.Internal
             GlowDepth = 1 << 7
         }
 
-        private const string GlowWindowClassName = "ControlzExGlowWindow";
+        private const string GlowWindowClassName = "ControlzEx_GlowWindow";
 
         private readonly Window targetWindow;
         private readonly GlowWindowBehavior behavior;
@@ -480,12 +526,6 @@ namespace ControlzEx.Controls.Internal
         // ReSharper disable NotAccessedField.Local
 #pragma warning disable IDE0052 // Remove unread private members
         private static WndProc? sharedWndProc;
-
-        // For diagnostics
-        private static long createdGlowWindows;
-
-        // For diagnostics
-        private static long disposedGlowWindows;
 #pragma warning restore IDE0052 // Remove unread private members
         // ReSharper restore NotAccessedField.Local
 
@@ -499,6 +539,8 @@ namespace ControlzEx.Controls.Internal
 
         private int glowDepth = 9;
         private int cornerGripThickness = 18;
+
+        private bool useRadialGradientForCorners = true;
 
         private bool isVisible;
 
@@ -577,6 +619,12 @@ namespace ControlzEx.Controls.Internal
             }
         }
 
+        public bool UseRadialGradientForCorners
+        {
+            get => this.useRadialGradientForCorners;
+            set => this.UpdateProperty(ref this.useRadialGradientForCorners, value, FieldInvalidationTypes.GlowDepth | FieldInvalidationTypes.Render | FieldInvalidationTypes.Location);
+        }
+
         public bool IsActive
         {
             get => this.isActive;
@@ -606,7 +654,6 @@ namespace ControlzEx.Controls.Internal
             this.targetWindow = owner ?? throw new ArgumentNullException(nameof(owner));
             this.behavior = behavior ?? throw new ArgumentNullException(nameof(behavior));
             this.orientation = orientation;
-            createdGlowWindows++;
         }
 
         private void UpdateProperty<T>(ref T field, T value, FieldInvalidationTypes invalidation)
@@ -634,14 +681,15 @@ namespace ControlzEx.Controls.Internal
 
         protected override void DestroyWindowClassCore()
         {
+            // Do nothing here as we registered a shared class/atom
         }
 
         protected override IntPtr CreateWindowCore()
         {
-            const WS_EX exStyle = WS_EX.TOOLWINDOW | WS_EX.LAYERED;
-            const WS style = WS.POPUP | WS.CLIPSIBLINGS | WS.CLIPCHILDREN;
+            const WS_EX EX_STYLE = WS_EX.TOOLWINDOW | WS_EX.LAYERED;
+            const WS STYLE = WS.POPUP | WS.CLIPSIBLINGS | WS.CLIPCHILDREN;
 
-            return NativeMethods.CreateWindowEx(exStyle, new IntPtr(this.WindowClassAtom), string.Empty, style, 0, 0, 0, 0, new WindowInteropHelper(this.targetWindow).Owner, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
+            return NativeMethods.CreateWindowEx(EX_STYLE, new IntPtr(this.WindowClassAtom), string.Empty, STYLE, 0, 0, 0, 0, new WindowInteropHelper(this.targetWindow).Owner, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
         }
 
         public void ChangeOwner(IntPtr newOwner)
@@ -858,41 +906,35 @@ namespace ControlzEx.Controls.Internal
 
         private void RenderLayeredWindow()
         {
-            using (var glowDrawingContext = new GlowDrawingContext(this.Width, this.Height))
+            using var glowDrawingContext = new GlowDrawingContext(this.Width, this.Height);
+            if (glowDrawingContext.IsInitialized == false)
             {
-                if (glowDrawingContext.IsInitialized)
-                {
-                    switch (this.orientation)
-                    {
-                        case Dock.Left:
-                            this.DrawLeft(glowDrawingContext);
-                            break;
-                        case Dock.Right:
-                            this.DrawRight(glowDrawingContext);
-                            break;
-                        case Dock.Top:
-                            this.DrawTop(glowDrawingContext);
-                            break;
-                        default:
-                            this.DrawBottom(glowDrawingContext);
-                            break;
-                    }
-
-                    var point = default(POINT);
-                    point.X = this.Left;
-                    point.Y = this.Top;
-                    var pptDest = point;
-                    var win32Size = default(SIZE);
-                    win32Size.cx = this.Width;
-                    win32Size.cy = this.Height;
-                    var psize = win32Size;
-                    point = default;
-                    point.X = 0;
-                    point.Y = 0;
-                    var pptSrc = point;
-                    NativeMethods.UpdateLayeredWindow(this.Handle, glowDrawingContext.ScreenDc, ref pptDest, ref psize, glowDrawingContext.WindowDc, ref pptSrc, 0, ref glowDrawingContext.Blend, ULW.ALPHA);
-                }
+                return;
             }
+
+            switch (this.orientation)
+            {
+                case Dock.Left:
+                    this.DrawLeft(glowDrawingContext);
+                    break;
+                case Dock.Right:
+                    this.DrawRight(glowDrawingContext);
+                    break;
+                case Dock.Top:
+                    this.DrawTop(glowDrawingContext);
+                    break;
+                case Dock.Bottom:
+                    this.DrawBottom(glowDrawingContext);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(this.orientation), this.orientation, null);
+            }
+
+            var pptDest = new POINT(this.Left, this.Top);
+            var psize = new SIZE(this.Width, this.Height);
+            var pptSrc = new POINT(0, 0);
+
+            NativeMethods.UpdateLayeredWindow(this.Handle, glowDrawingContext.ScreenDc, ref pptDest, ref psize, glowDrawingContext.WindowDc, ref pptSrc, 0, ref glowDrawingContext.Blend, ULW.ALPHA);
         }
 
         private GlowBitmap? GetOrCreateBitmap(GlowDrawingContext drawingContext, GlowBitmapPart bitmapPart)
@@ -916,7 +958,7 @@ namespace ControlzEx.Controls.Internal
                 color = this.InactiveGlowColor;
             }
 
-            return array[(int)bitmapPart] ?? (array[(int)bitmapPart] = GlowBitmap.Create(drawingContext, bitmapPart, color, this.GlowDepth));
+            return array[(int)bitmapPart] ?? (array[(int)bitmapPart] = GlowBitmap.Create(drawingContext, bitmapPart, color, this.GlowDepth, this.UseRadialGradientForCorners));
         }
 
         private static void ClearCache(GlowBitmap?[] cache)
@@ -934,12 +976,6 @@ namespace ControlzEx.Controls.Internal
         {
             ClearCache(this.activeGlowBitmaps);
             ClearCache(this.inactiveGlowBitmaps);
-        }
-
-        protected override void DisposeNativeResources()
-        {
-            base.DisposeNativeResources();
-            disposedGlowWindows++;
         }
 
         private void DrawLeft(GlowDrawingContext drawingContext)

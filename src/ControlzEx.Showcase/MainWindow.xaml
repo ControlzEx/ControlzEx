@@ -435,6 +435,7 @@
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
                                         <RowDefinition />
                                     </Grid.RowDefinitions>
 
@@ -517,6 +518,16 @@
                                              Padding="2"
                                              VerticalAlignment="Center"
                                              Text="{Binding ElementName=Window, Path=GlowDepth, Mode=TwoWay}" />
+                                    
+                                    <Label Grid.Row="6" Grid.Column="0">
+                                        UseRadialGradientForCorners
+                                    </Label>
+                                    <CheckBox Grid.Row="6"
+                                             Grid.Column="1"
+                                             Margin="4"
+                                             Padding="2"
+                                             VerticalAlignment="Center"
+                                             IsChecked="{Binding ElementName=Window, Path=UseRadialGradientForCorners, Mode=TwoWay}" />
                                 </Grid>
                             </GroupBox>
                         </Grid>
