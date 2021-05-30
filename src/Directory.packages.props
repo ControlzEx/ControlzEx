@@ -1,6 +1,6 @@
 <Project>
     <ItemGroup>
-        <PackageVersion Include="XamlColorSchemeGenerator" Version="4.0.0-rc0144" />
+        <PackageVersion Include="XamlColorSchemeGenerator" Version="4.0.0-rc0155" />
         <PackageVersion Include="System.Text.Json" Version="5.0.1" />
         <PackageVersion Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.31" />
     </ItemGroup>
