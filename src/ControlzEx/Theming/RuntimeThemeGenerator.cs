@@ -9,6 +9,7 @@ namespace ControlzEx.Theming
     using System.Windows;
     using System.Windows.Markup;
     using System.Windows.Media;
+    using ControlzEx.Internal.KnownBoxes;
     using JetBrains.Annotations;
 
     [PublicAPI]
@@ -142,8 +143,8 @@ namespace ControlzEx.Theming
             var preparedXamlContent = libraryThemeProvider.PrepareXamlContent(this, xamlContent, runtimeThemeColorValues);
 
             var resourceDictionary = (ResourceDictionary)XamlReader.Parse(preparedXamlContent);
-            resourceDictionary.Add(Theme.ThemeIsRuntimeGeneratedKey, true);
-            resourceDictionary[Theme.ThemeIsHighContrastKey] = runtimeThemeColorValues.Options.IsHighContrast;
+            resourceDictionary.Add(Theme.ThemeIsRuntimeGeneratedKey, BooleanBoxes.TrueBox);
+            resourceDictionary[Theme.ThemeIsHighContrastKey] = BooleanBoxes.Box(runtimeThemeColorValues.Options.IsHighContrast);
             resourceDictionary[LibraryTheme.RuntimeThemeColorValuesKey] = runtimeThemeColorValues;
 
             libraryThemeProvider.PrepareRuntimeThemeResourceDictionary(this, resourceDictionary, runtimeThemeColorValues);

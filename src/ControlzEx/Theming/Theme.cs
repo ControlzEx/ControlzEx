@@ -227,7 +227,7 @@ namespace ControlzEx.Theming
         /// <inheritdoc />
         public override string ToString()
         {
-            return $"DisplayName={this.DisplayName}, Name={this.Name}, IsHighContrast={this.IsHighContrast}, IsRuntimeGenerated={this.IsRuntimeGenerated}";
+            return $"DisplayName={this.DisplayName}, Name={this.Name}, IsHighContrast={this.IsHighContrast.ToString()}, IsRuntimeGenerated={this.IsRuntimeGenerated.ToString()}";
         }
 
         public static string? GetThemeName([NotNull] ResourceDictionary resourceDictionary)

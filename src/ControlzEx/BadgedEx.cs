@@ -5,6 +5,7 @@
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Media;
+    using ControlzEx.Internal.KnownBoxes;
 
 #pragma warning disable SA1602 // Enumeration items should be documented
     public enum BadgePlacementMode
@@ -308,7 +309,7 @@
             = DependencyProperty.RegisterReadOnly(nameof(IsBadgeSet),
                                                   typeof(bool),
                                                   typeof(BadgedEx),
-                                                  new PropertyMetadata(default(bool)));
+                                                  new PropertyMetadata(BooleanBoxes.FalseBox));
 
         /// <summary>Identifies the <see cref="IsBadgeSet"/> dependency property.</summary>
         public static readonly DependencyProperty IsBadgeSetProperty = IsBadgeSetPropertyKey.DependencyProperty;
@@ -319,7 +320,7 @@
         public bool IsBadgeSet
         {
             get => (bool)this.GetValue(IsBadgeSetProperty);
-            private set => this.SetValue(IsBadgeSetPropertyKey, value);
+            private set => this.SetValue(IsBadgeSetPropertyKey, BooleanBoxes.Box(value));
         }
 
         private static void OnBadgeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

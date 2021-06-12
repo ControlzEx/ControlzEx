@@ -9,6 +9,7 @@ namespace ControlzEx
     using System.Windows.Controls.Primitives;
     using System.Windows.Input;
     using System.Windows.Interop;
+    using ControlzEx.Internal.KnownBoxes;
 
     /// <summary>
     /// This custom popup can be used by validation error templates or something else.
@@ -24,7 +25,7 @@ namespace ControlzEx
             = DependencyProperty.Register(nameof(CloseOnMouseLeftButtonDown),
                                           typeof(bool),
                                           typeof(PopupEx),
-                                          new PropertyMetadata(false));
+                                          new PropertyMetadata(BooleanBoxes.FalseBox));
 
         /// <summary>
         /// Gets or sets if the popup can be closed by left mouse button down.
@@ -32,7 +33,7 @@ namespace ControlzEx
         public bool CloseOnMouseLeftButtonDown
         {
             get { return (bool)this.GetValue(CloseOnMouseLeftButtonDownProperty); }
-            set { this.SetValue(CloseOnMouseLeftButtonDownProperty, value); }
+            set { this.SetValue(CloseOnMouseLeftButtonDownProperty, BooleanBoxes.Box(value)); }
         }
 
         /// <summary>Identifies the <see cref="AllowTopMost"/> dependency property.</summary>
@@ -40,7 +41,7 @@ namespace ControlzEx
             = DependencyProperty.Register(nameof(AllowTopMost),
                                           typeof(bool),
                                           typeof(PopupEx),
-                                          new PropertyMetadata(true));
+                                          new PropertyMetadata(BooleanBoxes.TrueBox));
 
         /// <summary>
         /// Gets or sets whether if the Popup should be always on top.
@@ -48,7 +49,7 @@ namespace ControlzEx
         public bool AllowTopMost
         {
             get { return (bool)this.GetValue(AllowTopMostProperty); }
-            set { this.SetValue(AllowTopMostProperty, value); }
+            set { this.SetValue(AllowTopMostProperty, BooleanBoxes.Box(value)); }
         }
 
         public PopupEx()
@@ -146,7 +147,7 @@ namespace ControlzEx
                 if (adornedElement is not null)
                 {
                     this.SetCurrentValue(PopupAnimationProperty, PopupAnimation.None);
-                    this.SetCurrentValue(IsOpenProperty, false);
+                    this.SetCurrentValue(IsOpenProperty, BooleanBoxes.FalseBox);
                     var errorTemplate = adornedElement.GetValue(Validation.ErrorTemplateProperty);
                     adornedElement.SetCurrentValue(Validation.ErrorTemplateProperty, null);
                     adornedElement.SetCurrentValue(Validation.ErrorTemplateProperty, errorTemplate);
@@ -163,7 +164,7 @@ namespace ControlzEx
         {
             isTop &= this.AllowTopMost;
 
-            // Don’t apply state if it’s the same as incoming state
+            // Donâ€™t apply state if itâ€™s the same as incoming state
             if (this.appliedTopMost.HasValue && this.appliedTopMost == isTop)
             {
                 return;
@@ -216,7 +217,7 @@ namespace ControlzEx
         {
             if (this.CloseOnMouseLeftButtonDown)
             {
-                this.SetCurrentValue(IsOpenProperty, false);
+                this.SetCurrentValue(IsOpenProperty, BooleanBoxes.FalseBox);
             }
         }
 

@@ -758,7 +758,7 @@ namespace ControlzEx.Theming
 
             if (newTheme is null)
             {
-                Trace.TraceError($"Could not find a theme with base color scheme '{baseColorScheme}', color scheme '{colorScheme}' and high contrast equals {oldTheme.IsHighContrast}.");
+                Trace.TraceError($"Could not find a theme with base color scheme '{baseColorScheme}', color scheme '{colorScheme}' and high contrast equals {oldTheme.IsHighContrast.ToString()}.");
                 return null;
             }
 

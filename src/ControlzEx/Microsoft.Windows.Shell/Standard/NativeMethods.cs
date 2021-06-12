@@ -2405,7 +2405,7 @@ namespace ControlzEx.Standard
         /// <inheritdoc />
         public override string ToString()
         {
-            return $"x: {this.x}; y: {this.y}; cx: {this.cx}; cy: {this.cy}; flags: {this.flags}";
+            return $"x: {this.x.ToString()}; y: {this.y.ToString()}; cx: {this.cx.ToString()}; cy: {this.cy.ToString()}; flags: {this.flags.ToString()}";
         }
 
         public bool SizeAndPositionEquals(WINDOWPOS other)

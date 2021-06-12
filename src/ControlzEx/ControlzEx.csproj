@@ -60,4 +60,7 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" IncludeAssets="build; native" />
     </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Internal\KnownBoxes" />
+    </ItemGroup>
 </Project>
