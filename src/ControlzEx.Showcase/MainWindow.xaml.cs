@@ -1,18 +1,18 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Reflection;
+using System.Windows;
+using System.Windows.Input;
+using System.Windows.Interop;
+using System.Windows.Media;
+using ControlzEx.Native;
+using ControlzEx.Standard;
+
 namespace ControlzEx.Showcase
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Linq;
-    using System.Reflection;
-    using System.Windows;
-    using System.Windows.Input;
-    using System.Windows.Interop;
-    using System.Windows.Media;
-    using ControlzEx.Native;
-    using ControlzEx.Standard;
-
-    public partial class MainWindow
+    public partial class MainWindow : WindowChromeWindow
     {
         private static readonly PropertyInfo criticalHandlePropertyInfo = typeof(Window).GetProperty("CriticalHandle", BindingFlags.NonPublic | BindingFlags.Instance);
         private static readonly object[] emptyObjectArray = new object[0];
@@ -52,11 +52,29 @@ namespace ControlzEx.Showcase
             return new[] { new KeyValuePair<string, Brush>("None", null) }.Concat(brushes);
         }
 
+        private void OpenNewWindowStyleWindowButtonClick(object sender, RoutedEventArgs e)
+        {
+            var window = new MainWindow
+            {
+                WindowStartupLocation = WindowStartupLocation.Manual,
+                IgnoreTaskbarOnMaximize = this.IgnoreTaskbarOnMaximize,
+                WindowStyle = (WindowStyle)StyleComboBox.SelectedItem
+            };
+
+            if (this.SetOwner.IsChecked == true)
+            {
+                window.Owner = this;
+            }
+
+            window.Show();
+        }
+
         private void ButtonOpenChildWindowOnClick(object sender, RoutedEventArgs e)
         {
             var window = new MainWindow
             {
-                WindowStartupLocation = WindowStartupLocation.Manual
+                WindowStartupLocation = WindowStartupLocation.Manual,
+                WindowStyle = (WindowStyle)StyleComboBox.SelectedItem
             };
 
             if (this.SetOwner.IsChecked == true)
@@ -71,7 +89,8 @@ namespace ControlzEx.Showcase
         {
             var window = new MainWindow
             {
-                WindowStartupLocation = WindowStartupLocation.Manual
+                WindowStartupLocation = WindowStartupLocation.Manual,
+                WindowStyle = (WindowStyle)StyleComboBox.SelectedItem
             };
 
             if (this.SetOwner.IsChecked == true)
@@ -87,6 +106,7 @@ namespace ControlzEx.Showcase
             var window = new MainWindow
             {
                 WindowStartupLocation = WindowStartupLocation.Manual,
+                WindowStyle = (WindowStyle)StyleComboBox.SelectedItem,
                 Owner = this // for this to work we always have to set the owner
             };
 
