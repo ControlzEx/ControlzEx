@@ -31,7 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="XamlColorSchemeGenerator" privateAssets="All" includeAssets="build" />
+    <PackageReference Include="XamlColorSchemeGenerator" PrivateAssets="All" IncludeAssets="build" />
   </ItemGroup>
 
   <ItemGroup>
@@ -40,7 +40,7 @@
     </EmbeddedResource>
   </ItemGroup>
 
-  <Target Name="GenerateXamlFiles" BeforeTargets="DispatchToInnerBuilds">
+  <Target Name="GenerateXamlFiles" BeforeTargets="DispatchToInnerBuilds;PrepareResources;MarkupCompilePass1;MarkupCompilePass2">
     <!-- Generate theme files -->
     <Message Text="$(XamlColorSchemeGeneratorExecutable)" />
     <Exec Command="&quot;$(XamlColorSchemeGeneratorExecutable)&quot;" WorkingDirectory="$(MSBuildProjectDirectory)/Themes/Themes" />

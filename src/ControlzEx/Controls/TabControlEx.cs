@@ -113,7 +113,6 @@ namespace ControlzEx.Controls
         /// </summary>
         public TabControlEx()
         {
-            this.Loaded += this.HandleTabControlExLoaded;
             this.Unloaded += this.HandleTabControlExUnloaded;
         }
 
@@ -144,11 +143,20 @@ namespace ControlzEx.Controls
         {
             base.OnApplyTemplate();
 
-            this.ClearItemsHolder();
+            var newItemsHolder = this.Template.FindName("PART_ItemsHolder", this) as Panel;
+            var isDifferentItemsHolder = ReferenceEquals(this.itemsHolder, newItemsHolder) == false;
 
-            this.itemsHolder = this.Template.FindName("PART_ItemsHolder", this) as Panel;
+            if (isDifferentItemsHolder)
+            {
+                this.ClearItemsHolder();
+            }
 
-            this.RefreshItemsHolder();
+            this.itemsHolder = newItemsHolder;
+
+            if (isDifferentItemsHolder)
+            {
+                this.UpdateSelectedContent();
+            }
         }
 
         /// <inheritdoc />
@@ -346,11 +354,16 @@ namespace ControlzEx.Controls
 
         private void HandleTabControlExLoaded(object? sender, RoutedEventArgs e)
         {
-            this.RefreshItemsHolder();
+            this.Loaded -= this.HandleTabControlExLoaded;
+
+            this.UpdateSelectedContent();
         }
 
         private void HandleTabControlExUnloaded(object? sender, RoutedEventArgs e)
         {
+            this.Loaded -= this.HandleTabControlExLoaded;
+            this.Loaded += this.HandleTabControlExLoaded;
+
             this.ClearItemsHolder();
         }
 

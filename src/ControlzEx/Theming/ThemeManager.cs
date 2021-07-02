@@ -481,7 +481,14 @@ namespace ControlzEx.Theming
                 throw new ArgumentNullException(nameof(themeName));
             }
 
-            return this.ChangeTheme(app, app.Resources, this.GetTheme(themeName, highContrast)!);
+            var theme = this.GetTheme(themeName, highContrast);
+
+            if (theme is null)
+            {
+                throw new ArgumentException($"Could not find a theme matching \"{themeName}\" and high contrast = \"{highContrast}\".");
+            }
+
+            return this.ChangeTheme(app, app.Resources, theme);
         }
 
         /// <summary>
@@ -500,7 +507,14 @@ namespace ControlzEx.Theming
                 throw new ArgumentNullException(nameof(themeName));
             }
 
-            return this.ChangeTheme(frameworkElement, this.GetTheme(themeName, highContrast)!);
+            var theme = this.GetTheme(themeName, highContrast);
+
+            if (theme is null)
+            {
+                throw new ArgumentException($"Could not find a theme matching \"{themeName}\" and high contrast = \"{highContrast}\".");
+            }
+
+            return this.ChangeTheme(frameworkElement, theme);
         }
 
         /// <summary>
@@ -1145,7 +1159,7 @@ namespace ControlzEx.Theming
         [SecurityCritical]
         private void OnThemeChanged(object? target, ResourceDictionary targetResourceDictionary, Theme? oldTheme, Theme newTheme)
         {
-            this.ThemeChanged?.Invoke(Application.Current, new ThemeChangedEventArgs(target, targetResourceDictionary, oldTheme, newTheme));
+            this.ThemeChanged?.Invoke(this, new ThemeChangedEventArgs(target, targetResourceDictionary, oldTheme, newTheme));
         }
 
         public void SyncTheme()
@@ -1181,22 +1195,27 @@ namespace ControlzEx.Theming
                     baseColor ??= detectedTheme?.BaseColorScheme ?? BaseColorLight;
                 }
 
-                string? accentColor = null;
+                string? accentColor;
                 if (syncModeToUse.HasFlag(ThemeSyncMode.SyncWithAccent))
                 {
-                    accentColor = WindowsThemeHelper.GetWindowsAccentColor().ToString();
+                    accentColor = WindowsThemeHelper.GetWindowsAccentColor()?.ToString() ?? detectedTheme?.ColorScheme;
                 }
                 else
                 {
                     // If there was no detected Theme just use the windows accent color.
-                    accentColor ??= detectedTheme?.ColorScheme ?? WindowsThemeHelper.GetWindowsAccentColor().ToString();
+                    accentColor = detectedTheme?.ColorScheme ?? WindowsThemeHelper.GetWindowsAccentColor()?.ToString();
+                }
+
+                if (accentColor is null)
+                {
+                    throw new Exception("Accent color could not be detected.");
                 }
 
                 var isHighContrast = syncModeToUse.HasFlag(ThemeSyncMode.SyncWithHighContrast)
                                      && WindowsThemeHelper.IsHighContrastEnabled();
 
                 // Check if we previously generated a theme matching the desired settings
-                var theme = this.GetTheme(baseColor, accentColor!, isHighContrast)
+                var theme = this.GetTheme(baseColor, accentColor, isHighContrast)
                             ?? RuntimeThemeGenerator.Current.GenerateRuntimeThemeFromWindowsSettings(baseColor, isHighContrast, this.libraryThemeProvidersInternal);
 
                 // Only change the theme if it's not the current already

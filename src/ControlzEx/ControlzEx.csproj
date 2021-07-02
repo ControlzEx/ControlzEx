@@ -42,10 +42,15 @@
         <Compile DependentUpon="%(Filename)" SubType="Designer" Update="**\*.xaml$(DefaultLanguageSourceExtension)" />
     </ItemGroup>
 
+    <PropertyGroup>
+      <IsBuildingForLegacyFramework>false</IsBuildingForLegacyFramework>
+      <IsBuildingForLegacyFramework Condition="'$(TargetFramework)' == 'net452' or '$(TargetFramework)' == 'net462'">true</IsBuildingForLegacyFramework>
+    </PropertyGroup>
+  
     <ItemGroup>
-      <Reference Include="System.Web" Condition="!($(DefineConstants.Contains(NETCOREAPP)) or $(DefineConstants.Contains(NET5_0)))" />
-      <Reference Include="System.Web.Extensions" Condition="!($(DefineConstants.Contains(NETCOREAPP)) or $(DefineConstants.Contains(NET5_0)))" />
-      <PackageReference Include="System.Text.Json" Condition="$(DefineConstants.Contains(NETCOREAPP)) or $(DefineConstants.Contains(NET5_0))" />
+      <Reference Include="System.Web" Condition="'$(IsBuildingForLegacyFramework)' == 'true'" />
+      <Reference Include="System.Web.Extensions" Condition="'$(IsBuildingForLegacyFramework)' == 'true'" />
+      <PackageReference Include="System.Text.Json" Condition="'$(IsBuildingForLegacyFramework)' == 'false'" />
     </ItemGroup>
 
     <!-- reference includes -->

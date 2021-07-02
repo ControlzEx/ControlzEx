@@ -888,7 +888,7 @@ namespace ControlzEx.Behaviors
                     switch (state)
                     {
                         case WindowState.Maximized:
-                            NativeMethods.EnableMenuItem(hmenu, SC.RESTORE, MF_ENABLED);
+                            NativeMethods.EnableMenuItem(hmenu, SC.RESTORE, canMaximize ? MF_ENABLED : MF_DISABLED);
                             NativeMethods.EnableMenuItem(hmenu, SC.MOVE, MF_DISABLED);
                             NativeMethods.EnableMenuItem(hmenu, SC.SIZE, MF_DISABLED);
                             NativeMethods.EnableMenuItem(hmenu, SC.MINIMIZE, canMinimize ? MF_ENABLED : MF_DISABLED);
