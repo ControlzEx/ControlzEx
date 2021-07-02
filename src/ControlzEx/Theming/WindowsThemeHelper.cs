@@ -89,8 +89,6 @@ namespace ControlzEx.Theming
         [MustUseReturnValue]
         public static Color? GetWindowsAccentColor()
         {
-            Color? accentColor = null;
-
             try
             {
                 var registryValue = Registry.GetValue(@"HKEY_CURRENT_USER\Software\Microsoft\Windows\DWM", "ColorizationColor", null);
@@ -106,17 +104,18 @@ namespace ControlzEx.Theming
                 if (pp > 0)
                 {
                     var bytes = BitConverter.GetBytes(pp);
-                    accentColor = Color.FromArgb(bytes[3], bytes[2], bytes[1], bytes[0]);
+                    // We ignore the alpha value of the color as we always expect it to be fully opaque
+                    return Color.FromRgb(bytes[2], bytes[1], bytes[0]);
                 }
 
-                return accentColor;
+                return null;
             }
             catch (Exception exception)
             {
                 Trace.TraceError(exception.ToString());
             }
 
-            return accentColor;
+            return null;
         }
 
         //public static Color? GetWindowsAccentColorFromUWP()
