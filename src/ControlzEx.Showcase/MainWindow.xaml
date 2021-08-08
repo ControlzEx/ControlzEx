@@ -262,6 +262,9 @@
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
                                         <RowDefinition />
                                     </Grid.RowDefinitions>
 
@@ -352,65 +355,74 @@
                                     </ComboBox>
 
                                     <Label Grid.Row="4" Grid.Column="0">
-                                        IgnoreTaskbarOnMaximize
+                                        ShowInTaskbar
                                     </Label>
                                     <CheckBox Grid.Row="4"
                                               Grid.Column="1"
                                               Margin="4"
                                               VerticalAlignment="Center"
-                                              IsChecked="{Binding ElementName=Window, Path=IgnoreTaskbarOnMaximize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-
+                                              IsChecked="{Binding ElementName=Window, Path=ShowInTaskbar, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    
                                     <Label Grid.Row="5" Grid.Column="0">
-                                        KeepBorderOnMaximize
+                                        IgnoreTaskbarOnMaximize
                                     </Label>
                                     <CheckBox Grid.Row="5"
                                               Grid.Column="1"
                                               Margin="4"
                                               VerticalAlignment="Center"
-                                              IsChecked="{Binding ElementName=Window, Path=KeepBorderOnMaximize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                              IsChecked="{Binding ElementName=Window, Path=IgnoreTaskbarOnMaximize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                                     <Label Grid.Row="6" Grid.Column="0">
-                                        TryToBeFlickerFree
+                                        KeepBorderOnMaximize
                                     </Label>
                                     <CheckBox Grid.Row="6"
                                               Grid.Column="1"
                                               Margin="4"
                                               VerticalAlignment="Center"
-                                              IsChecked="{Binding ElementName=Window, Path=TryToBeFlickerFree, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                              IsChecked="{Binding ElementName=Window, Path=KeepBorderOnMaximize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                                     <Label Grid.Row="7" Grid.Column="0">
-                                        IsActive
+                                        TryToBeFlickerFree
                                     </Label>
                                     <CheckBox Grid.Row="7"
+                                              Grid.Column="1"
+                                              Margin="4"
+                                              VerticalAlignment="Center"
+                                              IsChecked="{Binding ElementName=Window, Path=TryToBeFlickerFree, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <Label Grid.Row="8" Grid.Column="0">
+                                        IsActive
+                                    </Label>
+                                    <CheckBox Grid.Row="8"
                                               Grid.Column="1"
                                               Margin="4"
                                               VerticalAlignment="Center"
                                               IsChecked="{Binding ElementName=Window, Path=IsActive, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                               IsEnabled="False" />
 
-                                    <Label Grid.Row="8" Grid.Column="0">
+                                    <Label Grid.Row="9" Grid.Column="0">
                                         IsNCActive
                                     </Label>
-                                    <CheckBox Grid.Row="8"
+                                    <CheckBox Grid.Row="9"
                                               Grid.Column="1"
                                               Margin="4"
                                               VerticalAlignment="Center"
                                               IsChecked="{Binding ElementName=Window, Path=IsNCActive, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                               IsEnabled="False" />
 
-                                    <Label Grid.Row="9" Grid.Column="0">
+                                    <Label Grid.Row="10" Grid.Column="0">
                                         EnableMinimize (Enable/Disable System Menu Item)
                                     </Label>
-                                    <CheckBox Grid.Row="9"
+                                    <CheckBox Grid.Row="10"
                                               Grid.Column="1"
                                               Margin="4"
                                               VerticalAlignment="Center"
                                               IsChecked="{Binding ElementName=Window, Path=ShowMinButton, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-                                    <Label Grid.Row="10" Grid.Column="0">
+                                    <Label Grid.Row="11" Grid.Column="0">
                                         EnableMaxRestore (Enable/Disable System Menu Item)
                                     </Label>
-                                    <CheckBox Grid.Row="10"
+                                    <CheckBox Grid.Row="11"
                                               Grid.Column="1"
                                               Margin="4"
                                               VerticalAlignment="Center"
