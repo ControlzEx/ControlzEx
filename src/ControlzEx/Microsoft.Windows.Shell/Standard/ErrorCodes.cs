@@ -550,7 +550,7 @@ namespace ControlzEx.Standard
 
                 // If we're not getting anything better than a COMException from Marshal,
                 // then at least check the facility and attempt to do better ourselves.
-                if (e.GetType() == typeof(COMException))
+                if (e!.GetType() == typeof(COMException))
                 {
                     switch (this.Facility)
                     {
