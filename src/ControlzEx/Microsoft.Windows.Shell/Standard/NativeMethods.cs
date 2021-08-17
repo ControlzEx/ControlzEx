@@ -2616,59 +2616,6 @@ namespace ControlzEx.Standard
 
     #endregion
 
-    #region Interfaces
-
-    [ComImport]
-    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    [Guid(IID.ServiceProvider)]
-    internal interface IServiceProvider
-    {
-        [return: MarshalAs(UnmanagedType.IUnknown)]
-        object QueryService(ref Guid guidService, ref Guid riid);
-    }
-
-    [ComImport]
-    [Guid(IID.DragSourceHelper)]
-    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    internal interface IDragSourceHelper
-    {
-        void InitializeFromBitmap([In] ref SHDRAGIMAGE pshdi, [In] IDataObject pDataObject);
-
-        void InitializeFromWindow(IntPtr hwnd, [In] ref POINT ppt, [In] IDataObject pDataObject);
-    }
-
-    [ComImport]
-    [Guid(IID.DragSourceHelper2)]
-    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    internal interface IDragSourceHelper2 : IDragSourceHelper
-    {
-        #region IDragSourceHelper redeclaration
-        new void InitializeFromBitmap([In] ref SHDRAGIMAGE pshdi, [In] IDataObject pDataObject);
-
-        new void InitializeFromWindow(IntPtr hwnd, [In] ref POINT ppt, [In] IDataObject pDataObject);
-        #endregion
-
-        void SetFlags(DSH dwFlags);
-    }
-
-    [ComImport]
-    [Guid(IID.DropTargetHelper)]
-    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    internal interface IDropTargetHelper
-    {
-        void DragEnter(IntPtr hwndTarget, IDataObject pDataObject, ref POINT ppt, int effect);
-
-        void DragLeave();
-
-        void DragOver(ref POINT ppt, int effect);
-
-        void Drop(IDataObject dataObject, ref POINT ppt, int effect);
-
-        void Show([MarshalAs(UnmanagedType.Bool)] bool fShow);
-    }
-
-    #endregion
-
     /// <summary>Delegate declaration that matches native WndProc signatures.</summary>
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     public delegate IntPtr WndProc(IntPtr hwnd, WM uMsg, IntPtr wParam, IntPtr lParam);
