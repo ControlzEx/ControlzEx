@@ -33,7 +33,7 @@
         {
         }
 
-        public PropertyChangeNotifier([NotNull] DependencyObject propertySource, [NotNull] PropertyPath property)
+        public PropertyChangeNotifier(DependencyObject propertySource, PropertyPath property)
         {
             if (propertySource is null)
             {

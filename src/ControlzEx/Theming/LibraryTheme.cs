@@ -32,7 +32,7 @@ namespace ControlzEx.Theming
         /// </summary>
         /// <param name="resourceAddress">The URI of the theme ResourceDictionary.</param>
         /// <param name="libraryThemeProvider">The <see cref="ControlzEx.Theming.LibraryThemeProvider"/> which created this instance.</param>
-        public LibraryTheme([NotNull] Uri resourceAddress, LibraryThemeProvider? libraryThemeProvider)
+        public LibraryTheme(Uri resourceAddress, LibraryThemeProvider? libraryThemeProvider)
             : this(CreateResourceDictionary(resourceAddress), libraryThemeProvider)
         {
         }
@@ -42,7 +42,7 @@ namespace ControlzEx.Theming
         /// </summary>
         /// <param name="resourceDictionary">The ResourceDictionary of the theme.</param>
         /// <param name="libraryThemeProvider">The <see cref="ControlzEx.Theming.LibraryThemeProvider"/> which created this instance.</param>
-        public LibraryTheme([NotNull] ResourceDictionary resourceDictionary, LibraryThemeProvider? libraryThemeProvider)
+        public LibraryTheme(ResourceDictionary resourceDictionary, LibraryThemeProvider? libraryThemeProvider)
         {
             if (resourceDictionary is null)
             {
@@ -132,7 +132,7 @@ namespace ControlzEx.Theming
                    && this.IsHighContrast == libraryTheme.IsHighContrast;
         }
 
-        public LibraryTheme AddResource([NotNull] ResourceDictionary resourceDictionary)
+        public LibraryTheme AddResource(ResourceDictionary resourceDictionary)
         {
             if (resourceDictionary is null)
             {
@@ -149,18 +149,18 @@ namespace ControlzEx.Theming
             return $"DisplayName={this.DisplayName}, Name={this.Name}, Origin={this.Origin}, IsHighContrast={this.IsHighContrast}";
         }
 
-        public static string? GetThemeName([NotNull] ResourceDictionary resourceDictionary)
+        public static string? GetThemeName(ResourceDictionary resourceDictionary)
         {
             return Theme.GetThemeName(resourceDictionary);
         }
 
-        public static bool IsThemeDictionary([NotNull] ResourceDictionary resourceDictionary)
+        public static bool IsThemeDictionary(ResourceDictionary resourceDictionary)
         {
             return Theme.IsThemeDictionary(resourceDictionary)
                 || ResourceDictionaryHelper.ContainsKey(resourceDictionary, LibraryThemeInstanceKey);
         }
 
-        public static bool IsRuntimeGeneratedThemeDictionary([NotNull] ResourceDictionary resourceDictionary)
+        public static bool IsRuntimeGeneratedThemeDictionary(ResourceDictionary resourceDictionary)
         {
             return Theme.IsRuntimeGeneratedThemeDictionary(resourceDictionary)
                 || (ResourceDictionaryHelper.ContainsKey(resourceDictionary, LibraryThemeInstanceKey) && ((LibraryTheme)resourceDictionary[LibraryThemeInstanceKey]).IsRuntimeGenerated);

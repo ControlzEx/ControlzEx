@@ -582,7 +582,7 @@ namespace ControlzEx.Behaviors
             this.resizeBorderThicknessChangeNotifier.RaiseValueChanged = true;
         }
 
-        private static void Invoke([NotNull] DispatcherObject dispatcherObject, [NotNull] Action invokeAction)
+        private static void Invoke(DispatcherObject dispatcherObject, Action invokeAction)
         {
             if (dispatcherObject is null)
             {

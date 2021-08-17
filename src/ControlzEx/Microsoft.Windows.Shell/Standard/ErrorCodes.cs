@@ -550,7 +550,7 @@ namespace ControlzEx.Standard
 
                 // If we're not getting anything better than a COMException from Marshal,
                 // then at least check the facility and attempt to do better ourselves.
-                if (e!.GetType() == typeof(COMException))
+                if (e.GetType() == typeof(COMException))
                 {
                     switch (this.Facility)
                     {
@@ -564,10 +564,10 @@ namespace ControlzEx.Standard
                 }
                 else
                 {
-                    var cons = e!.GetType().GetConstructor(new[] { typeof(string) });
+                    var cons = e.GetType().GetConstructor(new[] { typeof(string) });
                     if (cons is not null)
                     {
-                        e = cons.Invoke(new object[] { message! }) as Exception;
+                        e = cons.Invoke(new object[] { message }) as Exception;
                         Assert.IsNotNull(e);
                     }
                 }

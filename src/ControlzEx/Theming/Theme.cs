@@ -69,7 +69,7 @@ namespace ControlzEx.Theming
         /// Initializes a new instance.
         /// </summary>
         /// <param name="libraryTheme">The first <see cref="LibraryTheme"/> of the theme.</param>
-        public Theme([NotNull] LibraryTheme libraryTheme)
+        public Theme(LibraryTheme libraryTheme)
             : this(libraryTheme.Name, libraryTheme.DisplayName, libraryTheme.BaseColorScheme, libraryTheme.ColorScheme, libraryTheme.PrimaryAccentColor, libraryTheme.ShowcaseBrush, libraryTheme.IsRuntimeGenerated, libraryTheme.IsHighContrast)
         {
             if (libraryTheme is null)
@@ -199,7 +199,7 @@ namespace ControlzEx.Theming
         /// </summary>
         /// <param name="libraryTheme">The <see cref="LibraryTheme"/> to add.</param>
         /// <returns>This instance for fluent call usage.</returns>
-        public Theme AddLibraryTheme([NotNull] LibraryTheme libraryTheme)
+        public Theme AddLibraryTheme(LibraryTheme libraryTheme)
         {
             if (libraryTheme is null)
             {
@@ -228,7 +228,7 @@ namespace ControlzEx.Theming
             return $"DisplayName={this.DisplayName}, Name={this.Name}, IsHighContrast={this.IsHighContrast}, IsRuntimeGenerated={this.IsRuntimeGenerated}";
         }
 
-        public static string? GetThemeName([NotNull] ResourceDictionary resourceDictionary)
+        public static string? GetThemeName(ResourceDictionary resourceDictionary)
         {
             if (resourceDictionary is null)
             {
@@ -243,7 +243,7 @@ namespace ControlzEx.Theming
             return ResourceDictionaryHelper.GetValueFromKey(resourceDictionary, ThemeNameKey) as string;
         }
 
-        public static Theme? GetThemeInstance([NotNull] ResourceDictionary resourceDictionary)
+        public static Theme? GetThemeInstance(ResourceDictionary resourceDictionary)
         {
             if (resourceDictionary is null)
             {

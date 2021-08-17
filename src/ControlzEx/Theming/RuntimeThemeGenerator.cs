@@ -133,7 +133,7 @@ namespace ControlzEx.Theming
 
             libraryThemeProvider.FillColorSchemeValues(values, runtimeThemeColorValues);
 
-            var xamlContent = ThemeGenerator.Current.GenerateColorSchemeFileContent(themeTemplateContent!, themeName, themeDisplayName, baseColorScheme.Name, colorScheme.Name, colorScheme.Name, runtimeThemeColorValues.Options.IsHighContrast, colorScheme.Values, baseColorScheme.Values, generatorParameters.DefaultValues);
+            var xamlContent = ThemeGenerator.Current.GenerateColorSchemeFileContent(themeTemplateContent, themeName, themeDisplayName, baseColorScheme.Name, colorScheme.Name, colorScheme.Name, runtimeThemeColorValues.Options.IsHighContrast, colorScheme.Values, baseColorScheme.Values, generatorParameters.DefaultValues);
 
             var preparedXamlContent = libraryThemeProvider.PrepareXamlContent(this, xamlContent, runtimeThemeColorValues);
 

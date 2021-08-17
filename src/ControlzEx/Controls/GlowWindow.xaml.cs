@@ -587,7 +587,7 @@ namespace ControlzEx.Controls
             }
         }
 
-        private void InvokeIfCanUpdateCore([NotNull] Action invokeAction)
+        private void InvokeIfCanUpdateCore(Action invokeAction)
         {
             if (this.CanUpdateCore() == false)
             {

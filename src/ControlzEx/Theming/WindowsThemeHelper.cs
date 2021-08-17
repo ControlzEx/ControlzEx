@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 namespace ControlzEx.Theming
 {
     using System;
@@ -60,7 +60,6 @@ namespace ControlzEx.Theming
             return true;
         }
 
-        [NotNull]
         [MustUseReturnValue]
         public static string GetWindowsBaseColor()
         {
