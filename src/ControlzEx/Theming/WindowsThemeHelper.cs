@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 namespace ControlzEx.Theming
 {
     using System;
@@ -10,6 +10,8 @@ namespace ControlzEx.Theming
 
     public static class WindowsThemeHelper
     {
+        private static readonly Color baseGrayColor = Color.FromRgb(217, 217, 217);
+
         public static bool IsHighContrastEnabled()
         {
             return SystemParameters.HighContrast;
@@ -85,29 +87,27 @@ namespace ControlzEx.Theming
             return baseColor;
         }
 
+        // Thanks @https://stackoverflow.com/users/3137337/emoacht for providing the correct code on how to use ColorizationColorBalance in https://stackoverflow.com/questions/24555827/how-to-get-title-bar-color-of-wpf-window-in-windows-8-1/24600956
         [MustUseReturnValue]
         public static Color? GetWindowsAccentColor()
         {
             try
             {
-                var registryValue = Registry.GetValue(@"HKEY_CURRENT_USER\Software\Microsoft\Windows\DWM", "ColorizationColor", null);
+                var colorizationColorRegistryValue = Registry.GetValue(@"HKEY_CURRENT_USER\Software\Microsoft\Windows\DWM", "ColorizationColor", null);
 
-                if (registryValue is null)
+                if (colorizationColorRegistryValue is null)
                 {
                     return null;
                 }
 
-                // We get negative values out of the registry, so we have to cast to int from object first.
-                // Casting from int to uint works afterwards and converts the number correctly.
-                var pp = (uint)(int)registryValue;
-                if (pp > 0)
-                {
-                    var bytes = BitConverter.GetBytes(pp);
-                    // We ignore the alpha value of the color as we always expect it to be fully opaque
-                    return Color.FromRgb(bytes[2], bytes[1], bytes[0]);
-                }
+                var colorizationColorTypedRegistryValue = (uint)(int)colorizationColorRegistryValue;
 
-                return null;
+                // Convert colorization color to Color ignoring alpha channel.
+                var colorizationColor = Color.FromRgb((byte)(colorizationColorTypedRegistryValue >> 16),
+                                                      (byte)(colorizationColorTypedRegistryValue >> 8),
+                                                      (byte)colorizationColorTypedRegistryValue);
+
+                return colorizationColor;
             }
             catch (Exception exception)
             {
@@ -115,6 +115,59 @@ namespace ControlzEx.Theming
             }
 
             return null;
+        }
+
+        [MustUseReturnValue]
+        public static Color? GetBlendedWindowsAccentColor()
+        {
+            var colorizationColor = GetWindowsAccentColor();
+
+            if (colorizationColor is null)
+            {
+                return null;
+            }
+
+            var colorizationColorBalanceRegistryValue = Registry.GetValue(@"HKEY_CURRENT_USER\Software\Microsoft\Windows\DWM", "ColorizationColorBalance", null);
+
+            var colorizationColorBalance = 0D;
+
+            if (colorizationColorBalanceRegistryValue is not null)
+            {
+                colorizationColorBalance = (int)colorizationColorBalanceRegistryValue;
+            }
+
+            return GetBlendedWindowsAccentColor(colorizationColor.Value, baseGrayColor, 100 - colorizationColorBalance);
+        }
+
+        [MustUseReturnValue]
+        public static Color GetBlendedWindowsAccentColor(Color colorizationColor, double colorizationColorBalance)
+        {
+            return GetBlendedWindowsAccentColor(colorizationColor, baseGrayColor, 100 - colorizationColorBalance);
+        }
+
+        [MustUseReturnValue]
+        public static Color GetBlendedWindowsAccentColor(Color colorizationColor, Color baseColor, double colorizationColorBalance)
+        {
+            // Blend the two colors using colorization color balance parameter.
+            return BlendColor(colorizationColor, baseColor, 100 - colorizationColorBalance);
+        }
+
+        private static Color BlendColor(Color color1, Color color2, double color2Percentage)
+        {
+            if (color2Percentage is < 0 or > 100)
+            {
+                throw new ArgumentOutOfRangeException(nameof(color2Percentage));
+            }
+
+            return Color.FromRgb(BlendColorChannel(color1.R, color2.R, color2Percentage),
+                                 BlendColorChannel(color1.G, color2.G, color2Percentage),
+                                 BlendColorChannel(color1.B, color2.B, color2Percentage));
+        }
+
+        private static byte BlendColorChannel(double channel1, double channel2, double channel2Percentage)
+        {
+            var buff = channel1 + ((channel2 - channel1) * channel2Percentage / 100D);
+            return Math.Min((byte)Math.Round(buff), (byte)255);
         }
 
         //public static Color? GetWindowsAccentColorFromUWP()
