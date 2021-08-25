@@ -1,4 +1,3 @@
-﻿#nullable enable
 namespace ControlzEx.Theming
 {
     using System;
@@ -8,7 +7,7 @@ namespace ControlzEx.Theming
     using JetBrains.Annotations;
     using Microsoft.Win32;
 
-    public static class WindowsThemeHelper
+    public static partial class WindowsThemeHelper
     {
         private static readonly Color baseGrayColor = Color.FromRgb(217, 217, 217);
 
@@ -65,26 +64,19 @@ namespace ControlzEx.Theming
         [MustUseReturnValue]
         public static string GetWindowsBaseColor()
         {
-            string baseColor;
-
-            var isHighContrast = IsHighContrastEnabled();
-            if (isHighContrast)
+            if (IsHighContrastEnabled() == false)
             {
-                var windowColor = SystemColors.WindowBrush.Color;
-                var brightness = System.Drawing.Color.FromArgb(windowColor.R, windowColor.G, windowColor.B).GetBrightness();
-
-                baseColor = brightness < .5
-                    ? ThemeManager.BaseColorDark
-                    : ThemeManager.BaseColorLight;
-            }
-            else
-            {
-                baseColor = AppsUseLightTheme()
+                return AppsUseLightTheme()
                     ? ThemeManager.BaseColorLight
                     : ThemeManager.BaseColorDark;
             }
 
-            return baseColor;
+            var windowColor = SystemColors.WindowBrush.Color;
+            var brightness = System.Drawing.Color.FromArgb(windowColor.R, windowColor.G, windowColor.B).GetBrightness();
+
+            return brightness < .5
+                ? ThemeManager.BaseColorDark
+                : ThemeManager.BaseColorLight;
         }
 
         // Thanks @https://stackoverflow.com/users/3137337/emoacht for providing the correct code on how to use ColorizationColorBalance in https://stackoverflow.com/questions/24555827/how-to-get-title-bar-color-of-wpf-window-in-windows-8-1/24600956
