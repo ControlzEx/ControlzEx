@@ -82,7 +82,8 @@
         [MustUseReturnValue]
         public static Color? GetWindowsAccentColor()
         {
-            return GetWindowsAccentColorFromAccentPalette();
+            return GetWindowsAccentColorFromAccentPalette()
+                ?? GetWindowsColorizationColor();
         }
 
         [MustUseReturnValue]
