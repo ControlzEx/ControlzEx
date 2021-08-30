@@ -3,11 +3,11 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #module nuget:?package=Cake.DotNetTool.Module&version=0.5.0
-#tool "dotnet:?package=NuGetKeyVaultSignTool&version=1.2.28"
-#tool "dotnet:?package=AzureSignTool&version=2.0.17"
+#tool dotnet:?package=NuGetKeyVaultSignTool&version=1.2.28
+#tool dotnet:?package=AzureSignTool&version=2.0.17
+#tool dotnet:?package=GitReleaseManager.Tool&version=0.12.0
+#tool dotnet:?package=GitVersion.Tool&version=5.7.0
 
-#tool GitVersion.CommandLine&version=5.6.6
-#tool gitreleasemanager
 #addin nuget:?package=Cake.Figlet&version=1.4.0
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -317,46 +317,21 @@ Task("Zip")
 
 Task("CreateRelease")
     .WithCriteria(() => !isTagged)
+    .WithCriteria(() => !isPullRequest)
     .Does(() =>
 {
-    var username = EnvironmentVariable("GITHUB_USERNAME");
-    if (string.IsNullOrEmpty(username))
-    {
-        throw new Exception("The GITHUB_USERNAME environment variable is not defined.");
-    }
-
     var token = EnvironmentVariable("GITHUB_TOKEN");
     if (string.IsNullOrEmpty(token))
     {
         throw new Exception("The GITHUB_TOKEN environment variable is not defined.");
     }
 
-    GitReleaseManagerCreate(username, token, repoName, repoName, new GitReleaseManagerCreateSettings {
+    GitReleaseManagerCreate(token, repoName, repoName, new GitReleaseManagerCreateSettings {
         Milestone         = gitVersion.MajorMinorPatch,
         Name              = gitVersion.AssemblySemFileVer,
         Prerelease        = isDevelopBranch,
         TargetCommitish   = branchName,
         WorkingDirectory  = "."
-    });
-});
-
-Task("ExportReleaseNotes")
-    .Does(() =>
-{
-    var username = EnvironmentVariable("GITHUB_USERNAME");
-    if (string.IsNullOrEmpty(username))
-    {
-        throw new Exception("The GITHUB_USERNAME environment variable is not defined.");
-    }
-
-    var token = EnvironmentVariable("GITHUB_TOKEN");
-    if (string.IsNullOrEmpty(token))
-    {
-        throw new Exception("The GITHUB_TOKEN environment variable is not defined.");
-    }
-
-    GitReleaseManagerExport(username, token, repoName, repoName, "releasenotes.md", new GitReleaseManagerExportSettings {
-        TagName         = gitVersion.SemVer
     });
 });
 
