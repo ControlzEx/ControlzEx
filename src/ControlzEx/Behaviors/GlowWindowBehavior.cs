@@ -289,7 +289,7 @@
             }
         }
 
-        private void AssociatedObjectOnClosing(object o, CancelEventArgs args)
+        private void AssociatedObjectOnClosing(object? o, CancelEventArgs args)
         {
             if (!args.Cancel)
             {
