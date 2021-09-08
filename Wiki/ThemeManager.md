@@ -12,7 +12,7 @@ In the following sections the usage will be described by the sample usage at [Ma
 ### Using XamlColorSchemeGenerator
 You can provide built in themes in your application or library by running the [XamlColorSchemeGenerator](https://github.com/batzen/XamlColorSchemeGenerator) while building or via command line. For detailed information about the usage, please visit the [XamlColorSchemeGenerator site](https://github.com/batzen/XamlColorSchemeGenerator).
 
-### Using ResourceDicitionaries
+### Using ResourceDictionaries
 > **Please note:** It is not recommended to use this approach as you might miss the addition of new required resources when new versions of libraries are released.
 
 You may also provide a custom `ResourceDictionary` with all the needed resources.
