@@ -345,6 +345,7 @@ Task("Default")
 
 Task("CI")
     .IsDependentOn("Default")
+    .IsDependentOn("Test")
     .IsDependentOn("Sign")
     .IsDependentOn("Pack")
     .IsDependentOn("SignNuGet")
