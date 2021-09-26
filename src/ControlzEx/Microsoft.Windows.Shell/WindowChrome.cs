@@ -40,25 +40,23 @@ namespace ControlzEx.Windows.Shell
         public static bool GetIsHitTestVisibleInChrome(IInputElement inputElement)
         {
             Verify.IsNotNull(inputElement, "inputElement");
-            var dobj = inputElement as DependencyObject;
-            if (dobj is null)
+            if (inputElement is not DependencyObject dependencyObject)
             {
                 throw new ArgumentException("The element must be a DependencyObject", nameof(inputElement));
             }
 
-            return (bool)dobj.GetValue(IsHitTestVisibleInChromeProperty);
+            return (bool)dependencyObject.GetValue(IsHitTestVisibleInChromeProperty);
         }
 
         public static void SetIsHitTestVisibleInChrome(IInputElement inputElement, bool hitTestVisible)
         {
             Verify.IsNotNull(inputElement, "inputElement");
-            var dobj = inputElement as DependencyObject;
-            if (dobj is null)
+            if (inputElement is not DependencyObject dependencyObject)
             {
                 throw new ArgumentException("The element must be a DependencyObject", nameof(inputElement));
             }
 
-            dobj.SetValue(IsHitTestVisibleInChromeProperty, hitTestVisible);
+            dependencyObject.SetValue(IsHitTestVisibleInChromeProperty, hitTestVisible);
         }
 
         public static readonly DependencyProperty ResizeGripDirectionProperty = DependencyProperty.RegisterAttached(

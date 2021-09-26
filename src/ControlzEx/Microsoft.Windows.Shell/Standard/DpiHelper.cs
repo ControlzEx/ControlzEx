@@ -1,8 +1,8 @@
-﻿#pragma warning disable 1591, 1573, 618
+﻿#pragma warning disable 1591, 1573, 618, CA1060
+// ReSharper disable once CheckNamespace
 namespace ControlzEx.Standard
 {
     using System;
-    using System.Diagnostics.CodeAnalysis;
     using System.Windows;
     using System.Windows.Media;
 
@@ -10,11 +10,12 @@ namespace ControlzEx.Standard
     {
         [ThreadStatic]
         private static Matrix transformToDevice;
+
         [ThreadStatic]
         private static Matrix transformToDip;
 
         /// <summary>
-        /// Convert a point in device independent pixels (1/96") to a point in the system coordinates.
+        ///     Convert a point in device independent pixels (1/96") to a point in the system coordinates.
         /// </summary>
         /// <param name="logicalPoint">A point in the logical coordinate system.</param>
         /// <returns>Returns the parameter converted to the system's coordinates.</returns>
@@ -26,56 +27,56 @@ namespace ControlzEx.Standard
         }
 
         /// <summary>
-        /// Convert a point in system coordinates to a point in device independent pixels (1/96").
+        ///     Convert a point in system coordinates to a point in device independent pixels (1/96").
         /// </summary>
         /// <param name="devicePoint">A point in the physical coordinate system.</param>
         /// <returns>Returns the parameter converted to the device independent coordinate system.</returns>
-        public static Point DevicePixelsToLogical(Point devicePoint, double dpiScaleX, double dpiScaleY)
+        public static Point DevicePixelsToLogical(Point devicePoint, double dpiX, double dpiY)
         {
             transformToDip = Matrix.Identity;
-            transformToDip.Scale(1d / dpiScaleX, 1d / dpiScaleY);
+            transformToDip.Scale(1d / dpiX, 1d / dpiY);
             return transformToDip.Transform(devicePoint);
         }
 
-        public static Rect LogicalRectToDevice(Rect logicalRectangle, double dpiScaleX, double dpiScaleY)
+        public static Rect LogicalRectToDevice(Rect logicalRectangle, double dpiX, double dpiY)
         {
-            Point topLeft = LogicalPixelsToDevice(new Point(logicalRectangle.Left, logicalRectangle.Top), dpiScaleX, dpiScaleY);
-            Point bottomRight = LogicalPixelsToDevice(new Point(logicalRectangle.Right, logicalRectangle.Bottom), dpiScaleX, dpiScaleY);
+            var topLeft = LogicalPixelsToDevice(new Point(logicalRectangle.Left, logicalRectangle.Top), dpiX, dpiY);
+            var bottomRight = LogicalPixelsToDevice(new Point(logicalRectangle.Right, logicalRectangle.Bottom), dpiX, dpiY);
 
             return new Rect(topLeft, bottomRight);
         }
 
-        public static Rect DeviceRectToLogical(Rect deviceRectangle, double dpiScaleX, double dpiScaleY)
+        public static Rect DeviceRectToLogical(Rect deviceRectangle, double dpiX, double dpiY)
         {
-            Point topLeft = DevicePixelsToLogical(new Point(deviceRectangle.Left, deviceRectangle.Top), dpiScaleX, dpiScaleY);
-            Point bottomRight = DevicePixelsToLogical(new Point(deviceRectangle.Right, deviceRectangle.Bottom), dpiScaleX, dpiScaleY);
+            var topLeft = DevicePixelsToLogical(new Point(deviceRectangle.Left, deviceRectangle.Top), dpiX, dpiY);
+            var bottomRight = DevicePixelsToLogical(new Point(deviceRectangle.Right, deviceRectangle.Bottom), dpiX, dpiY);
 
             return new Rect(topLeft, bottomRight);
         }
 
-        public static Size LogicalSizeToDevice(Size logicalSize, double dpiScaleX, double dpiScaleY)
+        public static Size LogicalSizeToDevice(Size logicalSize, double dpiX, double dpiY)
         {
-            Point pt = LogicalPixelsToDevice(new Point(logicalSize.Width, logicalSize.Height), dpiScaleX, dpiScaleY);
+            var pt = LogicalPixelsToDevice(new Point(logicalSize.Width, logicalSize.Height), dpiX, dpiY);
 
             return new Size { Width = pt.X, Height = pt.Y };
         }
 
-        public static Size DeviceSizeToLogical(Size deviceSize, double dpiScaleX, double dpiScaleY)
+        public static Size DeviceSizeToLogical(Size deviceSize, double dpiX, double dpiY)
         {
-            Point pt = DevicePixelsToLogical(new Point(deviceSize.Width, deviceSize.Height), dpiScaleX, dpiScaleY);
+            var pt = DevicePixelsToLogical(new Point(deviceSize.Width, deviceSize.Height), dpiX, dpiY);
 
             return new Size(pt.X, pt.Y);
         }
 
-        public static Thickness LogicalThicknessToDevice(Thickness logicalThickness, double dpiScaleX, double dpiScaleY)
+        public static Thickness LogicalThicknessToDevice(Thickness logicalThickness, double dpiX, double dpiY)
         {
-            Point topLeft = LogicalPixelsToDevice(new Point(logicalThickness.Left, logicalThickness.Top), dpiScaleX, dpiScaleY);
-            Point bottomRight = LogicalPixelsToDevice(new Point(logicalThickness.Right, logicalThickness.Bottom), dpiScaleX, dpiScaleY);
+            var topLeft = LogicalPixelsToDevice(new Point(logicalThickness.Left, logicalThickness.Top), dpiX, dpiY);
+            var bottomRight = LogicalPixelsToDevice(new Point(logicalThickness.Right, logicalThickness.Bottom), dpiX, dpiY);
 
             return new Thickness(topLeft.X, topLeft.Y, bottomRight.X, bottomRight.Y);
         }
 
-        public static double TransformToDeviceY(Visual visual, double y, double dpiScaleY)
+        public static double TransformToDeviceY(Visual visual, double y, double dpiY)
         {
             var source = PresentationSource.FromVisual(visual);
             if (source?.CompositionTarget is not null)
@@ -83,10 +84,10 @@ namespace ControlzEx.Standard
                 return y * source.CompositionTarget.TransformToDevice.M22;
             }
 
-            return TransformToDeviceY(y, dpiScaleY);
+            return TransformToDeviceY(y, dpiY);
         }
 
-        public static double TransformToDeviceX(Visual visual, double x, double dpiScaleX)
+        public static double TransformToDeviceX(Visual visual, double x, double dpiX)
         {
             var source = PresentationSource.FromVisual(visual);
             if (source?.CompositionTarget is not null)
@@ -94,17 +95,17 @@ namespace ControlzEx.Standard
                 return x * source.CompositionTarget.TransformToDevice.M11;
             }
 
-            return TransformToDeviceX(x, dpiScaleX);
+            return TransformToDeviceX(x, dpiX);
         }
 
-        public static double TransformToDeviceY(double y, double dpiScaleY)
+        public static double TransformToDeviceY(double y, double dpiY)
         {
-            return y * dpiScaleY / 96;
+            return y * dpiY / 96;
         }
 
-        public static double TransformToDeviceX(double x, double dpiScaleX)
+        public static double TransformToDeviceX(double x, double dpiX)
         {
-            return x * dpiScaleX / 96;
+            return x * dpiX / 96;
         }
 
         #region Per monitor dpi support

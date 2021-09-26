@@ -41,7 +41,8 @@
             </Grid.RowDefinitions>
 
             <Grid Grid.Row="0"
-                  controlzEx:WindowChrome.IsHitTestVisibleInChrome="True"
+                  controlzEx:WindowChrome.IsHitTestVisibleInChrome="False"
+                  controlzEx:NonClientControlProperties.HitTestResult="CAPTION"
                   MouseLeftButtonDown="TitleBarGrid_OnMouseLeftButtonDown"
                   MouseRightButtonUp="TitleBarGrid_OnMouseRightButtonUp">
                 <Grid.ColumnDefinitions>
@@ -58,18 +59,30 @@
                            Text="Use GridSplitter below to move content above titlebar" />
 
                 <UniformGrid Grid.Column="2" Columns="3">
-                    <Button Width="20"
+                    <Button Style="{StaticResource WindowTitleBarButton}" 
+                            Width="20"
+                            Content="_"
                             Click="MinimizeButton_Click"
-                            Content="_" />
-                    <Button Click="RestoreOrMaximizeButton_Click" Content="[ ]" />
-                    <Button Click="CloseButton_Click" Content="X" />
+                            controlzEx:NonClientControlProperties.HitTestResult="MINBUTTON"
+                            controlzEx:NonClientControlProperties.ClickStrategy="AutomationPeer" />
+                    <Button Style="{StaticResource WindowTitleBarButton}"
+                            Content="[ ]" 
+                            Click="RestoreOrMaximizeButton_Click"
+                            controlzEx:NonClientControlProperties.HitTestResult="MAXBUTTON"
+                            controlzEx:NonClientControlProperties.ClickStrategy="MouseEvent" />
+                    <Button Style="{StaticResource WindowTitleBarButton}"
+                            Content="X" 
+                            Click="CloseButton_Click"
+                            controlzEx:NonClientControlProperties.HitTestResult="CLOSE"
+                            controlzEx:NonClientControlProperties.ClickStrategy="MouseEvent" />
                 </UniformGrid>
             </Grid>
 
             <GridSplitter Grid.Row="1"
                           Height="8"
                           HorizontalAlignment="Stretch"
-                          controlzEx:WindowChrome.IsHitTestVisibleInChrome="True"
+                          controlzEx:WindowChrome.IsHitTestVisibleInChrome="False"
+                          controlzEx:NonClientControlProperties.HitTestResult="CLIENT"
                           Background="{DynamicResource ControlzEx.Brushes.AccentBaseColorBrush}" />
 
             <controlzEx:TabControlEx Grid.Row="2">

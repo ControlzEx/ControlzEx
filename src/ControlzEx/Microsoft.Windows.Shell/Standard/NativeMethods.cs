@@ -1,3 +1,4 @@
+#pragma warning disable 649
 #pragma warning disable 1591, 618, CA1815, CA1028, CA1008
 #pragma warning disable SA1303 // Const field names should begin with upper-case letter
 #pragma warning disable SA1307 // Accessible fields should begin with upper-case letter
@@ -17,6 +18,8 @@ namespace ControlzEx.Standard
     using System.Runtime.InteropServices.ComTypes;
     using System.Security;
     using System.Text;
+    using System.Windows;
+    using ControlzEx.Native;
     using JetBrains.Annotations;
     using Microsoft.Win32.SafeHandles;
 
@@ -804,6 +807,14 @@ namespace ControlzEx.Standard
         CHILDWINDOW = CHILD,
     }
 
+    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    internal struct STYLESTRUCT
+    {
+        public int styleOld;
+
+        public int styleNew;
+    }
+
     /// <summary>
     /// Window message values, WM_*
     /// </summary>
@@ -835,6 +846,9 @@ namespace ControlzEx.Standard
         WININICHANGE = 0x001A,
         SETTINGCHANGE = 0x001A,
         ACTIVATEAPP = 0x001C,
+        FONTCHANGE = 0x001D,
+        TIMECHANGE = 0x001E,
+        CANCELMODE = 0x001F,
         SETCURSOR = 0x0020,
         MOUSEACTIVATE = 0x0021,
         CHILDACTIVATE = 0x0022,
@@ -2244,6 +2258,14 @@ namespace ControlzEx.Standard
             this.Bottom = rcSrc.Bottom;
         }
 
+        public RECT(Rect rect)
+        {
+            this.Left = (int)rect.Left;
+            this.Top = (int)rect.Top;
+            this.Right = (int)rect.Right;
+            this.Bottom = (int)rect.Bottom;
+        }
+
         public void Offset(int dx, int dy)
         {
             this.Left += dx;
@@ -2263,6 +2285,10 @@ namespace ControlzEx.Standard
         public int Width => this.Right - this.Left;
 
         public int Height => this.Bottom - this.Top;
+
+        public Point Position => new Point(this.Left, this.Top);
+
+        public Size Size => new Size(this.Width, this.Height);
 
         public static RECT Union(RECT rect1, RECT rect2)
         {
@@ -3603,6 +3629,10 @@ namespace ControlzEx.Standard
         [CLSCompliant(false)]
         public static extern IntPtr MonitorFromPoint(POINT pt, MonitorOptions dwFlags);
 
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern bool IntersectRect(out RECT lprcDst, [In] ref RECT lprcSrc1, [In] ref RECT lprcSrc2);
+        
         /// <summary>
         /// The MonitorFromRect function retrieves a handle to the display monitor that 
         /// has the largest area of intersection with a specified rectangle.
@@ -3959,9 +3989,71 @@ namespace ControlzEx.Standard
         [DllImport("user32.dll", SetLastError = true)]
         public static extern IntPtr SendMessage(IntPtr hWnd, WM Msg, IntPtr wParam, IntPtr lParam);
 
+        public static void RaiseNonClientMouseMessageAsClient(IntPtr hWnd, WM msg, IntPtr wParam, IntPtr lParam)
+        {
+            var newWindowMessage = msg + 513 - 161;
+
+            RaiseMouseMessage(hWnd, newWindowMessage, wParam, lParam);
+        }
+
+        public static void RaiseMouseMessage(IntPtr hWnd, WM msg, IntPtr wParam, IntPtr lParam, bool send = true)
+        {
+            var mousePoint = default(POINT);
+            mousePoint.X = GetXLParam(lParam.ToInt32Unchecked());
+            mousePoint.Y = GetYLParam(lParam.ToInt32Unchecked());
+            var point = mousePoint;
+            ScreenToClient(hWnd, ref point);
+            if (send)
+            {
+                SendMessage(hWnd, msg, new IntPtr(PressedMouseButtons), MakeParam(point.X, point.Y));
+            }
+            else
+            {
+                PostMessage(hWnd, msg, new IntPtr(PressedMouseButtons), MakeParam(point.X, point.Y));
+            }
+        }
+
+        private static int PressedMouseButtons
+        {
+            get
+            {
+                var num = 0;
+                if (IsKeyPressed(1))
+                {
+                    num |= 1;
+                }
+
+                if (IsKeyPressed(2))
+                {
+                    num |= 2;
+                }
+
+                if (IsKeyPressed(4))
+                {
+                    num |= 0x10;
+                }
+
+                if (IsKeyPressed(5))
+                {
+                    num |= 0x20;
+                }
+
+                if (IsKeyPressed(6))
+                {
+                    num |= 0x40;
+                }
+
+                return num;
+            }
+        }
+        
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool ShowWindow(IntPtr hwnd, SW nCmdShow);
+
+        [CLSCompliant(false)]
+        [DllImport("user32.dll")]
+        public static extern bool RedrawWindow(IntPtr hWnd, IntPtr lprcUpdate, IntPtr hrgnUpdate, Constants.RedrawWindowFlags flags);
 
         [DllImport("user32.dll", EntryPoint = "UnregisterClass", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -4069,5 +4161,83 @@ namespace ControlzEx.Standard
         public static extern bool Shell_NotifyIcon(NIM dwMessage, [In] NOTIFYICONDATA lpdata);
 
         #endregion
+
+        public static SC GET_SC_WPARAM(IntPtr wParam)
+        {
+            return (SC)((int)wParam & 0xFFF0);
+        }
+        
+        internal static int ToInt32Unchecked(this IntPtr value)
+        {
+            return (int)value.ToInt64();
+        }
+
+        internal static IntPtr MakeParam(int lowWord, int highWord)
+        {
+            return new IntPtr((lowWord & 0xFFFF) | (highWord << 16));
+        }
+
+        internal static IntPtr MakeParam(Point pt)
+        {
+            return MakeParam((int)pt.X, (int)pt.Y);
+        }
+
+        internal static int GetXLParam(int lParam)
+        {
+            return LoWord(lParam);
+        }
+
+        internal static int GetYLParam(int lParam)
+        {
+            return HiWord(lParam);
+        }
+
+        internal static int HiWord(int value)
+        {
+            return (short)(value >> 16);
+        }
+
+        internal static int HiWord(long value)
+        {
+            return (short)((value >> 16) & 0xFFFF);
+        }
+
+        internal static int HiWord(IntPtr value)
+        {
+            if (IntPtr.Size == 8)
+            {
+                return HiWord(value.ToInt64());
+            }
+            
+            return HiWord(value.ToInt32());
+        }
+
+        internal static int LoWord(int value)
+        {
+            return (short)(value & 0xFFFF);
+        }
+
+        internal static int LoWord(long value)
+        {
+            return (short)(value & 0xFFFF);
+        }
+
+        internal static int LoWord(IntPtr value)
+        {
+            if (IntPtr.Size == 8)
+            {
+                return LoWord(value.ToInt64());
+            }
+
+            return LoWord(value.ToInt32());
+        }
+        
+        [DllImport("user32.dll")]
+        internal static extern short GetKeyState(int vKey);
+
+        internal static bool IsKeyPressed(int vKey)
+        {
+            return GetKeyState(vKey) < 0;
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿#pragma warning disable 618, CA1001
 
+// ReSharper disable once CheckNamespace
 namespace ControlzEx.Behaviors
 {
     using System;
@@ -12,7 +13,6 @@ namespace ControlzEx.Behaviors
     using ControlzEx;
     using ControlzEx.Native;
     using ControlzEx.Standard;
-    using JetBrains.Annotations;
     using Microsoft.Xaml.Behaviors;
 
     /// <summary>
@@ -387,6 +387,7 @@ namespace ControlzEx.Behaviors
         private void AssociatedObject_SourceInitialized(object? sender, EventArgs e)
         {
             this.windowHandle = new WindowInteropHelper(this.AssociatedObject).Handle;
+            this.nonClientControlManager = new NonClientControlManager(this.AssociatedObject);
 
             if (this.windowHandle == IntPtr.Zero)
             {
