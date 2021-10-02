@@ -10,168 +10,168 @@ namespace ControlzEx.Behaviors
     using System.Windows.Media;
     using ControlzEx.Standard;
 
-        public class NonClientControlManager
-        {
-            private DependencyObject? trackedControl;
+    public class NonClientControlManager
+    {
+        private DependencyObject? trackedControl;
 
-            public NonClientControlManager(Window window)
+        public NonClientControlManager(Window window)
+        {
+            this.Owner = window ?? throw new ArgumentNullException(nameof(window));
+            this.OwnerHandle = new WindowInteropHelper(this.Owner).Handle;
+        }
+
+        private Window Owner { get; }
+
+        private IntPtr OwnerHandle { get; }
+
+        public void ClearTrackedControl()
+        {
+            if (this.trackedControl is null)
             {
-                this.Owner = window ?? throw new ArgumentNullException(nameof(window));
-                this.OwnerHandle = new WindowInteropHelper(this.Owner).Handle;
+                return;
             }
 
-            private Window Owner { get; }
+            NonClientControlProperties.SetIsNCMouseOver(this.trackedControl, false);
+            NonClientControlProperties.SetIsNCPressed(this.trackedControl, false);
+            this.trackedControl = null;
+        }
 
-            private IntPtr OwnerHandle { get; }
-
-            public void ClearTrackedControl()
+        public bool HoverTrackedControl(IntPtr lParam)
+        {
+            var controlUnderMouse = this.GetControlUnderMouse(lParam);
+            if (controlUnderMouse == this.trackedControl)
             {
-                if (this.trackedControl is null)
-                {
-                    return;
-                }
+                return true;
+            }
 
+            if (this.trackedControl is not null)
+            {
                 NonClientControlProperties.SetIsNCMouseOver(this.trackedControl, false);
                 NonClientControlProperties.SetIsNCPressed(this.trackedControl, false);
-                this.trackedControl = null;
             }
 
-            public bool HoverTrackedControl(IntPtr lParam)
+            this.trackedControl = controlUnderMouse;
+
+            if (this.trackedControl is not null)
             {
-                var controlUnderMouse = this.GetControlUnderMouse(lParam);
-                if (controlUnderMouse == this.trackedControl)
-                {
-                    return true;
-                }
+                NonClientControlProperties.SetIsNCMouseOver(this.trackedControl, true);
+            }
 
-                if (this.trackedControl is not null)
-                {
-                    NonClientControlProperties.SetIsNCMouseOver(this.trackedControl, false);
-                    NonClientControlProperties.SetIsNCPressed(this.trackedControl, false);
-                }
+            return true;
+        }
 
-                this.trackedControl = controlUnderMouse;
+        public bool PressTrackedControl(IntPtr lParam)
+        {
+            var controlUnderMouse = this.GetControlUnderMouse(lParam);
+            if (controlUnderMouse != this.trackedControl)
+            {
+                this.HoverTrackedControl(lParam);
+            }
 
-                if (this.trackedControl is not null)
-                {
-                    NonClientControlProperties.SetIsNCMouseOver(this.trackedControl, true);
-                }
+            if (this.trackedControl is null)
+            {
+                return false;
+            }
+
+            NonClientControlProperties.SetIsNCPressed(this.trackedControl, true);
+
+            var nonClientControlClickStrategy = NonClientControlProperties.GetClickStrategy(this.trackedControl);
+            if (nonClientControlClickStrategy is NonClientControlClickStrategy.MouseEvent)
+            {
+                // Raising LBUTTONDOWN here automatically causes a LBUTTONUP to be raised by windows later correctly
+                NativeMethods.RaiseMouseMessage(this.OwnerHandle, WM.LBUTTONDOWN, IntPtr.Zero, lParam);
 
                 return true;
             }
 
-            public bool PressTrackedControl(IntPtr lParam)
+            return nonClientControlClickStrategy != NonClientControlClickStrategy.None;
+        }
+
+        public bool ClickTrackedControl(IntPtr lParam)
+        {
+            var controlUnderMouse = this.GetControlUnderMouse(lParam);
+            if (controlUnderMouse != this.trackedControl)
             {
-                var controlUnderMouse = this.GetControlUnderMouse(lParam);
-                if (controlUnderMouse != this.trackedControl)
-                {
-                    this.HoverTrackedControl(lParam);
-                }
-
-                if (this.trackedControl is null)
-                {
-                    return false;
-                }
-
-                NonClientControlProperties.SetIsNCPressed(this.trackedControl, true);
-
-                var nonClientControlClickStrategy = NonClientControlProperties.GetClickStrategy(this.trackedControl);
-                if (nonClientControlClickStrategy is NonClientControlClickStrategy.MouseEvent)
-                {
-                    // Raising LBUTTONDOWN here automatically causes a LBUTTONUP to be raised by windows later correctly
-                    NativeMethods.RaiseMouseMessage(this.OwnerHandle, WM.LBUTTONDOWN, IntPtr.Zero, lParam);
-
-                    return true;
-                }
-
-                return nonClientControlClickStrategy != NonClientControlClickStrategy.None;
-            }
-
-            public bool ClickTrackedControl(IntPtr lParam)
-            {
-                var controlUnderMouse = this.GetControlUnderMouse(lParam);
-                if (controlUnderMouse != this.trackedControl)
-                {
-                    return false;
-                }
-
-                if (this.trackedControl is null)
-                {
-                    return false;
-                }
-
-                if (NonClientControlProperties.GetIsNCPressed(this.trackedControl) == false)
-                {
-                    return false;
-                }
-
-                NonClientControlProperties.SetIsNCPressed(this.trackedControl, false);
-
-                if (NonClientControlProperties.GetClickStrategy(this.trackedControl) is NonClientControlClickStrategy.AutomationPeer
-                    && this.trackedControl is UIElement uiElement
-                    && UIElementAutomationPeer.CreatePeerForElement(uiElement).GetPattern(PatternInterface.Invoke) is IInvokeProvider invokeProvider)
-                {
-                    invokeProvider.Invoke();
-                }
-
                 return false;
             }
 
-            public DependencyObject? GetControlUnderMouse(IntPtr lParam)
+            if (this.trackedControl is null)
             {
-                return GetControlUnderMouse(this.Owner, lParam);
+                return false;
             }
 
-            public static DependencyObject? GetControlUnderMouse(Window owner, IntPtr lParam)
+            if (NonClientControlProperties.GetIsNCPressed(this.trackedControl) == false)
             {
-                return GetControlUnderMouse(owner, lParam, out _);
+                return false;
             }
 
-            public static DependencyObject? GetControlUnderMouse(Window owner, IntPtr lParam, out HT hitTestResult)
-            {
-                var point = LogicalPointFromLParam(owner, lParam);
+            NonClientControlProperties.SetIsNCPressed(this.trackedControl, false);
 
-                if (VisualTreeHelper.HitTest(owner, point)?.VisualHit is Visual visualHit
-                    && NonClientControlProperties.GetHitTestResult(visualHit) is var res
-                    && res != HT.NOWHERE)
+            if (NonClientControlProperties.GetClickStrategy(this.trackedControl) is NonClientControlClickStrategy.AutomationPeer
+                && this.trackedControl is UIElement uiElement
+                && UIElementAutomationPeer.CreatePeerForElement(uiElement).GetPattern(PatternInterface.Invoke) is IInvokeProvider invokeProvider)
+            {
+                invokeProvider.Invoke();
+            }
+
+            return false;
+        }
+
+        public DependencyObject? GetControlUnderMouse(IntPtr lParam)
+        {
+            return GetControlUnderMouse(this.Owner, lParam);
+        }
+
+        public static DependencyObject? GetControlUnderMouse(Window owner, IntPtr lParam)
+        {
+            return GetControlUnderMouse(owner, lParam, out _);
+        }
+
+        public static DependencyObject? GetControlUnderMouse(Window owner, IntPtr lParam, out HT hitTestResult)
+        {
+            var point = LogicalPointFromLParam(owner, lParam);
+
+            if (VisualTreeHelper.HitTest(owner, point)?.VisualHit is Visual visualHit
+                && NonClientControlProperties.GetHitTestResult(visualHit) is var res
+                && res != HT.NOWHERE)
+            {
+                hitTestResult = res;
+
+                DependencyObject control = visualHit;
+                var currentControl = control;
+
+                while (currentControl is not null)
                 {
-                    hitTestResult = res;
-
-                    DependencyObject control = visualHit;
-                    var currentControl = control;
-
-                    while (currentControl is not null)
+                    if (currentControl.ReadLocalValue(NonClientControlProperties.HitTestResultProperty) is HT and not HT.NOWHERE)
                     {
-                        if (currentControl.ReadLocalValue(NonClientControlProperties.HitTestResultProperty) is HT and not HT.NOWHERE)
-                        {
-                            control = currentControl;
-                            break;
-                        }
-
-                        currentControl = GetVisualOrLogicalParent(currentControl);
+                        control = currentControl;
+                        break;
                     }
 
-                    return control;
+                    currentControl = GetVisualOrLogicalParent(currentControl);
                 }
 
-                hitTestResult = HT.NOWHERE;
-                return null;
-
-                static Point LogicalPointFromLParam(Window owner, IntPtr lParam)
-                {
-                    var point2 = Utility.GetPoint(lParam);
-                    return owner.PointFromScreen(point2);
-                }
+                return control;
             }
 
-            private static DependencyObject? GetVisualOrLogicalParent(DependencyObject? sourceElement)
+            hitTestResult = HT.NOWHERE;
+            return null;
+
+            static Point LogicalPointFromLParam(Window owner, IntPtr lParam)
             {
-                return sourceElement switch
-                {
-                    null => null,
-                    Visual => VisualTreeHelper.GetParent(sourceElement) ?? LogicalTreeHelper.GetParent(sourceElement),
-                    _ => LogicalTreeHelper.GetParent(sourceElement)
-                };
+                var point2 = Utility.GetPoint(lParam);
+                return owner.PointFromScreen(point2);
             }
         }
+
+        private static DependencyObject? GetVisualOrLogicalParent(DependencyObject? sourceElement)
+        {
+            return sourceElement switch
+            {
+                null => null,
+                Visual => VisualTreeHelper.GetParent(sourceElement) ?? LogicalTreeHelper.GetParent(sourceElement),
+                _ => LogicalTreeHelper.GetParent(sourceElement)
+            };
+        }
     }
+}
