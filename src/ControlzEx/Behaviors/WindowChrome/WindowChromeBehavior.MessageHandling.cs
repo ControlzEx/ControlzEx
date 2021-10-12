@@ -709,7 +709,7 @@ namespace ControlzEx.Behaviors
         {
             /*
              * This is a workaround for wrong windows behaviour (with multi monitor system).
-             * If a Window sets the WindoStyle to None and WindowState to maximized
+             * If a Window sets the WindowStyle to None and WindowState to maximized
              * we can move the Window to different monitor with maybe different dimension.
              * But after moving to the previous monitor we got a wrong size (from the old monitor dimension).
              */
