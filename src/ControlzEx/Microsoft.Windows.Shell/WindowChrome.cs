@@ -1,11 +1,8 @@
-﻿/**************************************************************************\
-    Copyright Microsoft Corporation. All Rights Reserved.
-\**************************************************************************/
+﻿// ReSharper disable once CheckNamespace
 namespace ControlzEx.Windows.Shell
 {
     using System;
     using System.ComponentModel;
-    using System.Diagnostics.CodeAnalysis;
     using System.Windows;
     using ControlzEx;
     using ControlzEx.Standard;
@@ -69,25 +66,23 @@ namespace ControlzEx.Windows.Shell
         public static ResizeGripDirection GetResizeGripDirection(IInputElement inputElement)
         {
             Verify.IsNotNull(inputElement, "inputElement");
-            var dobj = inputElement as DependencyObject;
-            if (dobj is null)
+            if (inputElement is not DependencyObject dependencyObject)
             {
                 throw new ArgumentException("The element must be a DependencyObject", nameof(inputElement));
             }
 
-            return (ResizeGripDirection)dobj.GetValue(ResizeGripDirectionProperty);
+            return (ResizeGripDirection)dependencyObject.GetValue(ResizeGripDirectionProperty);
         }
 
         public static void SetResizeGripDirection(IInputElement inputElement, ResizeGripDirection direction)
         {
             Verify.IsNotNull(inputElement, "inputElement");
-            var dobj = inputElement as DependencyObject;
-            if (dobj is null)
+            if (inputElement is not DependencyObject dependencyObject)
             {
                 throw new ArgumentException("The element must be a DependencyObject", nameof(inputElement));
             }
 
-            dobj.SetValue(ResizeGripDirectionProperty, direction);
+            dependencyObject.SetValue(ResizeGripDirectionProperty, direction);
         }
 
         #endregion
