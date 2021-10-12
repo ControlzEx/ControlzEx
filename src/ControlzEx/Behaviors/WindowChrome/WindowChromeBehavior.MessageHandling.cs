@@ -63,87 +63,6 @@ namespace ControlzEx.Behaviors
             }
         }
 
-        private IntPtr _HandleNCMOUSEMOVE(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
-        {
-            handled = this.nonClientControlManager?.HoverTrackedControl(lParam) == true;
-
-            return IntPtr.Zero;
-        }
-
-        private IntPtr _HandleMOUSEMOVE(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
-        {
-            this.nonClientControlManager?.ClearTrackedControl();
-            handled = false;
-            return IntPtr.Zero;
-        }
-
-        private IntPtr _HandleNCMOUSELEAVE(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
-        {
-            this.nonClientControlManager?.ClearTrackedControl();
-            handled = false;
-            return IntPtr.Zero;
-        }
-
-        private IntPtr _HandleMOUSELEAVE(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
-        {
-            this.nonClientControlManager?.ClearTrackedControl();
-            handled = false;
-            return IntPtr.Zero;
-        }
-
-        private IntPtr _HandleStyleChanging(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
-        {
-            handled = false;
-
-            var structure = Marshal.PtrToStructure<STYLESTRUCT>(lParam);
-            if ((GWL)wParam.ToInt64() == GWL.STYLE)
-            {
-                if (this.IgnoreTaskbarOnMaximize)
-                {
-                    structure.styleNew |= (int)(WS.OVERLAPPED | WS.SYSMENU | WS.THICKFRAME);
-                    structure.styleNew &= ~(int)WS.CAPTION;
-                }
-                else
-                {
-                    structure.styleNew |= (int)(WS.OVERLAPPED | WS.CAPTION | WS.SYSMENU | WS.THICKFRAME);
-                }
-            }
-
-            Marshal.StructureToPtr(structure, lParam, fDeleteOld: true);
-            return IntPtr.Zero;
-        }
-
-        private IntPtr _HandleDestroy(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
-        {
-            handled = false;
-
-            this.Detach();
-
-            return IntPtr.Zero;
-        }
-
-        private IntPtr _HandleNCLBUTTONDOWN(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
-        {
-            handled = this.nonClientControlManager?.PressTrackedControl(lParam) == true;
-
-            return IntPtr.Zero;
-        }
-
-        private IntPtr _HandleNCLBUTTONUP(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
-        {
-            handled = this.nonClientControlManager?.ClickTrackedControl(lParam) == true;
-
-            return IntPtr.Zero;
-        }
-
-        private IntPtr _HandleNCRBUTTONMessages(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
-        {
-            handled = true;
-            NativeMethods.RaiseNonClientMouseMessageAsClient(this.windowHandle, uMsg, wParam, lParam);
-
-            return IntPtr.Zero;
-        }
-
         /// <SecurityNote>
         ///   Critical : Calls critical methods
         ///   Safe     : Demands full trust permissions
@@ -843,6 +762,87 @@ namespace ControlzEx.Behaviors
             }
 
             handled = false;
+            return IntPtr.Zero;
+        }
+
+        private IntPtr _HandleNCMOUSEMOVE(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        {
+            handled = this.nonClientControlManager?.HoverTrackedControl(lParam) == true;
+
+            return IntPtr.Zero;
+        }
+
+        private IntPtr _HandleMOUSEMOVE(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        {
+            this.nonClientControlManager?.ClearTrackedControl();
+            handled = false;
+            return IntPtr.Zero;
+        }
+
+        private IntPtr _HandleNCMOUSELEAVE(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        {
+            this.nonClientControlManager?.ClearTrackedControl();
+            handled = false;
+            return IntPtr.Zero;
+        }
+
+        private IntPtr _HandleMOUSELEAVE(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        {
+            this.nonClientControlManager?.ClearTrackedControl();
+            handled = false;
+            return IntPtr.Zero;
+        }
+
+        private IntPtr _HandleStyleChanging(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        {
+            handled = false;
+
+            var structure = Marshal.PtrToStructure<STYLESTRUCT>(lParam);
+            if ((GWL)wParam.ToInt64() == GWL.STYLE)
+            {
+                if (this.IgnoreTaskbarOnMaximize)
+                {
+                    structure.styleNew |= (int)(WS.OVERLAPPED | WS.SYSMENU | WS.THICKFRAME);
+                    structure.styleNew &= ~(int)WS.CAPTION;
+                }
+                else
+                {
+                    structure.styleNew |= (int)(WS.OVERLAPPED | WS.CAPTION | WS.SYSMENU | WS.THICKFRAME);
+                }
+            }
+
+            Marshal.StructureToPtr(structure, lParam, fDeleteOld: true);
+            return IntPtr.Zero;
+        }
+
+        private IntPtr _HandleDestroy(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        {
+            handled = false;
+
+            this.Detach();
+
+            return IntPtr.Zero;
+        }
+
+        private IntPtr _HandleNCLBUTTONDOWN(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        {
+            handled = this.nonClientControlManager?.PressTrackedControl(lParam) == true;
+
+            return IntPtr.Zero;
+        }
+
+        private IntPtr _HandleNCLBUTTONUP(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        {
+            handled = this.nonClientControlManager?.ClickTrackedControl(lParam) == true;
+
+            return IntPtr.Zero;
+        }
+
+        private IntPtr _HandleNCRBUTTONMessages(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        {
+            handled = true;
+            NativeMethods.RaiseNonClientMouseMessageAsClient(this.windowHandle, uMsg, wParam, lParam);
+
             return IntPtr.Zero;
         }
 
