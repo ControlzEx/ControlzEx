@@ -2051,7 +2051,9 @@ namespace ControlzEx.Standard
         public uint dwInfoFlags;
         public Guid guidItem;
         // Vista only
+#pragma warning disable 169
         private IntPtr hBalloonIcon;
+#pragma warning restore 169
     }
 
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
