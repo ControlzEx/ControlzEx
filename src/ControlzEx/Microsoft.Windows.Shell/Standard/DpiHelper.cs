@@ -68,10 +68,15 @@ namespace ControlzEx.Standard
             return new Size(pt.X, pt.Y);
         }
 
-        public static Thickness LogicalThicknessToDevice(Thickness logicalThickness, double dpiX, double dpiY)
+        public static Thickness LogicalThicknessToDevice(Thickness logicalThickness, DpiScale dpiScale)
         {
-            var topLeft = LogicalPixelsToDevice(new Point(logicalThickness.Left, logicalThickness.Top), dpiX, dpiY);
-            var bottomRight = LogicalPixelsToDevice(new Point(logicalThickness.Right, logicalThickness.Bottom), dpiX, dpiY);
+            return LogicalThicknessToDevice(logicalThickness, dpiScale.DpiScaleX, dpiScale.DpiScaleY);
+        }
+
+        public static Thickness LogicalThicknessToDevice(Thickness logicalThickness, double dpiScaleX, double dpiScaleY)
+        {
+            var topLeft = LogicalPixelsToDevice(new Point(logicalThickness.Left, logicalThickness.Top), dpiScaleX, dpiScaleY);
+            var bottomRight = LogicalPixelsToDevice(new Point(logicalThickness.Right, logicalThickness.Bottom), dpiScaleX, dpiScaleY);
 
             return new Thickness(topLeft.X, topLeft.Y, bottomRight.X, bottomRight.Y);
         }
