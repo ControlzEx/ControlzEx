@@ -932,8 +932,8 @@ namespace ControlzEx.Behaviors
             {
                 this.lastMenuState = state;
 
-                var hmenu = NativeMethods.GetSystemMenu(this.windowHandle, false);
-                if (hmenu != IntPtr.Zero)
+                var menuHandle = NativeMethods.GetSystemMenu(this.windowHandle, false);
+                if (menuHandle != IntPtr.Zero)
                 {
                     var dwStyle = NativeMethods.GetWindowStyle(this.windowHandle);
 
@@ -944,27 +944,27 @@ namespace ControlzEx.Behaviors
                     switch (state)
                     {
                         case WindowState.Maximized:
-                            NativeMethods.EnableMenuItem(hmenu, SC.RESTORE, canMaximize ? MF_ENABLED : MF_DISABLED);
-                            NativeMethods.EnableMenuItem(hmenu, SC.MOVE, MF_DISABLED);
-                            NativeMethods.EnableMenuItem(hmenu, SC.SIZE, MF_DISABLED);
-                            NativeMethods.EnableMenuItem(hmenu, SC.MINIMIZE, canMinimize ? MF_ENABLED : MF_DISABLED);
-                            NativeMethods.EnableMenuItem(hmenu, SC.MAXIMIZE, MF_DISABLED);
+                            NativeMethods.EnableMenuItem(menuHandle, SC.RESTORE, canMaximize ? MF_ENABLED : MF_DISABLED);
+                            NativeMethods.EnableMenuItem(menuHandle, SC.MOVE, MF_DISABLED);
+                            NativeMethods.EnableMenuItem(menuHandle, SC.SIZE, MF_DISABLED);
+                            NativeMethods.EnableMenuItem(menuHandle, SC.MINIMIZE, canMinimize ? MF_ENABLED : MF_DISABLED);
+                            NativeMethods.EnableMenuItem(menuHandle, SC.MAXIMIZE, MF_DISABLED);
                             break;
 
                         case WindowState.Minimized:
-                            NativeMethods.EnableMenuItem(hmenu, SC.RESTORE, MF_ENABLED);
-                            NativeMethods.EnableMenuItem(hmenu, SC.MOVE, MF_DISABLED);
-                            NativeMethods.EnableMenuItem(hmenu, SC.SIZE, MF_DISABLED);
-                            NativeMethods.EnableMenuItem(hmenu, SC.MINIMIZE, MF_DISABLED);
-                            NativeMethods.EnableMenuItem(hmenu, SC.MAXIMIZE, canMaximize ? MF_ENABLED : MF_DISABLED);
+                            NativeMethods.EnableMenuItem(menuHandle, SC.RESTORE, MF_ENABLED);
+                            NativeMethods.EnableMenuItem(menuHandle, SC.MOVE, MF_DISABLED);
+                            NativeMethods.EnableMenuItem(menuHandle, SC.SIZE, MF_DISABLED);
+                            NativeMethods.EnableMenuItem(menuHandle, SC.MINIMIZE, MF_DISABLED);
+                            NativeMethods.EnableMenuItem(menuHandle, SC.MAXIMIZE, canMaximize ? MF_ENABLED : MF_DISABLED);
                             break;
 
                         default:
-                            NativeMethods.EnableMenuItem(hmenu, SC.RESTORE, MF_DISABLED);
-                            NativeMethods.EnableMenuItem(hmenu, SC.MOVE, MF_ENABLED);
-                            NativeMethods.EnableMenuItem(hmenu, SC.SIZE, canSize ? MF_ENABLED : MF_DISABLED);
-                            NativeMethods.EnableMenuItem(hmenu, SC.MINIMIZE, canMinimize ? MF_ENABLED : MF_DISABLED);
-                            NativeMethods.EnableMenuItem(hmenu, SC.MAXIMIZE, canMaximize ? MF_ENABLED : MF_DISABLED);
+                            NativeMethods.EnableMenuItem(menuHandle, SC.RESTORE, MF_DISABLED);
+                            NativeMethods.EnableMenuItem(menuHandle, SC.MOVE, MF_ENABLED);
+                            NativeMethods.EnableMenuItem(menuHandle, SC.SIZE, canSize ? MF_ENABLED : MF_DISABLED);
+                            NativeMethods.EnableMenuItem(menuHandle, SC.MINIMIZE, canMinimize ? MF_ENABLED : MF_DISABLED);
+                            NativeMethods.EnableMenuItem(menuHandle, SC.MAXIMIZE, canMaximize ? MF_ENABLED : MF_DISABLED);
                             break;
                     }
                 }
