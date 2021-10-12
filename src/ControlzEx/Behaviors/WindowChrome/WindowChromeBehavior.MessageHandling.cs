@@ -488,30 +488,32 @@ namespace ControlzEx.Behaviors
 
         private HT _GetHTFromResizeGripDirection(ResizeGripDirection direction)
         {
-            var compliment = this.AssociatedObject.FlowDirection == FlowDirection.RightToLeft;
-            switch (direction)
+            var isRightToLeft = this.AssociatedObject.FlowDirection == FlowDirection.RightToLeft;
+            return direction switch
             {
-                case ResizeGripDirection.Bottom:
-                    return HT.BOTTOM;
-                case ResizeGripDirection.BottomLeft:
-                    return compliment ? HT.BOTTOMRIGHT : HT.BOTTOMLEFT;
-                case ResizeGripDirection.BottomRight:
-                    return compliment ? HT.BOTTOMLEFT : HT.BOTTOMRIGHT;
-                case ResizeGripDirection.Left:
-                    return compliment ? HT.RIGHT : HT.LEFT;
-                case ResizeGripDirection.Right:
-                    return compliment ? HT.LEFT : HT.RIGHT;
-                case ResizeGripDirection.Top:
-                    return HT.TOP;
-                case ResizeGripDirection.TopLeft:
-                    return compliment ? HT.TOPRIGHT : HT.TOPLEFT;
-                case ResizeGripDirection.TopRight:
-                    return compliment ? HT.TOPLEFT : HT.TOPRIGHT;
-                case ResizeGripDirection.Caption:
-                    return HT.CAPTION;
-                default:
-                    return HT.NOWHERE;
-            }
+                ResizeGripDirection.Bottom => HT.BOTTOM,
+                ResizeGripDirection.BottomLeft => isRightToLeft
+                    ? HT.BOTTOMRIGHT
+                    : HT.BOTTOMLEFT,
+                ResizeGripDirection.BottomRight => isRightToLeft
+                    ? HT.BOTTOMLEFT
+                    : HT.BOTTOMRIGHT,
+                ResizeGripDirection.Left => isRightToLeft
+                    ? HT.RIGHT
+                    : HT.LEFT,
+                ResizeGripDirection.Right => isRightToLeft
+                    ? HT.LEFT
+                    : HT.RIGHT,
+                ResizeGripDirection.Top => HT.TOP,
+                ResizeGripDirection.TopLeft => isRightToLeft
+                    ? HT.TOPRIGHT
+                    : HT.TOPLEFT,
+                ResizeGripDirection.TopRight => isRightToLeft
+                    ? HT.TOPLEFT
+                    : HT.TOPRIGHT,
+                ResizeGripDirection.Caption => HT.CAPTION,
+                _ => HT.NOWHERE
+            };
         }
 
         /// <SecurityNote>
