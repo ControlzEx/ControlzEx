@@ -25,7 +25,7 @@
         /// <param name="value1">The first double to compare.</param>
         /// <param name="value2">The second double to compare.</param>
         /// <returns>The result of the AreClose comparision.</returns>
-        public static bool AreClose(double value1, double value2)
+        public static bool AreClose(this double value1, double value2)
         {
             if (value1 == value2)
             {
