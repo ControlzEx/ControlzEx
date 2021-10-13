@@ -2268,6 +2268,14 @@ namespace ControlzEx.Standard
             this.Bottom = (int)rect.Bottom;
         }
 
+        public RECT(WINDOWPOS windowpos)
+        {
+            this.Left = windowpos.x;
+            this.Top = windowpos.y;
+            this.Right = windowpos.x - windowpos.cx;
+            this.Bottom = windowpos.y - windowpos.cy;
+        }
+
         public void Offset(int dx, int dy)
         {
             this.Left += dx;
@@ -2327,7 +2335,7 @@ namespace ControlzEx.Standard
                 return "RECT {Empty}";
             }
 
-            return "RECT { left : " + this.Left + " / top : " + this.Top + " / right : " + this.Right + " / bottom : " + this.Bottom + " }";
+            return $"RECT {{ left: {this.Left} / top: {this.Top} / right: {this.Right} / bottom: {this.Bottom} / width: {this.Width} / height: {this.Height} }}";
         }
 
         public override int GetHashCode()
@@ -3002,7 +3010,7 @@ namespace ControlzEx.Standard
         public static void DwmSetWindowAttributeDisallowPeek(IntPtr hwnd, bool disallowPeek)
         {
             Assert.IsTrue(Utility.IsOSWindows7OrNewer);
-            int dwDisallow = (int)(disallowPeek ? Win32Value.TRUE : Win32Value.FALSE);
+            int dwDisallow = disallowPeek ? Win32Value.TRUE : Win32Value.FALSE;
             _DwmSetWindowAttribute(hwnd, DWMWA.DISALLOW_PEEK, ref dwDisallow, sizeof(int));
         }
 
