@@ -1013,25 +1013,25 @@ namespace ControlzEx.Behaviors
 
             // Determine if the point is at the top or bottom of the window.
             if (mousePosition.Y >= windowRect.Top
-                && mousePosition.Y < windowRect.Top + (resizeBorderThickness.Top * 2))
+                && mousePosition.Y < windowRect.Top + resizeBorderThickness.Top)
             {
                 onTopResizeBorder = mousePosition.Y < (windowRect.Top + resizeBorderThickness.Top);
                 uRow = 0; // top (caption or resize border)
             }
             else if (mousePosition.Y < windowRect.Bottom
-                     && mousePosition.Y >= windowRect.Bottom - ((int)resizeBorderThickness.Bottom * 2))
+                     && mousePosition.Y >= windowRect.Bottom - resizeBorderThickness.Bottom)
             {
                 uRow = 2; // bottom
             }
 
             // Determine if the point is at the left or right of the window.
             if (mousePosition.X >= windowRect.Left
-                && mousePosition.X < windowRect.Left + ((int)resizeBorderThickness.Left * 2))
+                && mousePosition.X < windowRect.Left + resizeBorderThickness.Left)
             {
                 uCol = 0; // left side
             }
             else if (mousePosition.X < windowRect.Right
-                     && mousePosition.X >= windowRect.Right - (resizeBorderThickness.Right * 2))
+                     && mousePosition.X >= windowRect.Right - resizeBorderThickness.Right)
             {
                 uCol = 2; // right side
             }
