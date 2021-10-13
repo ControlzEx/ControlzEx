@@ -376,7 +376,7 @@ namespace ControlzEx.Behaviors
 
                 Marshal.StructureToPtr(rc, lParam, true);
             }
-            else
+            else if (NativeMethods.GetWindowStyle(this.windowHandle).HasFlag(WS.CAPTION))
             {
                 var rc = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT))!;
                 var dpiScale = this.AssociatedObject.GetDpi();
