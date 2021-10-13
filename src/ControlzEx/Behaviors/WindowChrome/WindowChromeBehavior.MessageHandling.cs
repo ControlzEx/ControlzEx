@@ -480,7 +480,8 @@ namespace ControlzEx.Behaviors
 
         private HT GetHitTestResult(IntPtr lParam)
         {
-            if (NonClientControlManager.GetControlUnderMouse(this.AssociatedObject, lParam, out var res) is not null)
+            if (NonClientControlManager.GetControlUnderMouse(this.AssociatedObject, lParam, out var res) is not null
+                && res != HT.CAPTION)
             {
                 return res;
             }
