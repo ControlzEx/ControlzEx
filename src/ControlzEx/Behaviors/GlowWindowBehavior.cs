@@ -472,7 +472,7 @@
                 return;
             }
 
-            if (UnsafeNativeMethods.GetWindowRect(this.windowHandle, out var rect))
+            if (NativeMethods.GetMappedClientRect(this.windowHandle, out var rect))
             {
                 this.left?.UpdateCore(rect);
                 this.right?.UpdateCore(rect);

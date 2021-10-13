@@ -37,10 +37,6 @@ namespace ControlzEx.Native
         [DllImportAttribute("user32.dll")]
         public static extern bool ReleaseCapture();
 
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
-
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         public static extern int GetKeyNameText(int lParam, [MarshalAs(UnmanagedType.LPWStr), Out] StringBuilder str, int size);
     }

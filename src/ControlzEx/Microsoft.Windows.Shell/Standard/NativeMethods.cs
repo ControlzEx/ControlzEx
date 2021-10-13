@@ -3066,18 +3066,20 @@ namespace ControlzEx.Standard
 
         [DllImport("user32.dll", EntryPoint = "GetClientRect", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool _GetClientRect(IntPtr hwnd, [Out] out RECT lpRect);
+        public static extern bool GetClientRect(IntPtr hwnd, [Out] out RECT rect);
 
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        public static RECT GetClientRect(IntPtr hwnd)
+        [DllImport("user32.dll")]
+        internal static extern int MapWindowPoints(IntPtr hwndFrom, IntPtr hwndTo, ref RECT rect, int points);
+
+        public static bool GetMappedClientRect(IntPtr hwnd, out RECT rect)
         {
-            RECT rc;
-            if (!_GetClientRect(hwnd, out rc))
+            if (GetClientRect(hwnd, out rect))
             {
-                HRESULT.ThrowLastError();
+                MapWindowPoints(hwnd, IntPtr.Zero, ref rect, 2);
+                return true;
             }
 
-            return rc;
+            return false;
         }
 
         [SecurityCritical]

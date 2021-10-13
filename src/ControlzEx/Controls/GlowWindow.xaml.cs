@@ -323,7 +323,7 @@ namespace ControlzEx.Controls
                             });
 
                 if (this.IsGlowing
-                    && UnsafeNativeMethods.GetWindowRect(this.ownerWindowHandle, out rect))
+                    && NativeMethods.GetMappedClientRect(this.ownerWindowHandle, out rect))
                 {
                     this.UpdateCore(rect);
                 }
@@ -340,7 +340,7 @@ namespace ControlzEx.Controls
                             });
 
                 if (this.IsGlowing
-                    && UnsafeNativeMethods.GetWindowRect(this.ownerWindowHandle, out rect))
+                    && NativeMethods.GetMappedClientRect(this.ownerWindowHandle, out rect))
                 {
                     this.UpdateCore(rect);
                 }
@@ -534,7 +534,7 @@ namespace ControlzEx.Controls
                         || this.owner.ResizeMode == ResizeMode.CanResizeWithGrip)
                     {
                         if (this.IsOwnerHandleValid()
-                            && UnsafeNativeMethods.GetWindowRect(this.ownerWindowHandle, out var rect))
+                            && NativeMethods.GetMappedClientRect(this.ownerWindowHandle, out var rect))
                         {
                             if (NativeMethods.TryGetRelativeMousePosition(this.windowHandle, out var pt))
                             {
