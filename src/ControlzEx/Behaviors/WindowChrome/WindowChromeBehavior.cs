@@ -1,4 +1,4 @@
-#pragma warning disable 618, CA1001
+﻿#pragma warning disable 618, CA1001
 
 // ReSharper disable once CheckNamespace
 namespace ControlzEx.Behaviors
@@ -272,7 +272,15 @@ namespace ControlzEx.Behaviors
         /// </summary>
         public static Thickness GetDefaultResizeBorderThickness()
         {
-            return SystemParameters.WindowResizeBorderThickness;
+            var dpiX = NativeMethods.GetDeviceCaps(SafeDC.GetDesktop(), DeviceCap.LOGPIXELSX);
+            var dpiY = NativeMethods.GetDeviceCaps(SafeDC.GetDesktop(), DeviceCap.LOGPIXELSY);
+            var xframe = NativeMethods.GetSystemMetrics(SM.CXFRAME);
+            var yframe = NativeMethods.GetSystemMetrics(SM.CYFRAME);
+            var padding = NativeMethods.GetSystemMetrics(SM.CXPADDEDBORDER);
+            xframe += padding;
+            yframe += padding;
+            var logical = DpiHelper.DeviceSizeToLogical(new Size(xframe, yframe), dpiX / 96.0, dpiY / 96.0);
+            return new Thickness(logical.Width, logical.Height, logical.Width, logical.Height);
         }
 
         private void BorderThicknessChangeNotifierOnValueChanged(object? sender, EventArgs e)

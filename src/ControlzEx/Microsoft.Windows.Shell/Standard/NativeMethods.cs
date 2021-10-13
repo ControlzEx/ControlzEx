@@ -434,6 +434,7 @@ namespace ControlzEx.Standard
         CYFOCUSBORDER = 84,
         TABLETPC = 86,
         MEDIACENTER = 87,
+        CXPADDEDBORDER = 92,
         REMOTESESSION = 0x1000,
         REMOTECONTROL = 0x2001,
     }
