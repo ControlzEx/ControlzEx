@@ -521,6 +521,12 @@ namespace ControlzEx.Behaviors
                 }
             }
 
+            if (res != HT.NOWHERE
+                && ht == HT.CLIENT)
+            {
+                return res;
+            }
+
             return ht;
         }
 
