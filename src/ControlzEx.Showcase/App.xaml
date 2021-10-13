@@ -1,4 +1,4 @@
-﻿<Application x:Class="ControlzEx.Showcase.App"
+<Application x:Class="ControlzEx.Showcase.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:ControlzEx.Showcase"
@@ -93,12 +93,6 @@
                 </Style.Triggers>
             </Style>
 
-            <Style x:Key="NoneWindowStyle"
-                   BasedOn="{StaticResource {x:Type local:WindowChromeWindow}}"
-                   TargetType="{x:Type local:WindowChromeWindow}">
-                <Setter Property="WindowStyle" Value="None" />
-            </Style>
-            
             <Style x:Key="WindowTitleBarButton"
                    TargetType="Button">
                 <Style.Triggers>
