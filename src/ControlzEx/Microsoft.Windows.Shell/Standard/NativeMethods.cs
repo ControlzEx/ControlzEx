@@ -811,9 +811,9 @@ namespace ControlzEx.Standard
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
     internal struct STYLESTRUCT
     {
-        public int styleOld;
+        public WS styleOld;
 
-        public int styleNew;
+        public WS styleNew;
     }
 
     /// <summary>

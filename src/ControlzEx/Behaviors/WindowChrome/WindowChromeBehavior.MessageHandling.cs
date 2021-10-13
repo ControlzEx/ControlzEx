@@ -803,22 +803,24 @@ namespace ControlzEx.Behaviors
         {
             handled = false;
 
-            var structure = Marshal.PtrToStructure<STYLESTRUCT>(lParam);
             if ((GWL)wParam.ToInt64() == GWL.STYLE)
             {
+                var structure = Marshal.PtrToStructure<STYLESTRUCT>(lParam);
+
                 if (this.IgnoreTaskbarOnMaximize
                     && this._GetHwndState() == WindowState.Maximized)
                 {
-                    structure.styleNew |= (int)(WS.OVERLAPPED | WS.SYSMENU | WS.THICKFRAME);
-                    structure.styleNew &= ~(int)WS.CAPTION;
+                    structure.styleNew |= WS.OVERLAPPED | WS.SYSMENU | WS.THICKFRAME;
+                    structure.styleNew &= ~WS.CAPTION;
                 }
                 else
                 {
-                    structure.styleNew |= (int)(WS.OVERLAPPED | WS.CAPTION | WS.SYSMENU | WS.THICKFRAME);
+                    structure.styleNew |= WS.OVERLAPPED | WS.CAPTION | WS.SYSMENU | WS.THICKFRAME;
                 }
+
+                Marshal.StructureToPtr(structure, lParam, fDeleteOld: true);
             }
 
-            Marshal.StructureToPtr(structure, lParam, fDeleteOld: true);
             return IntPtr.Zero;
         }
 
