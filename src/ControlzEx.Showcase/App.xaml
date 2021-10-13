@@ -27,7 +27,6 @@
                 <Setter Property="NCActiveBrush" Value="{Binding Background, RelativeSource={RelativeSource Self}}" />
                 <Setter Property="NCCurrentBrush" Value="{Binding NCActiveBrush, RelativeSource={RelativeSource Self}}" />
                 <Setter Property="NCNonActiveBrush" Value="{Binding Source={x:Static SystemColors.WindowFrameBrush}}" />
-                <Setter Property="ResizeBorderThickness" Value="8" />
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type local:WindowChromeWindow}">
