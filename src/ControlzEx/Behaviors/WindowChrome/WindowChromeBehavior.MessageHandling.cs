@@ -974,39 +974,6 @@ namespace ControlzEx.Behaviors
             }
         }
 
-        /// <SecurityNote>
-        ///   Critical : Calls critical methods
-        /// </SecurityNote>
-        [SecurityCritical]
-        private void _UpdateFrameState(bool force)
-        {
-            if (this.windowHandle == IntPtr.Zero
-                || this.hwndSource is null
-                || this.hwndSource.IsDisposed)
-            {
-                return;
-            }
-
-            if (force)
-            {
-                if (this.hwndSource.IsDisposed)
-                {
-                    // If the window got closed very early
-                    return;
-                }
-
-                // This fixes both the flickering and the annoying rounded corners (meaning the rounded corners from the pre Windows 11 era).
-                //NativeMethods.SetWindowTheme(this.windowHandle, " ", " ");
-
-                this.UpdateWindowStyle();
-
-                //if (this.AssociatedObject.IsLoaded)
-                {
-                    // NativeMethods.SetWindowPos(this.windowHandle, IntPtr.Zero, 0, 0, 0, 0, SwpFlags);
-                }
-            }
-        }
-
         private void UpdateWindowStyle()
         {
             if (this.IgnoreTaskbarOnMaximize
