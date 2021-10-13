@@ -198,7 +198,11 @@ namespace ControlzEx.Showcase
             if (this.ShowGridLines)
             {
                 this.GridLinesRenderer ??= this.CreateGridLinesRenderer();
-                this.AddVisualChild(this.GridLinesRenderer);
+
+                if (this.GridLinesRenderer.Parent != this)
+                {
+                    this.AddVisualChild(this.GridLinesRenderer);
+                }
             }
             else if (this.ShowGridLines == false
                      && this.GridLinesRenderer is not null)
