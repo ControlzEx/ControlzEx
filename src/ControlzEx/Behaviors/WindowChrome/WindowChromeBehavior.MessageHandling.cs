@@ -1006,7 +1006,7 @@ namespace ControlzEx.Behaviors
             // Determine if hit test is for resizing, default middle (1,1).
             var uRow = 1;
             var uCol = 1;
-            var onResizeBorder = false;
+            var onTopResizeBorder = false;
 
             // Only get this once from the property to improve performance
             var resizeBorderThickness = this.ResizeBorderThickness;
@@ -1015,7 +1015,7 @@ namespace ControlzEx.Behaviors
             if (mousePosition.Y >= windowRect.Top
                 && mousePosition.Y < windowRect.Top + (resizeBorderThickness.Top * 2))
             {
-                onResizeBorder = mousePosition.Y < (windowRect.Top + resizeBorderThickness.Top);
+                onTopResizeBorder = mousePosition.Y < (windowRect.Top + resizeBorderThickness.Top);
                 uRow = 0; // top (caption or resize border)
             }
             else if (mousePosition.Y < windowRect.Bottom
@@ -1040,7 +1040,7 @@ namespace ControlzEx.Behaviors
             // then resize left-right rather than diagonally.
             if (uRow == 0
                 && uCol != 1
-                && onResizeBorder == false)
+                && onTopResizeBorder == false)
             {
                 uRow = 1;
             }
@@ -1048,7 +1048,7 @@ namespace ControlzEx.Behaviors
             var ht = hitTestBorders[uRow, uCol];
 
             if (ht == HT.TOP
-                && onResizeBorder == false)
+                && onTopResizeBorder == false)
             {
                 ht = HT.CAPTION;
             }
