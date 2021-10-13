@@ -4,7 +4,8 @@
              xmlns:local="clr-namespace:ControlzEx.Showcase"
              xmlns:theming="clr-namespace:ControlzEx.Showcase.Theming"
              xmlns:controlzex="urn:controlzex"
-             StartupUri="MainWindow.xaml">
+             StartupUri="MainWindow.xaml"
+             ShutdownMode="OnMainWindowClose">
     <Application.Resources>
         <ResourceDictionary>
             <theming:ShowcaseLibraryThemeProvider x:Key="{x:Static theming:ShowcaseLibraryThemeProvider.DefaultInstance}" />
