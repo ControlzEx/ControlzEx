@@ -544,6 +544,14 @@
                                              Padding="2"
                                              VerticalAlignment="Center"
                                              Text="{Binding ElementName=Window, Path=ResizeBorderThickness, Mode=TwoWay}" />
+
+                                    <Label>
+                                        NativeResizeBorderThickness
+                                    </Label>
+                                    <TextBox Margin="4"
+                                             Padding="2"
+                                             VerticalAlignment="Center"
+                                             Text="{Binding ElementName=Window, Path=NativeResizeBorderThickness, Mode=TwoWay}" />
                                 </local:UniformGridEx>
                             </GroupBox>
                         </Grid>

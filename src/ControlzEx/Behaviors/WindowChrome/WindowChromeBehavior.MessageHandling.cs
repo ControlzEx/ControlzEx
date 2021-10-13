@@ -22,8 +22,6 @@ namespace ControlzEx.Behaviors
 
         private const SWP SwpFlags = SWP.FRAMECHANGED | SWP.NOSIZE | SWP.NOMOVE | SWP.NOZORDER | SWP.NOOWNERZORDER | SWP.NOACTIVATE;
 
-        private readonly Thickness nativeResizeBorderThickness = new(8);
-
         private WindowState lastMenuState;
         private WINDOWPOS lastWindowpos;
 
@@ -380,7 +378,7 @@ namespace ControlzEx.Behaviors
             {
                 var rc = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT))!;
                 var dpiScale = this.AssociatedObject.GetDpi();
-                var deviceResizeBorderThickness = DpiHelper.LogicalThicknessToDevice(this.nativeResizeBorderThickness, dpiScale);
+                var deviceResizeBorderThickness = DpiHelper.LogicalThicknessToDevice(this.NativeResizeBorderThickness, dpiScale);
                 //rc.Top += (int)deviceResizeBorderThickness.Top; // todo: Should we really do that?
                 rc.Left += (int)deviceResizeBorderThickness.Left;
                 rc.Right -= (int)deviceResizeBorderThickness.Right;

@@ -1,4 +1,4 @@
-﻿#pragma warning disable 618, CA1001
+#pragma warning disable 618, CA1001
 
 // ReSharper disable once CheckNamespace
 namespace ControlzEx.Behaviors
@@ -57,13 +57,30 @@ namespace ControlzEx.Behaviors
             set { this.SetValue(ResizeBorderThicknessProperty, value); }
         }
 
-        /// <summary>
-        /// <see cref="DependencyProperty"/> for <see cref="ResizeBorderThickness"/>.
-        /// </summary>
+        /// <summary>Identifies the <see cref="ResizeBorderThickness"/> dependency property.</summary>
         public static readonly DependencyProperty ResizeBorderThicknessProperty =
             DependencyProperty.Register(nameof(ResizeBorderThickness), typeof(Thickness), typeof(WindowChromeBehavior), new PropertyMetadata(GetDefaultResizeBorderThickness(), OnResizeBorderThicknessChanged), (value) => ((Thickness)value).IsNonNegative());
 
         private static void OnResizeBorderThicknessChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var behavior = (WindowChromeBehavior)d;
+            behavior._OnChromePropertyChangedThatRequiresRepaint();
+        }
+
+        /// <summary>
+        /// Mirror property for <see cref="ResizeBorderThickness"/>.
+        /// </summary>
+        public Thickness NativeResizeBorderThickness
+        {
+            get { return (Thickness)this.GetValue(NativeResizeBorderThicknessProperty); }
+            set { this.SetValue(NativeResizeBorderThicknessProperty, value); }
+        }
+
+        /// <summary>Identifies the <see cref="NativeResizeBorderThickness"/> dependency property.</summary>
+        public static readonly DependencyProperty NativeResizeBorderThicknessProperty =
+            DependencyProperty.Register(nameof(NativeResizeBorderThickness), typeof(Thickness), typeof(WindowChromeBehavior), new PropertyMetadata(GetDefaultResizeBorderThickness(), OnNativeResizeBorderThicknessChanged), (value) => ((Thickness)value).IsNonNegative());
+
+        private static void OnNativeResizeBorderThicknessChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var behavior = (WindowChromeBehavior)d;
             behavior._OnChromePropertyChangedThatRequiresRepaint();

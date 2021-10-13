@@ -58,6 +58,7 @@
         {
             var behavior = new WindowChromeBehavior();
             BindingOperations.SetBinding(behavior, WindowChromeBehavior.ResizeBorderThicknessProperty, new Binding { Path = new PropertyPath(ResizeBorderThicknessProperty), Source = this });
+            BindingOperations.SetBinding(behavior, WindowChromeBehavior.NativeResizeBorderThicknessProperty, new Binding { Path = new PropertyPath(NativeResizeBorderThicknessProperty), Source = this });
             BindingOperations.SetBinding(behavior, WindowChromeBehavior.IgnoreTaskbarOnMaximizeProperty, new Binding { Path = new PropertyPath(IgnoreTaskbarOnMaximizeProperty), Source = this });
             BindingOperations.SetBinding(behavior, WindowChromeBehavior.KeepBorderOnMaximizeProperty, new Binding { Path = new PropertyPath(KeepBorderOnMaximizeProperty), Source = this });
             BindingOperations.SetBinding(behavior, WindowChromeBehavior.TryToBeFlickerFreeProperty, new Binding { Path = new PropertyPath(TryToBeFlickerFreeProperty), Source = this });
@@ -92,6 +93,15 @@
         // Using a DependencyProperty as the backing store for ResizeBorderThickness.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ResizeBorderThicknessProperty =
             DependencyProperty.Register(nameof(ResizeBorderThickness), typeof(Thickness), typeof(WindowChromeWindow), new PropertyMetadata(WindowChromeBehavior.ResizeBorderThicknessProperty.DefaultMetadata.DefaultValue));
+
+        public static readonly DependencyProperty NativeResizeBorderThicknessProperty =
+            DependencyProperty.Register(nameof(NativeResizeBorderThickness), typeof(Thickness), typeof(WindowChromeWindow), new PropertyMetadata(WindowChromeBehavior.NativeResizeBorderThicknessProperty.DefaultMetadata.DefaultValue));
+
+        public Thickness NativeResizeBorderThickness
+        {
+            get { return (Thickness)this.GetValue(NativeResizeBorderThicknessProperty); }
+            set { this.SetValue(NativeResizeBorderThicknessProperty, value); }
+        }
 
         public static readonly DependencyProperty IgnoreTaskbarOnMaximizeProperty = DependencyProperty.Register(nameof(IgnoreTaskbarOnMaximize), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(WindowChromeBehavior.IgnoreTaskbarOnMaximizeProperty.DefaultMetadata.DefaultValue));
 
