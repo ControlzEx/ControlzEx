@@ -361,6 +361,17 @@ namespace ControlzEx.Behaviors
 
                 Marshal.StructureToPtr(rc, lParam, true);
             }
+            else if (NativeMethods.GetWindowStyle(this.windowHandle).HasFlag(WS.CAPTION))
+            {
+                var rc = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT))!;
+                var dpiScale = this.AssociatedObject.GetDpi();
+                var deviceResizeBorderThickness = DpiHelper.LogicalThicknessToDevice(this.NativeResizeBorderThickness, dpiScale);
+                //rc.Top += (int)deviceResizeBorderThickness.Top; // todo: Should we really do that?
+                rc.Left += (int)deviceResizeBorderThickness.Left;
+                rc.Right -= (int)deviceResizeBorderThickness.Right;
+                rc.Bottom -= (int)deviceResizeBorderThickness.Bottom;
+                Marshal.StructureToPtr(rc, lParam, true);
+            }
             else if (this.TryToBeFlickerFree
                      && hwndState == WindowState.Normal
                      && wParam.ToInt32() != 0)
@@ -372,17 +383,6 @@ namespace ControlzEx.Behaviors
                 // Adding pixels does not seem to really increase the client area.
                 rc.Bottom += 1;
 
-                Marshal.StructureToPtr(rc, lParam, true);
-            }
-            else if (NativeMethods.GetWindowStyle(this.windowHandle).HasFlag(WS.CAPTION))
-            {
-                var rc = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT))!;
-                var dpiScale = this.AssociatedObject.GetDpi();
-                var deviceResizeBorderThickness = DpiHelper.LogicalThicknessToDevice(this.NativeResizeBorderThickness, dpiScale);
-                //rc.Top += (int)deviceResizeBorderThickness.Top; // todo: Should we really do that?
-                rc.Left += (int)deviceResizeBorderThickness.Left;
-                rc.Right -= (int)deviceResizeBorderThickness.Right;
-                rc.Bottom -= (int)deviceResizeBorderThickness.Bottom;
                 Marshal.StructureToPtr(rc, lParam, true);
             }
 
