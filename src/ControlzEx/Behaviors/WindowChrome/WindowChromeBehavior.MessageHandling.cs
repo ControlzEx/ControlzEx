@@ -22,7 +22,7 @@ namespace ControlzEx.Behaviors
 
         private const SWP SwpFlags = SWP.FRAMECHANGED | SWP.NOSIZE | SWP.NOMOVE | SWP.NOZORDER | SWP.NOOWNERZORDER | SWP.NOACTIVATE;
 
-        private readonly Thickness nativeResizeBorderThickness = new(6);
+        private readonly Thickness nativeResizeBorderThickness = new(8);
 
         private WindowState lastMenuState;
         private WINDOWPOS lastWindowpos;
@@ -488,19 +488,19 @@ namespace ControlzEx.Behaviors
             var dpi = this.AssociatedObject.GetDpi();
 
             // Let the system know if we consider the mouse to be in our effective non-client area.
-            var mousePosScreen = Utility.GetPoint(lParam); //new Point(Utility.GET_X_LPARAM(lParam), Utility.GET_Y_LPARAM(lParam));
-            var windowPosition = this._GetWindowRect();
+            var mousePosScreen = Utility.GetPoint(lParam);
+            var windowRect = this._GetWindowRect();
 
-            var mousePosWindow = mousePosScreen;
-            mousePosWindow.Offset(-windowPosition.X, -windowPosition.Y);
-            mousePosWindow = DpiHelper.DevicePixelsToLogical(mousePosWindow, dpi.DpiScaleX, dpi.DpiScaleY);
-
-            var ht = this._HitTestNca(DpiHelper.DeviceRectToLogical(windowPosition, dpi.DpiScaleX, dpi.DpiScaleY),
+            var ht = this._HitTestNca(DpiHelper.DeviceRectToLogical(windowRect, dpi.DpiScaleX, dpi.DpiScaleY),
                                       DpiHelper.DevicePixelsToLogical(mousePosScreen, dpi.DpiScaleX, dpi.DpiScaleY));
 
             if (ht != HT.CLIENT
                 || this.AssociatedObject.ResizeMode == ResizeMode.CanResizeWithGrip)
             {
+                var mousePosWindow = mousePosScreen;
+                mousePosWindow.Offset(-windowRect.X, -windowRect.Y);
+                mousePosWindow = DpiHelper.DevicePixelsToLogical(mousePosWindow, dpi.DpiScaleX, dpi.DpiScaleY);
+
                 // If the app is asking for content to be treated as client then that takes precedence over _everything_, even DWM caption buttons.
                 // This allows apps to set the glass frame to be non-empty, still cover it with WPF content to hide all the glass,
                 // yet still get DWM to draw a drop shadow.
@@ -1029,7 +1029,7 @@ namespace ControlzEx.Behaviors
                                                             { HT.BOTTOMLEFT, HT.BOTTOM,  HT.BOTTOMRIGHT },
                                                        };
 
-        private HT _HitTestNca(Rect windowPosition, Point mousePosition)
+        private HT _HitTestNca(Rect windowRect, Point mousePosition)
         {
             // Determine if hit test is for resizing, default middle (1,1).
             var uRow = 1;
@@ -1040,26 +1040,26 @@ namespace ControlzEx.Behaviors
             var resizeBorderThickness = this.ResizeBorderThickness;
 
             // Determine if the point is at the top or bottom of the window.
-            if (mousePosition.Y >= windowPosition.Top
-                && mousePosition.Y < windowPosition.Top + resizeBorderThickness.Top)
+            if (mousePosition.Y >= windowRect.Top
+                && mousePosition.Y < windowRect.Top + (resizeBorderThickness.Top * 2))
             {
-                onResizeBorder = mousePosition.Y < (windowPosition.Top + resizeBorderThickness.Top);
+                onResizeBorder = mousePosition.Y < (windowRect.Top + resizeBorderThickness.Top);
                 uRow = 0; // top (caption or resize border)
             }
-            else if (mousePosition.Y < windowPosition.Bottom
-                     && mousePosition.Y >= windowPosition.Bottom - (int)resizeBorderThickness.Bottom)
+            else if (mousePosition.Y < windowRect.Bottom
+                     && mousePosition.Y >= windowRect.Bottom - ((int)resizeBorderThickness.Bottom * 2))
             {
                 uRow = 2; // bottom
             }
 
             // Determine if the point is at the left or right of the window.
-            if (mousePosition.X >= windowPosition.Left
-                && mousePosition.X < windowPosition.Left + (int)resizeBorderThickness.Left)
+            if (mousePosition.X >= windowRect.Left
+                && mousePosition.X < windowRect.Left + ((int)resizeBorderThickness.Left * 2))
             {
                 uCol = 0; // left side
             }
-            else if (mousePosition.X < windowPosition.Right
-                     && mousePosition.X >= windowPosition.Right - resizeBorderThickness.Right)
+            else if (mousePosition.X < windowRect.Right
+                     && mousePosition.X >= windowRect.Right - (resizeBorderThickness.Right * 2))
             {
                 uCol = 2; // right side
             }
