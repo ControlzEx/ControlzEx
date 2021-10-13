@@ -1,4 +1,4 @@
-<Application x:Class="ControlzEx.Showcase.App"
+﻿<Application x:Class="ControlzEx.Showcase.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:ControlzEx.Showcase"
@@ -23,6 +23,7 @@
             
             <Style x:Key="{x:Type local:WindowChromeWindow}" TargetType="{x:Type local:WindowChromeWindow}">
                 <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="BorderBrush" Value="Black" />
                 <Setter Property="NCActiveBrush" Value="{Binding Background, RelativeSource={RelativeSource Self}}" />
                 <Setter Property="NCCurrentBrush" Value="{Binding NCActiveBrush, RelativeSource={RelativeSource Self}}" />
                 <Setter Property="NCNonActiveBrush" Value="{Binding Source={x:Static SystemColors.WindowFrameBrush}}" />
@@ -39,6 +40,7 @@
                                         HorizontalAlignment="Stretch"
                                         VerticalAlignment="Stretch"
                                         Background="{x:Null}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
                                         BorderThickness="{TemplateBinding BorderThickness}"
                                         UseLayoutRounding="True" />
 
@@ -60,9 +62,6 @@
                                 <!--  handle active/inactive state  -->
                                 <Trigger Property="IsActive" Value="False">
                                     <Setter TargetName="PART_Border" Property="BorderBrush" Value="{Binding Path=NonActiveGlowBrush, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" />
-                                </Trigger>
-                                <Trigger SourceName="PART_Border" Property="BorderBrush" Value="{x:Null}">
-                                    <Setter TargetName="PART_Border2" Property="BorderBrush" Value="Black" />
                                 </Trigger>
                                 <MultiTrigger>
                                     <MultiTrigger.Conditions>
