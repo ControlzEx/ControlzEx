@@ -4,15 +4,17 @@
 namespace ControlzEx.Behaviors
 {
     using System;
-
+    using System.Drawing;
+    using System.Drawing.Drawing2D;
     using System.Runtime.InteropServices;
     using System.Security;
     using System.Windows;
     using System.Windows.Data;
-    using ControlzEx.Native;
     using ControlzEx.Standard;
     using ControlzEx.Windows.Shell;
     using HANDLE_MESSAGE = System.Collections.Generic.KeyValuePair<ControlzEx.Standard.WM, ControlzEx.Standard.MessageHandler>;
+    using Point = System.Windows.Point;
+    using Size = System.Drawing.Size;
 
     public partial class WindowChromeBehavior
     {
@@ -20,12 +22,11 @@ namespace ControlzEx.Behaviors
 
         private const SWP SwpFlags = SWP.FRAMECHANGED | SWP.NOSIZE | SWP.NOMOVE | SWP.NOZORDER | SWP.NOOWNERZORDER | SWP.NOACTIVATE;
 
-        // Keep track of this so we can detect when we need to apply changes.  Tracking these separately
-        // as I've seen using just one cause things to get enough out of [....] that occasionally the caption will redraw.
-        private WindowState lastRegionWindowState;
-        private WindowState lastMenuState;
+        private readonly Thickness nativeResizeBorderThickness = new(6);
 
-        private WINDOWPOS previousWp;
+        private WindowState lastMenuState;
+        private WINDOWPOS lastWindowpos;
+
 #pragma warning disable 414
         private bool isDragging;
 #pragma warning restore 414
@@ -70,7 +71,7 @@ namespace ControlzEx.Behaviors
         [SecuritySafeCritical]
         private void _OnChromePropertyChangedThatRequiresRepaint()
         {
-            this._UpdateFrameState(true);
+            this.ForceNativeWindowRedraw();
         }
 
         /// <SecurityNote>
@@ -91,7 +92,7 @@ namespace ControlzEx.Behaviors
             this._UpdateSystemMenu(this.AssociatedObject.WindowState);
             this.UpdateMinimizeSystemMenu(this.EnableMinimize);
             this.UpdateMaxRestoreSystemMenu(this.EnableMaxRestore);
-            this._UpdateFrameState(true);
+            this.UpdateWindowStyle();
 
             if (this.hwndSource.IsDisposed)
             {
@@ -99,10 +100,6 @@ namespace ControlzEx.Behaviors
                 this.Cleanup(true);
             }
         }
-
-        // A borderless window lost his animation, with this we bring it back.
-        private bool MinimizeAnimation => SystemParameters.MinimizeAnimation
-                                          && NativeMethods.DwmIsCompositionEnabled();
 
         #region WindowProc and Message Handlers
 
@@ -124,7 +121,7 @@ namespace ControlzEx.Behaviors
 
             var message = (WM)msg;
 
-            //Trace.WriteLine(message);
+            //System.Diagnostics.Trace.WriteLine(message);
 
             switch (message)
             {
@@ -151,24 +148,23 @@ namespace ControlzEx.Behaviors
                     return this._HandleWINDOWPOSCHANGING(message, wParam, lParam, out handled);
                 case WM.WINDOWPOSCHANGED:
                     return this._HandleWINDOWPOSCHANGED(message, wParam, lParam, out handled);
-                case WM.GETMINMAXINFO:
-                    return this._HandleGETMINMAXINFO(message, wParam, lParam, out handled);
-                case WM.DWMCOMPOSITIONCHANGED:
-                    return this._HandleDWMCOMPOSITIONCHANGED(message, wParam, lParam, out handled);
+                // case WM.GETMINMAXINFO:
+                //     return this._HandleGETMINMAXINFO(message, wParam, lParam, out handled);
                 case WM.ENTERSIZEMOVE:
                     this.isDragging = true;
                     break;
                 case WM.EXITSIZEMOVE:
                     this.isDragging = false;
                     break;
-                case WM.MOVE:
-                    return this._HandleMOVEForRealSize(message, wParam, lParam, out handled);
+                // case WM.MOVE:
+                //     return this._HandleMOVEForRealSize(message, wParam, lParam, out handled);
                 case WM.DPICHANGED:
                     return this._HandleDPICHANGED(message, wParam, lParam, out handled);
                 case WM.STYLECHANGING:
                     return this._HandleStyleChanging(message, wParam, lParam, out handled);
                 case WM.DESTROY:
                     return this._HandleDestroy(message, wParam, lParam, out handled);
+
                 case WM.NCMOUSEMOVE:
                     return this._HandleNCMOUSEMOVE(message, wParam, lParam, out handled);
                 case WM.NCLBUTTONDOWN:
@@ -178,7 +174,6 @@ namespace ControlzEx.Behaviors
                 case WM.NCRBUTTONDOWN:
                 case WM.NCRBUTTONDBLCLK:
                     return this._HandleNCRBUTTONMessages(message, wParam, lParam, out handled);
-
                 case WM.MOUSEMOVE:
                     return this._HandleMOUSEMOVE(message, wParam, lParam, out handled);
                 case WM.NCMOUSELEAVE:
@@ -215,11 +210,9 @@ namespace ControlzEx.Behaviors
                 handled = true;
                 return lRet;
             }
-            else
-            {
-                handled = false;
-                return IntPtr.Zero;
-            }
+
+            handled = false;
+            return IntPtr.Zero;
         }
 
         private IntPtr _HandleSETICONOrSETTEXT(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
@@ -327,6 +320,10 @@ namespace ControlzEx.Behaviors
             // Since the first field of NCCALCSIZE_PARAMS is a RECT and is the only field we care about
             // we can unconditionally treat it as a RECT.
 
+            // We have to get the monitor preferably from the window position as the info for the window handle might not yet be updated.
+            // As we update lastWindowpos in WINDOWPOSCHANGING we have the right "future" position and thus can get the correct monitor from that.
+            var monitor = MonitorHelper.MonitorFromWindowPosOrWindow(this.lastWindowpos, this.windowHandle);
+
             if (this.dpiChanged)
             {
                 this.dpiChanged = false;
@@ -334,14 +331,17 @@ namespace ControlzEx.Behaviors
                 return IntPtr.Zero;
             }
 
-            if (this._GetHwndState() == WindowState.Maximized)
+            handled = true;
+
+            var hwndState = this._GetHwndState();
+
+            if (hwndState == WindowState.Maximized)
             {
                 NativeMethods.DefWindowProc(this.windowHandle, uMsg, wParam, lParam);
 
                 var rc = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT))!;
                 rc.Top -= (int)Math.Ceiling(DpiHelper.TransformToDeviceY(SystemParameters.CaptionHeight + 1D, this.AssociatedObject.GetDpi().PixelsPerInchY));
 
-                var monitor = NativeMethods.MonitorFromWindow(this.windowHandle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
                 var monitorInfo = NativeMethods.GetMonitorInfo(monitor);
 
                 var monitorRect = this.IgnoreTaskbarOnMaximize
@@ -364,7 +364,7 @@ namespace ControlzEx.Behaviors
                 Marshal.StructureToPtr(rc, lParam, true);
             }
             else if (this.TryToBeFlickerFree
-                     && this._GetHwndState() == WindowState.Normal
+                     && hwndState == WindowState.Normal
                      && wParam.ToInt32() != 0)
             {
                 var rc = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT))!;
@@ -376,20 +376,20 @@ namespace ControlzEx.Behaviors
 
                 Marshal.StructureToPtr(rc, lParam, true);
             }
-
-            // else
-            // {
-            //     var rc = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT))!;
-            //     rc.Left += (int)this.ResizeBorderThickness.Left;
-            //     rc.Right -= (int)this.ResizeBorderThickness.Right;
-            //     rc.Bottom -= (int)this.ResizeBorderThickness.Bottom;
-            //     Marshal.StructureToPtr(rc, lParam, true);
-            // }
-
-            handled = true;
+            else
+            {
+                var rc = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT))!;
+                var dpiScale = this.AssociatedObject.GetDpi();
+                var deviceResizeBorderThickness = DpiHelper.LogicalThicknessToDevice(this.nativeResizeBorderThickness, dpiScale);
+                //rc.Top += (int)deviceResizeBorderThickness.Top; // todo: Should we really do that?
+                rc.Left += (int)deviceResizeBorderThickness.Left;
+                rc.Right -= (int)deviceResizeBorderThickness.Right;
+                rc.Bottom -= (int)deviceResizeBorderThickness.Bottom;
+                Marshal.StructureToPtr(rc, lParam, true);
+            }
 
             // Per MSDN for NCCALCSIZE, always return 0 when wParam == FALSE
-            // 
+            //
             // Returning 0 when wParam == TRUE is not appropriate - it will preserve
             // the old client area and align it with the upper-left corner of the new
             // client area. So we simply ask for a redraw (WVR_REDRAW)
@@ -441,8 +441,26 @@ namespace ControlzEx.Behaviors
         [SecurityCritical]
         private IntPtr _HandleNCPAINT(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
-            handled = false;
+            // var regionHandle = wParam == new IntPtr(1)
+            //     ? IntPtr.Zero
+            //     : wParam;
+            // // if (wParam != IntPtr.Zero
+            // //     && wParam != new IntPtr(1))
+            // {
+            //     using (var dcEx = SafeDC.GetDCEx(this.windowHandle, regionHandle, SafeDC.DeviceContextValues.Window | SafeDC.DeviceContextValues.IntersectRgn | SafeDC.DeviceContextValues.UseStyle))
+            //     {
+            //         using (Graphics g = Graphics.FromHdc(dcEx.DangerousGetHandle()))
+            //         {
+            //             //g.Clear(Color.Transparent);
+            //             g.FillRectangle(new LinearGradientBrush(new System.Drawing.Point(0, 0), new System.Drawing.Point(800, 600), Color.Transparent, Color.Red), new Rectangle(new System.Drawing.Point(0, 0), new Size(800, 600)));
+            //             //g.FillRectangle();
+            //         }
+            //     }
+            // }
+            //
+            // handled = true;
 
+            handled = false;
             return IntPtr.Zero;
         }
 
@@ -558,7 +576,12 @@ namespace ControlzEx.Behaviors
         private IntPtr _HandleWINDOWPOSCHANGING(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
             Assert.IsNotDefault(lParam);
+
+            this.UpdateWindowStyle();
+
             var windowpos = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS))!;
+
+            this.lastWindowpos = windowpos;
 
             // we don't do bitwise operations cuz we're checking for this flag being the only one there
             // I have no clue why this works, I tried this because VS2013 has this flag removed on fullscreen window moves
@@ -568,6 +591,8 @@ namespace ControlzEx.Behaviors
             {
                 windowpos.flags = 0;
                 Marshal.StructureToPtr(windowpos, lParam, true);
+
+                this.lastWindowpos = windowpos;
 
                 handled = true;
                 return IntPtr.Zero;
@@ -596,12 +621,14 @@ namespace ControlzEx.Behaviors
 
                 var finalRect = this.isDragging
                     ? rect
-                    : MonitorHelper.GetOnScreenPosition(rect, this.IgnoreTaskbarOnMaximize);
+                    : MonitorHelper.GetOnScreenPosition(rect, this.windowHandle, this.IgnoreTaskbarOnMaximize);
                 windowpos.x = (int)finalRect.X;
                 windowpos.y = (int)finalRect.Y;
                 windowpos.cx = (int)finalRect.Width;
                 windowpos.cy = (int)finalRect.Height;
                 Marshal.StructureToPtr(windowpos, lParam, fDeleteOld: true);
+
+                this.lastWindowpos = windowpos;
             }
 
             handled = false;
@@ -621,24 +648,9 @@ namespace ControlzEx.Behaviors
             // suffer from the same limitations as WM_SHOWWINDOW, so you can
             // reliably use it to react to the window being shown or hidden.
 
-            this._UpdateSystemMenu(null);
-
             Assert.IsNotDefault(lParam);
-            var wp = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS))!;
 
-            if (wp.Equals(this.previousWp) == false)
-            {
-                this.previousWp = wp;
-                this._SetRegion(wp);
-            }
-
-            this.previousWp = wp;
-
-            //                if (wp.Equals(_previousWP) && wp.flags.Equals(_previousWP.flags))
-            //                {
-            //                    handled = true;
-            //                    return IntPtr.Zero;
-            //                }
+            this._UpdateSystemMenu(null);
 
             // Still want to pass this to DefWndProc
             handled = false;
@@ -663,6 +675,7 @@ namespace ControlzEx.Behaviors
                 && NativeMethods.IsZoomed(this.windowHandle))
             {
                 var mmi = (MINMAXINFO)Marshal.PtrToStructure(lParam, typeof(MINMAXINFO))!;
+
                 var monitor = NativeMethods.MonitorFromWindow(this.windowHandle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
                 if (monitor != IntPtr.Zero)
                 {
@@ -686,18 +699,6 @@ namespace ControlzEx.Behaviors
              * as mentioned by jason.bullard (comment from September 22, 2011) on http://gallery.expression.microsoft.com/ZuneWindowBehavior/ */
             handled = false;
 
-            return IntPtr.Zero;
-        }
-
-        /// <SecurityNote>
-        ///   Critical : Calls critical methods
-        /// </SecurityNote>
-        [SecurityCritical]
-        private IntPtr _HandleDWMCOMPOSITIONCHANGED(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
-        {
-            this._UpdateFrameState(false);
-
-            handled = false;
             return IntPtr.Zero;
         }
 
@@ -800,7 +801,8 @@ namespace ControlzEx.Behaviors
             var structure = Marshal.PtrToStructure<STYLESTRUCT>(lParam);
             if ((GWL)wParam.ToInt64() == GWL.STYLE)
             {
-                if (this.IgnoreTaskbarOnMaximize)
+                if (this.IgnoreTaskbarOnMaximize
+                    && this._GetHwndState() == WindowState.Maximized)
                 {
                     structure.styleNew |= (int)(WS.OVERLAPPED | WS.SYSMENU | WS.THICKFRAME);
                     structure.styleNew &= ~(int)WS.CAPTION;
@@ -992,167 +994,29 @@ namespace ControlzEx.Behaviors
                     return;
                 }
 
-                if (this.IgnoreTaskbarOnMaximize)
-                {
-                    this._ModifyStyle(WS.CAPTION, 0);
-                }
-                else
-                {
-                    this._ModifyStyle(0, WS.CAPTION);
-                }
+                // This fixes both the flickering and the annoying rounded corners (meaning the rounded corners from the pre Windows 11 era).
+                //NativeMethods.SetWindowTheme(this.windowHandle, " ", " ");
+
+                this.UpdateWindowStyle();
 
                 //if (this.AssociatedObject.IsLoaded)
                 {
-                    NativeMethods.SetWindowPos(this.windowHandle, IntPtr.Zero, 0, 0, 0, 0, SwpFlags);
+                    // NativeMethods.SetWindowPos(this.windowHandle, IntPtr.Zero, 0, 0, 0, 0, SwpFlags);
                 }
             }
         }
 
-        /// <SecurityNote>
-        ///   Critical : Calls critical methods
-        /// </SecurityNote>
-        [SecurityCritical]
-        private void _ClearRegion()
+        private void UpdateWindowStyle()
         {
-            NativeMethods.SetWindowRgn(this.windowHandle, IntPtr.Zero, NativeMethods.IsWindowVisible(this.windowHandle));
-        }
-
-        /// <SecurityNote>
-        ///   Critical : Calls critical methods
-        /// </SecurityNote>
-        [SecurityCritical]
-        private RECT _GetClientRectRelativeToWindowRect(IntPtr hWnd)
-        {
-            var windowRect = NativeMethods.GetWindowRect(hWnd);
-            var clientRect = NativeMethods.GetClientRect(hWnd);
-
-            var test = new POINT { X = 0, Y = 0 };
-            NativeMethods.ClientToScreen(hWnd, ref test);
-            if (this.AssociatedObject.FlowDirection == FlowDirection.RightToLeft)
+            if (this.IgnoreTaskbarOnMaximize
+                && this._GetHwndState() == WindowState.Maximized)
             {
-                clientRect.Offset(windowRect.Right - test.X, test.Y - windowRect.Top);
+                this._ModifyStyle(WS.CAPTION, 0);
             }
             else
             {
-                clientRect.Offset(test.X - windowRect.Left, test.Y - windowRect.Top);
+                this._ModifyStyle(0, WS.CAPTION);
             }
-
-            return clientRect;
-        }
-
-        /// <SecurityNote>
-        ///   Critical : Calls critical methods
-        /// </SecurityNote>
-        [SecurityCritical]
-        private void _SetRegion(WINDOWPOS? wp)
-        {
-            // We're early - WPF hasn't necessarily updated the state of the window.
-            // Need to query it ourselves.
-            var wpl = NativeMethods.GetWindowPlacement(this.windowHandle);
-
-            if (wpl.showCmd == SW.SHOWMAXIMIZED)
-            {
-                RECT rcMax;
-                if (this.MinimizeAnimation)
-                {
-                    rcMax = this._GetClientRectRelativeToWindowRect(this.windowHandle);
-                }
-                else
-                {
-                    int left;
-                    int top;
-
-                    if (wp.HasValue)
-                    {
-                        left = wp.Value.x;
-                        top = wp.Value.y;
-                    }
-                    else
-                    {
-                        var r = this._GetWindowRect();
-                        left = (int)r.Left;
-                        top = (int)r.Top;
-                    }
-
-                    var hMon = NativeMethods.MonitorFromWindow(this.windowHandle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
-
-                    var mi = NativeMethods.GetMonitorInfo(hMon);
-                    rcMax = this.IgnoreTaskbarOnMaximize
-                        ? mi.rcMonitor
-                        : mi.rcWork;
-                    // The location of maximized window takes into account the border that Windows was
-                    // going to remove, so we also need to consider it.
-                    rcMax.Offset(-left, -top);
-                }
-
-                var hrgn = IntPtr.Zero;
-                try
-                {
-                    hrgn = NativeMethods.CreateRectRgnIndirect(rcMax);
-                    NativeMethods.SetWindowRgn(this.windowHandle, hrgn, NativeMethods.IsWindowVisible(this.windowHandle));
-                    hrgn = IntPtr.Zero;
-                }
-                finally
-                {
-                    Utility.SafeDeleteObject(ref hrgn);
-                }
-            }
-            else
-            {
-                //this._ClearRegion();
-
-                Size windowSize;
-
-                // Use the size if it's specified.
-                if (wp is not null && !Utility.IsFlagSet((int)wp.Value.flags, (int)SWP.NOSIZE) && wp.Value.cx >= 0 && wp.Value.cy >= 0)
-                {
-                    windowSize = new Size(wp.Value.cx, wp.Value.cy);
-                }
-                else if (wp is not null && (this.lastRegionWindowState == this.AssociatedObject.WindowState))
-                {
-                    return;
-                }
-                else
-                {
-                    windowSize = this._GetWindowRect().Size;
-                }
-
-                var windowStateChanged = this.lastRegionWindowState != this.AssociatedObject.WindowState;
-                this.lastRegionWindowState = this.AssociatedObject.WindowState;
-
-                var hrgn = IntPtr.Zero;
-                try
-                {
-                    if (windowStateChanged)
-                    {
-                        hrgn = _CreateRectRgn(new Rect(windowSize));
-                    }
-
-                    NativeMethods.SetWindowRgn(this.windowHandle, hrgn, NativeMethods.IsWindowVisible(this.windowHandle));
-                    // After a successful call to SetWindowRgn, the system owns the region specified by the region handle hRgn.
-                    // The system does not make a copy of the region. Thus, you should not make any further function calls with this region handle.
-                    // In particular, do not delete this region handle. The system deletes the region handle when it no longer needed.
-                    hrgn = IntPtr.Zero;
-                }
-                finally
-                {
-                    // Free the memory associated with the HRGN if it wasn't assigned to the HWND.
-                    Utility.SafeDeleteObject(ref hrgn);
-                }
-            }
-        }
-
-        /// <SecurityNote>
-        ///   Critical : Calls critical methods
-        /// </SecurityNote>
-        [SecurityCritical]
-        private static IntPtr _CreateRectRgn(Rect region)
-        {
-            return NativeMethods.CreateRectRgn(
-                (int)Math.Floor(region.Left),
-                (int)Math.Floor(region.Top),
-                (int)Math.Ceiling(region.Right),
-                (int)Math.Ceiling(region.Bottom));
         }
 
         /// <summary>
@@ -1238,19 +1102,7 @@ namespace ControlzEx.Behaviors
                 return;
             }
 
-            this._RestoreHrgn();
-
             this.AssociatedObject.InvalidateMeasure();
-        }
-
-        /// <SecurityNote>
-        ///   Critical : Calls critical methods
-        /// </SecurityNote>
-        [SecurityCritical]
-        private void _RestoreHrgn()
-        {
-            this._ClearRegion();
-            NativeMethods.SetWindowPos(this.windowHandle, IntPtr.Zero, 0, 0, 0, 0, SwpFlags);
         }
 
         #endregion

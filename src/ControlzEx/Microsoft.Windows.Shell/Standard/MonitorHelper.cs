@@ -7,53 +7,62 @@ namespace ControlzEx.Standard
 
     internal static class MonitorHelper
     {
-        public static Rect GetOnScreenPosition(Rect rect, bool ignoreTaskbar)
+        public static Rect GetOnScreenPosition(Rect rect, IntPtr windowHandle, bool ignoreTaskbar)
         {
-            FindMaximumSingleMonitorRectangle(rect, out var screenSubRect, out var monitorRect);
+            FindMaximumSingleMonitorRectangle(rect, out var screenSubRect, out var _);
 
-            if (screenSubRect.Width == 0.0
-                || screenSubRect.Height == 0.0)
+            if (screenSubRect.Width.AreClose(0) == false
+                && screenSubRect.Height.AreClose(0) == false)
             {
-                if (TryGetMonitorInfoFromPoint(out var monitorInfo))
-                {
-                    var workAreaRect = ignoreTaskbar ? monitorInfo.rcMonitor : monitorInfo.rcWork;
+                return rect;
+            }
 
-                    if (rect.Width > workAreaRect.Width)
-                    {
-                        rect.Width = workAreaRect.Width;
-                    }
+            var monitor = MonitorFromRectOrWindow(new RECT(rect), windowHandle);
+            if (monitor == IntPtr.Zero)
+            {
+                return rect;
+            }
 
-                    if (rect.Height > workAreaRect.Height)
-                    {
-                        rect.Height = workAreaRect.Height;
-                    }
+            var monitorInfo = NativeMethods.GetMonitorInfo(monitor);
 
-                    if (rect.Right > workAreaRect.Right)
-                    {
-                        rect.X = workAreaRect.Right - rect.Width;
-                    }
+            var workAreaRect = ignoreTaskbar
+                ? monitorInfo.rcMonitor
+                : monitorInfo.rcWork;
 
-                    if (rect.Left < workAreaRect.Left)
-                    {
-                        rect.X = workAreaRect.Left;
-                    }
+            if (rect.Width > workAreaRect.Width)
+            {
+                rect.Width = workAreaRect.Width;
+            }
 
-                    if (rect.Bottom > workAreaRect.Bottom)
-                    {
-                        rect.Y = workAreaRect.Bottom - rect.Height;
-                    }
+            if (rect.Height > workAreaRect.Height)
+            {
+                rect.Height = workAreaRect.Height;
+            }
 
-                    if (rect.Top < workAreaRect.Top)
-                    {
-                        rect.Y = workAreaRect.Top;
-                    }
-                }
+            if (rect.Right > workAreaRect.Right)
+            {
+                rect.X = workAreaRect.Right - rect.Width;
+            }
+
+            if (rect.Left < workAreaRect.Left)
+            {
+                rect.X = workAreaRect.Left;
+            }
+
+            if (rect.Bottom > workAreaRect.Bottom)
+            {
+                rect.Y = workAreaRect.Bottom - rect.Height;
+            }
+
+            if (rect.Top < workAreaRect.Top)
+            {
+                rect.Y = workAreaRect.Top;
             }
 
             return rect;
         }
 
-        internal static void FindMaximumSingleMonitorRectangle(Rect windowRect, out Rect screenSubRect, out Rect monitorRect)
+        private static void FindMaximumSingleMonitorRectangle(Rect windowRect, out Rect screenSubRect, out Rect monitorRect)
         {
             var windowRect2 = new RECT(windowRect);
             FindMaximumSingleMonitorRectangle(windowRect2, out var screenSubRect2, out var monitorRect2);
@@ -61,7 +70,7 @@ namespace ControlzEx.Standard
             monitorRect = new Rect(monitorRect2.Position, monitorRect2.Size);
         }
 
-        internal static void FindMaximumSingleMonitorRectangle(RECT windowRect, out RECT screenSubRect, out RECT monitorRect)
+        private static void FindMaximumSingleMonitorRectangle(RECT windowRect, out RECT screenSubRect, out RECT monitorRect)
         {
             var rect = new RECT
             {
@@ -94,25 +103,32 @@ namespace ControlzEx.Standard
             }
         }
 
+        public static IntPtr MonitorFromWindowPosOrWindow(WINDOWPOS windowpos, IntPtr hwnd)
+        {
+            var windowRect = new RECT(windowpos);
+
+            return MonitorFromRectOrWindow(windowRect, hwnd);
+        }
+
+        public static IntPtr MonitorFromRectOrWindow(RECT windowRect, IntPtr hwnd)
+        {
+            var monitorFromWindow = NativeMethods.MonitorFromWindow(hwnd, MonitorOptions.MONITOR_DEFAULTTONEAREST);
+
+            if (windowRect.IsEmpty)
+            {
+                return monitorFromWindow;
+            }
+
+            var monitorFromRect = NativeMethods.MonitorFromRect(ref windowRect, MonitorOptions.MONITOR_DEFAULTTONEAREST);
+
+            return monitorFromRect;
+        }
+
         public static MONITORINFO MonitorInfoFromWindow(IntPtr hWnd)
         {
             var hMonitor = NativeMethods.MonitorFromWindow(hWnd, MonitorOptions.MONITOR_DEFAULTTONEAREST);
             var monitorInfo = NativeMethods.GetMonitorInfo(hMonitor);
             return monitorInfo;
-        }
-
-        /// <summary>
-        /// Gets the monitor information from the current cursor position.
-        /// </summary>
-        /// <returns>The monitor information.</returns>
-        public static MONITORINFO GetMonitorInfoFromPoint()
-        {
-            if (TryGetMonitorInfoFromPoint(out var mi))
-            {
-                return mi;
-            }
-
-            return default;
         }
 
         /// <summary>
