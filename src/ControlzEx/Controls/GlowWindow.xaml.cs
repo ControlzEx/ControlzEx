@@ -234,6 +234,7 @@ namespace ControlzEx.Controls
                     break;
             }
 
+            glowWindow.lastUpdateCoreRect = RECT.Empty;
             glowWindow.Update();
         }
 

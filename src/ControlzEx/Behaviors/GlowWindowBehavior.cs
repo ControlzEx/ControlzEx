@@ -79,7 +79,13 @@
         /// <summary>
         /// <see cref="DependencyProperty"/> for <see cref="ResizeBorderThickness"/>.
         /// </summary>
-        public static readonly DependencyProperty ResizeBorderThicknessProperty = DependencyProperty.Register(nameof(ResizeBorderThickness), typeof(Thickness), typeof(GlowWindowBehavior), new PropertyMetadata(default(Thickness)));
+        public static readonly DependencyProperty ResizeBorderThicknessProperty = DependencyProperty.Register(nameof(ResizeBorderThickness), typeof(Thickness), typeof(GlowWindowBehavior), new PropertyMetadata(default(Thickness), OnResizeBorderThicknessChanged));
+
+        private static void OnResizeBorderThicknessChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var behavior = (GlowWindowBehavior)d;
+            behavior.UpdateCore();
+        }
 
         /// <summary>
         /// Gets or sets resize border thickness.
@@ -464,6 +470,11 @@
 #pragma warning disable 618
         private void UpdateCore()
         {
+            if (this.AssociatedObject is null)
+            {
+                return;
+            }
+
             if ((this.IsActiveGlowDisabled && this.AssociatedObject.IsActive)
                 || (this.IsNoneActiveGlowDisabled && this.AssociatedObject.IsActive == false)
                 || WindowHelper.IsWindowHandleValid(this.windowHandle) == false
