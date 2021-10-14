@@ -18,7 +18,6 @@
                           FlowDirection="LeftToRight"
                           GlowBrush="Navy"
                           NonActiveGlowBrush="Crimson"
-                          BorderBrush="{x:Null}"
                           Style="{StaticResource {x:Type local:WindowChromeWindow}}"
                           WindowStartupLocation="CenterScreen"
                           WindowState="Normal"
@@ -403,13 +402,20 @@
                                     <CheckBox Margin="4"
                                               VerticalAlignment="Center"
                                               IsChecked="{Binding ElementName=Window, Path=TryToBeFlickerFree, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                    
+
                                     <Label>
                                         Topmost
                                     </Label>
                                     <CheckBox Margin="4"
                                               VerticalAlignment="Center"
                                               IsChecked="{Binding ElementName=Window, Path=Topmost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <Label>
+                                        ShowInTaskbar
+                                    </Label>
+                                    <CheckBox Margin="4"
+                                              VerticalAlignment="Center"
+                                              IsChecked="{Binding ElementName=Window, Path=ShowInTaskbar, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                                     <Label>
                                         IsActive
