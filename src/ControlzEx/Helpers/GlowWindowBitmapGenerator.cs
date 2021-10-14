@@ -94,7 +94,7 @@ namespace ControlzEx.Helpers
                 case GlowBitmapPart.TopRight:
                 case GlowBitmapPart.BottomLeft:
                 case GlowBitmapPart.BottomRight:
-                    return new Size(6, glowDepth);
+                    return new Size(Math.Min(glowDepth, 6), glowDepth);
 
                 case GlowBitmapPart.Left:
                 case GlowBitmapPart.Right:
@@ -104,7 +104,7 @@ namespace ControlzEx.Helpers
                 case GlowBitmapPart.LeftBottom:
                 case GlowBitmapPart.RightTop:
                 case GlowBitmapPart.RightBottom:
-                    return new Size(glowDepth, 6);
+                    return new Size(glowDepth, Math.Min(glowDepth, 6));
 
                 default:
                     throw new ArgumentOutOfRangeException(nameof(part), part, null);
