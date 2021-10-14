@@ -23,7 +23,7 @@
             
             <Style x:Key="{x:Type local:WindowChromeWindow}" TargetType="{x:Type local:WindowChromeWindow}">
                 <Setter Property="BorderThickness" Value="1" />
-                <Setter Property="BorderBrush" Value="Black" />
+                <Setter Property="BorderBrush" Value="{x:Null}" />
                 <Setter Property="NCActiveBrush" Value="{Binding Background, RelativeSource={RelativeSource Self}}" />
                 <Setter Property="NCCurrentBrush" Value="{Binding NCActiveBrush, RelativeSource={RelativeSource Self}}" />
                 <Setter Property="NCNonActiveBrush" Value="{Binding Source={x:Static SystemColors.WindowFrameBrush}}" />
@@ -35,19 +35,11 @@
                                     <ContentPresenter />
                                 </AdornerDecorator>
 
-                                <Border x:Name="PART_Border2"
-                                        HorizontalAlignment="Stretch"
-                                        VerticalAlignment="Stretch"
-                                        Background="{x:Null}"
-                                        BorderBrush="{TemplateBinding BorderBrush}"
-                                        BorderThickness="{TemplateBinding BorderThickness}"
-                                        UseLayoutRounding="True" />
-
                                 <Border x:Name="PART_Border"
                                         HorizontalAlignment="Stretch"
                                         VerticalAlignment="Stretch"
                                         Background="{x:Null}"
-                                        BorderBrush="{TemplateBinding GlowBrush}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
                                         BorderThickness="{TemplateBinding BorderThickness}"
                                         UseLayoutRounding="True" />
 
@@ -58,10 +50,6 @@
                                             Visibility="Collapsed" />
                             </Grid>
                             <ControlTemplate.Triggers>
-                                <!--  handle active/inactive state  -->
-                                <Trigger Property="IsActive" Value="False">
-                                    <Setter TargetName="PART_Border" Property="BorderBrush" Value="{Binding Path=NonActiveGlowBrush, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" />
-                                </Trigger>
                                 <MultiTrigger>
                                     <MultiTrigger.Conditions>
                                         <Condition Property="Window.ResizeMode" Value="CanResizeWithGrip" />
