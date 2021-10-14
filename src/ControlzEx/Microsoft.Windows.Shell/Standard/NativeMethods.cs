@@ -2371,8 +2371,8 @@ namespace ControlzEx.Standard
         {
             this.Left = windowpos.x;
             this.Top = windowpos.y;
-            this.Right = windowpos.x - windowpos.cx;
-            this.Bottom = windowpos.y - windowpos.cy;
+            this.Right = windowpos.cx + windowpos.x;
+            this.Bottom = windowpos.cy + windowpos.y;
         }
 
         public void Offset(int dx, int dy)
