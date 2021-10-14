@@ -3017,8 +3017,57 @@ namespace ControlzEx.Standard
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool IsWindow(IntPtr hwnd);
 
-        [DllImport("dwmapi.dll", PreserveSig = false)]
-        public static extern void DwmExtendFrameIntoClientArea(IntPtr hwnd, ref MARGINS pMarInset);
+        [CLSCompliant(false)]
+        public enum DWMNCRENDERINGPOLICY : uint
+        {
+            UseWindowStyle, // Enable/disable non-client rendering based on window style
+            Disabled, // Disabled non-client rendering; window style is ignored
+            Enabled // Enabled non-client rendering; window style is ignored
+        }
+
+        [CLSCompliant(false)]
+        public enum DWMWINDOWATTRIBUTE : uint
+        {
+            NCRENDERING_ENABLED = 1,              // [get] Is non-client rendering enabled/disabled
+            NCRENDERING_POLICY,                   // [set] DWMNCRENDERINGPOLICY - Non-client rendering policy
+            TRANSITIONS_FORCEDISABLED,            // [set] Potentially enable/forcibly disable transitions
+            ALLOW_NCPAINT,                        // [set] Allow contents rendered in the non-client area to be visible on the DWM-drawn frame.
+            CAPTION_BUTTON_BOUNDS,                // [get] Bounds of the caption button area in window-relative space.
+            NONCLIENT_RTL_LAYOUT,                 // [set] Is non-client content RTL mirrored
+            FORCE_ICONIC_REPRESENTATION,          // [set] Force this window to display iconic thumbnails.
+            FLIP3D_POLICY,                        // [set] Designates how Flip3D will treat the window.
+            EXTENDED_FRAME_BOUNDS,                // [get] Gets the extended frame bounds rectangle in screen space
+            HAS_ICONIC_BITMAP,                    // [set] Indicates an available bitmap when there is no better thumbnail representation.
+            DISALLOW_PEEK,                        // [set] Don't invoke Peek on the window.
+            EXCLUDED_FROM_PEEK,                   // [set] LivePreview exclusion information
+            CLOAK,                                // [set] Cloak or uncloak the window
+            CLOAKED,                              // [get] Gets the cloaked state of the window
+            FREEZE_REPRESENTATION,                // [set] BOOL, Force this window to freeze the thumbnail without live update
+            PASSIVE_UPDATE_MODE,                  // [set] BOOL, Updates the window only when desktop composition runs for other reasons
+            USE_HOSTBACKDROPBRUSH,                // [set] BOOL, Allows the use of host backdrop brushes for the window.
+            USE_IMMERSIVE_DARK_MODE = 20,         // [set] BOOL, Allows a window to either use the accent color, or dark, according to the user Color Mode preferences.
+            WINDOW_CORNER_PREFERENCE = 33,        // [set] WINDOW_CORNER_PREFERENCE, Controls the policy that rounds top-level window corners
+            BORDER_COLOR,                         // [set] COLORREF, The color of the thin border around a top-level window
+            CAPTION_COLOR,                        // [set] COLORREF, The color of the caption
+            TEXT_COLOR,                           // [set] COLORREF, The color of the caption text
+            VISIBLE_FRAME_BORDER_THICKNESS,       // [get] UINT, width of the visible border around a thick frame window
+            LAST
+        }
+
+        //https://msdn.microsoft.com/it-it/library/windows/desktop/aa969512(v=vs.85).aspx
+        [DllImport("dwmapi.dll")]
+        internal static extern int DwmExtendFrameIntoClientArea(IntPtr hWnd, ref MARGINS pMarInset);
+
+        //https://msdn.microsoft.com/en-us/library/windows/desktop/aa969515(v=vs.85).aspx
+        [DllImport("dwmapi.dll")]
+        internal static extern int DwmGetWindowAttribute(IntPtr hwnd, DWMWINDOWATTRIBUTE attr, ref uint attrValue, int attrSize);
+
+        //https://msdn.microsoft.com/en-us/library/windows/desktop/aa969524(v=vs.85).aspx
+        [DllImport("dwmapi.dll")]
+        internal static extern int DwmSetWindowAttribute(IntPtr hwnd, DWMWINDOWATTRIBUTE attr, ref uint attrValue, int attrSize);
+
+        [DllImport("dwmapi.dll")]
+        internal static extern int DwmIsCompositionEnabled(ref int pfEnabled);
 
         [DllImport("dwmapi.dll", EntryPoint = "DwmGetColorizationColor", PreserveSig = true)]
         private static extern HRESULT _DwmGetColorizationColor(out uint pcrColorization, [Out, MarshalAs(UnmanagedType.Bool)] out bool pfOpaqueBlend);
