@@ -2321,6 +2321,11 @@ namespace ControlzEx.Standard
         {
             return !(a == b);
         }
+
+        public override string ToString()
+        {
+            return $"POINT {{ x: {this.X} / y: {this.Y} }}";
+        }
     }
 
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
