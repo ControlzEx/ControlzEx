@@ -119,6 +119,12 @@ namespace ControlzEx.Behaviors
 
             var message = (WM)msg;
 
+            //{
+            //var monitor = NativeMethods.MonitorFromWindow(this.windowHandle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
+            // System.Diagnostics.Trace.WriteLine(monitor.ToString("X"));
+            //var monitorInfo = NativeMethods.GetMonitorInfo(monitor);
+            //System.Diagnostics.Trace.WriteLine($"{message.ToString().PadRight(20)} {monitorInfo.rcWork}");
+            //}
             //System.Diagnostics.Trace.WriteLine(message);
 
             switch (message)
@@ -335,12 +341,14 @@ namespace ControlzEx.Behaviors
 
             if (hwndState == WindowState.Maximized)
             {
+                var rcBefore = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT))!;
                 NativeMethods.DefWindowProc(this.windowHandle, uMsg, wParam, lParam);
 
                 var rc = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT))!;
                 rc.Top -= (int)Math.Ceiling(DpiHelper.TransformToDeviceY(SystemParameters.CaptionHeight + 1D, this.AssociatedObject.GetDpi().PixelsPerInchY));
 
                 var monitorInfo = NativeMethods.GetMonitorInfo(monitor);
+                //System.Diagnostics.Trace.WriteLine(monitorInfo.rcWork);
 
                 var monitorRect = this.IgnoreTaskbarOnMaximize
                     ? monitorInfo.rcMonitor
@@ -585,6 +593,8 @@ namespace ControlzEx.Behaviors
             this.UpdateWindowStyle();
 
             var windowpos = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS))!;
+
+            //System.Diagnostics.Trace.WriteLine(windowpos);
 
             this.lastWindowpos = windowpos;
 
