@@ -2464,6 +2464,12 @@ namespace ControlzEx.Standard
     [StructLayout(LayoutKind.Sequential)]
     public struct SIZE
     {
+        public SIZE(int cx, int cy)
+        {
+            this.cx = cx;
+            this.cy = cy;
+        }
+
         public int cx;
         public int cy;
     }
@@ -2534,7 +2540,7 @@ namespace ControlzEx.Standard
         /// <inheritdoc />
         public override string ToString()
         {
-            return $"x: {this.x}; y: {this.y}; cx: {this.cx}; cy: {this.cy}; flags: {this.flags}";
+            return $"x: {this.x.ToString()}; y: {this.y.ToString()}; cx: {this.cx.ToString()}; cy: {this.cy.ToString()}; flags: {this.flags.ToString()}";
         }
 
         public bool SizeAndPositionEquals(WINDOWPOS other)
@@ -2594,6 +2600,33 @@ namespace ControlzEx.Standard
         {
             return !left.Equals(right);
         }
+    }
+
+    [CLSCompliant(false)]
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct WNDCLASS
+    {
+        public uint style;
+
+        public Delegate lpfnWndProc;
+
+        public int cbClsExtra;
+
+        public int cbWndExtra;
+
+        public IntPtr hInstance;
+
+        public IntPtr hIcon;
+
+        public IntPtr hCursor;
+
+        public IntPtr hbrBackground;
+
+        [MarshalAs(UnmanagedType.LPWStr)]
+        public string? lpszMenuName;
+
+        [MarshalAs(UnmanagedType.LPWStr)]
+        public string lpszClassName;
     }
 
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
@@ -2973,10 +3006,14 @@ namespace ControlzEx.Standard
             int y,
             int nWidth,
             int nHeight,
-            IntPtr hWndParent,
+            IntPtr hWndOwner,
             IntPtr hMenu,
             IntPtr hInstance,
             IntPtr lpParam);
+
+        [CLSCompliant(false)]
+        [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        public static extern IntPtr CreateWindowEx(WS_EX dwExStyle, IntPtr classAtom, string lpWindowName, WS dwStyle, int x, int y, int nWidth, int nHeight, IntPtr hWndParent, IntPtr hMenu, IntPtr hInstance, IntPtr lpParam);
 
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.NoInlining)]
@@ -2989,12 +3026,12 @@ namespace ControlzEx.Standard
             int y,
             int nWidth,
             int nHeight,
-            IntPtr hWndParent,
+            IntPtr hWndOwner,
             IntPtr hMenu,
             IntPtr hInstance,
             IntPtr lpParam)
         {
-            IntPtr ret = _CreateWindowEx(dwExStyle, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
+            IntPtr ret = _CreateWindowEx(dwExStyle, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndOwner, hMenu, hInstance, lpParam);
             if (ret == IntPtr.Zero)
             {
                 HRESULT.ThrowLastError();
@@ -3882,6 +3919,10 @@ namespace ControlzEx.Standard
             return ret;
         }
 
+        [CLSCompliant(false)]
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        public static extern ushort RegisterClass(ref WNDCLASS lpWndClass);
+
         [DllImport("user32.dll", EntryPoint = "RegisterWindowMessage", SetLastError = true, CharSet = CharSet.Unicode)]
         private static extern uint _RegisterWindowMessage([MarshalAs(UnmanagedType.LPWStr)] string lpString);
 
@@ -4223,6 +4264,15 @@ namespace ControlzEx.Standard
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool _UnregisterClassName(string lpClassName, IntPtr hInstance);
 
+        [CLSCompliant(false)]
+        public static void UnregisterClass(ushort atom, IntPtr hinstance)
+        {
+            if (!_UnregisterClassAtom(new IntPtr(atom), hinstance))
+            {
+                HRESULT.ThrowLastError();
+            }
+        }
+
         public static void UnregisterClass(short atom, IntPtr hinstance)
         {
             if (!_UnregisterClassAtom(new IntPtr(atom), hinstance))
@@ -4399,5 +4449,9 @@ namespace ControlzEx.Standard
         {
             return GetKeyState(vKey) < 0;
         }
+
+        [DllImport("msimg32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern bool AlphaBlend(IntPtr hdcDest, int xoriginDest, int yoriginDest, int wDest, int hDest, IntPtr hdcSrc, int xoriginSrc, int yoriginSrc, int wSrc, int hSrc, BLENDFUNCTION pfn);
     }
 }

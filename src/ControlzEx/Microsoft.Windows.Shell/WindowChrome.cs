@@ -5,6 +5,7 @@ namespace ControlzEx.Windows.Shell
     using System.ComponentModel;
     using System.Windows;
     using ControlzEx;
+    using ControlzEx.Internal.KnownBoxes;
     using ControlzEx.Standard;
 
 #pragma warning disable SA1602 // Enumeration items should be documented
@@ -31,7 +32,7 @@ namespace ControlzEx.Windows.Shell
             "IsHitTestVisibleInChrome",
             typeof(bool),
             typeof(WindowChrome),
-            new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.Inherits));
+            new FrameworkPropertyMetadata(BooleanBoxes.FalseBox, FrameworkPropertyMetadataOptions.Inherits));
 
         [Category(DesignerConstants.LibraryName)]
         public static bool GetIsHitTestVisibleInChrome(IInputElement inputElement)
@@ -53,7 +54,7 @@ namespace ControlzEx.Windows.Shell
                 throw new ArgumentException("The element must be a DependencyObject", nameof(inputElement));
             }
 
-            dependencyObject.SetValue(IsHitTestVisibleInChromeProperty, hitTestVisible);
+            dependencyObject.SetValue(IsHitTestVisibleInChromeProperty, BooleanBoxes.Box(hitTestVisible));
         }
 
         public static readonly DependencyProperty ResizeGripDirectionProperty = DependencyProperty.RegisterAttached(

@@ -113,7 +113,7 @@ namespace ControlzEx.Standard
         /// <param name="obj">The object to validate.</param>
         /// <param name="name">The name of the parameter that will be presented if an exception is thrown.</param>
         [DebuggerStepThrough]
-        public static void IsNotNull<T>(T obj, string name)
+        public static void IsNotNull<T>(T? obj, string name)
             where T : class
         {
             if (obj is null)
@@ -128,7 +128,7 @@ namespace ControlzEx.Standard
         /// <param name="obj">The object to validate.</param>
         /// <param name="name">The name of the parameter that will be presented if an exception is thrown.</param>
         [DebuggerStepThrough]
-        public static void IsNull<T>(T obj, string name)
+        public static void IsNull<T>(T? obj, string name)
             where T : class
         {
             if (obj is not null)
@@ -139,7 +139,7 @@ namespace ControlzEx.Standard
         }
 
         [DebuggerStepThrough]
-        public static void PropertyIsNotNull<T>(T obj, string name)
+        public static void PropertyIsNotNull<T>(T? obj, string name)
             where T : class
         {
             if (obj is null)

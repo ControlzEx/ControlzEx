@@ -11,6 +11,7 @@ namespace ControlzEx.Behaviors
     using System.Windows.Interop;
     using System.Windows.Threading;
     using ControlzEx;
+    using ControlzEx.Internal.KnownBoxes;
     using ControlzEx.Native;
     using ControlzEx.Standard;
     using Microsoft.Xaml.Behaviors;
@@ -40,6 +41,8 @@ namespace ControlzEx.Behaviors
         private bool isCleanedUp;
 
         private bool dpiChanged;
+        
+        private Thickness cornerGripThickness;
 
         private struct SystemParameterBoundProperty
         {
@@ -93,14 +96,14 @@ namespace ControlzEx.Behaviors
         public bool IgnoreTaskbarOnMaximize
         {
             get { return (bool)this.GetValue(IgnoreTaskbarOnMaximizeProperty); }
-            set { this.SetValue(IgnoreTaskbarOnMaximizeProperty, value); }
+            set { this.SetValue(IgnoreTaskbarOnMaximizeProperty, BooleanBoxes.Box(value)); }
         }
 
         /// <summary>
         /// <see cref="DependencyProperty"/> for <see cref="IgnoreTaskbarOnMaximize"/>.
         /// </summary>
         public static readonly DependencyProperty IgnoreTaskbarOnMaximizeProperty =
-            DependencyProperty.Register(nameof(IgnoreTaskbarOnMaximize), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(false, OnIgnoreTaskbarOnMaximizeChanged));
+            DependencyProperty.Register(nameof(IgnoreTaskbarOnMaximize), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(BooleanBoxes.FalseBox, OnIgnoreTaskbarOnMaximizeChanged));
 
         /// <summary>
         /// Gets/sets if the border thickness value should be kept on maximize
@@ -109,13 +112,13 @@ namespace ControlzEx.Behaviors
         public bool KeepBorderOnMaximize
         {
             get { return (bool)this.GetValue(KeepBorderOnMaximizeProperty); }
-            set { this.SetValue(KeepBorderOnMaximizeProperty, value); }
+            set { this.SetValue(KeepBorderOnMaximizeProperty, BooleanBoxes.Box(value)); }
         }
 
         /// <summary>
         /// <see cref="DependencyProperty"/> for <see cref="KeepBorderOnMaximize"/>.
         /// </summary>
-        public static readonly DependencyProperty KeepBorderOnMaximizeProperty = DependencyProperty.Register(nameof(KeepBorderOnMaximize), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(true, OnKeepBorderOnMaximizeChanged));
+        public static readonly DependencyProperty KeepBorderOnMaximizeProperty = DependencyProperty.Register(nameof(KeepBorderOnMaximize), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(BooleanBoxes.TrueBox, OnKeepBorderOnMaximizeChanged));
 
         /// <summary>
         /// Gets or sets whether the resizing of the window should be tried in a way that does not cause flicker/jitter, especially when resizing from the left side.
@@ -126,15 +129,15 @@ namespace ControlzEx.Behaviors
         public bool TryToBeFlickerFree
         {
             get { return (bool)this.GetValue(TryToBeFlickerFreeProperty); }
-            set { this.SetValue(TryToBeFlickerFreeProperty, value); }
+            set { this.SetValue(TryToBeFlickerFreeProperty, BooleanBoxes.Box(value)); }
         }
 
         /// <summary>
         /// <see cref="DependencyProperty"/> for <see cref="TryToBeFlickerFree"/>.
         /// </summary>
-        public static readonly DependencyProperty TryToBeFlickerFreeProperty = DependencyProperty.Register(nameof(TryToBeFlickerFree), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(default(bool), OnTryToBeFlickerFreeChanged));
+        public static readonly DependencyProperty TryToBeFlickerFreeProperty = DependencyProperty.Register(nameof(TryToBeFlickerFree), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(BooleanBoxes.FalseBox, OnTryToBeFlickerFreeChanged));
 
-        private static readonly DependencyPropertyKey IsNCActivePropertyKey = DependencyProperty.RegisterReadOnly(nameof(IsNCActive), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(default(bool)));
+        private static readonly DependencyPropertyKey IsNCActivePropertyKey = DependencyProperty.RegisterReadOnly(nameof(IsNCActive), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(BooleanBoxes.FalseBox));
 
         /// <summary>
         /// <see cref="DependencyProperty"/> for <see cref="IsNCActive"/>.
@@ -147,10 +150,10 @@ namespace ControlzEx.Behaviors
         public bool IsNCActive
         {
             get { return (bool)this.GetValue(IsNCActiveProperty); }
-            private set { this.SetValue(IsNCActivePropertyKey, value); }
+            private set { this.SetValue(IsNCActivePropertyKey, BooleanBoxes.Box(value)); }
         }
 
-        public static readonly DependencyProperty EnableMinimizeProperty = DependencyProperty.Register(nameof(EnableMinimize), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(true, OnEnableMinimizeChanged));
+        public static readonly DependencyProperty EnableMinimizeProperty = DependencyProperty.Register(nameof(EnableMinimize), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(BooleanBoxes.TrueBox, OnEnableMinimizeChanged));
 
         private static void OnEnableMinimizeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -190,10 +193,10 @@ namespace ControlzEx.Behaviors
         public bool EnableMinimize
         {
             get { return (bool)this.GetValue(EnableMinimizeProperty); }
-            set { this.SetValue(EnableMinimizeProperty, value); }
+            set { this.SetValue(EnableMinimizeProperty, BooleanBoxes.Box(value)); }
         }
 
-        public static readonly DependencyProperty EnableMaxRestoreProperty = DependencyProperty.Register(nameof(EnableMaxRestore), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(true, OnEnableMaxRestoreChanged));
+        public static readonly DependencyProperty EnableMaxRestoreProperty = DependencyProperty.Register(nameof(EnableMaxRestore), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(BooleanBoxes.TrueBox, OnEnableMaxRestoreChanged));
 
         private static void OnEnableMaxRestoreChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -233,7 +236,7 @@ namespace ControlzEx.Behaviors
         public bool EnableMaxRestore
         {
             get { return (bool)this.GetValue(EnableMaxRestoreProperty); }
-            set { this.SetValue(EnableMaxRestoreProperty, value); }
+            set { this.SetValue(EnableMaxRestoreProperty, BooleanBoxes.Box(value)); }
         }
 
         /// <inheritdoc />
@@ -246,7 +249,7 @@ namespace ControlzEx.Behaviors
             {
                 try
                 {
-                    this.AssociatedObject.SetCurrentValue(Window.AllowsTransparencyProperty, false);
+                    this.AssociatedObject.SetCurrentValue(Window.AllowsTransparencyProperty, BooleanBoxes.FalseBox);
                 }
                 catch (Exception)
                 {

@@ -41,6 +41,8 @@ namespace ControlzEx.Behaviors
         [SecuritySafeCritical]
         public WindowChromeBehavior()
         {
+            this.cornerGripThickness = new Thickness(this.ResizeBorderThickness.Left * 2, this.ResizeBorderThickness.Top * 2, this.ResizeBorderThickness.Right * 2, this.ResizeBorderThickness.Bottom * 2);
+            
             // Effective default values for some of these properties are set to be bindings
             // that set them to system defaults.
             // A more correct way to do this would be to Coerce the value iff the source of the DP was the default value.
@@ -1023,30 +1025,14 @@ namespace ControlzEx.Behaviors
             // Only get this once from the property to improve performance
             var resizeBorderThickness = this.ResizeBorderThickness;
 
+            // Allow resize of up to some pixels inside the window itself
+            onTopResizeBorder = mousePosition.Y < (windowRect.Top + 8);
+
             // Determine if the point is at the top or bottom of the window.
-            if (mousePosition.Y >= windowRect.Top
-                && mousePosition.Y < windowRect.Top + resizeBorderThickness.Top)
-            {
-                onTopResizeBorder = mousePosition.Y < (windowRect.Top + resizeBorderThickness.Top);
-                uRow = 0; // top (caption or resize border)
-            }
-            else if (mousePosition.Y < windowRect.Bottom
-                     && mousePosition.Y >= windowRect.Bottom - resizeBorderThickness.Bottom)
-            {
-                uRow = 2; // bottom
-            }
+            uRow = GetHTRow(windowRect, mousePosition, resizeBorderThickness);
 
             // Determine if the point is at the left or right of the window.
-            if (mousePosition.X >= windowRect.Left
-                && mousePosition.X < windowRect.Left + resizeBorderThickness.Left)
-            {
-                uCol = 0; // left side
-            }
-            else if (mousePosition.X < windowRect.Right
-                     && mousePosition.X >= windowRect.Right - resizeBorderThickness.Right)
-            {
-                uCol = 2; // right side
-            }
+            uCol = GetHTColumn(windowRect, mousePosition, resizeBorderThickness);
 
             // If the cursor is in one of the top edges by the caption bar, but below the top resize border,
             // then resize left-right rather than diagonally.
@@ -1057,15 +1043,60 @@ namespace ControlzEx.Behaviors
                 uRow = 1;
             }
 
+            if (uRow != 1
+                && uCol == 1)
+            {
+                uCol = GetHTColumn(windowRect, mousePosition, this.cornerGripThickness);
+            }
+            else if (uCol != 1
+                     && uRow == 1)
+            {
+                uRow = GetHTRow(windowRect, mousePosition, this.cornerGripThickness);
+            }
+
             var ht = hitTestBorders[uRow, uCol];
 
-            if (ht == HT.TOP
+            if ((ht is HT.TOPLEFT or HT.TOP or HT.TOPRIGHT)
                 && onTopResizeBorder == false)
             {
                 ht = HT.CAPTION;
             }
 
             return ht;
+
+            static int GetHTRow(Rect windowRect, Point mousePosition, Thickness resizeBorderThickness)
+            {
+                if (mousePosition.Y >= windowRect.Top
+                    && mousePosition.Y < windowRect.Top + resizeBorderThickness.Top)
+                {
+                    return 0; // top (caption or resize border)
+                }
+
+                if (mousePosition.Y < windowRect.Bottom
+                    && mousePosition.Y >= windowRect.Bottom - resizeBorderThickness.Bottom)
+                {
+                    return 2; // bottom
+                }
+
+                return 1;
+            }
+
+            static int GetHTColumn(Rect windowRect, Point mousePosition, Thickness resizeBorderThickness)
+            {
+                if (mousePosition.X >= windowRect.Left
+                    && mousePosition.X < windowRect.Left + resizeBorderThickness.Left)
+                {
+                    return 0; // left side
+                }
+
+                if (mousePosition.X < windowRect.Right
+                    && mousePosition.X >= windowRect.Right - resizeBorderThickness.Right)
+                {
+                    return 2; // right side
+                }
+
+                return 1;
+            }
         }
 
         #region Remove Custom Chrome Methods

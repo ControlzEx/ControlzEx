@@ -7,6 +7,7 @@ namespace ControlzEx.Behaviors
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Input;
+    using ControlzEx.Internal.KnownBoxes;
     using Microsoft.Xaml.Behaviors;
 
     /// <summary>
@@ -37,21 +38,21 @@ namespace ControlzEx.Behaviors
         }
 
         /// <summary>Identifies the <see cref="ResetOnSpace"/> dependency property.</summary>
-        public static readonly DependencyProperty ResetOnSpaceProperty = DependencyProperty.Register(nameof(ResetOnSpace), typeof(bool), typeof(TextBoxInputMaskBehavior), new PropertyMetadata(false));
+        public static readonly DependencyProperty ResetOnSpaceProperty = DependencyProperty.Register(nameof(ResetOnSpace), typeof(bool), typeof(TextBoxInputMaskBehavior), new PropertyMetadata(BooleanBoxes.FalseBox));
 
         public bool ResetOnSpace
         {
             get { return (bool)this.GetValue(ResetOnSpaceProperty); }
-            set { this.SetValue(ResetOnSpaceProperty, value); }
+            set { this.SetValue(ResetOnSpaceProperty, BooleanBoxes.Box(value)); }
         }
 
         /// <summary>Identifies the <see cref="IgnoreSpace"/> dependency property.</summary>
-        public static readonly DependencyProperty IgnoreSpaceProperty = DependencyProperty.Register(nameof(IgnoreSpace), typeof(bool), typeof(TextBoxInputMaskBehavior), new PropertyMetadata(true));
+        public static readonly DependencyProperty IgnoreSpaceProperty = DependencyProperty.Register(nameof(IgnoreSpace), typeof(bool), typeof(TextBoxInputMaskBehavior), new PropertyMetadata(BooleanBoxes.TrueBox));
 
         public bool IgnoreSpace
         {
             get { return (bool)this.GetValue(IgnoreSpaceProperty); }
-            set { this.SetValue(IgnoreSpaceProperty, value); }
+            set { this.SetValue(IgnoreSpaceProperty, BooleanBoxes.Box(value)); }
         }
 
         #endregion

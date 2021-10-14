@@ -43,7 +43,7 @@
     <Grid SnapsToDevicePixels="True">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="30" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
@@ -54,16 +54,18 @@
                   MouseLeftButtonDown="TitleBarGrid_OnMouseLeftButtonDown"
                   MouseRightButtonUp="TitleBarGrid_OnMouseRightButtonUp">
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="150" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <Border Grid.ColumnSpan="10" Background="{Binding ElementName=Window, Path=NCCurrentBrush}" />
+                
+                <ProgressBar Grid.Column="0" Width="20" IsIndeterminate="True" />
 
                 <!-- <ProgressBar IsIndeterminate="True" /> -->
 
                 <TextBlock x:Name="TitlebarText"
-                           Grid.Column="0"
+                           Grid.Column="1"
                            Margin="4 0 0 0"
                            HorizontalAlignment="Center"
                            Text="Use GridSplitter below to move content above titlebar" />
@@ -383,9 +385,17 @@
                                     </ComboBox>
 
                                     <Label>
-                                        IgnoreTaskbarOnMaximize
+                                        ShowInTaskbar
                                     </Label>
                                     <CheckBox Margin="4"
+                                              VerticalAlignment="Center"
+                                              IsChecked="{Binding ElementName=Window, Path=ShowInTaskbar, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    
+                                    <Label>
+                                        IgnoreTaskbarOnMaximize
+                                    </Label>
+                                    <CheckBox
+                                        Margin="4"
                                               VerticalAlignment="Center"
                                               IsChecked="{Binding ElementName=Window, Path=IgnoreTaskbarOnMaximize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
@@ -544,6 +554,14 @@
                                     </StackPanel>
 
                                     <Label>
+                                        BorderThickness
+                                    </Label>
+                                    <TextBox Margin="4"
+                                             Padding="2"
+                                             VerticalAlignment="Center"
+                                             Text="{Binding ElementName=Window, Path=BorderThickness, Mode=TwoWay}" />
+                                    
+                                    <Label>
                                         ResizeBorderThickness
                                     </Label>
                                     <TextBox Margin="4"
@@ -558,6 +576,22 @@
                                              Padding="2"
                                              VerticalAlignment="Center"
                                              Text="{Binding ElementName=Window, Path=NativeResizeBorderThickness, Mode=TwoWay}" />
+
+                                    <Label>
+                                        GlowDepth
+                                    </Label>
+                                    <TextBox Margin="4"
+                                             Padding="2"
+                                             VerticalAlignment="Center"
+                                             Text="{Binding ElementName=Window, Path=GlowDepth, Mode=TwoWay}" />
+                                    
+                                    <Label>
+                                        UseRadialGradientForCorners
+                                    </Label>
+                                    <CheckBox Margin="4"
+                                              Padding="2"
+                                              VerticalAlignment="Center"
+                                              IsChecked="{Binding ElementName=Window, Path=UseRadialGradientForCorners, Mode=TwoWay}" />
                                 </local:UniformGridEx>
                             </GroupBox>
                         </Grid>

@@ -77,9 +77,10 @@
         {
             var behavior = new GlowWindowBehavior();
             //behavior.IsGlowTransitionEnabled = true;
-            BindingOperations.SetBinding(behavior, GlowWindowBehavior.ResizeBorderThicknessProperty, new Binding { Path = new PropertyPath(ResizeBorderThicknessProperty), Source = this });
+            BindingOperations.SetBinding(behavior, GlowWindowBehavior.GlowDepthProperty, new Binding { Path = new PropertyPath(GlowDepthProperty), Source = this });
             BindingOperations.SetBinding(behavior, GlowWindowBehavior.GlowBrushProperty, new Binding { Path = new PropertyPath(GlowBrushProperty), Source = this });
             BindingOperations.SetBinding(behavior, GlowWindowBehavior.NonActiveGlowBrushProperty, new Binding { Path = new PropertyPath(NonActiveGlowBrushProperty), Source = this });
+            BindingOperations.SetBinding(behavior, GlowWindowBehavior.UseRadialGradientForCornersProperty, new Binding { Path = new PropertyPath(UseRadialGradientForCornersProperty), Source = this });
 
             Interaction.GetBehaviors(this).Add(behavior);
         }
@@ -101,6 +102,25 @@
         {
             get { return (Thickness)this.GetValue(NativeResizeBorderThicknessProperty); }
             set { this.SetValue(NativeResizeBorderThicknessProperty, value); }
+        }
+
+        public int GlowDepth
+        {
+            get { return (int)this.GetValue(GlowDepthProperty); }
+            set { this.SetValue(GlowDepthProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for GlowDepth.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty GlowDepthProperty =
+            DependencyProperty.Register(nameof(GlowDepth), typeof(int), typeof(WindowChromeWindow), new PropertyMetadata(GlowWindowBehavior.GlowDepthProperty.DefaultMetadata.DefaultValue));
+
+        public static readonly DependencyProperty UseRadialGradientForCornersProperty = DependencyProperty.Register(
+            nameof(UseRadialGradientForCorners), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(GlowWindowBehavior.UseRadialGradientForCornersProperty.DefaultMetadata.DefaultValue));
+
+        public bool UseRadialGradientForCorners
+        {
+            get { return (bool)this.GetValue(UseRadialGradientForCornersProperty); }
+            set { this.SetValue(UseRadialGradientForCornersProperty, value); }
         }
 
         public static readonly DependencyProperty IgnoreTaskbarOnMaximizeProperty = DependencyProperty.Register(nameof(IgnoreTaskbarOnMaximize), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(WindowChromeBehavior.IgnoreTaskbarOnMaximizeProperty.DefaultMetadata.DefaultValue));

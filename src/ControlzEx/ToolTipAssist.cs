@@ -6,6 +6,7 @@
     using System.Windows.Controls;
     using System.Windows.Controls.Primitives;
     using System.Windows.Input;
+    using ControlzEx.Internal.KnownBoxes;
     using ControlzEx.Standard;
 
     public static class ToolTipAssist
@@ -14,7 +15,7 @@
             = DependencyProperty.RegisterAttached("AutoMove",
                                                   typeof(bool),
                                                   typeof(ToolTipAssist),
-                                                  new FrameworkPropertyMetadata(false, OnAutoMoveChanged));
+                                                  new FrameworkPropertyMetadata(BooleanBoxes.FalseBox, OnAutoMoveChanged));
 
         /// <summary>
         /// Indicates whether a tooltip should follow the mouse cursor.
@@ -31,7 +32,7 @@
         [AttachedPropertyBrowsableForType(typeof(ToolTip))]
         public static void SetAutoMove(ToolTip element, bool value)
         {
-            element.SetValue(AutoMoveProperty, value);
+            element.SetValue(AutoMoveProperty, BooleanBoxes.Box(value));
         }
 
         public static readonly DependencyProperty AutoMoveHorizontalOffsetProperty

@@ -1,29 +1,34 @@
-﻿namespace ControlzEx.Behaviors
+﻿#nullable enable
+
+#pragma warning disable 618
+namespace ControlzEx.Behaviors
 {
     using System;
-    using System.ComponentModel;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Runtime.InteropServices;
     using System.Windows;
+    using System.Windows.Controls;
     using System.Windows.Interop;
     using System.Windows.Media;
     using System.Windows.Threading;
-    using ControlzEx.Controls;
-    using ControlzEx.Internal;
-    using ControlzEx.Native;
+    using ControlzEx.Controls.Internal;
+    using ControlzEx.Internal.KnownBoxes;
     using ControlzEx.Standard;
     using Microsoft.Xaml.Behaviors;
 
     public class GlowWindowBehavior : Behavior<Window>
     {
         private static readonly TimeSpan glowTimerDelay = TimeSpan.FromMilliseconds(200); //200 ms delay, the same as in visual studio
-        private GlowWindow? left;
-        private GlowWindow? right;
-        private GlowWindow? top;
-        private GlowWindow? bottom;
         private DispatcherTimer? makeGlowVisibleTimer;
-        private IntPtr windowHandle;
+#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
+        private WindowInteropHelper windowHelper;
+#pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
         private HwndSource? hwndSource;
+
+        private readonly GlowWindow?[] glowWindows = new GlowWindow[4];
+
+        private IEnumerable<GlowWindow> LoadedGlowWindows => this.glowWindows.Where(w => w != null)!;
 
         /// <summary>
         /// <see cref="DependencyProperty"/> for <see cref="GlowBrush"/>.
@@ -32,11 +37,7 @@
 
         private static void OnGlowBrushChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (e.OldValue is null
-                || e.NewValue is null)
-            {
-                ((GlowWindowBehavior)d).Update();
-            }
+            ((GlowWindowBehavior)d).UpdateGlowColors();
         }
 
         /// <summary>
@@ -51,7 +52,12 @@
         /// <summary>
         /// <see cref="DependencyProperty"/> for <see cref="NonActiveGlowBrush"/>.
         /// </summary>
-        public static readonly DependencyProperty NonActiveGlowBrushProperty = DependencyProperty.Register(nameof(NonActiveGlowBrush), typeof(Brush), typeof(GlowWindowBehavior), new PropertyMetadata(default(Brush)));
+        public static readonly DependencyProperty NonActiveGlowBrushProperty = DependencyProperty.Register(nameof(NonActiveGlowBrush), typeof(Brush), typeof(GlowWindowBehavior), new PropertyMetadata(default(Brush), OnNonActiveGlowBrushChanged));
+
+        private static void OnNonActiveGlowBrushChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((GlowWindowBehavior)d).UpdateGlowColors();
+        }
 
         /// <summary>
         /// Gets or sets a brush which is used as the glow when the window is not active.
@@ -65,7 +71,7 @@
         /// <summary>
         /// <see cref="DependencyProperty"/> for <see cref="IsGlowTransitionEnabled"/>.
         /// </summary>
-        public static readonly DependencyProperty IsGlowTransitionEnabledProperty = DependencyProperty.Register(nameof(IsGlowTransitionEnabled), typeof(bool), typeof(GlowWindowBehavior), new PropertyMetadata(default(bool)));
+        public static readonly DependencyProperty IsGlowTransitionEnabledProperty = DependencyProperty.Register(nameof(IsGlowTransitionEnabled), typeof(bool), typeof(GlowWindowBehavior), new PropertyMetadata(BooleanBoxes.TrueBox));
 
         /// <summary>
         /// Defines whether glow transitions should be used or not.
@@ -73,45 +79,58 @@
         public bool IsGlowTransitionEnabled
         {
             get => (bool)this.GetValue(IsGlowTransitionEnabledProperty);
-            set => this.SetValue(IsGlowTransitionEnabledProperty, value);
+            set => this.SetValue(IsGlowTransitionEnabledProperty, BooleanBoxes.Box(value));
         }
 
         /// <summary>
-        /// <see cref="DependencyProperty"/> for <see cref="ResizeBorderThickness"/>.
+        /// <see cref="DependencyProperty"/> for <see cref="GlowDepth"/>.
         /// </summary>
-        public static readonly DependencyProperty ResizeBorderThicknessProperty = DependencyProperty.Register(nameof(ResizeBorderThickness), typeof(Thickness), typeof(GlowWindowBehavior), new PropertyMetadata(default(Thickness), OnResizeBorderThicknessChanged));
+        public static readonly DependencyProperty GlowDepthProperty = DependencyProperty.Register(nameof(GlowDepth), typeof(int), typeof(GlowWindowBehavior), new PropertyMetadata(9, OnGlowDepthChanged));
 
-        private static void OnResizeBorderThicknessChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnGlowDepthChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var behavior = (GlowWindowBehavior)d;
-            behavior.UpdateCore();
+            ((GlowWindowBehavior)d).UpdateGlowDepth();
         }
 
         /// <summary>
-        /// Gets or sets resize border thickness.
+        /// Gets or sets the glow depth.
         /// </summary>
-        public Thickness ResizeBorderThickness
+        public int GlowDepth
         {
-            get => (Thickness)this.GetValue(ResizeBorderThicknessProperty);
-            set => this.SetValue(ResizeBorderThicknessProperty, value);
+            get => (int)this.GetValue(GlowDepthProperty);
+            set => this.SetValue(GlowDepthProperty, value);
         }
 
-        private bool IsActiveGlowDisabled => this.GlowBrush is null;
+        /// <summary>Identifies the <see cref="UseRadialGradientForCorners"/> dependency property.</summary>
+        public static readonly DependencyProperty UseRadialGradientForCornersProperty = DependencyProperty.Register(
+            nameof(UseRadialGradientForCorners), typeof(bool), typeof(GlowWindowBehavior), new PropertyMetadata(BooleanBoxes.TrueBox, OnUseRadialGradientForCornersChanged));
 
-        private bool IsNoneActiveGlowDisabled => this.NonActiveGlowBrush is null;
+        private static void OnUseRadialGradientForCornersChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((GlowWindowBehavior)d).UpdateUseRadialGradientForCorners();
+        }
+
+        /// <summary>
+        /// Gets or sets whether to use a radial gradient for the corners or not.
+        /// </summary>
+        public bool UseRadialGradientForCorners
+        {
+            get => (bool)this.GetValue(UseRadialGradientForCornersProperty);
+            set => this.SetValue(UseRadialGradientForCornersProperty, BooleanBoxes.Box(value));
+        }
 
         protected override void OnAttached()
         {
             base.OnAttached();
 
-            this.AssociatedObject.SourceInitialized += this.AssociatedObjectSourceInitialized;
-            this.AssociatedObject.Loaded += this.AssociatedObjectOnLoaded;
-            this.AssociatedObject.Unloaded += this.AssociatedObjectUnloaded;
-
             if (this.AssociatedObject.IsLoaded)
             {
-                this.AssociatedObjectOnLoaded(this.AssociatedObject, new RoutedEventArgs());
                 this.AssociatedObjectSourceInitialized(this.AssociatedObject, EventArgs.Empty);
+                this.UpdateGlowWindowPositions(true);
+            }
+            else
+            {
+                this.AssociatedObject.SourceInitialized += this.AssociatedObjectSourceInitialized;
             }
         }
 
@@ -119,194 +138,54 @@
         protected override void OnDetaching()
         {
             this.AssociatedObject.SourceInitialized -= this.AssociatedObjectSourceInitialized;
-            this.AssociatedObject.Loaded -= this.AssociatedObjectOnLoaded;
-            this.AssociatedObject.Unloaded -= this.AssociatedObjectUnloaded;
 
             this.hwndSource?.RemoveHook(this.AssociatedObjectWindowProc);
 
+            this.AssociatedObject.Closed -= this.AssociatedObjectOnClosed;
+
             this.AssociatedObject.Activated -= this.AssociatedObjectActivatedOrDeactivated;
             this.AssociatedObject.Deactivated -= this.AssociatedObjectActivatedOrDeactivated;
-            this.AssociatedObject.StateChanged -= this.AssociatedObjectStateChanged;
-            this.AssociatedObject.IsVisibleChanged -= this.AssociatedObjectIsVisibleChanged;
-            this.AssociatedObject.Closing -= this.AssociatedObjectOnClosing;
 
-            this.DestroyGlowVisibleTimer();
+            this.StopTimer();
 
-            this.Close();
+            this.DestroyGlowWindows();
 
             base.OnDetaching();
         }
 
+        private void AssociatedObjectActivatedOrDeactivated(object? sender, EventArgs e)
+        {
+            this.UpdateGlowActiveState();
+        }
+
         private void AssociatedObjectSourceInitialized(object? sender, EventArgs e)
         {
-            this.windowHandle = new WindowInteropHelper(this.AssociatedObject).Handle;
-            this.hwndSource = HwndSource.FromHwnd(this.windowHandle);
+            this.windowHelper = new WindowInteropHelper(this.AssociatedObject);
+            this.hwndSource = HwndSource.FromHwnd(this.windowHelper.Handle);
             this.hwndSource?.AddHook(this.AssociatedObjectWindowProc);
-        }
 
-        private void AssociatedObjectStateChanged(object? sender, EventArgs e)
-        {
-            this.makeGlowVisibleTimer?.Stop();
+            this.AssociatedObject.Closed += this.AssociatedObjectOnClosed;
 
-            if (this.AssociatedObject.WindowState == WindowState.Normal)
-            {
-                var ignoreTaskBar = Interaction.GetBehaviors(this.AssociatedObject).OfType<WindowChromeBehavior>().FirstOrDefault()?.IgnoreTaskbarOnMaximize == true;
-                if (this.makeGlowVisibleTimer is not null
-                    && SystemParameters.MinimizeAnimation
-                    && !ignoreTaskBar)
-                {
-                    this.makeGlowVisibleTimer.Start();
-                }
-                else
-                {
-                    this.RestoreGlow();
-                }
-            }
-            else
-            {
-                this.HideGlow();
-            }
-        }
-
-        private void AssociatedObjectUnloaded(object? sender, RoutedEventArgs e)
-        {
-            this.DestroyGlowVisibleTimer();
-        }
-
-        private void DestroyGlowVisibleTimer()
-        {
-            if (this.makeGlowVisibleTimer is null)
-            {
-                return;
-            }
-
-            this.makeGlowVisibleTimer.Stop();
-            this.makeGlowVisibleTimer.Tick -= this.GlowVisibleTimerOnTick;
-            this.makeGlowVisibleTimer = null;
-        }
-
-        private void GlowVisibleTimerOnTick(object? sender, EventArgs e)
-        {
-            this.makeGlowVisibleTimer?.Stop();
-            this.RestoreGlow();
-        }
-
-        private void RestoreGlow()
-        {
-            if (this.left is not null)
-            {
-                this.left.IsGlowing = true;
-            }
-
-            if (this.top is not null)
-            {
-                this.top.IsGlowing = true;
-            }
-
-            if (this.right is not null)
-            {
-                this.right.IsGlowing = true;
-            }
-
-            if (this.bottom is not null)
-            {
-                this.bottom.IsGlowing = true;
-            }
-
-            this.Update();
-        }
-
-        private void HideGlow()
-        {
-            if (this.left is not null)
-            {
-                this.left.IsGlowing = false;
-            }
-
-            if (this.top is not null)
-            {
-                this.top.IsGlowing = false;
-            }
-
-            if (this.right is not null)
-            {
-                this.right.IsGlowing = false;
-            }
-
-            if (this.bottom is not null)
-            {
-                this.bottom.IsGlowing = false;
-            }
-
-            this.Update();
-        }
-
-        private void AssociatedObjectOnLoaded(object? sender, RoutedEventArgs routedEventArgs)
-        {
-            // No glow effect if GlowBrush not set.
-            if (this.IsActiveGlowDisabled)
-            {
-                return;
-            }
-
-            this.AssociatedObject.Activated -= this.AssociatedObjectActivatedOrDeactivated;
             this.AssociatedObject.Activated += this.AssociatedObjectActivatedOrDeactivated;
-            this.AssociatedObject.Deactivated -= this.AssociatedObjectActivatedOrDeactivated;
             this.AssociatedObject.Deactivated += this.AssociatedObjectActivatedOrDeactivated;
 
-            this.AssociatedObject.StateChanged -= this.AssociatedObjectStateChanged;
-            this.AssociatedObject.StateChanged += this.AssociatedObjectStateChanged;
-
-            if (this.makeGlowVisibleTimer is null)
-            {
-                this.makeGlowVisibleTimer = new DispatcherTimer { Interval = glowTimerDelay };
-                this.makeGlowVisibleTimer.Tick += this.GlowVisibleTimerOnTick;
-            }
-
-            this.left = new GlowWindow(this.AssociatedObject, this, GlowDirection.Left);
-            this.right = new GlowWindow(this.AssociatedObject, this, GlowDirection.Right);
-            this.top = new GlowWindow(this.AssociatedObject, this, GlowDirection.Top);
-            this.bottom = new GlowWindow(this.AssociatedObject, this, GlowDirection.Bottom);
-
-            this.loadedGlowWindows = new[]
-                                     {
-                                         this.left,
-                                         this.top,
-                                         this.right,
-                                         this.bottom
-                                     };
-
-            this.Show();
-            this.Update();
-
-            if (!this.IsGlowTransitionEnabled)
-            {
-                // no storyboard so set opacity to 1
-                this.AssociatedObject.Dispatcher.BeginInvoke(DispatcherPriority.Loaded, new Action(() => this.SetOpacityTo(1)));
-            }
-            else
-            {
-                // start the opacity storyboard 0->1
-                this.StartOpacityStoryboard();
-                // hide the glows if window get invisible state
-                this.AssociatedObject.IsVisibleChanged += this.AssociatedObjectIsVisibleChanged;
-                // closing always handled
-                this.AssociatedObject.Closing += this.AssociatedObjectOnClosing;
-            }
+            this.CreateGlowWindowHandles();
         }
 
-        private void AssociatedObjectOnClosing(object? o, CancelEventArgs args)
+        private void AssociatedObjectOnClosed(object? o, EventArgs args)
         {
-            if (!args.Cancel)
-            {
-                this.AssociatedObject.IsVisibleChanged -= this.AssociatedObjectIsVisibleChanged;
-            }
+            this.AssociatedObject.Closed -= this.AssociatedObjectOnClosed;
+
+            // todo: detach here????
+
+            this.StopTimer();
+            this.DestroyGlowWindows();
         }
 
-#pragma warning disable 618
-        private WINDOWPOS prevWindowPos;
-        private GlowWindow[] loadedGlowWindows = new GlowWindow[0];
+#pragma warning disable 618, SA1401
         private bool updatingZOrder;
+
+        public int DeferGlowChangesCount;
 
         private IntPtr AssociatedObjectWindowProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
@@ -315,48 +194,18 @@
                 return IntPtr.Zero;
             }
 
+            // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
             switch ((WM)msg)
             {
-                // Z-Index must NOT be updated when WINDOWPOSCHANGING
-                case WM.WINDOWPOSCHANGING:
-                    {
-                        Assert.IsNotDefault(lParam);
-                        var wp = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS))!;
-                        if (wp.SizeAndPositionEquals(this.prevWindowPos) == false)
-                        {
-                            this.UpdateCore();
-                            this.prevWindowPos = wp;
-                        }
-                    }
-
-                    break;
-
                 // Z-Index must be updated when WINDOWPOSCHANGED
                 case WM.WINDOWPOSCHANGED:
                     {
-                        Assert.IsNotDefault(lParam);
                         var wp = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS))!;
-                        if (wp.SizeAndPositionEquals(this.prevWindowPos) == false)
-                        {
-                            this.UpdateCore();
-                            this.prevWindowPos = wp;
-                        }
-
-                        // todo: direct z-order
-                        //foreach (GlowWindow loadedGlowWindow in this.loadedGlowWindows)
-                        //{
-                        //    var glowWindowHandle = new WindowInteropHelper(loadedGlowWindow).Handle;
-                        //    NativeMethods.SetWindowPos(glowWindowHandle, this.windowHandle, 0, 0, 0, 0, SWP.NOSIZE | SWP.NOMOVE | SWP.NOACTIVATE);
-                        //}
+                        this.UpdateGlowWindowPositions((wp.flags & SWP.SHOWWINDOW) == 0);
 
                         this.UpdateZOrderOfThisAndOwner();
                     }
 
-                    break;
-
-                case WM.SIZE:
-                case WM.SIZING:
-                    this.UpdateCore();
                     break;
             }
 
@@ -375,33 +224,23 @@
             try
             {
                 this.updatingZOrder = true;
-                var windowInteropHelper = new WindowInteropHelper(this.AssociatedObject);
-                var currentHandle = windowInteropHelper.Handle;
+                // var handle = this.windowHelper.Handle;
+                // foreach (var loadedGlowWindow in this.LoadedGlowWindows)
+                // {
+                //     var window = NativeMethods.GetWindow(loadedGlowWindow.Handle, GW.HWNDPREV);
+                //     if (window != handle)
+                //     {
+                //         NativeMethods.SetWindowPos(handle, loadedGlowWindow.Handle, 0, 0, 0, 0, SWP.NOSIZE | SWP.NOMOVE | SWP.NOACTIVATE);
+                //     }
+                //
+                //     handle = loadedGlowWindow.Handle;
+                // }
 
-                if (currentHandle != this.windowHandle
-                    || WindowHelper.IsWindowHandleValid(currentHandle) == false)
+                var owner = this.windowHelper.Owner;
+                if (owner != IntPtr.Zero)
                 {
-                    return;
+                    this.UpdateZOrderOfOwner(owner);
                 }
-
-                foreach (var loadedGlowWindow in this.loadedGlowWindows)
-                {
-                    var glowWindowHandle = new WindowInteropHelper(loadedGlowWindow).Handle;
-
-                    var window = NativeMethods.GetWindow(glowWindowHandle, GW.HWNDPREV);
-                    if (window != currentHandle)
-                    {
-                        if (WindowHelper.IsWindowHandleValid(glowWindowHandle)
-                            && WindowHelper.IsWindowHandleValid(currentHandle))
-                        {
-                            NativeMethods.SetWindowPos(glowWindowHandle, currentHandle, 0, 0, 0, 0, SWP.NOSIZE | SWP.NOMOVE | SWP.NOACTIVATE);
-                        }
-                    }
-
-                    currentHandle = glowWindowHandle;
-                }
-
-                this.UpdateZOrderOfOwner(currentHandle, windowInteropHelper.Owner);
             }
             finally
             {
@@ -409,148 +248,227 @@
             }
         }
 
-        private void UpdateZOrderOfOwner(IntPtr hwndWindow, IntPtr hwndOwner)
+        private void UpdateZOrderOfOwner(IntPtr hwndOwner)
         {
-            if (WindowHelper.IsWindowHandleValid(hwndWindow) == false
-                || WindowHelper.IsWindowHandleValid(hwndOwner) == false)
+            var lastOwnedWindow = IntPtr.Zero;
+            NativeMethods.EnumThreadWindows(NativeMethods.GetCurrentThreadId(), delegate(IntPtr hwnd, IntPtr _)
+            {
+                if (NativeMethods.GetWindow(hwnd, GW.OWNER) == hwndOwner)
+                {
+                    lastOwnedWindow = hwnd;
+                }
+
+                return true;
+            }, IntPtr.Zero);
+
+            if (lastOwnedWindow == IntPtr.Zero
+                || NativeMethods.GetWindow(hwndOwner, GW.HWNDPREV) == lastOwnedWindow)
             {
                 return;
             }
 
-            var lastOwnedWindow = IntPtr.Zero;
-            NativeMethods.EnumThreadWindows(NativeMethods.GetCurrentThreadId(), delegate(IntPtr hwnd, IntPtr lParam)
-                                                                                {
-                                                                                    if (NativeMethods.GetWindow(hwnd, GW.OWNER) == hwndOwner)
-                                                                                    {
-                                                                                        lastOwnedWindow = hwnd;
-                                                                                    }
-
-                                                                                    return true;
-                                                                                }, IntPtr.Zero);
-            if (WindowHelper.IsWindowHandleValid(hwndOwner)
-                && WindowHelper.IsWindowHandleValid(lastOwnedWindow)
-                && NativeMethods.GetWindow(hwndOwner, GW.HWNDPREV) != lastOwnedWindow)
+            if (this.IsGlowVisible
+                && lastOwnedWindow == this.windowHelper.Handle)
             {
-                NativeMethods.SetWindowPos(hwndOwner, lastOwnedWindow, 0, 0, 0, 0, SWP.NOSIZE | SWP.NOMOVE | SWP.NOACTIVATE);
+                var glowWindow = this.LoadedGlowWindows.LastOrDefault();
+                if (glowWindow != null)
+                {
+                    lastOwnedWindow = glowWindow.Handle;
+                }
             }
+
+            NativeMethods.SetWindowPos(hwndOwner, lastOwnedWindow, 0, 0, 0, 0, SWP.NOSIZE | SWP.NOMOVE | SWP.NOACTIVATE);
         }
-#pragma warning restore 618
 
         #endregion
 
-        private void AssociatedObjectActivatedOrDeactivated(object? sender, EventArgs e)
+        private void DestroyGlowWindows()
         {
-            this.UpdateCore();
+            for (var i = 0; i < this.glowWindows.Length; i++)
+            {
+                this.glowWindows[i]?.Dispose();
+                this.glowWindows[i] = null;
+            }
         }
 
-        private void AssociatedObjectIsVisibleChanged(object? sender, DependencyPropertyChangedEventArgs e)
+        public void EndDeferGlowChanges()
         {
-            if (!this.AssociatedObject.IsVisible)
+            foreach (var loadedGlowWindow in this.LoadedGlowWindows)
             {
-                // the associated owner got invisible so set opacity to 0 to start the storyboard by 0 for the next visible state
-                this.SetOpacityTo(0);
+                loadedGlowWindow.CommitChanges();
+            }
+        }
+
+        private GlowWindow GetOrCreateGlowWindow(int index)
+        {
+            this.glowWindows[index] ??= new GlowWindow(this.AssociatedObject, this, (Dock)index)
+            {
+                ActiveGlowColor = ((SolidColorBrush?)this.GlowBrush)?.Color ?? Colors.Transparent,
+                InactiveGlowColor = ((SolidColorBrush?)this.NonActiveGlowBrush)?.Color ?? Colors.Transparent,
+                IsActive = this.AssociatedObject.IsActive,
+                GlowDepth = this.GlowDepth,
+                UseRadialGradientForCorners = this.UseRadialGradientForCorners
+            };
+
+            return this.glowWindows[index]!;
+        }
+
+        private void CreateGlowWindowHandles()
+        {
+            for (var i = 0; i < this.glowWindows.Length; i++)
+            {
+                var orCreateGlowWindow = this.GetOrCreateGlowWindow(i);
+                orCreateGlowWindow.EnsureHandle();
+            }
+        }
+
+        private bool isGlowVisible;
+
+        private bool IsGlowVisible
+        {
+            get => this.isGlowVisible;
+            set
+            {
+                if (this.isGlowVisible != value)
+                {
+                    this.isGlowVisible = value;
+
+                    for (var i = 0; i < this.glowWindows.Length; i++)
+                    {
+                        this.GetOrCreateGlowWindow(i).IsVisible = value;
+                    }
+                }
+            }
+        }
+
+        protected virtual bool ShouldShowGlow
+        {
+            get
+            {
+                var handle = this.windowHelper.Handle;
+                if (NativeMethods.IsWindowVisible(handle)
+                    && !NativeMethods.IsIconic(handle)
+                    && !NativeMethods.IsZoomed(handle))
+                {
+                    return this.AssociatedObject.ResizeMode != ResizeMode.NoResize;
+                }
+
+                return false;
+            }
+        }
+
+        private void UpdateGlowWindowPositions(bool delayIfNecessary)
+        {
+            using (this.DeferGlowChanges())
+            {
+                this.UpdateGlowVisibility(delayIfNecessary);
+
+                foreach (var loadedGlowWindow in this.LoadedGlowWindows)
+                {
+                    loadedGlowWindow.UpdateWindowPos();
+                }
+            }
+        }
+
+        private void UpdateGlowColors()
+        {
+            using (this.DeferGlowChanges())
+            {
+                foreach (var loadedGlowWindow in this.LoadedGlowWindows)
+                {
+                    loadedGlowWindow.ActiveGlowColor = ((SolidColorBrush?)this.GlowBrush)?.Color ?? Colors.Transparent;
+                    loadedGlowWindow.InactiveGlowColor = ((SolidColorBrush?)this.NonActiveGlowBrush)?.Color ?? Colors.Transparent;
+                }
+            }
+        }
+
+        private void UpdateGlowActiveState()
+        {
+            using (this.DeferGlowChanges())
+            {
+                foreach (var loadedGlowWindow in this.LoadedGlowWindows)
+                {
+                    loadedGlowWindow.IsActive = this.AssociatedObject.IsActive;
+                }
+            }
+        }
+
+        private void UpdateGlowDepth()
+        {
+            using (this.DeferGlowChanges())
+            {
+                foreach (var loadedGlowWindow in this.LoadedGlowWindows)
+                {
+                    loadedGlowWindow.GlowDepth = this.GlowDepth;
+                    loadedGlowWindow.UpdateWindowPos();
+                }
+            }
+        }
+
+        private void UpdateUseRadialGradientForCorners()
+        {
+            using (this.DeferGlowChanges())
+            {
+                foreach (var loadedGlowWindow in this.LoadedGlowWindows)
+                {
+                    loadedGlowWindow.UseRadialGradientForCorners = this.UseRadialGradientForCorners;
+                }
+            }
+        }
+
+        private IDisposable DeferGlowChanges()
+        {
+            return new ChangeScope(this);
+        }
+
+        private void UpdateGlowVisibility(bool delayIfNecessary)
+        {
+            var shouldShowGlow = this.ShouldShowGlow;
+            if (shouldShowGlow == this.IsGlowVisible)
+            {
+                return;
+            }
+
+            if ((shouldShowGlow && this.IsGlowTransitionEnabled && SystemParameters.MinimizeAnimation) & delayIfNecessary)
+            {
+                if (this.makeGlowVisibleTimer is null)
+                {
+                    this.makeGlowVisibleTimer = new DispatcherTimer
+                    {
+                        Interval = glowTimerDelay
+                    };
+                    this.makeGlowVisibleTimer.Tick += this.OnDelayedVisibilityTimerTick;
+                }
+                else
+                {
+                    this.makeGlowVisibleTimer.Stop();
+                }
+
+                this.makeGlowVisibleTimer.Start();
             }
             else
             {
-                this.StartOpacityStoryboard();
+                this.StopTimer();
+                this.IsGlowVisible = shouldShowGlow;
             }
         }
 
-        /// <summary>
-        /// Updates all glow windows (visible, hidden, collapsed)
-        /// </summary>
-        private void Update()
+        private void StopTimer()
         {
-            this.left?.Update();
-            this.right?.Update();
-            this.top?.Update();
-            this.bottom?.Update();
-        }
-
-#pragma warning disable 618
-        private void UpdateCore()
-        {
-            if (this.AssociatedObject is null)
+            if (this.makeGlowVisibleTimer is null)
             {
                 return;
             }
 
-            if ((this.IsActiveGlowDisabled && this.AssociatedObject.IsActive)
-                || (this.IsNoneActiveGlowDisabled && this.AssociatedObject.IsActive == false)
-                || WindowHelper.IsWindowHandleValid(this.windowHandle) == false
-                || NativeMethods.IsWindowVisible(this.windowHandle) == false)
-            {
-                return;
-            }
-
-            if (NativeMethods.GetMappedClientRect(this.windowHandle, out var rect))
-            {
-                this.left?.UpdateCore(rect);
-                this.right?.UpdateCore(rect);
-                this.top?.UpdateCore(rect);
-                this.bottom?.UpdateCore(rect);
-            }
-        }
-#pragma warning restore 618
-
-        /// <summary>
-        /// Sets the opacity to all glow windows
-        /// </summary>
-        private void SetOpacityTo(double newOpacity)
-        {
-            var canSetOpacity = this.left is not null
-                                && this.right is not null
-                                && this.top is not null
-                                && this.bottom is not null;
-
-            if (canSetOpacity)
-            {
-                this.left!.Opacity = newOpacity;
-                this.right!.Opacity = newOpacity;
-                this.top!.Opacity = newOpacity;
-                this.bottom!.Opacity = newOpacity;
-            }
+            this.makeGlowVisibleTimer.Stop();
+            this.makeGlowVisibleTimer.Tick -= this.OnDelayedVisibilityTimerTick;
+            this.makeGlowVisibleTimer = null;
         }
 
-        /// <summary>
-        /// Starts the opacity storyboard 0 -> 1
-        /// </summary>
-        private void StartOpacityStoryboard()
+        private void OnDelayedVisibilityTimerTick(object? sender, EventArgs e)
         {
-            var canStartOpacityStoryboard = this.left?.OpacityStoryboard is not null
-                                            && this.right?.OpacityStoryboard is not null
-                                            && this.top?.OpacityStoryboard is not null
-                                            && this.bottom?.OpacityStoryboard is not null;
-
-            if (canStartOpacityStoryboard)
-            {
-                this.left!.BeginStoryboard(this.left.OpacityStoryboard!);
-                this.right!.BeginStoryboard(this.right.OpacityStoryboard!);
-                this.top!.BeginStoryboard(this.top.OpacityStoryboard!);
-                this.bottom!.BeginStoryboard(this.bottom.OpacityStoryboard!);
-            }
-        }
-
-        /// <summary>
-        /// Shows all glow windows
-        /// </summary>
-        private void Show()
-        {
-            this.left?.Show();
-            this.right?.Show();
-            this.top?.Show();
-            this.bottom?.Show();
-        }
-
-        /// <summary>
-        /// Closes all glow windows
-        /// </summary>
-        private void Close()
-        {
-            this.left?.InternalClose();
-            this.right?.InternalClose();
-            this.top?.InternalClose();
-            this.bottom?.InternalClose();
+            this.StopTimer();
+            this.UpdateGlowWindowPositions(false);
         }
     }
 }
