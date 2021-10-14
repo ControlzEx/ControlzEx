@@ -130,7 +130,7 @@ namespace ControlzEx.Helpers
                     return new RadialGradientBrush(gradientStopCollection)
                         {
                             GradientOrigin = startAndEndPoint.Start,
-                            Center = new Point(DoubleUtilities.AreClose(startAndEndPoint.Start.X, 0) ? 0.1 : 0.9, DoubleUtilities.AreClose(startAndEndPoint.Start.Y, 0) ? 0.1 : 0.9),
+                            Center = new Point(startAndEndPoint.Start.X.AreClose(0) ? 0.2 : 0.8, startAndEndPoint.Start.Y.AreClose(0) ? 0.2 : 0.8),
                             RadiusX = 1,
                             RadiusY = 1
                         };
