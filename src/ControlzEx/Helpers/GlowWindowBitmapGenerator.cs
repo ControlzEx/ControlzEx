@@ -14,19 +14,20 @@ namespace ControlzEx.Helpers
         {
             var size = GetSize(part, glowDepth);
 
-            var gradientBrush = CreateGradientBrush(part, useRadialGradientForCorners);
-            gradientBrush.Freeze();
-
             var drawingVisual = new DrawingVisual();
-            var drawingContext = drawingVisual.RenderOpen();
-            try
+            using (var drawingContext = drawingVisual.RenderOpen())
             {
-                drawingContext.DrawRectangle(gradientBrush, null, new Rect(0, 0, size.Width, size.Height));
-                drawingContext.DrawRectangle(Brushes.Black, null, GetBlackRect(part, glowDepth));
-            }
-            finally
-            {
-                drawingContext.Close();
+                if (glowDepth > 1)
+                {
+                    var gradientBrush = CreateGradientBrush(part, useRadialGradientForCorners);
+                    gradientBrush.Freeze();
+                    drawingContext.DrawRectangle(gradientBrush, null, new Rect(0, 0, size.Width, size.Height));
+                    drawingContext.DrawRectangle(Brushes.Black, null, GetBlackRect(part, glowDepth));
+                }
+                else
+                {
+                    drawingContext.DrawRectangle(Brushes.Black, null, new Rect(0, 0, size.Width, size.Height));
+                }
             }
 
             var targetBitmap = new RenderTargetBitmap((int)size.Width, (int)size.Height, 96, 96, PixelFormats.Pbgra32);
