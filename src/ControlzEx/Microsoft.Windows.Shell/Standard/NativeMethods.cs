@@ -2248,17 +2248,25 @@ namespace ControlzEx.Standard
     [StructLayout(LayoutKind.Sequential)]
     public struct MARGINS
     {
+        public MARGINS(int left, int top, int right, int bottom)
+        {
+            this.Left = left;
+            this.Top = top;
+            this.Right = right;
+            this.Bottom = bottom;
+        }
+
         /// <summary>Width of left border that retains its size.</summary>
-        public int cxLeftWidth;
+        public int Left;
 
         /// <summary>Width of right border that retains its size.</summary>
-        public int cxRightWidth;
+        public int Right;
 
         /// <summary>Height of top border that retains its size.</summary>
-        public int cyTopHeight;
+        public int Top;
 
         /// <summary>Height of bottom border that retains its size.</summary>
-        public int cyBottomHeight;
+        public int Bottom;
     }
 
     [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
