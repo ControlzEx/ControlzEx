@@ -146,16 +146,16 @@ namespace ControlzEx.Behaviors
                     return this._HandleWINDOWPOSCHANGING(message, wParam, lParam, out handled);
                 case WM.WINDOWPOSCHANGED:
                     return this._HandleWINDOWPOSCHANGED(message, wParam, lParam, out handled);
-                // case WM.GETMINMAXINFO:
-                //     return this._HandleGETMINMAXINFO(message, wParam, lParam, out handled);
+                case WM.GETMINMAXINFO:
+                    return this._HandleGETMINMAXINFO(message, wParam, lParam, out handled);
                 case WM.ENTERSIZEMOVE:
                     this.isDragging = true;
                     break;
                 case WM.EXITSIZEMOVE:
                     this.isDragging = false;
                     break;
-                // case WM.MOVE:
-                //     return this._HandleMOVEForRealSize(message, wParam, lParam, out handled);
+                case WM.MOVE:
+                    return this._HandleMOVEForRealSize(message, wParam, lParam, out handled);
                 case WM.DPICHANGED:
                     return this._HandleDPICHANGED(message, wParam, lParam, out handled);
                 case WM.STYLECHANGING:
