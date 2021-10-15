@@ -17,13 +17,21 @@ namespace ControlzEx.Showcase
         private static readonly PropertyInfo criticalHandlePropertyInfo = typeof(Window).GetProperty("CriticalHandle", BindingFlags.NonPublic | BindingFlags.Instance);
         private static readonly object[] emptyObjectArray = new object[0];
 
-        public static readonly DependencyProperty BrushesProperty = DependencyProperty.Register(nameof(Brushes), typeof(List<KeyValuePair<string, Brush>>), typeof(MainWindow), new PropertyMetadata(default(List<KeyValuePair<string, Brush>>)));
+        public static readonly DependencyProperty ColorsProperty = DependencyProperty.Register(nameof(Colors), typeof(List<KeyValuePair<string, Color>>), typeof(MainWindow), new PropertyMetadata(null));
+        public static readonly DependencyProperty BrushesProperty = DependencyProperty.Register(nameof(Brushes), typeof(List<KeyValuePair<string, Brush>>), typeof(MainWindow), new PropertyMetadata(null));
 
         public MainWindow()
         {
             this.InitializeComponent();
 
+            this.Colors = GetColors().ToList();
             this.Brushes = GetBrushes().ToList();
+        }
+
+        public List<KeyValuePair<string, Color>> Colors
+        {
+            get => (List<KeyValuePair<string, Color>>)this.GetValue(ColorsProperty);
+            set => this.SetValue(ColorsProperty, value);
         }
 
         public List<KeyValuePair<string, Brush>> Brushes

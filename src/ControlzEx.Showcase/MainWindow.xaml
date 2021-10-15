@@ -16,8 +16,8 @@
                           MinHeight="60"
                           Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
                           FlowDirection="LeftToRight"
-                          GlowBrush="Navy"
-                          NonActiveGlowBrush="Crimson"
+                          GlowColor="Navy"
+                          NonActiveGlowColor="Crimson"
                           Style="{StaticResource {x:Type local:WindowChromeWindow}}"
                           WindowStartupLocation="CenterScreen"
                           WindowState="Normal"
@@ -298,13 +298,13 @@
                                               SelectedItem="{Binding ElementName=Window, Path=ResizeMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                                     <Label>
-                                        GlowBrush
+                                        GlowColor
                                     </Label>
                                     <ComboBox Margin="4"
                                               VerticalAlignment="Center"
                                               HorizontalContentAlignment="Stretch"
-                                              ItemsSource="{Binding Brushes, ElementName=Window}"
-                                              SelectedValue="{Binding ElementName=Window, Path=GlowBrush, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                              ItemsSource="{Binding Colors, ElementName=Window}"
+                                              SelectedValue="{Binding ElementName=Window, Path=GlowColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                               SelectedValuePath="Value">
                                         <ComboBox.ItemTemplate>
                                             <DataTemplate>
@@ -319,21 +319,24 @@
                                                     <Grid Grid.Column="1"
                                                           Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}"
                                                           Margin="4 0"
-                                                          VerticalAlignment="Stretch"
-                                                          Background="{Binding Value}" />
+                                                          VerticalAlignment="Stretch">
+                                                        <Grid.Background>
+                                                            <SolidColorBrush Color="{Binding Value}" />
+                                                        </Grid.Background>
+                                                    </Grid>
                                                 </Grid>
                                             </DataTemplate>
                                         </ComboBox.ItemTemplate>
                                     </ComboBox>
 
                                     <Label>
-                                        NonActiveGlowBrush
+                                        NonActiveGlowColor
                                     </Label>
                                     <ComboBox Margin="4"
                                               VerticalAlignment="Center"
                                               HorizontalContentAlignment="Stretch"
-                                              ItemsSource="{Binding Brushes, ElementName=Window}"
-                                              SelectedValue="{Binding ElementName=Window, Path=NonActiveGlowBrush, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                              ItemsSource="{Binding Colors, ElementName=Window}"
+                                              SelectedValue="{Binding ElementName=Window, Path=NonActiveGlowColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                               SelectedValuePath="Value">
                                         <ComboBox.ItemTemplate>
                                             <DataTemplate>
@@ -348,8 +351,11 @@
                                                     <Grid Grid.Column="1"
                                                           Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}"
                                                           Margin="4 0"
-                                                          VerticalAlignment="Stretch"
-                                                          Background="{Binding Value}" />
+                                                          VerticalAlignment="Stretch">
+                                                        <Grid.Background>
+                                                            <SolidColorBrush Color="{Binding Value}" />
+                                                        </Grid.Background>
+                                                    </Grid>
                                                 </Grid>
                                             </DataTemplate>
                                         </ComboBox.ItemTemplate>

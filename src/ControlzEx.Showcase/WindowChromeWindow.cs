@@ -77,8 +77,8 @@
             var behavior = new GlowWindowBehavior();
             //behavior.IsGlowTransitionEnabled = true;
             BindingOperations.SetBinding(behavior, GlowWindowBehavior.GlowDepthProperty, new Binding { Path = new PropertyPath(GlowDepthProperty), Source = this });
-            BindingOperations.SetBinding(behavior, GlowWindowBehavior.GlowBrushProperty, new Binding { Path = new PropertyPath(GlowBrushProperty), Source = this });
-            BindingOperations.SetBinding(behavior, GlowWindowBehavior.NonActiveGlowBrushProperty, new Binding { Path = new PropertyPath(NonActiveGlowBrushProperty), Source = this });
+            BindingOperations.SetBinding(behavior, GlowWindowBehavior.GlowColorProperty, new Binding { Path = new PropertyPath(GlowColorProperty), Source = this });
+            BindingOperations.SetBinding(behavior, GlowWindowBehavior.NonActiveGlowColorProperty, new Binding { Path = new PropertyPath(NonActiveGlowColorProperty), Source = this });
             BindingOperations.SetBinding(behavior, GlowWindowBehavior.UseRadialGradientForCornersProperty, new Binding { Path = new PropertyPath(UseRadialGradientForCornersProperty), Source = this });
 
             Interaction.GetBehaviors(this).Add(behavior);
@@ -153,11 +153,6 @@
         /// </summary>
         public static readonly DependencyProperty TryToBeFlickerFreeProperty = DependencyProperty.Register(nameof(TryToBeFlickerFree), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(default(bool)));
 
-        /// <summary>
-        /// <see cref="DependencyProperty"/> for <see cref="GlowBrush"/>.
-        /// </summary>
-        public static readonly DependencyProperty GlowBrushProperty = DependencyProperty.Register(nameof(GlowBrush), typeof(Brush), typeof(WindowChromeWindow), new PropertyMetadata(default(Brush)));
-
         public static readonly DependencyProperty ShowMinButtonProperty = DependencyProperty.Register(nameof(ShowMinButton), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(true));
 
         /// <summary>
@@ -181,26 +176,31 @@
         }
 
         /// <summary>
+        /// <see cref="DependencyProperty"/> for <see cref="GlowColor"/>.
+        /// </summary>
+        public static readonly DependencyProperty GlowColorProperty = DependencyProperty.Register(nameof(GlowColor), typeof(Color?), typeof(WindowChromeWindow), new PropertyMetadata(null));
+        
+        /// <summary>
         /// Gets or sets a brush which is used as the glow when the window is active.
         /// </summary>
-        public Brush GlowBrush
+        public Color? GlowColor
         {
-            get { return (Brush)this.GetValue(GlowBrushProperty); }
-            set { this.SetValue(GlowBrushProperty, value); }
+            get { return (Color?)this.GetValue(GlowColorProperty); }
+            set { this.SetValue(GlowColorProperty, value); }
         }
 
         /// <summary>
-        /// <see cref="DependencyProperty"/> for <see cref="NonActiveGlowBrush"/>.
+        /// <see cref="DependencyProperty"/> for <see cref="NonActiveGlowColor"/>.
         /// </summary>
-        public static readonly DependencyProperty NonActiveGlowBrushProperty = DependencyProperty.Register(nameof(NonActiveGlowBrush), typeof(Brush), typeof(WindowChromeWindow), new PropertyMetadata(default(Brush)));
+        public static readonly DependencyProperty NonActiveGlowColorProperty = DependencyProperty.Register(nameof(NonActiveGlowColor), typeof(Color?), typeof(WindowChromeWindow), new PropertyMetadata(null));
 
         /// <summary>
         /// Gets or sets a brush which is used as the glow when the window is not active.
         /// </summary>
-        public Brush NonActiveGlowBrush
+        public Color? NonActiveGlowColor
         {
-            get { return (Brush)this.GetValue(NonActiveGlowBrushProperty); }
-            set { this.SetValue(NonActiveGlowBrushProperty, value); }
+            get { return (Color?)this.GetValue(NonActiveGlowColorProperty); }
+            set { this.SetValue(NonActiveGlowColorProperty, value); }
         }
 
         /// <summary>

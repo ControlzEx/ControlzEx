@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 
 #pragma warning disable 618
 namespace ControlzEx.Behaviors
@@ -31,11 +31,11 @@ namespace ControlzEx.Behaviors
         private IEnumerable<GlowWindow> LoadedGlowWindows => this.glowWindows.Where(w => w != null)!;
 
         /// <summary>
-        /// <see cref="DependencyProperty"/> for <see cref="GlowBrush"/>.
+        /// <see cref="DependencyProperty"/> for <see cref="GlowColor"/>.
         /// </summary>
-        public static readonly DependencyProperty GlowBrushProperty = DependencyProperty.Register(nameof(GlowBrush), typeof(Brush), typeof(GlowWindowBehavior), new PropertyMetadata(default(Brush), OnGlowBrushChanged));
+        public static readonly DependencyProperty GlowColorProperty = DependencyProperty.Register(nameof(GlowColor), typeof(Color?), typeof(GlowWindowBehavior), new PropertyMetadata(default(Color?), OnGlowColorChanged));
 
-        private static void OnGlowBrushChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnGlowColorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             ((GlowWindowBehavior)d).UpdateGlowColors();
         }
@@ -43,18 +43,18 @@ namespace ControlzEx.Behaviors
         /// <summary>
         /// Gets or sets a brush which is used as the glow when the window is active.
         /// </summary>
-        public Brush? GlowBrush
+        public Color? GlowColor
         {
-            get => (Brush?)this.GetValue(GlowBrushProperty);
-            set => this.SetValue(GlowBrushProperty, value);
+            get => (Color?)this.GetValue(GlowColorProperty);
+            set => this.SetValue(GlowColorProperty, value);
         }
 
         /// <summary>
-        /// <see cref="DependencyProperty"/> for <see cref="NonActiveGlowBrush"/>.
+        /// <see cref="DependencyProperty"/> for <see cref="NonActiveGlowColor"/>.
         /// </summary>
-        public static readonly DependencyProperty NonActiveGlowBrushProperty = DependencyProperty.Register(nameof(NonActiveGlowBrush), typeof(Brush), typeof(GlowWindowBehavior), new PropertyMetadata(default(Brush), OnNonActiveGlowBrushChanged));
+        public static readonly DependencyProperty NonActiveGlowColorProperty = DependencyProperty.Register(nameof(NonActiveGlowColor), typeof(Color?), typeof(GlowWindowBehavior), new PropertyMetadata(default(Color?), OnNonActiveGlowColorChanged));
 
-        private static void OnNonActiveGlowBrushChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnNonActiveGlowColorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             ((GlowWindowBehavior)d).UpdateGlowColors();
         }
@@ -62,10 +62,10 @@ namespace ControlzEx.Behaviors
         /// <summary>
         /// Gets or sets a brush which is used as the glow when the window is not active.
         /// </summary>
-        public Brush? NonActiveGlowBrush
+        public Color? NonActiveGlowColor
         {
-            get => (Brush?)this.GetValue(NonActiveGlowBrushProperty);
-            set => this.SetValue(NonActiveGlowBrushProperty, value);
+            get => (Color?)this.GetValue(NonActiveGlowColorProperty);
+            set => this.SetValue(NonActiveGlowColorProperty, value);
         }
 
         /// <summary>
@@ -303,8 +303,8 @@ namespace ControlzEx.Behaviors
         {
             this.glowWindows[index] ??= new GlowWindow(this.AssociatedObject, this, (Dock)index)
             {
-                ActiveGlowColor = ((SolidColorBrush?)this.GlowBrush)?.Color ?? Colors.Transparent,
-                InactiveGlowColor = ((SolidColorBrush?)this.NonActiveGlowBrush)?.Color ?? Colors.Transparent,
+                ActiveGlowColor = this.GlowColor ?? Colors.Transparent,
+                InactiveGlowColor = this.NonActiveGlowColor ?? Colors.Transparent,
                 IsActive = this.AssociatedObject.IsActive,
                 GlowDepth = this.GlowDepth,
                 UseRadialGradientForCorners = this.UseRadialGradientForCorners
@@ -376,8 +376,8 @@ namespace ControlzEx.Behaviors
             {
                 foreach (var loadedGlowWindow in this.LoadedGlowWindows)
                 {
-                    loadedGlowWindow.ActiveGlowColor = ((SolidColorBrush?)this.GlowBrush)?.Color ?? Colors.Transparent;
-                    loadedGlowWindow.InactiveGlowColor = ((SolidColorBrush?)this.NonActiveGlowBrush)?.Color ?? Colors.Transparent;
+                    loadedGlowWindow.ActiveGlowColor = this.GlowColor ?? Colors.Transparent;
+                    loadedGlowWindow.InactiveGlowColor = this.NonActiveGlowColor ?? Colors.Transparent;
                 }
             }
         }
