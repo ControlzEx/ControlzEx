@@ -4,7 +4,6 @@ namespace ControlzEx.Standard
 {
     using System;
 
-    [CLSCompliant(false)]
     public static class DwmHelper
     {
         public static bool IsCompositionEnabled()
@@ -14,9 +13,9 @@ namespace ControlzEx.Standard
             return pfEnabled == 1;
         }
 
-        public static bool WindowSetAttribute(IntPtr hWnd, NativeMethods.DWMWINDOWATTRIBUTE attribute, uint attributeValue)
+        public static bool WindowSetAttribute(IntPtr hWnd, NativeMethods.DWMWINDOWATTRIBUTE attribute, ref int attributeValue)
         {
-            var result = NativeMethods.DwmSetWindowAttribute(hWnd, attribute, ref attributeValue, sizeof(uint));
+            var result = NativeMethods.DwmSetWindowAttribute(hWnd, attribute, ref attributeValue, sizeof(int));
             return result == 0;
         }
 

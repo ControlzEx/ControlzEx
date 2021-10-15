@@ -19,6 +19,7 @@ namespace ControlzEx.Standard
     using System.Security;
     using System.Text;
     using System.Windows;
+    using System.Windows.Media;
     using ControlzEx.Native;
     using JetBrains.Annotations;
     using Microsoft.Win32.SafeHandles;
@@ -43,7 +44,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// HIGHCONTRAST flags
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [Flags]
     public enum HCF
     {
@@ -84,7 +85,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// BITMAPINFOHEADER Compression type.  BI_*.
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum BI
     {
         RGB = 0,
@@ -93,7 +94,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// CombingRgn flags.  RGN_*
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum RGN
     {
         /// <summary>
@@ -122,7 +123,7 @@ namespace ControlzEx.Standard
         COPY = 5,
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum CombineRgnResult
     {
         ERROR = 0,
@@ -222,7 +223,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// DATAOBJ_GET_ITEM_FLAGS.  DOGIF_*.
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum DOGIF
     {
         DEFAULT = 0x0000,
@@ -232,14 +233,14 @@ namespace ControlzEx.Standard
         ONLY_IF_ONE = 0x0008,    // only return the item if there is one item in the array
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum DWM_SIT
     {
         None,
         DISPLAYFRAME = 1,
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [Flags]
     public enum ErrorModes
     {
@@ -276,7 +277,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// Non-client hit test values, HT*
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum HT
     {
         ERROR = -2,
@@ -308,7 +309,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// GetClassLongPtr values, GCLP_*
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum GCLP
     {
         HBRBACKGROUND = -10,
@@ -334,7 +335,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// GetWindowLongPtr values, GWL_*
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum GWL
     {
         WNDPROC = -4,
@@ -349,7 +350,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// SystemMetrics.  SM_*
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum SM
     {
         CXSCREEN = 0,
@@ -442,7 +443,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// SystemParameterInfo values, SPI_*
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum SPI
     {
         GETBEEP = 0x0001,
@@ -682,7 +683,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// SystemParameterInfo flag values, SPIF_*
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [Flags]
     public enum SPIF
     {
@@ -728,7 +729,7 @@ namespace ControlzEx.Standard
         VALID = 0x3FFFFFFF,
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum StockObject : int
     {
         WHITE_BRUSH = 0,
@@ -748,7 +749,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// CS_*
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [Flags]
     [CLSCompliant(false)]
     public enum CS : uint
@@ -771,7 +772,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// WindowStyle values, WS_*
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [Flags]
     [CLSCompliant(false)]
     public enum WS : uint
@@ -808,7 +809,7 @@ namespace ControlzEx.Standard
         CHILDWINDOW = CHILD,
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     internal struct STYLESTRUCT
     {
         public WS styleOld;
@@ -819,7 +820,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// Window message values, WM_*
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum WM
     {
         NULL = 0x0000,
@@ -1001,7 +1002,7 @@ namespace ControlzEx.Standard
     /// Window style extended values, WS_EX_*
     /// </summary>
     [Flags]
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [CLSCompliant(false)]
     public enum WS_EX : uint
     {
@@ -1037,7 +1038,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// GetDeviceCaps nIndex values.
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum DeviceCap
     {
         /// <summary>Number of bits per pixel
@@ -1060,7 +1061,7 @@ namespace ControlzEx.Standard
         LOGPIXELSY = 90,
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum FO : int
     {
         MOVE = 0x0001,
@@ -1072,7 +1073,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// "FILEOP_FLAGS", FOF_*.
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [CLSCompliant(false)]
     public enum FOF : ushort
     {
@@ -1097,7 +1098,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// EnableMenuItem uEnable values, MF_*
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [Flags]
     [CLSCompliant(false)]
     public enum MF : uint
@@ -1113,7 +1114,7 @@ namespace ControlzEx.Standard
     }
 
     /// <summary>Specifies the type of visual style attribute to set on a window.</summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [CLSCompliant(false)]
     public enum WINDOWTHEMEATTRIBUTETYPE : uint
     {
@@ -1124,7 +1125,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// DWMFLIP3DWINDOWPOLICY.  DWMFLIP3D_*
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum DWMFLIP3D
     {
         DEFAULT,
@@ -1171,7 +1172,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// WindowThemeNonClientAttributes
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [Flags]
     [CLSCompliant(false)]
     public enum WTNCA : uint
@@ -1195,7 +1196,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// SetWindowPos options
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [Flags]
     [CLSCompliant(false)]
     public enum SWP : uint
@@ -1281,7 +1282,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// ShowWindow options
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum SW
     {
         HIDE = 0,
@@ -1300,7 +1301,7 @@ namespace ControlzEx.Standard
         FORCEMINIMIZE = 11,
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum SC
     {
         SIZE = 0xF000,
@@ -1336,7 +1337,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// GDI+ Status codes
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum Status
     {
         Ok = 0,
@@ -1373,7 +1374,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// MSGFLT_*.  New in Vista.  Realiased in Windows 7.
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum MSGFLT
     {
         // Win7 versions of this enum:
@@ -1386,7 +1387,7 @@ namespace ControlzEx.Standard
         // REMOVE = 2,
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum MSGFLTINFO
     {
         NONE = 0,
@@ -1403,7 +1404,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// Shell_NotifyIcon messages.  NIM_*
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [CLSCompliant(false)]
     public enum NIM : uint
     {
@@ -1428,7 +1429,7 @@ namespace ControlzEx.Standard
         APPIDINFOLINK = 0x00000007, // indicates the data type is a pointer to a SHARDAPPIDINFOLINK structure 
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [Flags]
     public enum SLGP
     {
@@ -1440,7 +1441,7 @@ namespace ControlzEx.Standard
     /// <summary>
     /// Shell_NotifyIcon flags.  NIF_*
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [Flags]
     [CLSCompliant(false)]
     public enum NIF : uint
@@ -1495,14 +1496,14 @@ namespace ControlzEx.Standard
     /// <summary>
     /// AC_*
     /// </summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum AC : byte
     {
         SRC_OVER = 0,
         SRC_ALPHA = 1,
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public enum ULW
     {
         ALPHA = 2,
@@ -1554,7 +1555,7 @@ namespace ControlzEx.Standard
 
     #region SafeHandles
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public sealed class SafeFindHandle : SafeHandleZeroOrMinusOneIsInvalid
     {
         [SecurityCritical]
@@ -1569,7 +1570,7 @@ namespace ControlzEx.Standard
         }
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public sealed class SafeDC : SafeHandleZeroOrMinusOneIsInvalid
     {
         private static class NativeMethods
@@ -1839,7 +1840,7 @@ namespace ControlzEx.Standard
         }
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public sealed class SafeHBITMAP : SafeHandleZeroOrMinusOneIsInvalid
     {
         private SafeHBITMAP()
@@ -1964,7 +1965,7 @@ namespace ControlzEx.Standard
 
     #region Native Types
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     public struct BLENDFUNCTION
     {
@@ -1978,7 +1979,7 @@ namespace ControlzEx.Standard
         public AC AlphaFormat;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     public struct HIGHCONTRAST
     {
@@ -1989,7 +1990,7 @@ namespace ControlzEx.Standard
         public IntPtr lpszDefaultScheme;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     public struct RGBQUAD
     {
@@ -1999,7 +2000,7 @@ namespace ControlzEx.Standard
         public byte rgbReserved;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential, Pack = 2)]
     public struct BITMAPINFOHEADER
     {
@@ -2016,7 +2017,7 @@ namespace ControlzEx.Standard
         public int biClrImportant;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     public struct BITMAPINFO
     {
@@ -2051,7 +2052,7 @@ namespace ControlzEx.Standard
         public WS_EX dwExStyle;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode, Pack = 1)]
     public struct SHFILEOPSTRUCT
     {
@@ -2103,7 +2104,7 @@ namespace ControlzEx.Standard
         public RECT rgrect_CloseButton;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     public class NOTIFYICONDATA
     {
@@ -2142,7 +2143,7 @@ namespace ControlzEx.Standard
 #pragma warning restore 169
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
     public struct LOGFONT
     {
@@ -2173,7 +2174,7 @@ namespace ControlzEx.Standard
         public POINT ptMaxTrackSize;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     public struct NONCLIENTMETRICS
     {
@@ -2218,7 +2219,7 @@ namespace ControlzEx.Standard
     }
 
     /// <summary>Defines options that are used to set window visual style attributes.</summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Explicit)]
     public struct WTA_OPTIONS
     {
@@ -2244,7 +2245,7 @@ namespace ControlzEx.Standard
         public WTNCA dwMask;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     public struct MARGINS
     {
@@ -2269,7 +2270,7 @@ namespace ControlzEx.Standard
         public int Bottom;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
     public struct POINT
@@ -2328,7 +2329,7 @@ namespace ControlzEx.Standard
         }
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     public class RefPOINT
     {
@@ -2336,7 +2337,7 @@ namespace ControlzEx.Standard
         public int y;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential, Pack = 0)]
     [Serializable]
     public struct RECT : IEquatable<RECT>
@@ -2460,7 +2461,7 @@ namespace ControlzEx.Standard
         }
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     public struct SIZE
     {
@@ -2474,7 +2475,7 @@ namespace ControlzEx.Standard
         public int cy;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     public struct StartupOutput
     {
@@ -2482,7 +2483,7 @@ namespace ControlzEx.Standard
         public IntPtr unhook;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     public class StartupInput
     {
@@ -2492,7 +2493,7 @@ namespace ControlzEx.Standard
         public bool SuppressExternalCodecs;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
     [BestFitMapping(false)]
     public class WIN32_FIND_DATAW
@@ -2511,7 +2512,7 @@ namespace ControlzEx.Standard
         public string? cAlternateFileName;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
     public class WINDOWPLACEMENT
@@ -2524,7 +2525,7 @@ namespace ControlzEx.Standard
         public RECT normalPosition;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     public struct WINDOWPOS : IEquatable<WINDOWPOS>
     {
@@ -2629,7 +2630,7 @@ namespace ControlzEx.Standard
         public string lpszClassName;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
     public struct WNDCLASSEX
     {
@@ -2650,7 +2651,7 @@ namespace ControlzEx.Standard
         public IntPtr hIconSm;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     public struct WINDOWINFO
     {
@@ -2671,7 +2672,7 @@ namespace ControlzEx.Standard
         public ushort wCreatorVersion;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     public struct MOUSEINPUT
     {
@@ -2683,7 +2684,7 @@ namespace ControlzEx.Standard
         public IntPtr dwExtraInfo;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     public struct INPUT
     {
@@ -2692,7 +2693,7 @@ namespace ControlzEx.Standard
         public MOUSEINPUT mi;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     [CLSCompliant(false)]
     public struct UNSIGNED_RATIO
@@ -2701,7 +2702,7 @@ namespace ControlzEx.Standard
         public uint uiDenominator;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [CLSCompliant(false)]
     public struct DWM_TIMING_INFO
@@ -2767,7 +2768,7 @@ namespace ControlzEx.Standard
         public string szInsert;
     }
 
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     public struct APPBARDATA
     {
@@ -2785,14 +2786,14 @@ namespace ControlzEx.Standard
     #endregion
 
     /// <summary>Delegate declaration that matches native WndProc signatures.</summary>
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public delegate IntPtr WndProc(IntPtr hwnd, WM uMsg, IntPtr wParam, IntPtr lParam);
 
     /// <summary>Delegate declaration that matches managed WndProc signatures.</summary>
     internal delegate IntPtr MessageHandler(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled);
 
     // Some native methods are shimmed through public versions that handle converting failures into thrown exceptions.
-    [Obsolete(ControlzEx.DesignerConstants.Win32ElementWarning)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
     public static class NativeMethods
     {
         [DllImport("user32.dll", EntryPoint = "AdjustWindowRectEx", SetLastError = true)]
@@ -3059,16 +3060,34 @@ namespace ControlzEx.Standard
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool IsWindow(IntPtr hwnd);
 
-        [CLSCompliant(false)]
-        public enum DWMNCRENDERINGPOLICY : uint
+        internal struct COLORREF
+        {
+            public uint dwColor;
+
+            public COLORREF(uint dwColor)
+            {
+                this.dwColor = dwColor;
+            }
+
+            public COLORREF(Color color)
+            {
+                this.dwColor = (uint)(color.R + (color.G << 8) + (color.B << 16));
+            }
+
+            public Color GetMediaColor()
+            {
+                return Color.FromRgb((byte)(0xFFu & this.dwColor), (byte)((0xFF00 & this.dwColor) >> 8), (byte)((0xFF0000 & this.dwColor) >> 16));
+            }
+        }
+
+        public enum DWMNCRENDERINGPOLICY : int
         {
             UseWindowStyle, // Enable/disable non-client rendering based on window style
             Disabled, // Disabled non-client rendering; window style is ignored
             Enabled // Enabled non-client rendering; window style is ignored
         }
 
-        [CLSCompliant(false)]
-        public enum DWMWINDOWATTRIBUTE : uint
+        public enum DWMWINDOWATTRIBUTE : int
         {
             NCRENDERING_ENABLED = 1,              // [get] Is non-client rendering enabled/disabled
             NCRENDERING_POLICY,                   // [set] DWMNCRENDERINGPOLICY - Non-client rendering policy
@@ -3102,11 +3121,11 @@ namespace ControlzEx.Standard
 
         //https://msdn.microsoft.com/en-us/library/windows/desktop/aa969515(v=vs.85).aspx
         [DllImport("dwmapi.dll")]
-        internal static extern int DwmGetWindowAttribute(IntPtr hwnd, DWMWINDOWATTRIBUTE attr, ref uint attrValue, int attrSize);
+        internal static extern int DwmGetWindowAttribute(IntPtr hwnd, DWMWINDOWATTRIBUTE attr, ref int attrValue, int attrSize);
 
         //https://msdn.microsoft.com/en-us/library/windows/desktop/aa969524(v=vs.85).aspx
         [DllImport("dwmapi.dll")]
-        internal static extern int DwmSetWindowAttribute(IntPtr hwnd, DWMWINDOWATTRIBUTE attr, ref uint attrValue, int attrSize);
+        internal static extern int DwmSetWindowAttribute(IntPtr hwnd, DWMWINDOWATTRIBUTE attr, ref int attrValue, int attrSize);
 
         [DllImport("dwmapi.dll")]
         internal static extern int DwmIsCompositionEnabled(ref int pfEnabled);
@@ -3332,18 +3351,18 @@ namespace ControlzEx.Standard
         /// </summary>
         /// <param name="hWnd">The handle for this method.</param>
         /// <param name="point">The relative mouse position to the given handle.</param>
-        public static bool TryGetRelativeMousePosition(IntPtr hWnd, out System.Windows.Point point)
+        public static bool TryGetRelativeMousePosition(IntPtr hWnd, out Point point)
         {
             POINT pt = default(POINT);
             var returnValue = hWnd != IntPtr.Zero && TryGetPhysicalCursorPos(out pt);
             if (returnValue)
             {
                 ScreenToClient(hWnd, ref pt);
-                point = new System.Windows.Point(pt.X, pt.Y);
+                point = new Point(pt.X, pt.Y);
             }
             else
             {
-                point = default(System.Windows.Point);
+                point = default(Point);
             }
 
             return returnValue;
@@ -3488,13 +3507,13 @@ namespace ControlzEx.Standard
         public static IntPtr GetTaskBarHandleForMonitor(IntPtr monitor)
         {
             // maybe we can use ReBarWindow32 isntead Shell_TrayWnd
-            var hwnd = NativeMethods.FindWindow("Shell_TrayWnd", null);
-            var monitorWithTaskbarOnIt = NativeMethods.MonitorFromWindow(hwnd, MonitorOptions.MONITOR_DEFAULTTONEAREST);
+            var hwnd = FindWindow("Shell_TrayWnd", null);
+            var monitorWithTaskbarOnIt = MonitorFromWindow(hwnd, MonitorOptions.MONITOR_DEFAULTTONEAREST);
 
             if (!Equals(monitor, monitorWithTaskbarOnIt))
             {
-                hwnd = NativeMethods.FindWindow("Shell_SecondaryTrayWnd", null);
-                monitorWithTaskbarOnIt = NativeMethods.MonitorFromWindow(hwnd, MonitorOptions.MONITOR_DEFAULTTONEAREST);
+                hwnd = FindWindow("Shell_SecondaryTrayWnd", null);
+                monitorWithTaskbarOnIt = MonitorFromWindow(hwnd, MonitorOptions.MONITOR_DEFAULTTONEAREST);
 
                 if (!Equals(monitor, monitorWithTaskbarOnIt))
                 {
