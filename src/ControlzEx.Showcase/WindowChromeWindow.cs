@@ -1,4 +1,4 @@
-namespace ControlzEx.Showcase
+﻿namespace ControlzEx.Showcase
 {
     using System;
     using System.Windows;

@@ -41,8 +41,6 @@ namespace ControlzEx.Behaviors
         [SecuritySafeCritical]
         public WindowChromeBehavior()
         {
-            this.cornerGripThickness = new Thickness(this.ResizeBorderThickness.Left * 2, this.ResizeBorderThickness.Top * 2, this.ResizeBorderThickness.Right * 2, this.ResizeBorderThickness.Bottom * 2);
-            
             // Effective default values for some of these properties are set to be bindings
             // that set them to system defaults.
             // A more correct way to do this would be to Coerce the value iff the source of the DP was the default value.

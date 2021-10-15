@@ -14,6 +14,7 @@ namespace ControlzEx.Controls.Internal
     using System.Windows.Media;
     using ControlzEx.Behaviors;
     using ControlzEx.Helpers;
+    using ControlzEx.Native;
     using ControlzEx.Standard;
     using JetBrains.Annotations;
 
@@ -538,7 +539,7 @@ namespace ControlzEx.Controls.Internal
         private int height;
 
         private int glowDepth = 9;
-        private int cornerGripThickness = 18;
+        private readonly int cornerGripThickness = Constants.ResizeCornerGripThickness;
 
         private bool useRadialGradientForCorners = true;
 
@@ -612,11 +613,7 @@ namespace ControlzEx.Controls.Internal
         public int GlowDepth
         {
             get => this.glowDepth;
-            set
-            {
-                this.cornerGripThickness = value * 2;
-                this.UpdateProperty(ref this.glowDepth, value, FieldInvalidationTypes.GlowDepth | FieldInvalidationTypes.Render | FieldInvalidationTypes.Location);
-            }
+            set => this.UpdateProperty(ref this.glowDepth, value, FieldInvalidationTypes.GlowDepth | FieldInvalidationTypes.Render | FieldInvalidationTypes.Location);
         }
 
         public bool UseRadialGradientForCorners

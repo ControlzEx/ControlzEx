@@ -40,7 +40,7 @@ namespace ControlzEx.Behaviors
 
         private bool isCleanedUp;
 
-        private Thickness cornerGripThickness;
+        private readonly Thickness cornerGripThickness = new(Constants.ResizeCornerGripThickness);
 
         private struct SystemParameterBoundProperty
         {
