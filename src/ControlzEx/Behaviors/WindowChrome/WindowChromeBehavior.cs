@@ -40,8 +40,6 @@ namespace ControlzEx.Behaviors
 
         private bool isCleanedUp;
 
-        private bool dpiChanged;
-        
         private Thickness cornerGripThickness;
 
         private struct SystemParameterBoundProperty
@@ -65,25 +63,6 @@ namespace ControlzEx.Behaviors
             DependencyProperty.Register(nameof(ResizeBorderThickness), typeof(Thickness), typeof(WindowChromeBehavior), new PropertyMetadata(GetDefaultResizeBorderThickness(), OnResizeBorderThicknessChanged), (value) => ((Thickness)value).IsNonNegative());
 
         private static void OnResizeBorderThicknessChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var behavior = (WindowChromeBehavior)d;
-            behavior._OnChromePropertyChangedThatRequiresRepaint();
-        }
-
-        /// <summary>
-        /// Mirror property for <see cref="ResizeBorderThickness"/>.
-        /// </summary>
-        public Thickness NativeResizeBorderThickness
-        {
-            get { return (Thickness)this.GetValue(NativeResizeBorderThicknessProperty); }
-            set { this.SetValue(NativeResizeBorderThicknessProperty, value); }
-        }
-
-        /// <summary>Identifies the <see cref="NativeResizeBorderThickness"/> dependency property.</summary>
-        public static readonly DependencyProperty NativeResizeBorderThicknessProperty =
-            DependencyProperty.Register(nameof(NativeResizeBorderThickness), typeof(Thickness), typeof(WindowChromeBehavior), new PropertyMetadata(GetDefaultResizeBorderThickness(), OnNativeResizeBorderThicknessChanged), (value) => ((Thickness)value).IsNonNegative());
-
-        private static void OnNativeResizeBorderThicknessChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var behavior = (WindowChromeBehavior)d;
             behavior._OnChromePropertyChangedThatRequiresRepaint();

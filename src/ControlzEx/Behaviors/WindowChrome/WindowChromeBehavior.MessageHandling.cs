@@ -164,8 +164,6 @@ namespace ControlzEx.Behaviors
                     break;
                 case WM.MOVE:
                     return this._HandleMOVEForRealSize(message, wParam, lParam, out handled);
-                case WM.DPICHANGED:
-                    return this._HandleDPICHANGED(message, wParam, lParam, out handled);
                 case WM.STYLECHANGING:
                     return this._HandleStyleChanging(message, wParam, lParam, out handled);
                 case WM.DESTROY:
@@ -326,29 +324,15 @@ namespace ControlzEx.Behaviors
             // Since the first field of NCCALCSIZE_PARAMS is a RECT and is the only field we care about
             // we can unconditionally treat it as a RECT.
 
-            // We have to get the monitor preferably from the window position as the info for the window handle might not yet be updated.
-            // As we update lastWindowpos in WINDOWPOSCHANGING we have the right "future" position and thus can get the correct monitor from that.
-            var monitor = MonitorHelper.MonitorFromWindowPosOrWindow(this.lastWindowpos, this.windowHandle);
-
-            if (this.dpiChanged)
-            {
-                this.dpiChanged = false;
-                handled = this.IgnoreTaskbarOnMaximize == false;
-                return IntPtr.Zero;
-            }
-
             handled = true;
 
             var hwndState = this._GetHwndState();
 
             if (hwndState == WindowState.Maximized)
             {
-                var rcBefore = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT))!;
-                NativeMethods.DefWindowProc(this.windowHandle, uMsg, wParam, lParam);
-
-                var rc = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT))!;
-                rc.Top -= (int)Math.Ceiling(DpiHelper.TransformToDeviceY(SystemParameters.CaptionHeight + 1D, this.AssociatedObject.GetDpi().PixelsPerInchY));
-
+                // We have to get the monitor preferably from the window position as the info for the window handle might not yet be updated.
+                // As we update lastWindowpos in WINDOWPOSCHANGING we have the right "future" position and thus can get the correct monitor from that.
+                var monitor = MonitorHelper.MonitorFromWindowPosOrWindow(this.lastWindowpos, this.windowHandle);
                 var monitorInfo = NativeMethods.GetMonitorInfo(monitor);
                 //System.Diagnostics.Trace.WriteLine(monitorInfo.rcWork);
 
@@ -356,6 +340,7 @@ namespace ControlzEx.Behaviors
                     ? monitorInfo.rcMonitor
                     : monitorInfo.rcWork;
 
+                var rc = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT))!;
                 rc.Left = monitorRect.Left;
                 rc.Top = monitorRect.Top;
                 rc.Right = monitorRect.Right;
@@ -373,26 +358,10 @@ namespace ControlzEx.Behaviors
             }
             else if (NativeMethods.GetWindowStyle(this.windowHandle).HasFlag(WS.CAPTION))
             {
+                var rcBefore = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT))!;
+                NativeMethods.DefWindowProc(this.windowHandle, uMsg, wParam, lParam);
                 var rc = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT))!;
-                var dpiScale = this.AssociatedObject.GetDpi();
-                var deviceResizeBorderThickness = DpiHelper.LogicalThicknessToDevice(this.NativeResizeBorderThickness, dpiScale);
-                //rc.Top += (int)deviceResizeBorderThickness.Top; // todo: Should we really do that?
-                rc.Left += (int)deviceResizeBorderThickness.Left;
-                rc.Right -= (int)deviceResizeBorderThickness.Right;
-                rc.Bottom -= (int)deviceResizeBorderThickness.Bottom;
-                Marshal.StructureToPtr(rc, lParam, true);
-            }
-            else if (this.TryToBeFlickerFree
-                     && hwndState == WindowState.Normal
-                     && wParam.ToInt32() != 0)
-            {
-                var rc = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT))!;
-
-                // We have to add or remove one pixel on any side of the window to force a flicker free resize.
-                // Removing pixels would result in a smaller client area.
-                // Adding pixels does not seem to really increase the client area.
-                rc.Bottom += 1;
-
+                rc.Top = rcBefore.Top; // Remove titlebar
                 Marshal.StructureToPtr(rc, lParam, true);
             }
 
@@ -760,25 +729,6 @@ namespace ControlzEx.Behaviors
                      */
                     NativeMethods.SetWindowPos(this.windowHandle, IntPtr.Zero, rcMonitorArea.Left, rcMonitorArea.Top, rcMonitorArea.Width, rcMonitorArea.Height, SWP.ASYNCWINDOWPOS | SWP.FRAMECHANGED | SWP.NOCOPYBITS);
                 }
-            }
-
-            handled = false;
-            return IntPtr.Zero;
-        }
-
-        /// <SecurityNote>
-        ///   Critical : Calls critical methods
-        /// </SecurityNote>
-        [SecurityCritical]
-        private IntPtr _HandleDPICHANGED(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
-        {
-            this.dpiChanged = true;
-
-            if (this._GetHwndState() == WindowState.Normal)
-            {
-                var rect = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT))!;
-                rect.Bottom += 1;
-                Marshal.StructureToPtr(rect, lParam, true);
             }
 
             handled = false;

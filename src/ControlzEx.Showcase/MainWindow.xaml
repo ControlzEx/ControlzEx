@@ -570,14 +570,6 @@
                                              Text="{Binding ElementName=Window, Path=ResizeBorderThickness, Mode=TwoWay}" />
 
                                     <Label>
-                                        NativeResizeBorderThickness
-                                    </Label>
-                                    <TextBox Margin="4"
-                                             Padding="2"
-                                             VerticalAlignment="Center"
-                                             Text="{Binding ElementName=Window, Path=NativeResizeBorderThickness, Mode=TwoWay}" />
-
-                                    <Label>
                                         GlowDepth
                                     </Label>
                                     <TextBox Margin="4"
