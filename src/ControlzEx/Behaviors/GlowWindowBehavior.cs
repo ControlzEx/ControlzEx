@@ -350,7 +350,8 @@ namespace ControlzEx.Behaviors
                     && !NativeMethods.IsIconic(handle)
                     && !NativeMethods.IsZoomed(handle))
                 {
-                    return this.AssociatedObject.ResizeMode != ResizeMode.NoResize;
+                    return this.AssociatedObject.ResizeMode != ResizeMode.NoResize
+                           && this.GlowDepth > 0;
                 }
 
                 return false;
@@ -397,6 +398,8 @@ namespace ControlzEx.Behaviors
         {
             using (this.DeferGlowChanges())
             {
+                this.UpdateGlowVisibility(false);
+
                 foreach (var loadedGlowWindow in this.LoadedGlowWindows)
                 {
                     loadedGlowWindow.GlowDepth = this.GlowDepth;
