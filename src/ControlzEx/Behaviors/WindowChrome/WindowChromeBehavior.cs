@@ -1,4 +1,4 @@
-﻿#pragma warning disable 618, CA1001
+#pragma warning disable 618, CA1001
 
 // ReSharper disable once CheckNamespace
 namespace ControlzEx.Behaviors
@@ -216,6 +216,22 @@ namespace ControlzEx.Behaviors
         {
             get { return (bool)this.GetValue(EnableMaxRestoreProperty); }
             set { this.SetValue(EnableMaxRestoreProperty, BooleanBoxes.Box(value)); }
+        }
+
+        public static readonly DependencyProperty CornerPreferenceProperty = 
+            DependencyProperty.Register(nameof(CornerPreference), typeof(DWM_WINDOW_CORNER_PREFERENCE), typeof(WindowChromeBehavior), new PropertyMetadata(DWM_WINDOW_CORNER_PREFERENCE.DEFAULT, OnCornerPreferenceChanged));
+
+        public DWM_WINDOW_CORNER_PREFERENCE CornerPreference
+        {
+            get => (DWM_WINDOW_CORNER_PREFERENCE)this.GetValue(CornerPreferenceProperty);
+            set => this.SetValue(CornerPreferenceProperty, value);
+        }
+
+        private static void OnCornerPreferenceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var behavior = (WindowChromeBehavior)d;
+
+            behavior.UpdateDWMCornerPreference((DWM_WINDOW_CORNER_PREFERENCE)e.NewValue);
         }
 
         /// <inheritdoc />
@@ -494,6 +510,16 @@ namespace ControlzEx.Behaviors
             }
 
             this.borderThicknessChangeNotifier.RaiseValueChanged = true;
+        }
+
+        private bool UpdateDWMCornerPreference(DWM_WINDOW_CORNER_PREFERENCE cornerPreference)
+        {
+            if (this.windowHandle == IntPtr.Zero)
+            {
+                return false;
+            }
+
+            return DwmHelper.SetWindowAttributeValue(this.windowHandle, DWMWINDOWATTRIBUTE.WINDOW_CORNER_PREFERENCE, (int)cornerPreference);
         }
 
         private static void Invoke(DispatcherObject dispatcherObject, Action invokeAction)

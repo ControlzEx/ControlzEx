@@ -38,6 +38,14 @@
                 <x:Type TypeName="WindowStyle" />
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
+
+        <ObjectDataProvider x:Key="CornerPreferenceEnumValues"
+                            MethodName="GetValues"
+                            ObjectType="{x:Type native:DWM_WINDOW_CORNER_PREFERENCE}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="native:DWM_WINDOW_CORNER_PREFERENCE" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
     </local:WindowChromeWindow.Resources>
 
     <Grid SnapsToDevicePixels="True">
@@ -419,6 +427,15 @@
                                               VerticalAlignment="Center"
                                               IsChecked="{Binding ElementName=Window, Path=TryToBeFlickerFree, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
+                                    <Label>
+                                        CornerPreference
+                                    </Label>
+                                    <ComboBox x:Name="CornerPreferenceComboBox"
+                                              Margin="4"
+                                              VerticalAlignment="Center"
+                                              ItemsSource="{Binding Source={StaticResource CornerPreferenceEnumValues}}"
+                                              SelectedItem="{Binding ElementName=Window, Path=CornerPreference, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    
                                     <Label>
                                         Topmost
                                     </Label>

@@ -1,4 +1,5 @@
-﻿namespace ControlzEx.Showcase
+#pragma warning disable 618
+namespace ControlzEx.Showcase
 {
     using System;
     using System.Windows;
@@ -6,6 +7,7 @@
     using System.Windows.Media;
     using System.Windows.Threading;
     using ControlzEx.Behaviors;
+    using ControlzEx.Standard;
     using Microsoft.Xaml.Behaviors;
 
     public class WindowChromeWindow : Window
@@ -64,6 +66,8 @@
             BindingOperations.SetBinding(behavior, WindowChromeBehavior.EnableMinimizeProperty, new Binding { Path = new PropertyPath(ShowMinButtonProperty), Source = this });
             BindingOperations.SetBinding(behavior, WindowChromeBehavior.EnableMaxRestoreProperty, new Binding { Path = new PropertyPath(ShowMaxRestoreButtonProperty), Source = this });
 
+            BindingOperations.SetBinding(behavior, WindowChromeBehavior.CornerPreferenceProperty, new Binding { Path = new PropertyPath(CornerPreferenceProperty), Source = this });
+
             this.SetBinding(IsNCActiveProperty, new Binding { Path = new PropertyPath(WindowChromeBehavior.IsNCActiveProperty), Source = behavior });
 
             Interaction.GetBehaviors(this).Add(behavior);
@@ -86,8 +90,8 @@
 
         public Thickness ResizeBorderThickness
         {
-            get { return (Thickness)this.GetValue(ResizeBorderThicknessProperty); }
-            set { this.SetValue(ResizeBorderThicknessProperty, value); }
+            get => (Thickness)this.GetValue(ResizeBorderThicknessProperty);
+            set => this.SetValue(ResizeBorderThicknessProperty, value);
         }
 
         // Using a DependencyProperty as the backing store for ResizeBorderThickness.  This enables animation, styling, binding, etc...
@@ -96,8 +100,8 @@
 
         public int GlowDepth
         {
-            get { return (int)this.GetValue(GlowDepthProperty); }
-            set { this.SetValue(GlowDepthProperty, value); }
+            get => (int)this.GetValue(GlowDepthProperty);
+            set => this.SetValue(GlowDepthProperty, value);
         }
 
         // Using a DependencyProperty as the backing store for GlowDepth.  This enables animation, styling, binding, etc...
@@ -109,16 +113,16 @@
 
         public bool UseRadialGradientForCorners
         {
-            get { return (bool)this.GetValue(UseRadialGradientForCornersProperty); }
-            set { this.SetValue(UseRadialGradientForCornersProperty, value); }
+            get => (bool)this.GetValue(UseRadialGradientForCornersProperty);
+            set => this.SetValue(UseRadialGradientForCornersProperty, value);
         }
 
         public static readonly DependencyProperty IgnoreTaskbarOnMaximizeProperty = DependencyProperty.Register(nameof(IgnoreTaskbarOnMaximize), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(WindowChromeBehavior.IgnoreTaskbarOnMaximizeProperty.DefaultMetadata.DefaultValue));
 
         public bool IgnoreTaskbarOnMaximize
         {
-            get { return (bool)this.GetValue(IgnoreTaskbarOnMaximizeProperty); }
-            set { this.SetValue(IgnoreTaskbarOnMaximizeProperty, value); }
+            get => (bool)this.GetValue(IgnoreTaskbarOnMaximizeProperty);
+            set => this.SetValue(IgnoreTaskbarOnMaximizeProperty, value);
         }
 
         /// <summary>
@@ -127,8 +131,8 @@
         /// </summary>
         public bool KeepBorderOnMaximize
         {
-            get { return (bool)this.GetValue(KeepBorderOnMaximizeProperty); }
-            set { this.SetValue(KeepBorderOnMaximizeProperty, value); }
+            get => (bool)this.GetValue(KeepBorderOnMaximizeProperty);
+            set => this.SetValue(KeepBorderOnMaximizeProperty, value);
         }
 
         /// <summary>
@@ -144,8 +148,8 @@
         /// </remarks>
         public bool TryToBeFlickerFree
         {
-            get { return (bool)this.GetValue(TryToBeFlickerFreeProperty); }
-            set { this.SetValue(TryToBeFlickerFreeProperty, value); }
+            get => (bool)this.GetValue(TryToBeFlickerFreeProperty);
+            set => this.SetValue(TryToBeFlickerFreeProperty, value);
         }
 
         /// <summary>
@@ -160,8 +164,8 @@
         /// </summary>
         public bool ShowMinButton
         {
-            get { return (bool)this.GetValue(ShowMinButtonProperty); }
-            set { this.SetValue(ShowMinButtonProperty, value); }
+            get => (bool)this.GetValue(ShowMinButtonProperty);
+            set => this.SetValue(ShowMinButtonProperty, value);
         }
 
         public static readonly DependencyProperty ShowMaxRestoreButtonProperty = DependencyProperty.Register(nameof(ShowMaxRestoreButton), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(true));
@@ -171,22 +175,22 @@
         /// </summary>
         public bool ShowMaxRestoreButton
         {
-            get { return (bool)this.GetValue(ShowMaxRestoreButtonProperty); }
-            set { this.SetValue(ShowMaxRestoreButtonProperty, value); }
+            get => (bool)this.GetValue(ShowMaxRestoreButtonProperty);
+            set => this.SetValue(ShowMaxRestoreButtonProperty, value);
         }
 
         /// <summary>
         /// <see cref="DependencyProperty"/> for <see cref="GlowColor"/>.
         /// </summary>
         public static readonly DependencyProperty GlowColorProperty = DependencyProperty.Register(nameof(GlowColor), typeof(Color?), typeof(WindowChromeWindow), new PropertyMetadata(null));
-        
+
         /// <summary>
         /// Gets or sets a brush which is used as the glow when the window is active.
         /// </summary>
         public Color? GlowColor
         {
-            get { return (Color?)this.GetValue(GlowColorProperty); }
-            set { this.SetValue(GlowColorProperty, value); }
+            get => (Color?)this.GetValue(GlowColorProperty);
+            set => this.SetValue(GlowColorProperty, value);
         }
 
         /// <summary>
@@ -199,8 +203,8 @@
         /// </summary>
         public Color? NonActiveGlowColor
         {
-            get { return (Color?)this.GetValue(NonActiveGlowColorProperty); }
-            set { this.SetValue(NonActiveGlowColorProperty, value); }
+            get => (Color?)this.GetValue(NonActiveGlowColorProperty);
+            set => this.SetValue(NonActiveGlowColorProperty, value);
         }
 
         /// <summary>
@@ -213,32 +217,32 @@
         /// </summary>
         public bool IsNCActive
         {
-            get { return (bool)this.GetValue(IsNCActiveProperty); }
-            private set { this.SetValue(IsNCActiveProperty, value); }
+            get => (bool)this.GetValue(IsNCActiveProperty);
+            private set => this.SetValue(IsNCActiveProperty, value);
         }
 
         public static readonly DependencyProperty NCActiveBrushProperty = DependencyProperty.Register(nameof(NCActiveBrush), typeof(Brush), typeof(WindowChromeWindow), new PropertyMetadata(default(Brush)));
 
         public Brush NCActiveBrush
         {
-            get { return (Brush)this.GetValue(NCActiveBrushProperty); }
-            set { this.SetValue(NCActiveBrushProperty, value); }
+            get => (Brush)this.GetValue(NCActiveBrushProperty);
+            set => this.SetValue(NCActiveBrushProperty, value);
         }
 
         public static readonly DependencyProperty NCNonActiveBrushProperty = DependencyProperty.Register(nameof(NCNonActiveBrush), typeof(Brush), typeof(WindowChromeWindow), new PropertyMetadata(default(Brush)));
 
         public Brush NCNonActiveBrush
         {
-            get { return (Brush)this.GetValue(NCNonActiveBrushProperty); }
-            set { this.SetValue(NCNonActiveBrushProperty, value); }
+            get => (Brush)this.GetValue(NCNonActiveBrushProperty);
+            set => this.SetValue(NCNonActiveBrushProperty, value);
         }
 
         public static readonly DependencyProperty NCCurrentBrushProperty = DependencyProperty.Register(nameof(NCCurrentBrush), typeof(Brush), typeof(WindowChromeWindow), new PropertyMetadata(default(Brush)));
 
         public Brush NCCurrentBrush
         {
-            get { return (Brush)this.GetValue(NCCurrentBrushProperty); }
-            set { this.SetValue(NCCurrentBrushProperty, value); }
+            get => (Brush)this.GetValue(NCCurrentBrushProperty);
+            set => this.SetValue(NCCurrentBrushProperty, value);
         }
     }
 }
