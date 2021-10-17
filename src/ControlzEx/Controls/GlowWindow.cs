@@ -697,10 +697,14 @@ namespace ControlzEx.Controls.Internal
 
         protected override IntPtr WndProc(IntPtr hwnd, WM msg, IntPtr wParam, IntPtr lParam)
         {
-            System.Diagnostics.Trace.WriteLine($"{DateTime.Now} {msg}");
-            
+            //System.Diagnostics.Trace.WriteLine($"{DateTime.Now} {msg}");
+
             switch (msg)
             {
+                case WM.DESTROY:
+                    this.Dispose();
+                    break;
+
                 case WM.NCHITTEST:
                     return new IntPtr((int)this.WmNcHitTest(lParam));
 
