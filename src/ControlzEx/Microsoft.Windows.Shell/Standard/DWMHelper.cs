@@ -13,7 +13,12 @@ namespace ControlzEx.Standard
             return pfEnabled == 1;
         }
 
-        public static bool WindowSetAttribute(IntPtr hWnd, NativeMethods.DWMWINDOWATTRIBUTE attribute, ref int attributeValue)
+        public static bool SetWindowAttributeValue(IntPtr hWnd, DWMWINDOWATTRIBUTE attribute, int attributeValue)
+        {
+            return SetWindowAttribute(hWnd, attribute, ref attributeValue);
+        }
+
+        public static bool SetWindowAttribute(IntPtr hWnd, DWMWINDOWATTRIBUTE attribute, ref int attributeValue)
         {
             var result = NativeMethods.DwmSetWindowAttribute(hWnd, attribute, ref attributeValue, sizeof(int));
             return result == 0;
