@@ -81,12 +81,14 @@
 
                 <UniformGrid Grid.Column="2" Columns="3">
                     <Button Style="{StaticResource WindowTitleBarButton}"
+                            IsEnabled="{Binding IsEnabled, ElementName=MinimizeButton}"
                             Width="20"
                             Content="_"
                             Click="MinimizeButton_Click"
                             controlzEx:NonClientControlProperties.HitTestResult="MINBUTTON"
                             controlzEx:NonClientControlProperties.ClickStrategy="AutomationPeer" />
                     <Button Style="{StaticResource WindowTitleBarButton}"
+                            IsEnabled="{Binding IsEnabled, ElementName=MaximizeButton}"
                             Content="[ ]"
                             Click="RestoreOrMaximizeButton_Click"
                             controlzEx:NonClientControlProperties.HitTestResult="MAXBUTTON"
@@ -126,7 +128,8 @@
                                       BorderThickness="0 1 0 0"
                                       Header="Actions">
                                 <WrapPanel Orientation="Horizontal">
-                                    <Button MinWidth="100"
+                                    <Button x:Name="MinimizeButton"
+                                            MinWidth="100"
                                             Margin="4"
                                             Padding="4"
                                             Click="ButtonMinimizeOnClick"
@@ -135,16 +138,16 @@
                                             <Style BasedOn="{StaticResource {x:Type Button}}"
                                                    TargetType="{x:Type Button}">
                                                 <Style.Triggers>
-                                                    <DataTrigger
-                                                        Binding="{Binding ElementName=Window, Path=ResizeMode}"
-                                                        Value="{x:Static ResizeMode.NoResize}">
+                                                    <DataTrigger Binding="{Binding ElementName=Window, Path=ResizeMode}"
+                                                                 Value="{x:Static ResizeMode.NoResize}">
                                                         <Setter Property="IsEnabled" Value="False" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
                                         </Button.Style>
                                     </Button>
-                                    <Button MinWidth="100"
+                                    <Button x:Name="MaximizeButton" 
+                                            MinWidth="100"
                                             Margin="4"
                                             Padding="4"
                                             Click="ButtonMaximizeOnClick"
@@ -153,14 +156,12 @@
                                             <Style BasedOn="{StaticResource {x:Type Button}}"
                                                    TargetType="{x:Type Button}">
                                                 <Style.Triggers>
-                                                    <DataTrigger
-                                                        Binding="{Binding ElementName=Window, Path=ResizeMode}"
-                                                        Value="{x:Static ResizeMode.NoResize}">
+                                                    <DataTrigger Binding="{Binding ElementName=Window, Path=ResizeMode}"
+                                                                 Value="{x:Static ResizeMode.NoResize}">
                                                         <Setter Property="IsEnabled" Value="False" />
                                                     </DataTrigger>
-                                                    <DataTrigger
-                                                        Binding="{Binding ElementName=Window, Path=ResizeMode}"
-                                                        Value="{x:Static ResizeMode.CanMinimize}">
+                                                    <DataTrigger Binding="{Binding ElementName=Window, Path=ResizeMode}"
+                                                                 Value="{x:Static ResizeMode.CanMinimize}">
                                                         <Setter Property="IsEnabled" Value="False" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
@@ -177,9 +178,8 @@
                                                    TargetType="{x:Type Button}">
                                                 <Setter Property="IsEnabled" Value="False" />
                                                 <Style.Triggers>
-                                                    <DataTrigger
-                                                        Binding="{Binding ElementName=Window, Path=WindowState}"
-                                                        Value="{x:Static WindowState.Maximized}">
+                                                    <DataTrigger Binding="{Binding ElementName=Window, Path=WindowState}"
+                                                                 Value="{x:Static WindowState.Maximized}">
                                                         <Setter Property="IsEnabled" Value="True" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
