@@ -467,7 +467,8 @@ namespace ControlzEx.Behaviors
             var mousePosScreen = Utility.GetPoint(lParam);
             var windowRect = this._GetWindowRect();
 
-            var ht = this._GetHwndState() == WindowState.Maximized
+            var preventResize = this._GetHwndState() == WindowState.Maximized || this.AssociatedObject.ResizeMode is ResizeMode.NoResize;
+            var ht = preventResize
                 ? HT.CLIENT
                 : this._HitTestNca(DpiHelper.DeviceRectToLogical(windowRect, dpi.DpiScaleX, dpi.DpiScaleY),
                                    DpiHelper.DevicePixelsToLogical(mousePosScreen, dpi.DpiScaleX, dpi.DpiScaleY));
@@ -490,10 +491,13 @@ namespace ControlzEx.Behaviors
                         return HT.CLIENT;
                     }
 
-                    var direction = WindowChrome.GetResizeGripDirection(inputElement);
-                    if (direction != ResizeGripDirection.None)
+                    if (this.AssociatedObject.ResizeMode == ResizeMode.CanResizeWithGrip)
                     {
-                        return this._GetHTFromResizeGripDirection(direction);
+                        var direction = WindowChrome.GetResizeGripDirection(inputElement);
+                        if (direction != ResizeGripDirection.None)
+                        {
+                            return this._GetHTFromResizeGripDirection(direction);
+                        }
                     }
                 }
             }
