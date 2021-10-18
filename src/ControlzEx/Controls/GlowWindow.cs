@@ -128,6 +128,11 @@ namespace ControlzEx.Controls.Internal
                 return;
             }
 
+            if (this.IsDisposed)
+            {
+                return;
+            }
+
             this.isHandleCreationAllowed = false;
             this.handle = this.CreateWindowCore();
 
@@ -692,6 +697,11 @@ namespace ControlzEx.Controls.Internal
 
         public void ChangeOwner(IntPtr newOwner)
         {
+            if (this.IsDisposed)
+            {
+                return;
+            }
+
             NativeMethods.SetWindowLongPtr(this.Handle, GWL.HWNDPARENT, newOwner);
         }
 
@@ -766,6 +776,11 @@ namespace ControlzEx.Controls.Internal
 
         private HT WmNcHitTest(IntPtr lParam)
         {
+            if (this.IsDisposed)
+            {
+                return HT.NOWHERE;
+            }
+
             var xLParam = Utility.GET_X_LPARAM(lParam);
             var yLParam = Utility.GET_Y_LPARAM(lParam);
             var lpRect = NativeMethods.GetWindowRect(this.Handle);
@@ -856,6 +871,11 @@ namespace ControlzEx.Controls.Internal
 
         private void UpdateWindowPosCore()
         {
+            if (this.IsDisposed)
+            {
+                return;
+            }
+
             if (this.InvalidatedValuesHasFlag(FieldInvalidationTypes.Location | FieldInvalidationTypes.Size | FieldInvalidationTypes.Visibility))
             {
                 var flags = SWP.NOZORDER | SWP.NOACTIVATE | SWP.NOOWNERZORDER;
@@ -928,6 +948,11 @@ namespace ControlzEx.Controls.Internal
 
         private void RenderLayeredWindow()
         {
+            if (this.IsDisposed)
+            {
+                return;
+            }
+
             using var glowDrawingContext = new GlowDrawingContext(this.Width, this.Height);
             if (glowDrawingContext.IsInitialized == false)
             {
