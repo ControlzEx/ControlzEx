@@ -84,6 +84,9 @@ namespace ControlzEx.Showcase
             BindingOperations.SetBinding(behavior, GlowWindowBehavior.GlowColorProperty, new Binding { Path = new PropertyPath(GlowColorProperty), Source = this });
             BindingOperations.SetBinding(behavior, GlowWindowBehavior.NonActiveGlowColorProperty, new Binding { Path = new PropertyPath(NonActiveGlowColorProperty), Source = this });
             BindingOperations.SetBinding(behavior, GlowWindowBehavior.UseRadialGradientForCornersProperty, new Binding { Path = new PropertyPath(UseRadialGradientForCornersProperty), Source = this });
+            BindingOperations.SetBinding(behavior, GlowWindowBehavior.PreferDWMBorderColorProperty, new Binding { Path = new PropertyPath(PreferDWMBorderColorProperty), Source = this });
+
+            this.SetBinding(DWMSupportsBorderColorProperty, new Binding { Path = new PropertyPath(GlowWindowBehavior.DWMSupportsBorderColorProperty), Source = behavior });
 
             Interaction.GetBehaviors(this).Add(behavior);
         }
@@ -243,6 +246,40 @@ namespace ControlzEx.Showcase
         {
             get => (Brush)this.GetValue(NCCurrentBrushProperty);
             set => this.SetValue(NCCurrentBrushProperty, value);
+        }
+
+        /// <summary>Identifies the <see cref="PreferDWMBorderColor"/> dependency property.</summary>
+        public static readonly DependencyProperty PreferDWMBorderColorProperty =
+            DependencyProperty.Register(nameof(PreferDWMBorderColor), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(true));
+
+        /// <inheritdoc cref="GlowWindowBehavior.PreferDWMBorderColor"/>
+        public bool PreferDWMBorderColor
+        {
+            get => (bool)this.GetValue(PreferDWMBorderColorProperty);
+            set => this.SetValue(PreferDWMBorderColorProperty, value);
+        }
+
+        /// <summary>
+        /// <see cref="DependencyProperty"/> for <see cref="DWMSupportsBorderColor"/>.
+        /// </summary>
+        public static readonly DependencyProperty DWMSupportsBorderColorProperty = DependencyProperty.Register(nameof(DWMSupportsBorderColor), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(default(bool)));
+
+        /// <inheritdoc cref="GlowWindowBehavior.DWMSupportsBorderColor"/>
+        public bool DWMSupportsBorderColor
+        {
+            get => (bool)this.GetValue(DWMSupportsBorderColorProperty);
+            private set => this.SetValue(DWMSupportsBorderColorProperty, value);
+        }
+
+#pragma warning disable WPF0010
+        public static readonly DependencyProperty CornerPreferenceProperty = DependencyProperty.Register(
+            nameof(CornerPreference), typeof(DWM_WINDOW_CORNER_PREFERENCE), typeof(WindowChromeWindow), new PropertyMetadata(WindowChromeBehavior.CornerPreferenceProperty.DefaultMetadata.DefaultValue));
+#pragma warning restore WPF0010
+
+        public DWM_WINDOW_CORNER_PREFERENCE CornerPreference
+        {
+            get => (DWM_WINDOW_CORNER_PREFERENCE)this.GetValue(CornerPreferenceProperty);
+            set => this.SetValue(CornerPreferenceProperty, value);
         }
     }
 }

@@ -8,6 +8,7 @@
                           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                           xmlns:system="clr-namespace:System;assembly=mscorlib"
                           xmlns:views="clr-namespace:ControlzEx.Showcase.Views"
+                          xmlns:native="clr-namespace:ControlzEx.Standard;assembly=ControlzEx"
                           x:Name="Window"
                           Title="ControlzEx.Showcase"
                           Width="800"
@@ -599,7 +600,24 @@
                                              Padding="2"
                                              VerticalAlignment="Center"
                                              Text="{Binding ElementName=Window, Path=GlowDepth, Mode=TwoWay}" />
-                                    
+
+                                    <Label>
+                                        PreferDWMBorderColor
+                                    </Label>
+                                    <CheckBox Margin="4"
+                                              Padding="2"
+                                              VerticalAlignment="Center"
+                                              IsChecked="{Binding ElementName=Window, Path=PreferDWMBorderColor, Mode=TwoWay}" />
+
+                                    <Label>
+                                        DWMSupportsBorderColor
+                                    </Label>
+                                    <CheckBox Margin="4"
+                                              Padding="2"
+                                              VerticalAlignment="Center"
+                                              IsEnabled="False"
+                                              IsChecked="{Binding ElementName=Window, Path=DWMSupportsBorderColor, Mode=OneWay}" />
+
                                     <Label>
                                         UseRadialGradientForCorners
                                     </Label>

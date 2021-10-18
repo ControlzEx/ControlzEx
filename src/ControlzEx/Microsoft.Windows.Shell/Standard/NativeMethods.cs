@@ -2556,6 +2556,11 @@ namespace ControlzEx.Standard
 
         public int cx;
         public int cy;
+
+        public override string ToString()
+        {
+            return $"cx: {this.cx.ToString()}; cy: {this.cy.ToString()}";
+        }
     }
 
     [Obsolete(DesignerConstants.Win32ElementWarning)]

@@ -21,9 +21,7 @@ namespace ControlzEx.Behaviors
     {
         private static readonly TimeSpan glowTimerDelay = TimeSpan.FromMilliseconds(200); //200 ms delay, the same as in visual studio
         private DispatcherTimer? makeGlowVisibleTimer;
-#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
-        private WindowInteropHelper windowHelper;
-#pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
+        private WindowInteropHelper? windowHelper;
         private HwndSource? hwndSource;
 
         private readonly GlowWindow?[] glowWindows = new GlowWindow[4];
@@ -105,11 +103,6 @@ namespace ControlzEx.Behaviors
         public static readonly DependencyProperty UseRadialGradientForCornersProperty = DependencyProperty.Register(
             nameof(UseRadialGradientForCorners), typeof(bool), typeof(GlowWindowBehavior), new PropertyMetadata(BooleanBoxes.TrueBox, OnUseRadialGradientForCornersChanged));
 
-        private static void OnUseRadialGradientForCornersChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            ((GlowWindowBehavior)d).UpdateUseRadialGradientForCorners();
-        }
-
         /// <summary>
         /// Gets or sets whether to use a radial gradient for the corners or not.
         /// </summary>
@@ -117,6 +110,47 @@ namespace ControlzEx.Behaviors
         {
             get => (bool)this.GetValue(UseRadialGradientForCornersProperty);
             set => this.SetValue(UseRadialGradientForCornersProperty, BooleanBoxes.Box(value));
+        }
+
+        private static void OnUseRadialGradientForCornersChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((GlowWindowBehavior)d).UpdateUseRadialGradientForCorners();
+        }
+
+        /// <summary>Identifies the <see cref="PreferDWMBorderColor"/> dependency property.</summary>
+        public static readonly DependencyProperty PreferDWMBorderColorProperty =
+            DependencyProperty.Register(nameof(PreferDWMBorderColor), typeof(bool), typeof(GlowWindowBehavior), new PropertyMetadata(BooleanBoxes.TrueBox, OnPreferDWMBorderColorChanged));
+
+        private static void OnPreferDWMBorderColorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var behavior = (GlowWindowBehavior)d;
+            behavior.UpdateDWMBorder();
+            behavior.UpdateGlowVisibility(true);
+        }
+
+        /// <summary>
+        /// Gets or sets whether the DWM border should be preferred instead of showing glow windows.
+        /// </summary>
+        public bool PreferDWMBorderColor
+        {
+            get => (bool)this.GetValue(PreferDWMBorderColorProperty);
+            set => this.SetValue(PreferDWMBorderColorProperty, BooleanBoxes.Box(value));
+        }
+
+        /// <summary>Identifies the <see cref="DWMSupportsBorderColor"/> dependency property key.</summary>
+        private static readonly DependencyPropertyKey DWMSupportsBorderColorPropertyKey =
+            DependencyProperty.RegisterReadOnly(nameof(DWMSupportsBorderColor), typeof(bool), typeof(GlowWindowBehavior), new PropertyMetadata(BooleanBoxes.FalseBox));
+
+        /// <summary>Identifies the <see cref="DWMSupportsBorderColor"/> dependency property.</summary>
+        public static readonly DependencyProperty DWMSupportsBorderColorProperty = DWMSupportsBorderColorPropertyKey.DependencyProperty;
+
+        /// <summary>
+        /// Gets whether DWM supports a border color or not.
+        /// </summary>
+        public bool DWMSupportsBorderColor
+        {
+            get => (bool)this.GetValue(DWMSupportsBorderColorProperty);
+            private set => this.SetValue(DWMSupportsBorderColorPropertyKey, BooleanBoxes.Box(value));
         }
 
         protected override void OnAttached()
@@ -170,6 +204,7 @@ namespace ControlzEx.Behaviors
             this.AssociatedObject.Deactivated += this.AssociatedObjectActivatedOrDeactivated;
 
             this.CreateGlowWindowHandles();
+            this.UpdateDWMBorder();
         }
 
         private void AssociatedObjectOnClosed(object? o, EventArgs args)
@@ -236,7 +271,7 @@ namespace ControlzEx.Behaviors
                 //     handle = loadedGlowWindow.Handle;
                 // }
 
-                var owner = this.windowHelper.Owner;
+                var owner = this.windowHelper?.Owner ?? IntPtr.Zero;
                 if (owner != IntPtr.Zero)
                 {
                     this.UpdateZOrderOfOwner(owner);
@@ -268,6 +303,7 @@ namespace ControlzEx.Behaviors
             }
 
             if (this.IsGlowVisible
+                && this.windowHelper is not null
                 && lastOwnedWindow == this.windowHelper.Handle)
             {
                 var glowWindow = this.LoadedGlowWindows.LastOrDefault();
@@ -345,13 +381,31 @@ namespace ControlzEx.Behaviors
         {
             get
             {
+                if (this.windowHelper is null)
+                {
+                    return false;
+                }
+
                 var handle = this.windowHelper.Handle;
                 if (NativeMethods.IsWindowVisible(handle)
                     && !NativeMethods.IsIconic(handle)
                     && !NativeMethods.IsZoomed(handle))
                 {
-                    return this.AssociatedObject.ResizeMode != ResizeMode.NoResize
+                    var result = this.AssociatedObject is not null
+                           && this.AssociatedObject.ResizeMode != ResizeMode.NoResize
                            && this.GlowDepth > 0;
+                    if (result == false)
+                    {
+                        return false;
+                    }
+
+                    if (this.DWMSupportsBorderColor
+                        && this.PreferDWMBorderColor)
+                    {
+                        return false;
+                    }
+
+                    return true;
                 }
 
                 return false;
@@ -373,8 +427,12 @@ namespace ControlzEx.Behaviors
 
         private void UpdateGlowColors()
         {
+            this.UpdateDWMBorder();
+
             using (this.DeferGlowChanges())
             {
+                this.UpdateGlowVisibility(false);
+
                 foreach (var loadedGlowWindow in this.LoadedGlowWindows)
                 {
                     loadedGlowWindow.ActiveGlowColor = this.GlowColor ?? Colors.Transparent;
@@ -385,13 +443,44 @@ namespace ControlzEx.Behaviors
 
         private void UpdateGlowActiveState()
         {
+            if (this.AssociatedObject is null)
+            {
+                return;
+            }
+
+            this.UpdateDWMBorder();
+
+            var isWindowActive = this.AssociatedObject.IsActive;
+
             using (this.DeferGlowChanges())
             {
+                this.UpdateGlowVisibility(false);
+
                 foreach (var loadedGlowWindow in this.LoadedGlowWindows)
                 {
-                    loadedGlowWindow.IsActive = this.AssociatedObject.IsActive;
+                    loadedGlowWindow.IsActive = isWindowActive;
                 }
             }
+        }
+
+        private bool UpdateDWMBorder()
+        {
+            if (this.AssociatedObject is null
+                || this.windowHelper is null)
+            {
+                return false;
+            }
+
+            var isWindowActive = this.AssociatedObject.IsActive;
+            var color = isWindowActive ? this.GlowColor : this.NonActiveGlowColor;
+            var useColor = this.AssociatedObject.WindowState != WindowState.Maximized
+                           && color.HasValue;
+            var attrValue = useColor && this.PreferDWMBorderColor
+                        ? (int)new NativeMethods.COLORREF(color!.Value).dwColor
+                        : -2;
+            this.DWMSupportsBorderColor = DwmHelper.SetWindowAttributeValue(this.windowHelper.Handle, DWMWINDOWATTRIBUTE.BORDER_COLOR, attrValue);
+
+            return this.DWMSupportsBorderColor;
         }
 
         private void UpdateGlowDepth()
