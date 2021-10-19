@@ -688,21 +688,11 @@ namespace ControlzEx.Controls.Internal
 
         protected override IntPtr CreateWindowCore()
         {
-            const WS_EX EX_STYLE = WS_EX.TOOLWINDOW | WS_EX.LAYERED | WS_EX.NOACTIVATE;
+            const WS_EX EX_STYLE = WS_EX.TOOLWINDOW | WS_EX.LAYERED;
             const WS STYLE = WS.POPUP | WS.CLIPSIBLINGS | WS.CLIPCHILDREN;
 
             var windowHandle = NativeMethods.CreateWindowEx(EX_STYLE, new IntPtr(this.WindowClassAtom), string.Empty, STYLE, 0, 0, 0, 0, this.TargetWindowHandle, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
             return windowHandle;
-        }
-
-        public void ChangeOwner(IntPtr newOwner)
-        {
-            if (this.IsDisposed)
-            {
-                return;
-            }
-
-            NativeMethods.SetWindowLongPtr(this.Handle, GWL.HWNDPARENT, newOwner);
         }
 
         protected override IntPtr WndProc(IntPtr hwnd, WM message, IntPtr wParam, IntPtr lParam)
@@ -728,8 +718,6 @@ namespace ControlzEx.Controls.Internal
                 case WM.NCXBUTTONDBLCLK:
                 {
                     var targetWindowHandle = this.TargetWindowHandle;
-                    // WA_CLICKACTIVE = 2
-                    NativeMethods.SendMessage(targetWindowHandle, WM.ACTIVATE, new IntPtr(2), IntPtr.Zero);
                     NativeMethods.SendMessage(targetWindowHandle, message, wParam, IntPtr.Zero);
                     return IntPtr.Zero;
                 }
@@ -758,9 +746,8 @@ namespace ControlzEx.Controls.Internal
                     return new IntPtr(1);
 
                 case WM.MOUSEACTIVATE:
-                    NativeMethods.SendMessage(this.TargetWindowHandle, WM.ACTIVATE, wParam, lParam);
-                    // We must not send NCACTIVATE here as that will cause the window to activate, but will also confuse windows and prevent deactivation...
-                    //NativeMethods.SendMessage(this.TargetWindowHandle, WM.NCACTIVATE, new IntPtr(1), IntPtr.Zero);
+                    // WA_CLICKACTIVE = 2
+                    NativeMethods.SendMessage(this.TargetWindowHandle, WM.ACTIVATE, new IntPtr(2), IntPtr.Zero);
 
                     return new IntPtr(3) /* MA_NOACTIVATE */;
 
