@@ -1,4 +1,4 @@
-﻿// ReSharper disable IdentifierTypo
+// ReSharper disable IdentifierTypo
 #nullable enable
 
 // ReSharper disable once CheckNamespace
@@ -368,7 +368,7 @@ namespace ControlzEx.Controls.Internal
 
         public override bool Equals(object? obj)
         {
-            return obj is CachedBitmapInfoKey other 
+            return obj is CachedBitmapInfoKey other
                    && this.Equals(other);
         }
 

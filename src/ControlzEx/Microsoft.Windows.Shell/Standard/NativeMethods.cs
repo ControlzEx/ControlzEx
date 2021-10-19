@@ -1763,12 +1763,12 @@ namespace ControlzEx.Standard
                 return NativeMethods.DeleteDC(this.handle);
             }
 
-            if (!this._hwnd.HasValue || this._hwnd.Value == IntPtr.Zero)
+            if (this.handle == IntPtr.Zero)
             {
                 return true;
             }
 
-            return NativeMethods.ReleaseDC(this._hwnd.Value, this.handle) == 1;
+            return NativeMethods.ReleaseDC(this._hwnd.GetValueOrDefault(IntPtr.Zero), this.handle) == 1;
         }
 
         /* Unmerged change from project 'ControlzEx (net5.0-windows)'
