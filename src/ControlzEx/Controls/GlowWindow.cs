@@ -759,7 +759,8 @@ namespace ControlzEx.Controls.Internal
 
                 case WM.MOUSEACTIVATE:
                     NativeMethods.SendMessage(this.TargetWindowHandle, WM.ACTIVATE, wParam, lParam);
-                    NativeMethods.SendMessage(this.TargetWindowHandle, WM.NCACTIVATE, new IntPtr(1), IntPtr.Zero);
+                    // We must not send NCACTIVATE here as that will cause the window to activate, but will also confuse windows and prevent deactivation...
+                    //NativeMethods.SendMessage(this.TargetWindowHandle, WM.NCACTIVATE, new IntPtr(1), IntPtr.Zero);
 
                     return new IntPtr(3) /* MA_NOACTIVATE */;
 
