@@ -266,7 +266,7 @@ namespace ControlzEx.Standard
         CAPTION_COLOR,                        // [set] COLORREF, The color of the caption
         TEXT_COLOR,                           // [set] COLORREF, The color of the caption text
         VISIBLE_FRAME_BORDER_THICKNESS,       // [get] UINT, width of the visible border around a thick frame window
-        DWMWA_MICA_EFFECT = 1029,
+        MICA_EFFECT = 1029,                   // [set] BOOL, Enables or disables the Mica window effect
         LAST
     }
 
