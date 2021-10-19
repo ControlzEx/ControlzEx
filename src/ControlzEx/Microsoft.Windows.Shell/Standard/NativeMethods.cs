@@ -289,21 +289,21 @@ namespace ControlzEx.Standard
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    internal struct WindowCompositionAttributeData
+    public struct WindowCompositionAttributeData
     {
         public WindowCompositionAttribute Attribute;
         public IntPtr Data;
         public int SizeOfData;
     }
 
-    internal enum WindowCompositionAttribute
+    public enum WindowCompositionAttribute
     {
         // ...
         WCA_ACCENT_POLICY = 19
         // ...
     }
 
-    internal enum AccentState
+    public enum AccentState
     {
         ACCENT_DISABLED = 0,
         ACCENT_ENABLE_GRADIENT = 1,
@@ -314,8 +314,9 @@ namespace ControlzEx.Standard
         ACCENT_INVALID_STATE = 6
     }
 
+    [CLSCompliant(false)]
     [StructLayout(LayoutKind.Sequential)]
-    internal struct AccentPolicy
+    public struct AccentPolicy
     {
         public AccentState AccentState;
         public int AccentFlags;
@@ -2048,6 +2049,21 @@ namespace ControlzEx.Standard
 
     #region Native Types
 
+    [CLSCompliant(false)]
+    [Obsolete(DesignerConstants.Win32ElementWarning)]
+    [StructLayout(LayoutKind.Sequential)]
+    public struct RTL_OSVERSIONINFOEX
+    {
+        public uint dwOSVersionInfoSize;
+        public uint dwMajorVersion;
+        public uint dwMinorVersion;
+        public uint dwBuildNumber;
+        public uint dwRevision;
+        public uint dwPlatformId;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
+        public string szCSDVersion;
+    }
+
     [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential)]
     public struct BLENDFUNCTION
@@ -3170,21 +3186,24 @@ namespace ControlzEx.Standard
 
         //https://msdn.microsoft.com/it-it/library/windows/desktop/aa969512(v=vs.85).aspx
         [DllImport("dwmapi.dll")]
-        internal static extern int DwmExtendFrameIntoClientArea(IntPtr hWnd, ref MARGINS pMarInset);
+        public static extern int DwmExtendFrameIntoClientArea(IntPtr hWnd, ref MARGINS pMarInset);
 
         //https://msdn.microsoft.com/en-us/library/windows/desktop/aa969515(v=vs.85).aspx
         [DllImport("dwmapi.dll")]
-        internal static extern int DwmGetWindowAttribute(IntPtr hwnd, DWMWINDOWATTRIBUTE attr, ref int attrValue, int attrSize);
+        public static extern int DwmGetWindowAttribute(IntPtr hwnd, DWMWINDOWATTRIBUTE attr, out int attrValue, int attrSize);
+
+        [DllImport("dwmapi.dll")]
+        public static extern int DwmGetWindowAttribute(IntPtr hwnd, DWMWINDOWATTRIBUTE attr, out RECT attrValue, int attrSize);
 
         //https://msdn.microsoft.com/en-us/library/windows/desktop/aa969524(v=vs.85).aspx
         [DllImport("dwmapi.dll")]
-        internal static extern int DwmSetWindowAttribute(IntPtr hwnd, DWMWINDOWATTRIBUTE attr, ref int attrValue, int attrSize);
+        public static extern int DwmSetWindowAttribute(IntPtr hwnd, DWMWINDOWATTRIBUTE attr, ref int attrValue, int attrSize);
 
         [DllImport("dwmapi.dll")]
-        internal static extern int DwmIsCompositionEnabled(ref int pfEnabled);
+        public static extern int DwmIsCompositionEnabled(ref int pfEnabled);
 
         [DllImport("user32.dll")]
-        internal static extern int SetWindowCompositionAttribute(IntPtr hwnd, ref WindowCompositionAttributeData data);
+        public static extern int SetWindowCompositionAttribute(IntPtr hwnd, ref WindowCompositionAttributeData data);
 
         [DllImport("dwmapi.dll", EntryPoint = "DwmGetColorizationColor", PreserveSig = true)]
         private static extern HRESULT _DwmGetColorizationColor(out uint pcrColorization, [Out, MarshalAs(UnmanagedType.Bool)] out bool pfOpaqueBlend);
@@ -4528,5 +4547,9 @@ namespace ControlzEx.Standard
         [DllImport("msimg32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         internal static extern bool AlphaBlend(IntPtr hdcDest, int xoriginDest, int yoriginDest, int wDest, int hDest, IntPtr hdcSrc, int xoriginSrc, int yoriginSrc, int wSrc, int hSrc, BLENDFUNCTION pfn);
+
+        [CLSCompliant(false)]
+        [DllImport("ntdll.dll")]
+        public static extern int RtlGetVersion(out RTL_OSVERSIONINFOEX lpVersionInformation);
     }
 }
