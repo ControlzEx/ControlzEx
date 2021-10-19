@@ -259,17 +259,20 @@ namespace ControlzEx.Behaviors
             try
             {
                 this.updatingZOrder = true;
-                // var handle = this.windowHelper.Handle;
-                // foreach (var loadedGlowWindow in this.LoadedGlowWindows)
-                // {
-                //     var window = NativeMethods.GetWindow(loadedGlowWindow.Handle, GW.HWNDPREV);
-                //     if (window != handle)
-                //     {
-                //         NativeMethods.SetWindowPos(handle, loadedGlowWindow.Handle, 0, 0, 0, 0, SWP.NOSIZE | SWP.NOMOVE | SWP.NOACTIVATE);
-                //     }
-                //
-                //     handle = loadedGlowWindow.Handle;
-                // }
+                if (this.windowHelper is not null)
+                {
+                    var handle = this.windowHelper.Handle;
+                    foreach (var loadedGlowWindow in this.LoadedGlowWindows)
+                    {
+                        var window = NativeMethods.GetWindow(loadedGlowWindow.Handle, GW.HWNDPREV);
+                        if (window != handle)
+                        {
+                            NativeMethods.SetWindowPos(handle, loadedGlowWindow.Handle, 0, 0, 0, 0, SWP.NOSIZE | SWP.NOMOVE | SWP.NOACTIVATE);
+                        }
+
+                        handle = loadedGlowWindow.Handle;
+                    }
+                }
 
                 var owner = this.windowHelper?.Owner ?? IntPtr.Zero;
                 if (owner != IntPtr.Zero)
