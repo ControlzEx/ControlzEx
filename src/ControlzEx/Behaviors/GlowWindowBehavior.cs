@@ -261,16 +261,17 @@ namespace ControlzEx.Behaviors
                 this.updatingZOrder = true;
                 if (this.windowHelper is not null)
                 {
-                    var handle = this.windowHelper.Handle;
+                    var currentWindowHandle = this.windowHelper.Handle;
                     foreach (var loadedGlowWindow in this.LoadedGlowWindows)
                     {
-                        var window = NativeMethods.GetWindow(loadedGlowWindow.Handle, GW.HWNDPREV);
-                        if (window != handle)
+                        var previousWindow = NativeMethods.GetWindow(loadedGlowWindow.Handle, GW.HWNDPREV);
+                        if (previousWindow != currentWindowHandle
+                            && previousWindow != IntPtr.Zero)
                         {
-                            NativeMethods.SetWindowPos(handle, loadedGlowWindow.Handle, 0, 0, 0, 0, SWP.NOSIZE | SWP.NOMOVE | SWP.NOACTIVATE);
+                            NativeMethods.SetWindowPos(currentWindowHandle, loadedGlowWindow.Handle, 0, 0, 0, 0, SWP.NOSIZE | SWP.NOMOVE | SWP.NOACTIVATE);
                         }
 
-                        handle = loadedGlowWindow.Handle;
+                        currentWindowHandle = loadedGlowWindow.Handle;
                     }
                 }
 
