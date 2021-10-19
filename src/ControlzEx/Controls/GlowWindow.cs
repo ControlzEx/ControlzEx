@@ -948,7 +948,9 @@ namespace ControlzEx.Controls.Internal
 
         private void RenderLayeredWindow()
         {
-            if (this.IsDisposed)
+            if (this.IsDisposed
+                || this.Width == 0
+                || this.Height == 0)
             {
                 return;
             }
