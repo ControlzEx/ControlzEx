@@ -9,6 +9,7 @@ namespace ControlzEx.Showcase
     using System.Windows.Input;
     using System.Windows.Interop;
     using System.Windows.Media;
+    using System.Windows.Media.Animation;
     using ControlzEx.Native;
     using ControlzEx.Standard;
 
@@ -234,12 +235,34 @@ namespace ControlzEx.Showcase
                 this.WindowState = WindowState.Maximized;
             }
         }
-        
+
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
         }
 
-#pragma warning restore 618
+        private Storyboard glowDepthStoryboard;
+
+        private void AnimateGlowDepth_OnChecked(object sender, RoutedEventArgs e)
+        {
+            if (this.glowDepthStoryboard is null)
+            {
+                var glowDepthAnimation = new Int32Animation(1, 60, TimeSpan.FromSeconds(2.5));
+
+                this.glowDepthStoryboard = new Storyboard();
+                this.glowDepthStoryboard.Children.Add(glowDepthAnimation);
+                this.glowDepthStoryboard.RepeatBehavior = RepeatBehavior.Forever;
+                this.glowDepthStoryboard.AutoReverse = true;
+
+                Storyboard.SetTargetProperty(this.glowDepthStoryboard, new PropertyPath(nameof(this.GlowDepth)));
+            }
+
+            this.glowDepthStoryboard.Begin(this, true);
+        }
+
+        private void AnimateGlowDepth_OnUnchecked(object sender, RoutedEventArgs e)
+        {
+            this.glowDepthStoryboard.Stop(this);
+        }
     }
 }

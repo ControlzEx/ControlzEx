@@ -625,10 +625,20 @@
                                     <Label>
                                         GlowDepth
                                     </Label>
-                                    <TextBox Margin="4"
-                                             Padding="2"
-                                             VerticalAlignment="Center"
-                                             Text="{Binding ElementName=Window, Path=GlowDepth, Mode=TwoWay}" />
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBox Margin="4"
+                                                 Padding="2"
+                                                 Width="30"
+                                                 VerticalAlignment="Center"
+                                                 Text="{Binding ElementName=Window, Path=GlowDepth, Mode=TwoWay}" />
+                                        <CheckBox x:Name="AnimateGlowDepth" 
+                                                  Margin="4"
+                                                  Padding="2"
+                                                  VerticalAlignment="Center"
+                                                  VerticalContentAlignment="Center"
+                                                  Checked="AnimateGlowDepth_OnChecked"
+                                                  Unchecked="AnimateGlowDepth_OnUnchecked">Animate</CheckBox>
+                                    </StackPanel>
 
                                     <Label>
                                         PreferDWMBorderColor
