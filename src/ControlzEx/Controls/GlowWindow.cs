@@ -111,9 +111,9 @@ namespace ControlzEx.Controls.Internal
             }
         }
 
-        protected virtual IntPtr WndProc(IntPtr hwnd, WM msg, IntPtr wParam, IntPtr lParam)
+        protected virtual IntPtr WndProc(IntPtr hwnd, WM message, IntPtr wParam, IntPtr lParam)
         {
-            return NativeMethods.DefWindowProc(hwnd, msg, wParam, lParam);
+            return NativeMethods.DefWindowProc(hwnd, message, wParam, lParam);
         }
 
         public void EnsureHandle()
@@ -705,11 +705,11 @@ namespace ControlzEx.Controls.Internal
             NativeMethods.SetWindowLongPtr(this.Handle, GWL.HWNDPARENT, newOwner);
         }
 
-        protected override IntPtr WndProc(IntPtr hwnd, WM msg, IntPtr wParam, IntPtr lParam)
+        protected override IntPtr WndProc(IntPtr hwnd, WM message, IntPtr wParam, IntPtr lParam)
         {
-            //System.Diagnostics.Trace.WriteLine($"{DateTime.Now} {msg}");
+            //System.Diagnostics.Trace.WriteLine($"{DateTime.Now} {message}");
 
-            switch (msg)
+            switch (message)
             {
                 case WM.DESTROY:
                     this.Dispose();
@@ -730,7 +730,7 @@ namespace ControlzEx.Controls.Internal
                     var targetWindowHandle = this.TargetWindowHandle;
                     // WA_CLICKACTIVE = 2
                     NativeMethods.SendMessage(targetWindowHandle, WM.ACTIVATE, new IntPtr(2), IntPtr.Zero);
-                    NativeMethods.SendMessage(targetWindowHandle, msg, wParam, IntPtr.Zero);
+                    NativeMethods.SendMessage(targetWindowHandle, message, wParam, IntPtr.Zero);
                     return IntPtr.Zero;
                 }
 
@@ -752,13 +752,14 @@ namespace ControlzEx.Controls.Internal
                     return IntPtr.Zero;
 
                 case WM.NCACTIVATE:
-                    NativeMethods.SendMessage(this.TargetWindowHandle, msg, wParam, lParam);
+                    NativeMethods.SendMessage(this.TargetWindowHandle, message, wParam, lParam);
                     // We have to return true according to https://docs.microsoft.com/en-us/windows/win32/winmsg/wm-ncactivate
                     // If we don't do that here the owner window can't be activated.
                     return new IntPtr(1);
 
                 case WM.MOUSEACTIVATE:
                     NativeMethods.SendMessage(this.TargetWindowHandle, WM.ACTIVATE, wParam, lParam);
+                    NativeMethods.SendMessage(this.TargetWindowHandle, WM.NCACTIVATE, new IntPtr(1), IntPtr.Zero);
 
                     return new IntPtr(3) /* MA_NOACTIVATE */;
 
@@ -771,7 +772,7 @@ namespace ControlzEx.Controls.Internal
                     break;
             }
 
-            return base.WndProc(hwnd, msg, wParam, lParam);
+            return base.WndProc(hwnd, message, wParam, lParam);
         }
 
         private HT WmNcHitTest(IntPtr lParam)

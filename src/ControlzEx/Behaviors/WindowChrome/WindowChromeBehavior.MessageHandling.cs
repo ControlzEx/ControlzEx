@@ -125,7 +125,7 @@ namespace ControlzEx.Behaviors
             //var monitorInfo = NativeMethods.GetMonitorInfo(monitor);
             //System.Diagnostics.Trace.WriteLine($"{message.ToString().PadRight(20)} {monitorInfo.rcWork}");
             //}
-            //System.Diagnostics.Trace.WriteLine(message);
+            //System.Diagnostics.Trace.WriteLine($"{DateTime.Now} {message}");
 
             switch (message)
             {
