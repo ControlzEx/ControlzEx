@@ -540,6 +540,12 @@ namespace ControlzEx.Behaviors
         {
             const int SIZE_MAXIMIZED = 2;
 
+            // Whenever an interesting size change takes place, there may be a corresponding rounding change.
+            // if (NativeMethods.DwmGetWindowAttribute(this.windowHandle, DWMWINDOWATTRIBUTE.WINDOW_CORNER_RADIUS, out var radius, sizeof(int)) == HRESULT.S_OK)
+            // {
+            //     this.DWMCornerRadius = radius;
+            // }
+
             // Force when maximized.
             // We can tell what's happening right now, but the Window doesn't yet know it's
             // maximized.  Not forcing this update will eventually cause the
