@@ -427,7 +427,7 @@ namespace ControlzEx.Controls.Internal
             }
         }
 
-        public SafeDC? ScreenDc { get; }
+        public SafeDC? ScreenDc { get; private set; }
 
         public SafeDC? WindowDc { get; }
 
@@ -437,15 +437,29 @@ namespace ControlzEx.Controls.Internal
 
         public int Height => this.windowBitmap?.Height ?? 0;
 
+        private static SafeDC? desktopDC;
+
         public GlowDrawingContext(int width, int height)
         {
-            this.ScreenDc = SafeDC.GetDC(IntPtr.Zero);
-            if (this.ScreenDc.DangerousGetHandle() == IntPtr.Zero)
+            this.SetupDesktopDC();
+
+            if (this.ScreenDc is null)
             {
                 return;
             }
 
-            this.WindowDc = SafeDC.CreateCompatibleDC(this.ScreenDc);
+            try
+            {
+                this.WindowDc = SafeDC.CreateCompatibleDC(this.ScreenDc);
+            }
+            catch
+            {
+                desktopDC?.Dispose();
+                desktopDC = null;
+                this.SetupDesktopDC();
+
+                this.WindowDc = SafeDC.CreateCompatibleDC(this.ScreenDc);
+            }
 
             if (this.WindowDc.DangerousGetHandle() == IntPtr.Zero)
             {
@@ -467,6 +481,18 @@ namespace ControlzEx.Controls.Internal
             NativeMethods.SelectObject(this.WindowDc, this.windowBitmap.Handle);
         }
 
+        private void SetupDesktopDC()
+        {
+            desktopDC ??= SafeDC.GetDesktop();
+
+            this.ScreenDc = desktopDC;
+            if (this.ScreenDc.DangerousGetHandle() == IntPtr.Zero)
+            {
+                this.ScreenDc?.Dispose();
+                this.ScreenDc = null;
+            }
+        }
+
         protected override void DisposeManagedResources()
         {
             this.windowBitmap?.Dispose();
@@ -474,8 +500,6 @@ namespace ControlzEx.Controls.Internal
 
         protected override void DisposeNativeResources()
         {
-            this.ScreenDc?.Dispose();
-
             this.WindowDc?.Dispose();
 
             this.BackgroundDc?.Dispose();
