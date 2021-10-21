@@ -3164,6 +3164,10 @@ namespace ControlzEx.Standard
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool IsWindow(IntPtr hwnd);
 
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool IsWindowUnicode(IntPtr hwnd);
+
         internal struct COLORREF
         {
             public uint dwColor;

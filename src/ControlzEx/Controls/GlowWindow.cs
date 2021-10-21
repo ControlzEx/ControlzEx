@@ -8,6 +8,7 @@ namespace ControlzEx.Controls.Internal
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Runtime.InteropServices;
+    using System.Text;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Interop;
@@ -541,6 +542,7 @@ namespace ControlzEx.Controls.Internal
         private FieldInvalidationTypes invalidatedValues;
 
         private bool pendingDelayRender;
+        private string title;
 
         private bool IsDeferringChanges => this.behavior.DeferGlowChangesCount > 0;
 
@@ -638,6 +640,8 @@ namespace ControlzEx.Controls.Internal
             this.targetWindow = owner ?? throw new ArgumentNullException(nameof(owner));
             this.behavior = behavior ?? throw new ArgumentNullException(nameof(behavior));
             this.orientation = orientation;
+
+            this.title = $"Glow_{this.orientation}";
         }
 
         private void UpdateProperty<T>(ref T field, T value, FieldInvalidationTypes invalidation)
@@ -683,6 +687,33 @@ namespace ControlzEx.Controls.Internal
 
             switch (message)
             {
+                case WM.GETTEXTLENGTH:
+                {
+                    var encoding = NativeMethods.IsWindowUnicode(hwnd)
+                        ? Encoding.Unicode
+                        : Encoding.ASCII;
+
+                    var titleBytes = encoding.GetBytes(this.title);
+                    return new IntPtr(titleBytes.Length);
+                }
+
+                case WM.GETTEXT:
+                {
+                    var encoding = NativeMethods.IsWindowUnicode(hwnd)
+                        ? Encoding.Unicode
+                        : Encoding.ASCII;
+
+                    var maxLength = Math.Min(this.title.Length, wParam.ToInt32());
+                    // Cut text
+                    var substring = this.title.Substring(0, maxLength);
+                    // Get bytes and add terminating null char
+                    var titleBytes = encoding.GetBytes(substring + "\0");
+                    Marshal.Copy(titleBytes, 0, lParam, titleBytes.Length);
+                    // We have return the length without the terminating null char
+                    var bytesLengthWithoutTerminatingNull = titleBytes.Length - 1;
+                    return new IntPtr(bytesLengthWithoutTerminatingNull);
+                }
+
                 case WM.DESTROY:
                     this.Dispose();
                     break;
@@ -699,8 +730,7 @@ namespace ControlzEx.Controls.Internal
                 case WM.NCXBUTTONDOWN:
                 case WM.NCXBUTTONDBLCLK:
                 {
-                    var targetWindowHandle = this.TargetWindowHandle;
-                    NativeMethods.SendMessage(targetWindowHandle, message, wParam, IntPtr.Zero);
+                    NativeMethods.SendMessage(this.TargetWindowHandle, message, wParam, IntPtr.Zero);
                     return IntPtr.Zero;
                 }
 
