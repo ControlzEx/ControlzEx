@@ -23,6 +23,7 @@ namespace ControlzEx.Behaviors
         private static readonly TimeSpan glowTimerDelay = TimeSpan.FromMilliseconds(200); //200 ms delay, the same as in visual studio
         private DispatcherTimer? makeGlowVisibleTimer;
         private WindowInteropHelper? windowHelper;
+        private IntPtr windowHandle;
         private HwndSource? hwndSource;
 
         private readonly IGlowWindow?[] glowWindows = new IGlowWindow[4];
@@ -185,6 +186,9 @@ namespace ControlzEx.Behaviors
 
             this.DestroyGlowWindows();
 
+            this.windowHelper = null;
+            this.windowHandle = IntPtr.Zero;
+
             base.OnDetaching();
         }
 
@@ -196,7 +200,8 @@ namespace ControlzEx.Behaviors
         private void AssociatedObjectSourceInitialized(object? sender, EventArgs e)
         {
             this.windowHelper = new WindowInteropHelper(this.AssociatedObject);
-            this.hwndSource = HwndSource.FromHwnd(this.windowHelper.Handle);
+            this.windowHandle = this.windowHelper.EnsureHandle();
+            this.hwndSource = HwndSource.FromHwnd(this.windowHandle);
             this.hwndSource?.AddHook(this.AssociatedObjectWindowProc);
 
             this.AssociatedObject.Closed += this.AssociatedObjectOnClosed;
@@ -260,9 +265,9 @@ namespace ControlzEx.Behaviors
             try
             {
                 this.updatingZOrder = true;
-                if (this.windowHelper is not null)
+                if (this.windowHandle != IntPtr.Zero)
                 {
-                    var currentWindowHandle = this.windowHelper.Handle;
+                    var currentWindowHandle = this.windowHandle;
                     foreach (var loadedGlowWindow in this.LoadedGlowWindows)
                     {
                         var previousWindow = NativeMethods.GetWindow(loadedGlowWindow.Handle, GW.HWNDPREV);
@@ -308,8 +313,8 @@ namespace ControlzEx.Behaviors
             }
 
             if (this.IsGlowVisible
-                && this.windowHelper is not null
-                && lastOwnedWindow == this.windowHelper.Handle)
+                && this.windowHandle != IntPtr.Zero
+                && lastOwnedWindow == this.windowHandle)
             {
                 var glowWindow = this.LoadedGlowWindows.LastOrDefault();
                 if (glowWindow != null)
@@ -405,12 +410,12 @@ namespace ControlzEx.Behaviors
         {
             get
             {
-                if (this.windowHelper is null)
+                if (this.windowHandle == IntPtr.Zero)
                 {
                     return false;
                 }
 
-                var handle = this.windowHelper.Handle;
+                var handle = this.windowHandle;
                 if (NativeMethods.IsWindowVisible(handle)
                     && !NativeMethods.IsIconic(handle)
                     && !NativeMethods.IsZoomed(handle))
@@ -490,7 +495,7 @@ namespace ControlzEx.Behaviors
         private bool UpdateDWMBorder()
         {
             if (this.AssociatedObject is null
-                || this.windowHelper is null)
+                || this.windowHandle == IntPtr.Zero)
             {
                 return false;
             }
@@ -502,7 +507,7 @@ namespace ControlzEx.Behaviors
             var attrValue = useColor && this.PreferDWMBorderColor
                         ? (int)new NativeMethods.COLORREF(color!.Value).dwColor
                         : -2;
-            this.DWMSupportsBorderColor = DwmHelper.SetWindowAttributeValue(this.windowHelper.Handle, DWMWINDOWATTRIBUTE.BORDER_COLOR, attrValue);
+            this.DWMSupportsBorderColor = DwmHelper.SetWindowAttributeValue(this.windowHandle, DWMWINDOWATTRIBUTE.BORDER_COLOR, attrValue);
 
             return this.DWMSupportsBorderColor;
         }

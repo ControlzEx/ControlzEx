@@ -653,7 +653,7 @@ namespace ControlzEx.Controls.Internal
             set => this.UpdateProperty(ref this.inactiveGlowColor, value, FieldInvalidationTypes.InactiveColor | FieldInvalidationTypes.Render);
         }
 
-        private IntPtr TargetWindowHandle => new WindowInteropHelper(this.targetWindow).Handle;
+        private IntPtr TargetWindowHandle { get; }
 
         protected override bool IsWindowSubClassed => true;
 
@@ -665,6 +665,7 @@ namespace ControlzEx.Controls.Internal
             this.behavior = behavior ?? throw new ArgumentNullException(nameof(behavior));
             this.orientation = orientation;
 
+            this.TargetWindowHandle = new WindowInteropHelper(this.targetWindow).EnsureHandle();
             this.title = $"Glow_{this.orientation}";
         }
 
