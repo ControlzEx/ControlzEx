@@ -1673,7 +1673,7 @@ namespace ControlzEx.Standard
             public static extern SafeDC CreateDC([MarshalAs(UnmanagedType.LPWStr)] string lpszDriver, [MarshalAs(UnmanagedType.LPWStr)] string? lpszDevice, IntPtr lpszOutput, IntPtr lpInitData);
 
             [DllImport("gdi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-            public static extern SafeDC CreateCompatibleDC(IntPtr hdc);
+            public static extern SafeDC? CreateCompatibleDC(IntPtr hdc);
 
             [DllImport("gdi32.dll")]
             [return: MarshalAs(UnmanagedType.Bool)]
