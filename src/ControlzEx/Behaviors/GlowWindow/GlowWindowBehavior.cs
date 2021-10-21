@@ -1,12 +1,12 @@
 #nullable enable
 
 #pragma warning disable 618
+// ReSharper disable once CheckNamespace
 namespace ControlzEx.Behaviors
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Runtime.InteropServices;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Interop;
@@ -140,6 +140,7 @@ namespace ControlzEx.Behaviors
         }
 
         /// <summary>Identifies the <see cref="DWMSupportsBorderColor"/> dependency property key.</summary>
+        // ReSharper disable once InconsistentNaming
         private static readonly DependencyPropertyKey DWMSupportsBorderColorPropertyKey =
             DependencyProperty.RegisterReadOnly(nameof(DWMSupportsBorderColor), typeof(bool), typeof(GlowWindowBehavior), new PropertyMetadata(BooleanBoxes.FalseBox));
 
@@ -228,6 +229,8 @@ namespace ControlzEx.Behaviors
 
         public int DeferGlowChangesCount;
 
+        private bool positionUpdateRequired;
+
         private IntPtr AssociatedObjectWindowProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             if (this.hwndSource?.RootVisual is null)
@@ -238,13 +241,33 @@ namespace ControlzEx.Behaviors
             // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
             switch ((WM)msg)
             {
+                case WM.CLOSE:
+                    this.StopTimer();
+                    this.DestroyGlowWindows();
+                    break;
+
+                case WM.MOVE:
+                    this.UpdateGlowWindowPositions();
+                    break;
+
                 // Z-Index must be updated when WINDOWPOSCHANGED
                 case WM.WINDOWPOSCHANGED:
-                    {
-                        var wp = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS))!;
-                        this.UpdateGlowWindowPositions((wp.flags & SWP.SHOWWINDOW) == 0);
+                    this.UpdateZOrderOfThisAndOwner();
+                    break;
 
-                        this.UpdateZOrderOfThisAndOwner();
+                case WM.SIZE:
+                    {
+                        this.positionUpdateRequired = true;
+                        NativeMethods.PostMessage(hwnd, WM.USER, IntPtr.Zero, IntPtr.Zero);
+                    }
+
+                    break;
+
+                case WM.USER:
+                    if (this.positionUpdateRequired)
+                    {
+                        this.positionUpdateRequired = false;
+                        this.UpdateGlowWindowPositions();
                     }
 
                     break;
@@ -255,7 +278,7 @@ namespace ControlzEx.Behaviors
 
         #region Z-Order
 
-        private void UpdateZOrderOfThisAndOwner()
+        private void UpdateZOrderOfThisAndOwner(IntPtr ownerHandle)
         {
             if (this.updatingZOrder)
             {
@@ -281,10 +304,9 @@ namespace ControlzEx.Behaviors
                     }
                 }
 
-                var owner = this.windowHelper?.Owner ?? IntPtr.Zero;
-                if (owner != IntPtr.Zero)
+                if (ownerHandle != IntPtr.Zero)
                 {
-                    this.UpdateZOrderOfOwner(owner);
+                    this.UpdateZOrderOfOwner(ownerHandle);
                 }
             }
             finally
@@ -439,6 +461,18 @@ namespace ControlzEx.Behaviors
 
                 return false;
             }
+        }
+
+        private void UpdateGlowWindowPositions()
+        {
+            this.UpdateGlowWindowPositions(NativeMethods.IsWindowVisible(this.windowHandle));
+
+            this.UpdateZOrderOfThisAndOwner();
+        }
+
+        private void UpdateZOrderOfThisAndOwner()
+        {
+            this.UpdateZOrderOfThisAndOwner(this.windowHelper?.Owner ?? IntPtr.Zero);
         }
 
         private void UpdateGlowWindowPositions(bool delayIfNecessary)
