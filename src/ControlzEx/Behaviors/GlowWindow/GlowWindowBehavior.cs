@@ -12,6 +12,7 @@ namespace ControlzEx.Behaviors
     using System.Windows.Interop;
     using System.Windows.Media;
     using System.Windows.Threading;
+    using ControlzEx.Controls;
     using ControlzEx.Controls.Internal;
     using ControlzEx.Internal.KnownBoxes;
     using ControlzEx.Standard;
@@ -24,9 +25,9 @@ namespace ControlzEx.Behaviors
         private WindowInteropHelper? windowHelper;
         private HwndSource? hwndSource;
 
-        private readonly GlowWindow?[] glowWindows = new GlowWindow[4];
+        private readonly IGlowWindow?[] glowWindows = new IGlowWindow[4];
 
-        private IEnumerable<GlowWindow> LoadedGlowWindows => this.glowWindows.Where(w => w != null)!;
+        private IEnumerable<IGlowWindow> LoadedGlowWindows => this.glowWindows.Where(w => w is not null)!;
 
         /// <summary>
         /// <see cref="DependencyProperty"/> for <see cref="GlowColor"/>.
@@ -333,24 +334,43 @@ namespace ControlzEx.Behaviors
 
         public void EndDeferGlowChanges()
         {
+            var windowPosInfo = NativeMethods.BeginDeferWindowPos(this.LoadedGlowWindows.Count());
+
             foreach (var loadedGlowWindow in this.LoadedGlowWindows)
             {
-                loadedGlowWindow.CommitChanges();
+                loadedGlowWindow.CommitChanges(windowPosInfo);
             }
+
+            NativeMethods.EndDeferWindowPos(windowPosInfo);
         }
 
-        private GlowWindow GetOrCreateGlowWindow(int index)
+        private IGlowWindow GetOrCreateGlowWindow(int index)
         {
-            this.glowWindows[index] ??= new GlowWindow(this.AssociatedObject, this, (Dock)index)
-            {
-                ActiveGlowColor = this.GlowColor ?? Colors.Transparent,
-                InactiveGlowColor = this.NonActiveGlowColor ?? Colors.Transparent,
-                IsActive = this.AssociatedObject.IsActive,
-                GlowDepth = this.GlowDepth,
-                UseRadialGradientForCorners = this.UseRadialGradientForCorners
-            };
+            return this.GetOrCreateGlowWindow((Dock)index);
+        }
+
+        private IGlowWindow GetOrCreateGlowWindow(Dock orientation)
+        {
+            var index = (int)orientation;
+            this.glowWindows[index] ??= this.CreateGlowWindow(orientation);
 
             return this.glowWindows[index]!;
+        }
+
+        protected virtual IGlowWindow CreateGlowWindow(Dock orientation)
+        {
+            return this.SetupGlowWindow(new GlowWindow(this.AssociatedObject, this, orientation));
+        }
+
+        protected virtual IGlowWindow SetupGlowWindow(IGlowWindow glowWindow)
+        {
+            glowWindow.ActiveGlowColor = this.GlowColor ?? Colors.Transparent;
+            glowWindow.InactiveGlowColor = this.NonActiveGlowColor ?? Colors.Transparent;
+            glowWindow.IsActive = this.AssociatedObject.IsActive;
+            glowWindow.GlowDepth = this.GlowDepth;
+            glowWindow.UseRadialGradientForCorners = this.UseRadialGradientForCorners;
+
+            return glowWindow;
         }
 
         private void CreateGlowWindowHandles()

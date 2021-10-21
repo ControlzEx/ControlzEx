@@ -4183,6 +4183,24 @@ namespace ControlzEx.Standard
             }
         }
 
+        [DllImport("user32.dll")]
+        public static extern IntPtr BeginDeferWindowPos(int nNumWindows);
+
+        [CLSCompliant(false)]
+        [DllImport("User32.dll")]
+        public static extern IntPtr DeferWindowPos(
+            IntPtr hWinPosInfo,
+            IntPtr hWnd,           // window handle
+            IntPtr hWndInsertAfter,    // placement-order handle
+            int x,             // horizontal position
+            int y,             // vertical position
+            int cx,            // width
+            int cy,            // height
+            SWP uFlags);          // window positioning flags
+
+        [DllImport("user32.dll")]
+        public static extern bool EndDeferWindowPos(IntPtr hWinPosInfo);
+
         [DllImport("shell32.dll", SetLastError = false)]
         public static extern Win32Error SHFileOperation(ref SHFILEOPSTRUCT lpFileOp);
 

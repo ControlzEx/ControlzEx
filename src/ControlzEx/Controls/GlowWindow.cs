@@ -116,21 +116,21 @@ namespace ControlzEx.Controls.Internal
             return NativeMethods.DefWindowProc(hwnd, message, wParam, lParam);
         }
 
-        public void EnsureHandle()
+        public IntPtr EnsureHandle()
         {
             if (this.handle != IntPtr.Zero)
             {
-                return;
+                return this.handle;
             }
 
             if (this.isHandleCreationAllowed == false)
             {
-                return;
+                return IntPtr.Zero;
             }
 
             if (this.IsDisposed)
             {
-                return;
+                return IntPtr.Zero;
             }
 
             this.isHandleCreationAllowed = false;
@@ -140,6 +140,8 @@ namespace ControlzEx.Controls.Internal
             {
                 this.SubclassWndProc();
             }
+
+            return this.handle;
         }
 
         protected override void DisposeNativeResources()
@@ -480,7 +482,7 @@ namespace ControlzEx.Controls.Internal
     }
 
     [PublicAPI]
-    public sealed class GlowWindow : HwndWrapper
+    public sealed class GlowWindow : HwndWrapper, IGlowWindow
     {
         [Flags]
         private enum FieldInvalidationTypes
@@ -651,7 +653,7 @@ namespace ControlzEx.Controls.Internal
 
             if (this.IsDeferringChanges == false)
             {
-                this.CommitChanges();
+                this.CommitChanges(IntPtr.Zero);
             }
         }
 
@@ -810,10 +812,10 @@ namespace ControlzEx.Controls.Internal
             }
         }
 
-        public void CommitChanges()
+        public void CommitChanges(IntPtr windowPosInfo)
         {
             this.InvalidateCachedBitmaps();
-            this.UpdateWindowPosCore();
+            this.UpdateWindowPosCore(windowPosInfo);
             this.UpdateLayeredWindowCore();
             this.invalidatedValues = FieldInvalidationTypes.None;
         }
@@ -838,7 +840,7 @@ namespace ControlzEx.Controls.Internal
             }
         }
 
-        private void UpdateWindowPosCore()
+        private void UpdateWindowPosCore(IntPtr windowPosInfo)
         {
             if (this.IsDisposed)
             {
@@ -865,7 +867,14 @@ namespace ControlzEx.Controls.Internal
                     flags |= SWP.NOSIZE;
                 }
 
-                NativeMethods.SetWindowPos(this.Handle, IntPtr.Zero, this.Left, this.Top, this.Width, this.Height, flags);
+                if (windowPosInfo == IntPtr.Zero)
+                {
+                    NativeMethods.SetWindowPos(this.Handle, IntPtr.Zero, this.Left, this.Top, this.Width, this.Height, flags);
+                }
+                else
+                {
+                    NativeMethods.DeferWindowPos(windowPosInfo, this.Handle, IntPtr.Zero, this.Left, this.Top, this.Width, this.Height, flags);
+                }
             }
         }
 
