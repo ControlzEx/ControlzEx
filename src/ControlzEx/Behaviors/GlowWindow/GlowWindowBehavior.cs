@@ -5,8 +5,6 @@
 namespace ControlzEx.Behaviors
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Interop;
@@ -27,8 +25,6 @@ namespace ControlzEx.Behaviors
         private HwndSource? hwndSource;
 
         private readonly IGlowWindow?[] glowWindows = new IGlowWindow[4];
-
-        private IEnumerable<IGlowWindow> LoadedGlowWindows => this.glowWindows.Where(w => w is not null)!;
 
         /// <summary>
         /// <see cref="DependencyProperty"/> for <see cref="GlowColor"/>.
@@ -291,16 +287,21 @@ namespace ControlzEx.Behaviors
                 if (this.windowHandle != IntPtr.Zero)
                 {
                     var currentWindowHandle = this.windowHandle;
-                    foreach (var loadedGlowWindow in this.LoadedGlowWindows)
+                    foreach (var glowWindow in this.glowWindows)
                     {
-                        var previousWindow = NativeMethods.GetWindow(loadedGlowWindow.Handle, GW.HWNDPREV);
+                        if (glowWindow is null)
+                        {
+                            continue;
+                        }
+
+                        var previousWindow = NativeMethods.GetWindow(glowWindow.Handle, GW.HWNDPREV);
                         if (previousWindow != currentWindowHandle
                             && previousWindow != IntPtr.Zero)
                         {
-                            NativeMethods.SetWindowPos(currentWindowHandle, loadedGlowWindow.Handle, 0, 0, 0, 0, SWP.NOSIZE | SWP.NOMOVE | SWP.NOACTIVATE);
+                            NativeMethods.SetWindowPos(currentWindowHandle, glowWindow.Handle, 0, 0, 0, 0, SWP.NOSIZE | SWP.NOMOVE | SWP.NOACTIVATE);
                         }
 
-                        currentWindowHandle = loadedGlowWindow.Handle;
+                        currentWindowHandle = glowWindow.Handle;
                     }
                 }
 
@@ -338,8 +339,8 @@ namespace ControlzEx.Behaviors
                 && this.windowHandle != IntPtr.Zero
                 && lastOwnedWindow == this.windowHandle)
             {
-                var glowWindow = this.LoadedGlowWindows.LastOrDefault();
-                if (glowWindow != null)
+                var glowWindow = this.glowWindows[this.glowWindows.Length - 1];
+                if (glowWindow is not null)
                 {
                     lastOwnedWindow = glowWindow.Handle;
                 }
@@ -361,11 +362,11 @@ namespace ControlzEx.Behaviors
 
         public void EndDeferGlowChanges()
         {
-            var windowPosInfo = NativeMethods.BeginDeferWindowPos(this.LoadedGlowWindows.Count());
+            var windowPosInfo = NativeMethods.BeginDeferWindowPos(this.glowWindows.Length);
 
-            foreach (var loadedGlowWindow in this.LoadedGlowWindows)
+            foreach (var glowWindow in this.glowWindows)
             {
-                loadedGlowWindow.CommitChanges(windowPosInfo);
+                glowWindow?.CommitChanges(windowPosInfo);
             }
 
             NativeMethods.EndDeferWindowPos(windowPosInfo);
@@ -481,9 +482,9 @@ namespace ControlzEx.Behaviors
             {
                 this.UpdateGlowVisibility(delayIfNecessary);
 
-                foreach (var loadedGlowWindow in this.LoadedGlowWindows)
+                foreach (var glowWindow in this.glowWindows)
                 {
-                    loadedGlowWindow.UpdateWindowPos();
+                    glowWindow?.UpdateWindowPos();
                 }
             }
         }
@@ -496,10 +497,15 @@ namespace ControlzEx.Behaviors
             {
                 this.UpdateGlowVisibility(false);
 
-                foreach (var loadedGlowWindow in this.LoadedGlowWindows)
+                foreach (var glowWindow in this.glowWindows)
                 {
-                    loadedGlowWindow.ActiveGlowColor = this.GlowColor ?? Colors.Transparent;
-                    loadedGlowWindow.InactiveGlowColor = this.NonActiveGlowColor ?? Colors.Transparent;
+                    if (glowWindow is null)
+                    {
+                        continue;
+                    }
+
+                    glowWindow.ActiveGlowColor = this.GlowColor ?? Colors.Transparent;
+                    glowWindow.InactiveGlowColor = this.NonActiveGlowColor ?? Colors.Transparent;
                 }
             }
         }
@@ -519,9 +525,14 @@ namespace ControlzEx.Behaviors
             {
                 this.UpdateGlowVisibility(false);
 
-                foreach (var loadedGlowWindow in this.LoadedGlowWindows)
+                foreach (var glowWindow in this.glowWindows)
                 {
-                    loadedGlowWindow.IsActive = isWindowActive;
+                    if (glowWindow is null)
+                    {
+                        continue;
+                    }
+
+                    glowWindow.IsActive = isWindowActive;
                 }
             }
         }
@@ -552,10 +563,15 @@ namespace ControlzEx.Behaviors
             {
                 this.UpdateGlowVisibility(false);
 
-                foreach (var loadedGlowWindow in this.LoadedGlowWindows)
+                foreach (var glowWindow in this.glowWindows)
                 {
-                    loadedGlowWindow.GlowDepth = this.GlowDepth;
-                    loadedGlowWindow.UpdateWindowPos();
+                    if (glowWindow is null)
+                    {
+                        continue;
+                    }
+
+                    glowWindow.GlowDepth = this.GlowDepth;
+                    glowWindow.UpdateWindowPos();
                 }
             }
         }
@@ -564,9 +580,14 @@ namespace ControlzEx.Behaviors
         {
             using (this.DeferGlowChanges())
             {
-                foreach (var loadedGlowWindow in this.LoadedGlowWindows)
+                foreach (var glowWindow in this.glowWindows)
                 {
-                    loadedGlowWindow.UseRadialGradientForCorners = this.UseRadialGradientForCorners;
+                    if (glowWindow is null)
+                    {
+                        continue;
+                    }
+
+                    glowWindow.UseRadialGradientForCorners = this.UseRadialGradientForCorners;
                 }
             }
         }
