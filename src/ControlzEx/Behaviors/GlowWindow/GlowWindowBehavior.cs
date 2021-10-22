@@ -220,10 +220,11 @@ namespace ControlzEx.Behaviors
             this.DestroyGlowWindows();
         }
 
-#pragma warning disable 618, SA1401
         private bool updatingZOrder;
 
+#pragma warning disable SA1401
         public int DeferGlowChangesCount;
+#pragma warning restore SA1401
 
         private bool positionUpdateRequired;
 
@@ -243,8 +244,11 @@ namespace ControlzEx.Behaviors
                     break;
 
                 case WM.MOVE:
-                    this.UpdateGlowWindowPositions();
+                {
+                    this.positionUpdateRequired = true;
+                    NativeMethods.PostMessage(hwnd, WM.USER, IntPtr.Zero, IntPtr.Zero);
                     break;
+                }
 
                 // Z-Index must be updated when WINDOWPOSCHANGED
                 case WM.WINDOWPOSCHANGED:
@@ -252,14 +256,14 @@ namespace ControlzEx.Behaviors
                     break;
 
                 case WM.SIZE:
-                    {
-                        this.positionUpdateRequired = true;
-                        NativeMethods.PostMessage(hwnd, WM.USER, IntPtr.Zero, IntPtr.Zero);
-                    }
-
+                {
+                    this.positionUpdateRequired = true;
+                    NativeMethods.PostMessage(hwnd, WM.USER, IntPtr.Zero, IntPtr.Zero);
                     break;
+                }
 
                 case WM.USER:
+                {
                     if (this.positionUpdateRequired)
                     {
                         this.positionUpdateRequired = false;
@@ -267,6 +271,7 @@ namespace ControlzEx.Behaviors
                     }
 
                     break;
+                }
             }
 
             return IntPtr.Zero;
