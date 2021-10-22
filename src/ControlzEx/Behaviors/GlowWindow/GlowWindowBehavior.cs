@@ -286,6 +286,8 @@ namespace ControlzEx.Behaviors
                 this.updatingZOrder = true;
                 if (this.windowHandle != IntPtr.Zero)
                 {
+                    var windowPosInfo = NativeMethods.BeginDeferWindowPos(this.glowWindows.Length);
+
                     var currentWindowHandle = this.windowHandle;
                     foreach (var glowWindow in this.glowWindows)
                     {
@@ -298,11 +300,13 @@ namespace ControlzEx.Behaviors
                         if (previousWindow != currentWindowHandle
                             && previousWindow != IntPtr.Zero)
                         {
-                            NativeMethods.SetWindowPos(currentWindowHandle, glowWindow.Handle, 0, 0, 0, 0, SWP.NOSIZE | SWP.NOMOVE | SWP.NOACTIVATE);
+                            NativeMethods.DeferWindowPos(windowPosInfo, currentWindowHandle, glowWindow.Handle, 0, 0, 0, 0, SWP.NOSIZE | SWP.NOMOVE | SWP.NOACTIVATE);
                         }
 
                         currentWindowHandle = glowWindow.Handle;
                     }
+
+                    NativeMethods.EndDeferWindowPos(windowPosInfo);
                 }
 
                 if (ownerHandle != IntPtr.Zero)
