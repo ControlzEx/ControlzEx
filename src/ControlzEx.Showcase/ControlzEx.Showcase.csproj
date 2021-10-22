@@ -41,6 +41,7 @@
     <Target Name="GenerateXamlFiles" BeforeTargets="DispatchToInnerBuilds;PrepareForBuild" Condition="'$(IsBuildingWpfTempProj)' != 'true'">
       <Message Text="Generating XAML files ($(TargetFramework))" Importance="high" />
       <!-- Generate theme files -->
+      <Error Condition="'$(XamlColorSchemeGeneratorExecutable)' == '' Or !Exists('$(XamlColorSchemeGeneratorExecutable)')" Text="Could not find XamlColorSchemeGeneratorExecutable." />
       <Exec Command="&quot;$(XamlColorSchemeGeneratorExecutable)&quot;" WorkingDirectory="$(MSBuildProjectDirectory)/Themes/Themes" />
     </Target>
 
