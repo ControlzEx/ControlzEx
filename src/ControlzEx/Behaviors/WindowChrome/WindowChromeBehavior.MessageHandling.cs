@@ -4,8 +4,6 @@
 namespace ControlzEx.Behaviors
 {
     using System;
-    using System.Drawing;
-    using System.Drawing.Drawing2D;
     using System.Runtime.InteropServices;
     using System.Security;
     using System.Windows;
@@ -14,7 +12,6 @@ namespace ControlzEx.Behaviors
     using ControlzEx.Windows.Shell;
     using HANDLE_MESSAGE = System.Collections.Generic.KeyValuePair<ControlzEx.Standard.WM, ControlzEx.Standard.MessageHandler>;
     using Point = System.Windows.Point;
-    using Size = System.Drawing.Size;
 
     public partial class WindowChromeBehavior
     {
@@ -416,25 +413,6 @@ namespace ControlzEx.Behaviors
         [SecurityCritical]
         private IntPtr _HandleNCPAINT(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
-            // var regionHandle = wParam == new IntPtr(1)
-            //     ? IntPtr.Zero
-            //     : wParam;
-            // // if (wParam != IntPtr.Zero
-            // //     && wParam != new IntPtr(1))
-            // {
-            //     using (var dcEx = SafeDC.GetDCEx(this.windowHandle, regionHandle, SafeDC.DeviceContextValues.Window | SafeDC.DeviceContextValues.IntersectRgn | SafeDC.DeviceContextValues.UseStyle))
-            //     {
-            //         using (Graphics g = Graphics.FromHdc(dcEx.DangerousGetHandle()))
-            //         {
-            //             //g.Clear(Color.Transparent);
-            //             g.FillRectangle(new LinearGradientBrush(new System.Drawing.Point(0, 0), new System.Drawing.Point(800, 600), Color.Transparent, Color.Red), new Rectangle(new System.Drawing.Point(0, 0), new Size(800, 600)));
-            //             //g.FillRectangle();
-            //         }
-            //     }
-            // }
-            //
-            // handled = true;
-
             handled = false;
             return IntPtr.Zero;
         }
