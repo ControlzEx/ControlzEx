@@ -286,7 +286,7 @@
                             <GroupBox Grid.Row="3"
                                       Margin="5"
                                       BorderThickness="0 1 0 0"
-                                      Header="Options">
+                                      Header="Options (Window)">
                                 <local:UniformGridEx Columns="2"
                                                      ShowGridLines="True">
                                     <Label>
@@ -305,7 +305,163 @@
                                               VerticalAlignment="Center"
                                               ItemsSource="{Binding Source={StaticResource ResizeModeEnumValues}}"
                                               SelectedItem="{Binding ElementName=Window, Path=ResizeMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    
+                                    <Label>
+                                        Background
+                                    </Label>
+                                    <ComboBox Margin="4"
+                                              VerticalAlignment="Center"
+                                              HorizontalContentAlignment="Stretch"
+                                              ItemsSource="{Binding Brushes, ElementName=Window}"
+                                              SelectedValue="{Binding ElementName=Window, Path=Background, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                              SelectedValuePath="Value">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Grid.Column="0"
+                                                               Margin="4 0"
+                                                               Text="{Binding}" />
+                                                    <Grid Grid.Column="1"
+                                                          Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}"
+                                                          Margin="4 0"
+                                                          VerticalAlignment="Stretch"
+                                                          Background="{Binding Value}" />
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
 
+                                    <Label>
+                                        BorderThickness
+                                    </Label>
+                                    <TextBox Margin="4"
+                                             Padding="2"
+                                             VerticalAlignment="Center"
+                                             Text="{Binding ElementName=Window, Path=BorderThickness, Mode=TwoWay}" />
+
+                                    <Label>
+                                        BorderBrush
+                                    </Label>
+                                    <ComboBox Margin="4"
+                                              VerticalAlignment="Center"
+                                              HorizontalContentAlignment="Stretch"
+                                              ItemsSource="{Binding Brushes, ElementName=Window}"
+                                              SelectedValue="{Binding ElementName=Window, Path=BorderBrush, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                              SelectedValuePath="Value">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Grid.Column="0"
+                                                               Margin="4 0"
+                                                               Text="{Binding}" />
+                                                    <Grid Grid.Column="1"
+                                                          Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}"
+                                                          Margin="4 0"
+                                                          VerticalAlignment="Stretch"
+                                                          Background="{Binding Value}" />
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                    
+                                    <Label>
+                                        ShowInTaskbar
+                                    </Label>
+                                    <CheckBox Margin="4"
+                                              VerticalAlignment="Center"
+                                              IsChecked="{Binding ElementName=Window, Path=ShowInTaskbar, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <Label>
+                                        Topmost
+                                    </Label>
+                                    <CheckBox Margin="4"
+                                              VerticalAlignment="Center"
+                                              IsChecked="{Binding ElementName=Window, Path=Topmost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <Label>
+                                        ShowInTaskbar
+                                    </Label>
+                                    <CheckBox Margin="4"
+                                              VerticalAlignment="Center"
+                                              IsChecked="{Binding ElementName=Window, Path=ShowInTaskbar, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                </local:UniformGridEx>
+                            </GroupBox>
+                            
+                            <GroupBox Grid.Row="4"
+                                      Margin="5"
+                                      BorderThickness="0 1 0 0"
+                                      Header="Options (WindowChromeBehavior)">
+                                <local:UniformGridEx Columns="2"
+                                                     ShowGridLines="True">
+                                    <Label>
+                                        IgnoreTaskbarOnMaximize
+                                    </Label>
+                                    <CheckBox
+                                        Margin="4"
+                                              VerticalAlignment="Center"
+                                              IsChecked="{Binding ElementName=Window, Path=IgnoreTaskbarOnMaximize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <Label>
+                                        KeepBorderOnMaximize
+                                    </Label>
+                                    <CheckBox Margin="4"
+                                              VerticalAlignment="Center"
+                                              IsChecked="{Binding ElementName=Window, Path=KeepBorderOnMaximize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <Label>
+                                        TryToBeFlickerFree
+                                    </Label>
+                                    <CheckBox Margin="4"
+                                              VerticalAlignment="Center"
+                                              IsChecked="{Binding ElementName=Window, Path=TryToBeFlickerFree, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <Label>
+                                        ResizeBorderThickness
+                                    </Label>
+                                    <TextBox Margin="4"
+                                             Padding="2"
+                                             VerticalAlignment="Center"
+                                             Text="{Binding ElementName=Window, Path=ResizeBorderThickness, Mode=TwoWay}" />
+
+                                    <Label>
+                                        CornerPreference
+                                    </Label>
+                                    <ComboBox x:Name="CornerPreferenceComboBox"
+                                              Margin="4"
+                                              VerticalAlignment="Center"
+                                              ItemsSource="{Binding Source={StaticResource CornerPreferenceEnumValues}}"
+                                              SelectedItem="{Binding ElementName=Window, Path=CornerPreference, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <Label>
+                                        EnableMinimize (Enable/Disable System Menu Item)
+                                    </Label>
+                                    <CheckBox Margin="4"
+                                              VerticalAlignment="Center"
+                                              IsChecked="{Binding ElementName=Window, Path=ShowMinButton, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <Label>
+                                        EnableMaxRestore (Enable/Disable System Menu Item)
+                                    </Label>
+                                    <CheckBox Margin="4"
+                                              VerticalAlignment="Center"
+                                              IsChecked="{Binding ElementName=Window, Path=ShowMaxRestoreButton, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                </local:UniformGridEx>
+                            </GroupBox>
+
+                            <GroupBox Grid.Row="5"
+                                      Margin="5"
+                                      BorderThickness="0 1 0 0"
+                                      Header="Options (GlowWindowBehavior)">
+                                <local:UniformGridEx Columns="2"
+                                                     ShowGridLines="True">
                                     <Label>
                                         GlowColor
                                     </Label>
@@ -371,148 +527,51 @@
                                     </ComboBox>
 
                                     <Label>
-                                        Background
+                                        GlowDepth
                                     </Label>
-                                    <ComboBox Margin="4"
-                                              VerticalAlignment="Center"
-                                              HorizontalContentAlignment="Stretch"
-                                              ItemsSource="{Binding Brushes, ElementName=Window}"
-                                              SelectedValue="{Binding ElementName=Window, Path=Background, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                              SelectedValuePath="Value">
-                                        <ComboBox.ItemTemplate>
-                                            <DataTemplate>
-                                                <Grid>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="*" />
-                                                        <ColumnDefinition Width="Auto" />
-                                                    </Grid.ColumnDefinitions>
-                                                    <TextBlock Grid.Column="0"
-                                                               Margin="4 0"
-                                                               Text="{Binding}" />
-                                                    <Grid Grid.Column="1"
-                                                          Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}"
-                                                          Margin="4 0"
-                                                          VerticalAlignment="Stretch"
-                                                          Background="{Binding Value}" />
-                                                </Grid>
-                                            </DataTemplate>
-                                        </ComboBox.ItemTemplate>
-                                    </ComboBox>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBox Margin="4"
+                                                 Padding="2"
+                                                 Width="30"
+                                                 VerticalAlignment="Center"
+                                                 Text="{Binding ElementName=Window, Path=GlowDepth, Mode=TwoWay}" />
+                                        <CheckBox x:Name="AnimateGlowDepth" 
+                                                  Margin="4"
+                                                  Padding="2"
+                                                  VerticalAlignment="Center"
+                                                  VerticalContentAlignment="Center"
+                                                  Checked="AnimateGlowDepth_OnChecked"
+                                                  Unchecked="AnimateGlowDepth_OnUnchecked">Animate</CheckBox>
+                                    </StackPanel>
 
                                     <Label>
-                                        BorderBrush
-                                    </Label>
-                                    <ComboBox Margin="4"
-                                              VerticalAlignment="Center"
-                                              HorizontalContentAlignment="Stretch"
-                                              ItemsSource="{Binding Brushes, ElementName=Window}"
-                                              SelectedValue="{Binding ElementName=Window, Path=BorderBrush, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                              SelectedValuePath="Value">
-                                        <ComboBox.ItemTemplate>
-                                            <DataTemplate>
-                                                <Grid>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="*" />
-                                                        <ColumnDefinition Width="Auto" />
-                                                    </Grid.ColumnDefinitions>
-                                                    <TextBlock Grid.Column="0"
-                                                               Margin="4 0"
-                                                               Text="{Binding}" />
-                                                    <Grid Grid.Column="1"
-                                                          Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}"
-                                                          Margin="4 0"
-                                                          VerticalAlignment="Stretch"
-                                                          Background="{Binding Value}" />
-                                                </Grid>
-                                            </DataTemplate>
-                                        </ComboBox.ItemTemplate>
-                                    </ComboBox>
-
-                                    <Label>
-                                        ShowInTaskbar
+                                        PreferDWMBorderColor
                                     </Label>
                                     <CheckBox Margin="4"
+                                              Padding="2"
                                               VerticalAlignment="Center"
-                                              IsChecked="{Binding ElementName=Window, Path=ShowInTaskbar, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                    
-                                    <Label>
-                                        IgnoreTaskbarOnMaximize
-                                    </Label>
-                                    <CheckBox
-                                        Margin="4"
-                                              VerticalAlignment="Center"
-                                              IsChecked="{Binding ElementName=Window, Path=IgnoreTaskbarOnMaximize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                              IsChecked="{Binding ElementName=Window, Path=PreferDWMBorderColor, Mode=TwoWay}" />
 
                                     <Label>
-                                        KeepBorderOnMaximize
+                                        DWMSupportsBorderColor
                                     </Label>
                                     <CheckBox Margin="4"
+                                              Padding="2"
                                               VerticalAlignment="Center"
-                                              IsChecked="{Binding ElementName=Window, Path=KeepBorderOnMaximize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                              IsEnabled="False"
+                                              IsChecked="{Binding ElementName=Window, Path=DWMSupportsBorderColor, Mode=OneWay}" />
 
                                     <Label>
-                                        TryToBeFlickerFree
+                                        UseRadialGradientForCorners
                                     </Label>
                                     <CheckBox Margin="4"
+                                              Padding="2"
                                               VerticalAlignment="Center"
-                                              IsChecked="{Binding ElementName=Window, Path=TryToBeFlickerFree, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-
-                                    <Label>
-                                        CornerPreference
-                                    </Label>
-                                    <ComboBox x:Name="CornerPreferenceComboBox"
-                                              Margin="4"
-                                              VerticalAlignment="Center"
-                                              ItemsSource="{Binding Source={StaticResource CornerPreferenceEnumValues}}"
-                                              SelectedItem="{Binding ElementName=Window, Path=CornerPreference, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                    
-                                    <Label>
-                                        Topmost
-                                    </Label>
-                                    <CheckBox Margin="4"
-                                              VerticalAlignment="Center"
-                                              IsChecked="{Binding ElementName=Window, Path=Topmost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-
-                                    <Label>
-                                        ShowInTaskbar
-                                    </Label>
-                                    <CheckBox Margin="4"
-                                              VerticalAlignment="Center"
-                                              IsChecked="{Binding ElementName=Window, Path=ShowInTaskbar, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-
-                                    <Label>
-                                        IsActive
-                                    </Label>
-                                    <CheckBox Margin="4"
-                                              VerticalAlignment="Center"
-                                              IsChecked="{Binding ElementName=Window, Path=IsActive, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                                              IsEnabled="False" />
-
-                                    <Label>
-                                        IsNCActive
-                                    </Label>
-                                    <CheckBox Margin="4"
-                                              VerticalAlignment="Center"
-                                              IsChecked="{Binding ElementName=Window, Path=IsNCActive, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                                              IsEnabled="False" />
-
-                                    <Label>
-                                        EnableMinimize (Enable/Disable System Menu Item)
-                                    </Label>
-                                    <CheckBox Margin="4"
-                                              VerticalAlignment="Center"
-                                              IsChecked="{Binding ElementName=Window, Path=ShowMinButton, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-
-                                    <Label>
-                                        EnableMaxRestore (Enable/Disable System Menu Item)
-                                    </Label>
-                                    <CheckBox Margin="4"
-                                              VerticalAlignment="Center"
-                                              IsChecked="{Binding ElementName=Window, Path=ShowMaxRestoreButton, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                              IsChecked="{Binding ElementName=Window, Path=UseRadialGradientForCorners, Mode=TwoWay}" />
                                 </local:UniformGridEx>
                             </GroupBox>
-
-                            <GroupBox Grid.Row="4"
+                            
+                            <GroupBox Grid.Row="6"
                                       Margin="5"
                                       BorderThickness="0 1 0 0"
                                       Header="Current values">
@@ -607,63 +666,20 @@
                                     </StackPanel>
 
                                     <Label>
-                                        BorderThickness
-                                    </Label>
-                                    <TextBox Margin="4"
-                                             Padding="2"
-                                             VerticalAlignment="Center"
-                                             Text="{Binding ElementName=Window, Path=BorderThickness, Mode=TwoWay}" />
-                                    
-                                    <Label>
-                                        ResizeBorderThickness
-                                    </Label>
-                                    <TextBox Margin="4"
-                                             Padding="2"
-                                             VerticalAlignment="Center"
-                                             Text="{Binding ElementName=Window, Path=ResizeBorderThickness, Mode=TwoWay}" />
-
-                                    <Label>
-                                        GlowDepth
-                                    </Label>
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBox Margin="4"
-                                                 Padding="2"
-                                                 Width="30"
-                                                 VerticalAlignment="Center"
-                                                 Text="{Binding ElementName=Window, Path=GlowDepth, Mode=TwoWay}" />
-                                        <CheckBox x:Name="AnimateGlowDepth" 
-                                                  Margin="4"
-                                                  Padding="2"
-                                                  VerticalAlignment="Center"
-                                                  VerticalContentAlignment="Center"
-                                                  Checked="AnimateGlowDepth_OnChecked"
-                                                  Unchecked="AnimateGlowDepth_OnUnchecked">Animate</CheckBox>
-                                    </StackPanel>
-
-                                    <Label>
-                                        PreferDWMBorderColor
+                                        IsActive
                                     </Label>
                                     <CheckBox Margin="4"
-                                              Padding="2"
                                               VerticalAlignment="Center"
-                                              IsChecked="{Binding ElementName=Window, Path=PreferDWMBorderColor, Mode=TwoWay}" />
+                                              IsChecked="{Binding ElementName=Window, Path=IsActive, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                              IsEnabled="False" />
 
                                     <Label>
-                                        DWMSupportsBorderColor
+                                        IsNCActive
                                     </Label>
                                     <CheckBox Margin="4"
-                                              Padding="2"
                                               VerticalAlignment="Center"
-                                              IsEnabled="False"
-                                              IsChecked="{Binding ElementName=Window, Path=DWMSupportsBorderColor, Mode=OneWay}" />
-
-                                    <Label>
-                                        UseRadialGradientForCorners
-                                    </Label>
-                                    <CheckBox Margin="4"
-                                              Padding="2"
-                                              VerticalAlignment="Center"
-                                              IsChecked="{Binding ElementName=Window, Path=UseRadialGradientForCorners, Mode=TwoWay}" />
+                                              IsChecked="{Binding ElementName=Window, Path=IsNCActive, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                              IsEnabled="False" />
                                 </local:UniformGridEx>
                             </GroupBox>
                         </Grid>
