@@ -1112,6 +1112,7 @@ namespace ControlzEx.Standard
         APPWINDOW = 0x00040000,
         LAYERED = 0x00080000,
         NOINHERITLAYOUT = 0x00100000, // Disable inheritence of mirroring by children
+        NOREDIRECTIONBITMAP = 0x00200000,
         LAYOUTRTL = 0x00400000, // Right to left mirroring
         COMPOSITED = 0x02000000,
         NOACTIVATE = 0x08000000,
