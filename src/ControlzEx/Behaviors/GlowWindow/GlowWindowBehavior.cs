@@ -463,8 +463,8 @@ namespace ControlzEx.Behaviors
 
                 var handle = this.windowHandle;
                 if (NativeMethods.IsWindowVisible(handle)
-                    && !NativeMethods.IsIconic(handle)
-                    && !NativeMethods.IsZoomed(handle))
+                    && NativeMethods.IsIconic(handle) == false
+                    && NativeMethods.IsZoomed(handle) == false)
                 {
                     var result = this.AssociatedObject is not null
                            && this.AssociatedObject.ResizeMode != ResizeMode.NoResize
