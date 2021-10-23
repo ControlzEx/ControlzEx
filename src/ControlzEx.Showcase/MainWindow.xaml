@@ -309,31 +309,40 @@
                                     <Label>
                                         Background
                                     </Label>
-                                    <ComboBox Margin="4"
-                                              VerticalAlignment="Center"
-                                              HorizontalContentAlignment="Stretch"
-                                              ItemsSource="{Binding Brushes, ElementName=Window}"
-                                              SelectedValue="{Binding ElementName=Window, Path=Background, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                              SelectedValuePath="Value">
-                                        <ComboBox.ItemTemplate>
-                                            <DataTemplate>
-                                                <Grid>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="*" />
-                                                        <ColumnDefinition Width="Auto" />
-                                                    </Grid.ColumnDefinitions>
-                                                    <TextBlock Grid.Column="0"
-                                                               Margin="4 0"
-                                                               Text="{Binding}" />
-                                                    <Grid Grid.Column="1"
-                                                          Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}"
-                                                          Margin="4 0"
-                                                          VerticalAlignment="Stretch"
-                                                          Background="{Binding Value}" />
-                                                </Grid>
-                                            </DataTemplate>
-                                        </ComboBox.ItemTemplate>
-                                    </ComboBox>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Border Margin="4"
+                                                Width="16"
+                                                Height="16"
+                                                BorderThickness="1"
+                                                BorderBrush="Black"
+                                                Background="{Binding ElementName=Window, Path=Background}" />
+                                        <ComboBox Margin="4"
+                                                  Width="100"
+                                                  VerticalAlignment="Center"
+                                                  HorizontalContentAlignment="Stretch"
+                                                  IsEditable="True"
+                                                  ItemsSource="{Binding Brushes, ElementName=Window}"
+                                                  Text="{Binding ElementName=Window, Path=Background, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="Auto" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Grid.Column="0"
+                                                                   Margin="4 0"
+                                                                   Text="{Binding}" />
+                                                        <Grid Grid.Column="1"
+                                                              Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}"
+                                                              Margin="4 0"
+                                                              VerticalAlignment="Stretch"
+                                                              Background="{Binding}" />
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </StackPanel>
 
                                     <Label>
                                         BorderThickness
@@ -346,31 +355,40 @@
                                     <Label>
                                         BorderBrush
                                     </Label>
-                                    <ComboBox Margin="4"
-                                              VerticalAlignment="Center"
-                                              HorizontalContentAlignment="Stretch"
-                                              ItemsSource="{Binding Brushes, ElementName=Window}"
-                                              SelectedValue="{Binding ElementName=Window, Path=BorderBrush, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                              SelectedValuePath="Value">
-                                        <ComboBox.ItemTemplate>
-                                            <DataTemplate>
-                                                <Grid>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="*" />
-                                                        <ColumnDefinition Width="Auto" />
-                                                    </Grid.ColumnDefinitions>
-                                                    <TextBlock Grid.Column="0"
-                                                               Margin="4 0"
-                                                               Text="{Binding}" />
-                                                    <Grid Grid.Column="1"
-                                                          Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}"
-                                                          Margin="4 0"
-                                                          VerticalAlignment="Stretch"
-                                                          Background="{Binding Value}" />
-                                                </Grid>
-                                            </DataTemplate>
-                                        </ComboBox.ItemTemplate>
-                                    </ComboBox>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Border Margin="4"
+                                                Width="16" 
+                                                Height="16"
+                                                BorderThickness="1"
+                                                BorderBrush="Black"
+                                                Background="{Binding ElementName=Window, Path=BorderBrush}" />
+                                        <ComboBox Margin="4"
+                                                  Width="100"
+                                                  VerticalAlignment="Center"
+                                                  HorizontalContentAlignment="Stretch"
+                                                  IsEditable="True"
+                                                  ItemsSource="{Binding Brushes, ElementName=Window}"
+                                                  Text="{Binding ElementName=Window, Path=BorderBrush, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="Auto" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Grid.Column="0"
+                                                                   Margin="4 0"
+                                                                   Text="{Binding}" />
+                                                        <Grid Grid.Column="1"
+                                                              Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}"
+                                                              Margin="4 0"
+                                                              VerticalAlignment="Stretch"
+                                                              Background="{Binding}" />
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </StackPanel>
                                     
                                     <Label>
                                         ShowInTaskbar
@@ -458,66 +476,91 @@
                                     <Label>
                                         GlowColor
                                     </Label>
-                                    <ComboBox Margin="4"
-                                              VerticalAlignment="Center"
-                                              HorizontalContentAlignment="Stretch"
-                                              ItemsSource="{Binding Colors, ElementName=Window}"
-                                              SelectedValue="{Binding ElementName=Window, Path=GlowColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                              SelectedValuePath="Value">
-                                        <ComboBox.ItemTemplate>
-                                            <DataTemplate>
-                                                <Grid>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="*" />
-                                                        <ColumnDefinition Width="Auto" />
-                                                    </Grid.ColumnDefinitions>
-                                                    <TextBlock Grid.Column="0"
-                                                               Margin="4 0"
-                                                               Text="{Binding}" />
-                                                    <Grid Grid.Column="1"
-                                                          Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}"
-                                                          Margin="4 0"
-                                                          VerticalAlignment="Stretch">
-                                                        <Grid.Background>
-                                                            <SolidColorBrush Color="{Binding Value}" />
-                                                        </Grid.Background>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Border Margin="4"
+                                                Width="16" 
+                                                Height="16"
+                                                BorderThickness="1"
+                                                BorderBrush="Black">
+                                            <Border.Background>
+                                                <SolidColorBrush Color="{Binding ElementName=Window, Path=GlowColor}" />
+                                            </Border.Background>
+                                        </Border>
+                                        <ComboBox Margin="4"
+                                                  Width="100"
+                                                  VerticalAlignment="Center"
+                                                  HorizontalContentAlignment="Stretch"
+                                                  IsEditable="True"
+                                                  ItemsSource="{Binding Colors, ElementName=Window}"
+                                                  Text="{Binding ElementName=Window, Path=GlowColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="Auto" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Grid.Column="0"
+                                                                   Margin="4 0"
+                                                                   Text="{Binding}" />
+                                                        <Grid Grid.Column="1"
+                                                              Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}"
+                                                              Margin="4 0"
+                                                              VerticalAlignment="Stretch">
+                                                            <Grid.Background>
+                                                                <SolidColorBrush Color="{Binding}" />
+                                                            </Grid.Background>
+                                                        </Grid>
                                                     </Grid>
-                                                </Grid>
-                                            </DataTemplate>
-                                        </ComboBox.ItemTemplate>
-                                    </ComboBox>
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </StackPanel>
 
                                     <Label>
                                         NonActiveGlowColor
                                     </Label>
-                                    <ComboBox Margin="4"
-                                              VerticalAlignment="Center"
-                                              HorizontalContentAlignment="Stretch"
-                                              ItemsSource="{Binding Colors, ElementName=Window}"
-                                              SelectedValue="{Binding ElementName=Window, Path=NonActiveGlowColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                              SelectedValuePath="Value">
-                                        <ComboBox.ItemTemplate>
-                                            <DataTemplate>
-                                                <Grid>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="*" />
-                                                        <ColumnDefinition Width="Auto" />
-                                                    </Grid.ColumnDefinitions>
-                                                    <TextBlock Grid.Column="0"
-                                                               Margin="4 0"
-                                                               Text="{Binding}" />
-                                                    <Grid Grid.Column="1"
-                                                          Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}"
-                                                          Margin="4 0"
-                                                          VerticalAlignment="Stretch">
-                                                        <Grid.Background>
-                                                            <SolidColorBrush Color="{Binding Value}" />
-                                                        </Grid.Background>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Border Margin="4"
+                                                Width="16" 
+                                                Height="16"
+                                                BorderThickness="1"
+                                                BorderBrush="Black">
+                                            <Border.Background>
+                                                <SolidColorBrush Color="{Binding ElementName=Window, Path=NonActiveGlowColor}" />
+                                            </Border.Background>
+                                        </Border>
+                                        <ComboBox Margin="4"
+                                                  Width="100"
+                                                  VerticalAlignment="Center"
+                                                  HorizontalAlignment="Stretch"
+                                                  HorizontalContentAlignment="Stretch"
+                                                  IsEditable="True"
+                                                  ItemsSource="{Binding Colors, ElementName=Window}"
+                                                  Text="{Binding ElementName=Window, Path=NonActiveGlowColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="Auto" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Grid.Column="0"
+                                                                   Margin="4 0"
+                                                                   Text="{Binding}" />
+                                                        <Grid Grid.Column="1"
+                                                              Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}"
+                                                              Margin="4 0"
+                                                              VerticalAlignment="Stretch">
+                                                            <Grid.Background>
+                                                                <SolidColorBrush Color="{Binding}" />
+                                                            </Grid.Background>
+                                                        </Grid>
                                                     </Grid>
-                                                </Grid>
-                                            </DataTemplate>
-                                        </ComboBox.ItemTemplate>
-                                    </ComboBox>
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </StackPanel>
 
                                     <Label>
                                         GlowDepth

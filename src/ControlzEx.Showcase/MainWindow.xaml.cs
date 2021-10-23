@@ -18,8 +18,8 @@ namespace ControlzEx.Showcase
         private static readonly PropertyInfo criticalHandlePropertyInfo = typeof(Window).GetProperty("CriticalHandle", BindingFlags.NonPublic | BindingFlags.Instance);
         private static readonly object[] emptyObjectArray = new object[0];
 
-        public static readonly DependencyProperty ColorsProperty = DependencyProperty.Register(nameof(Colors), typeof(List<KeyValuePair<string, Color>>), typeof(MainWindow), new PropertyMetadata(null));
-        public static readonly DependencyProperty BrushesProperty = DependencyProperty.Register(nameof(Brushes), typeof(List<KeyValuePair<string, Brush>>), typeof(MainWindow), new PropertyMetadata(null));
+        public static readonly DependencyProperty ColorsProperty = DependencyProperty.Register(nameof(Colors), typeof(List<Color>), typeof(MainWindow), new PropertyMetadata(null));
+        public static readonly DependencyProperty BrushesProperty = DependencyProperty.Register(nameof(Brushes), typeof(List<Brush>), typeof(MainWindow), new PropertyMetadata(null));
 
         public MainWindow()
         {
@@ -29,36 +29,36 @@ namespace ControlzEx.Showcase
             this.Brushes = GetBrushes().ToList();
         }
 
-        public List<KeyValuePair<string, Color>> Colors
+        public List<Color> Colors
         {
-            get => (List<KeyValuePair<string, Color>>)this.GetValue(ColorsProperty);
+            get => (List<Color>)this.GetValue(ColorsProperty);
             set => this.SetValue(ColorsProperty, value);
         }
 
-        public List<KeyValuePair<string, Brush>> Brushes
+        public List<Brush> Brushes
         {
-            get => (List<KeyValuePair<string, Brush>>)this.GetValue(BrushesProperty);
+            get => (List<Brush>)this.GetValue(BrushesProperty);
             set => this.SetValue(BrushesProperty, value);
         }
 
         public int LoadedCount { get; set; }
 
-        public static IEnumerable<KeyValuePair<string, Color>> GetColors()
+        public static IEnumerable<Color> GetColors()
         {
             return typeof(Colors)
                    .GetProperties()
                    .Where(prop => typeof(Color).IsAssignableFrom(prop.PropertyType))
-                   .Select(prop => new KeyValuePair<string, Color>(prop.Name, (Color)prop.GetValue(null, null)));
+                   .Select(prop => (Color)prop.GetValue(null, null));
         }
 
-        public static IEnumerable<KeyValuePair<string, Brush>> GetBrushes()
+        public static IEnumerable<Brush> GetBrushes()
         {
             var brushes = typeof(Brushes)
                           .GetProperties()
                           .Where(prop => typeof(Brush).IsAssignableFrom(prop.PropertyType))
-                          .Select(prop => new KeyValuePair<string, Brush>(prop.Name, (Brush)prop.GetValue(null, null)));
+                          .Select(prop => (Brush)prop.GetValue(null, null));
 
-            return new[] { new KeyValuePair<string, Brush>("None", null) }.Concat(brushes);
+            return new Brush[] { null }.Concat(brushes);
         }
 
         private void ButtonOpenChildWindowOnClick(object sender, RoutedEventArgs e)
