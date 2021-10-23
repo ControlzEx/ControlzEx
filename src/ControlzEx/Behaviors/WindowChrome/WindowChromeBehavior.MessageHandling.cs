@@ -335,7 +335,7 @@ namespace ControlzEx.Behaviors
                     ? monitorInfo.rcMonitor
                     : monitorInfo.rcWork;
 
-                var rc = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT))!;
+                var rc = Marshal.PtrToStructure<RECT>(lParam);
                 rc.Left = monitorRect.Left;
                 rc.Top = monitorRect.Top;
                 rc.Right = monitorRect.Right;
@@ -353,9 +353,9 @@ namespace ControlzEx.Behaviors
             }
             else if (NativeMethods.GetWindowStyle(this.windowHandle).HasFlag(WS.CAPTION))
             {
-                var rcBefore = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT))!;
+                var rcBefore = Marshal.PtrToStructure<RECT>(lParam);
                 NativeMethods.DefWindowProc(this.windowHandle, uMsg, wParam, lParam);
-                var rc = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT))!;
+                var rc = Marshal.PtrToStructure<RECT>(lParam);
                 rc.Top = rcBefore.Top; // Remove titlebar
                 Marshal.StructureToPtr(rc, lParam, true);
             }
@@ -551,7 +551,7 @@ namespace ControlzEx.Behaviors
 
             this.UpdateWindowStyle();
 
-            var windowpos = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS))!;
+            var windowpos = Marshal.PtrToStructure<WINDOWPOS>(lParam);
 
             //System.Diagnostics.Trace.WriteLine(windowpos);
 
@@ -648,7 +648,7 @@ namespace ControlzEx.Behaviors
             if (this.IgnoreTaskbarOnMaximize
                 && NativeMethods.IsZoomed(this.windowHandle))
             {
-                var mmi = (MINMAXINFO)Marshal.PtrToStructure(lParam, typeof(MINMAXINFO))!;
+                var mmi = Marshal.PtrToStructure<MINMAXINFO>(lParam);
 
                 var monitor = NativeMethods.MonitorFromWindow(this.windowHandle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
                 if (monitor != IntPtr.Zero)

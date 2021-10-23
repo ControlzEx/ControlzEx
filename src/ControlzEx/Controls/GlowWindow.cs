@@ -762,7 +762,7 @@ namespace ControlzEx.Controls.Internal
                 case WM.WINDOWPOSCHANGED:
                 case WM.WINDOWPOSCHANGING:
                 {
-                    var windowpos = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS))!;
+                    var windowpos = Marshal.PtrToStructure<WINDOWPOS>(lParam);
                     windowpos.flags |= SWP.NOACTIVATE;
                     Marshal.StructureToPtr(windowpos, lParam, true);
                     break;
