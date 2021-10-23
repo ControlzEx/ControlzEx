@@ -5,6 +5,7 @@
 namespace ControlzEx.Behaviors
 {
     using System;
+    using System.Runtime.InteropServices;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Interop;
@@ -252,8 +253,21 @@ namespace ControlzEx.Behaviors
 
                 // Z-Index must be updated when WINDOWPOSCHANGED
                 case WM.WINDOWPOSCHANGED:
+                {
+                    // If the owner is TopMost we don't receive the regular move message, so we must check that here...
+                    var windowPos = Marshal.PtrToStructure<WINDOWPOS>(lParam);
+                    if (windowPos.flags.HasFlag(SWP.HIDEWINDOW)
+                        || windowPos.flags.HasFlag(SWP.SHOWWINDOW))
+                    {
+                        using (this.DeferGlowChanges())
+                        {
+                            this.UpdateGlowVisibility(false);
+                        }
+                    }
+
                     this.UpdateZOrderOfThisAndOwner();
                     break;
+                }
 
                 case WM.SIZE:
                 {
