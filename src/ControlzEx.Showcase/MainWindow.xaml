@@ -123,10 +123,11 @@
                                 <RowDefinition />
                             </Grid.RowDefinitions>
 
-                            <GroupBox Grid.Row="0"
+                            <Expander Grid.Row="0"
                                       Margin="5"
                                       BorderThickness="0 1 0 0"
-                                      Header="Actions">
+                                      Header="Actions"
+                                      IsExpanded="True">
                                 <WrapPanel Orientation="Horizontal">
                                     <Button x:Name="MinimizeButton"
                                             MinWidth="100"
@@ -193,12 +194,13 @@
                                             Click="ButtonHideOnClick"
                                             Content="Hide" />
                                 </WrapPanel>
-                            </GroupBox>
+                            </Expander>
 
-                            <GroupBox Grid.Row="1"
+                            <Expander Grid.Row="1"
                                       Margin="5"
                                       BorderThickness="0 1 0 0"
-                                      Header="Window tests (primarily for glows)">
+                                      Header="Window tests (primarily for glows)"
+                                      IsExpanded="True">
                                 <StackPanel Orientation="Vertical">
                                     <WrapPanel Orientation="Horizontal">
                                         <CheckBox x:Name="SetOwner"
@@ -227,12 +229,13 @@
                                                 Content="Open pseudo modal child window" />
                                     </WrapPanel>
                                 </StackPanel>
-                            </GroupBox>
+                            </Expander>
 
-                            <GroupBox Grid.Row="2"
+                            <Expander Grid.Row="2"
                                       Margin="5"
                                       BorderThickness="0 1 0 0"
-                                      Header="Misc">
+                                      Header="Misc"
+                                      IsExpanded="True">
                                 <WrapPanel Orientation="Horizontal">
                                     <Button MinWidth="100"
                                             Margin="4"
@@ -281,12 +284,13 @@
                                                 Content="Badge" />
                                     </controlzEx:BadgedEx>
                                 </WrapPanel>
-                            </GroupBox>
+                            </Expander>
 
-                            <GroupBox Grid.Row="3"
+                            <Expander Grid.Row="3"
                                       Margin="5"
                                       BorderThickness="0 1 0 0"
-                                      Header="Options (Window)">
+                                      Header="Options (Window)"
+                                      IsExpanded="True">
                                 <local:UniformGridEx Columns="2"
                                                      ShowGridLines="True">
                                     <Label>
@@ -403,20 +407,14 @@
                                     <CheckBox Margin="4"
                                               VerticalAlignment="Center"
                                               IsChecked="{Binding ElementName=Window, Path=Topmost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-
-                                    <Label>
-                                        ShowInTaskbar
-                                    </Label>
-                                    <CheckBox Margin="4"
-                                              VerticalAlignment="Center"
-                                              IsChecked="{Binding ElementName=Window, Path=ShowInTaskbar, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 </local:UniformGridEx>
-                            </GroupBox>
+                            </Expander>
                             
-                            <GroupBox Grid.Row="4"
+                            <Expander Grid.Row="4"
                                       Margin="5"
                                       BorderThickness="0 1 0 0"
-                                      Header="Options (WindowChromeBehavior)">
+                                      Header="Options (WindowChromeBehavior)"
+                                      IsExpanded="True">
                                 <local:UniformGridEx Columns="2"
                                                      ShowGridLines="True">
                                     <Label>
@@ -465,12 +463,13 @@
                                               VerticalAlignment="Center"
                                               IsChecked="{Binding ElementName=Window, Path=ShowMaxRestoreButton, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 </local:UniformGridEx>
-                            </GroupBox>
+                            </Expander>
 
-                            <GroupBox Grid.Row="5"
+                            <Expander Grid.Row="5"
                                       Margin="5"
                                       BorderThickness="0 1 0 0"
-                                      Header="Options (GlowWindowBehavior)">
+                                      Header="Options (GlowWindowBehavior)"
+                                      IsExpanded="True">
                                 <local:UniformGridEx Columns="2"
                                                      ShowGridLines="True">
                                     <Label>
@@ -605,12 +604,13 @@
                                               VerticalAlignment="Center"
                                               IsChecked="{Binding ElementName=Window, Path=UseRadialGradientForCorners, Mode=TwoWay}" />
                                 </local:UniformGridEx>
-                            </GroupBox>
-                            
-                            <GroupBox Grid.Row="6"
+                            </Expander>
+
+                            <Expander Grid.Row="6"
                                       Margin="5"
                                       BorderThickness="0 1 0 0"
-                                      Header="Current values">
+                                      Header="Current values"
+                                      IsExpanded="True">
                                 <local:UniformGridEx Columns="2"
                                                      ShowGridLines="True">
                                     <Label>
@@ -717,7 +717,7 @@
                                               IsChecked="{Binding ElementName=Window, Path=IsNCActive, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                               IsEnabled="False" />
                                 </local:UniformGridEx>
-                            </GroupBox>
+                            </Expander>
                         </Grid>
                     </ScrollViewer>
                 </TabItem>
