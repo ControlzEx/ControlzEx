@@ -417,13 +417,6 @@
                                               IsChecked="{Binding ElementName=Window, Path=KeepBorderOnMaximize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                                     <Label>
-                                        TryToBeFlickerFree
-                                    </Label>
-                                    <CheckBox Margin="4"
-                                              VerticalAlignment="Center"
-                                              IsChecked="{Binding ElementName=Window, Path=TryToBeFlickerFree, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-
-                                    <Label>
                                         ResizeBorderThickness
                                     </Label>
                                     <TextBox Margin="4"

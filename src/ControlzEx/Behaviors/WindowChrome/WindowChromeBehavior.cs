@@ -99,23 +99,6 @@ namespace ControlzEx.Behaviors
         /// </summary>
         public static readonly DependencyProperty KeepBorderOnMaximizeProperty = DependencyProperty.Register(nameof(KeepBorderOnMaximize), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(BooleanBoxes.TrueBox, OnKeepBorderOnMaximizeChanged));
 
-        /// <summary>
-        /// Gets or sets whether the resizing of the window should be tried in a way that does not cause flicker/jitter, especially when resizing from the left side.
-        /// </summary>
-        /// <remarks>
-        /// Please note that setting this to <c>true</c> may cause resize lag and black areas appearing on some systems.
-        /// </remarks>
-        public bool TryToBeFlickerFree
-        {
-            get { return (bool)this.GetValue(TryToBeFlickerFreeProperty); }
-            set { this.SetValue(TryToBeFlickerFreeProperty, BooleanBoxes.Box(value)); }
-        }
-
-        /// <summary>
-        /// <see cref="DependencyProperty"/> for <see cref="TryToBeFlickerFree"/>.
-        /// </summary>
-        public static readonly DependencyProperty TryToBeFlickerFreeProperty = DependencyProperty.Register(nameof(TryToBeFlickerFree), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(BooleanBoxes.FalseBox, OnTryToBeFlickerFreeChanged));
-
         private static readonly DependencyPropertyKey IsNCActivePropertyKey = DependencyProperty.RegisterReadOnly(nameof(IsNCActive), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(BooleanBoxes.FalseBox));
 
         /// <summary>
@@ -317,13 +300,6 @@ namespace ControlzEx.Behaviors
             var behavior = (WindowChromeBehavior)d;
 
             behavior.HandleStateChanged();
-        }
-
-        private static void OnTryToBeFlickerFreeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var behavior = (WindowChromeBehavior)d;
-
-            behavior._OnChromePropertyChangedThatRequiresRepaint();
         }
 
         [SecuritySafeCritical]
