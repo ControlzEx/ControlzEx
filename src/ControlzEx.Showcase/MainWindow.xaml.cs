@@ -65,7 +65,11 @@ namespace ControlzEx.Showcase
         {
             var window = new MainWindow
             {
-                WindowStartupLocation = WindowStartupLocation.Manual
+                WindowStartupLocation = WindowStartupLocation.Manual,
+                SetOwner =
+                {
+                    IsChecked = this.SetOwner.IsChecked
+                }
             };
 
             if (this.SetOwner.IsChecked == true)
