@@ -264,5 +264,20 @@ namespace ControlzEx.Showcase
         {
             this.glowDepthStoryboard.Stop(this);
         }
+
+        protected override void OnKeyUp(KeyEventArgs e)
+        {
+            base.OnKeyUp(e);
+
+            if (e.Handled)
+            {
+                return;
+            }
+
+            if (e.Key == Key.F3)
+            {
+                this.ButtonOpenChildWindowOnClick(this, null);
+            }
+        }
     }
 }
