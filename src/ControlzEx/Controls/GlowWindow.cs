@@ -714,7 +714,7 @@ namespace ControlzEx.Controls.Internal
 
         protected override IntPtr WndProc(IntPtr hwnd, WM message, IntPtr wParam, IntPtr lParam)
         {
-            System.Diagnostics.Trace.WriteLine($"{DateTime.Now} {message} {wParam} {lParam}");
+            //System.Diagnostics.Trace.WriteLine($"{DateTime.Now} {hwnd} {message} {wParam} {lParam}");
 
             switch (message)
             {
