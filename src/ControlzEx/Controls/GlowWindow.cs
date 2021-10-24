@@ -103,7 +103,7 @@ namespace ControlzEx.Controls.Internal
         {
             if (this.handle != IntPtr.Zero)
             {
-                if (!NativeMethods.DestroyWindow(this.handle))
+                if (NativeMethods.DestroyWindow(this.handle) == false)
                 {
                     LastDestroyWindowError = Marshal.GetLastWin32Error();
                 }
@@ -158,6 +158,8 @@ namespace ControlzEx.Controls.Internal
     {
         private EventHandler? disposingEventHandlers;
 
+        public bool IsDisposing { get; private set; }
+
         public bool IsDisposed { get; private set; }
 
         public event EventHandler Disposing
@@ -191,10 +193,13 @@ namespace ControlzEx.Controls.Internal
 
         protected virtual void Dispose(bool disposing)
         {
-            if (this.IsDisposed)
+            if (this.IsDisposed
+                || this.IsDisposing)
             {
                 return;
             }
+
+            this.IsDisposing = true;
 
             try
             {
@@ -210,6 +215,7 @@ namespace ControlzEx.Controls.Internal
             finally
             {
                 this.IsDisposed = true;
+                this.IsDisposing = false;
             }
         }
 
@@ -708,7 +714,7 @@ namespace ControlzEx.Controls.Internal
 
         protected override IntPtr WndProc(IntPtr hwnd, WM message, IntPtr wParam, IntPtr lParam)
         {
-            //System.Diagnostics.Trace.WriteLine($"{DateTime.Now} {message}");
+            System.Diagnostics.Trace.WriteLine($"{DateTime.Now} {message} {wParam} {lParam}");
 
             switch (message)
             {
