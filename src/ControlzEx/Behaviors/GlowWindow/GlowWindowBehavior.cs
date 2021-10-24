@@ -221,8 +221,6 @@ namespace ControlzEx.Behaviors
             this.DestroyGlowWindows();
         }
 
-        private bool updatingZOrder;
-
 #pragma warning disable SA1401
         public int DeferGlowChangesCount;
 #pragma warning restore SA1401
@@ -265,7 +263,6 @@ namespace ControlzEx.Behaviors
                         }
                     }
 
-                    this.UpdateZOrderOfThisAndOwner();
                     break;
                 }
 
@@ -290,89 +287,6 @@ namespace ControlzEx.Behaviors
 
             return IntPtr.Zero;
         }
-
-        #region Z-Order
-
-        private void UpdateZOrderOfThisAndOwner(IntPtr ownerHandle)
-        {
-            if (this.updatingZOrder)
-            {
-                return;
-            }
-
-            try
-            {
-                this.updatingZOrder = true;
-                if (this.windowHandle != IntPtr.Zero)
-                {
-                    var windowPosInfo = NativeMethods.BeginDeferWindowPos(this.glowWindows.Length);
-
-                    var currentWindowHandle = this.windowHandle;
-                    foreach (var glowWindow in this.glowWindows)
-                    {
-                        if (glowWindow is null)
-                        {
-                            continue;
-                        }
-
-                        var previousWindow = NativeMethods.GetWindow(glowWindow.Handle, GW.HWNDPREV);
-                        if (previousWindow != currentWindowHandle
-                            && previousWindow != IntPtr.Zero)
-                        {
-                            NativeMethods.DeferWindowPos(windowPosInfo, currentWindowHandle, glowWindow.Handle, 0, 0, 0, 0, SWP.NOSIZE | SWP.NOMOVE | SWP.NOACTIVATE);
-                        }
-
-                        currentWindowHandle = glowWindow.Handle;
-                    }
-
-                    NativeMethods.EndDeferWindowPos(windowPosInfo);
-                }
-
-                if (ownerHandle != IntPtr.Zero)
-                {
-                    this.UpdateZOrderOfOwner(ownerHandle);
-                }
-            }
-            finally
-            {
-                this.updatingZOrder = false;
-            }
-        }
-
-        private void UpdateZOrderOfOwner(IntPtr hwndOwner)
-        {
-            var lastOwnedWindow = IntPtr.Zero;
-            NativeMethods.EnumThreadWindows(NativeMethods.GetCurrentThreadId(), delegate(IntPtr hwnd, IntPtr _)
-            {
-                if (NativeMethods.GetWindow(hwnd, GW.OWNER) == hwndOwner)
-                {
-                    lastOwnedWindow = hwnd;
-                }
-
-                return true;
-            }, IntPtr.Zero);
-
-            if (lastOwnedWindow == IntPtr.Zero
-                || NativeMethods.GetWindow(hwndOwner, GW.HWNDPREV) == lastOwnedWindow)
-            {
-                return;
-            }
-
-            if (this.IsGlowVisible
-                && this.windowHandle != IntPtr.Zero
-                && lastOwnedWindow == this.windowHandle)
-            {
-                var glowWindow = this.glowWindows[this.glowWindows.Length - 1];
-                if (glowWindow is not null)
-                {
-                    lastOwnedWindow = glowWindow.Handle;
-                }
-            }
-
-            NativeMethods.SetWindowPos(hwndOwner, lastOwnedWindow, 0, 0, 0, 0, SWP.NOSIZE | SWP.NOMOVE | SWP.NOACTIVATE);
-        }
-
-        #endregion
 
         private void DestroyGlowWindows()
         {
@@ -490,13 +404,6 @@ namespace ControlzEx.Behaviors
         private void UpdateGlowWindowPositions()
         {
             this.UpdateGlowWindowPositions(NativeMethods.IsWindowVisible(this.windowHandle));
-
-            this.UpdateZOrderOfThisAndOwner();
-        }
-
-        private void UpdateZOrderOfThisAndOwner()
-        {
-            this.UpdateZOrderOfThisAndOwner(this.windowHelper?.Owner ?? IntPtr.Zero);
         }
 
         private void UpdateGlowWindowPositions(bool delayIfNecessary)
