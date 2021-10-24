@@ -859,7 +859,7 @@ namespace ControlzEx.Standard
     [Obsolete(DesignerConstants.Win32ElementWarning)]
     [Flags]
     [CLSCompliant(false)]
-    public enum WS : uint
+    public enum WS : long
     {
         OVERLAPPED = 0x00000000,
         POPUP = 0x80000000,
@@ -1088,7 +1088,7 @@ namespace ControlzEx.Standard
     [Flags]
     [Obsolete(DesignerConstants.Win32ElementWarning)]
     [CLSCompliant(false)]
-    public enum WS_EX : uint
+    public enum WS_EX : long
     {
         None = 0,
         DLGMODALFRAME = 0x00000001,
