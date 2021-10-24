@@ -28,15 +28,6 @@ namespace ControlzEx.Showcase
 
             // Using Loaded causes the glow to show and then window window startup animation renders into that "frame"
             //this.Loaded += this.WindowChromeWindow_Loaded;
-
-            // Using ContentRendered causes the window startup animation to show and then shows the glow
-            this.ContentRendered += this.WindowChromeWindow_ContentRendered;
-        }
-
-        private void WindowChromeWindow_ContentRendered(object sender, EventArgs e)
-        {
-            this.ContentRendered -= this.WindowChromeWindow_ContentRendered;
-            this.InitializeGlowWindowBehavior();
         }
 
         private void WindowChromeWindow_Loaded(object sender, RoutedEventArgs e)
@@ -49,8 +40,7 @@ namespace ControlzEx.Showcase
         {
             this.InitializeWindowChromeBehavior();
 
-            // Uncommenting this causes the window startup animation to not work
-            //this.InitializeGlowWindowBehavior();
+            this.InitializeGlowWindowBehavior();
         }
 
         /// <summary>
