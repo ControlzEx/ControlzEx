@@ -580,21 +580,12 @@
                                     </StackPanel>
 
                                     <Label>
-                                        PreferDWMBorderColor
+                                        IsGlowTransitionEnabled
                                     </Label>
                                     <CheckBox Margin="4"
                                               Padding="2"
                                               VerticalAlignment="Center"
-                                              IsChecked="{Binding ElementName=Window, Path=PreferDWMBorderColor, Mode=TwoWay}" />
-
-                                    <Label>
-                                        DWMSupportsBorderColor
-                                    </Label>
-                                    <CheckBox Margin="4"
-                                              Padding="2"
-                                              VerticalAlignment="Center"
-                                              IsEnabled="False"
-                                              IsChecked="{Binding ElementName=Window, Path=DWMSupportsBorderColor, Mode=OneWay}" />
+                                              IsChecked="{Binding ElementName=Window, Path=IsGlowTransitionEnabled, Mode=TwoWay}" />
 
                                     <Label>
                                         UseRadialGradientForCorners
@@ -603,6 +594,23 @@
                                               Padding="2"
                                               VerticalAlignment="Center"
                                               IsChecked="{Binding ElementName=Window, Path=UseRadialGradientForCorners, Mode=TwoWay}" />
+
+                                    <Label>
+                                        PreferDWMBorderColor
+                                    </Label>
+                                    <CheckBox Margin="4"
+                                              Padding="2"
+                                              VerticalAlignment="Center"
+                                              IsChecked="{Binding ElementName=Window, Path=PreferDWMBorderColor, Mode=TwoWay}" />
+                                    
+                                    <Label>
+                                        DWMSupportsBorderColor
+                                    </Label>
+                                    <CheckBox Margin="4"
+                                              Padding="2"
+                                              VerticalAlignment="Center"
+                                              IsEnabled="False"
+                                              IsChecked="{Binding ElementName=Window, Path=DWMSupportsBorderColor, Mode=OneWay}" />
                                 </local:UniformGridEx>
                             </Expander>
 

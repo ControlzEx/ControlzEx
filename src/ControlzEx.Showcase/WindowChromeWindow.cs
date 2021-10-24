@@ -83,6 +83,7 @@ namespace ControlzEx.Showcase
             BindingOperations.SetBinding(behavior, GlowWindowBehavior.GlowColorProperty, new Binding { Path = new PropertyPath(GlowColorProperty), Source = this });
             BindingOperations.SetBinding(behavior, GlowWindowBehavior.NonActiveGlowColorProperty, new Binding { Path = new PropertyPath(NonActiveGlowColorProperty), Source = this });
             BindingOperations.SetBinding(behavior, GlowWindowBehavior.UseRadialGradientForCornersProperty, new Binding { Path = new PropertyPath(UseRadialGradientForCornersProperty), Source = this });
+            BindingOperations.SetBinding(behavior, GlowWindowBehavior.IsGlowTransitionEnabledProperty, new Binding { Path = new PropertyPath(IsGlowTransitionEnabledProperty), Source = this });
             BindingOperations.SetBinding(behavior, GlowWindowBehavior.PreferDWMBorderColorProperty, new Binding { Path = new PropertyPath(PreferDWMBorderColorProperty), Source = this });
 
             this.SetBinding(DWMSupportsBorderColorProperty, new Binding { Path = new PropertyPath(GlowWindowBehavior.DWMSupportsBorderColorProperty), Source = behavior });
@@ -117,6 +118,15 @@ namespace ControlzEx.Showcase
         {
             get => (bool)this.GetValue(UseRadialGradientForCornersProperty);
             set => this.SetValue(UseRadialGradientForCornersProperty, value);
+        }
+
+        public static readonly DependencyProperty IsGlowTransitionEnabledProperty = DependencyProperty.Register(
+            nameof(IsGlowTransitionEnabled), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(GlowWindowBehavior.IsGlowTransitionEnabledProperty.DefaultMetadata.DefaultValue));
+
+        public bool IsGlowTransitionEnabled
+        {
+            get => (bool)this.GetValue(IsGlowTransitionEnabledProperty);
+            set => this.SetValue(IsGlowTransitionEnabledProperty, value);
         }
 
         public static readonly DependencyProperty IgnoreTaskbarOnMaximizeProperty = DependencyProperty.Register(nameof(IgnoreTaskbarOnMaximize), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(WindowChromeBehavior.IgnoreTaskbarOnMaximizeProperty.DefaultMetadata.DefaultValue));
