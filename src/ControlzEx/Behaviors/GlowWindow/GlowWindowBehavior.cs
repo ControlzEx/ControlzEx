@@ -261,7 +261,7 @@ namespace ControlzEx.Behaviors
                     {
                         using (this.DeferGlowChanges())
                         {
-                            this.UpdateGlowVisibility(false);
+                            this.UpdateGlowVisibility(windowPos.flags.HasFlag(SWP.SHOWWINDOW));
                         }
                     }
 
@@ -518,7 +518,7 @@ namespace ControlzEx.Behaviors
 
             using (this.DeferGlowChanges())
             {
-                this.UpdateGlowVisibility(false);
+                this.UpdateGlowVisibility(true);
 
                 foreach (var glowWindow in this.glowWindows)
                 {
@@ -546,7 +546,7 @@ namespace ControlzEx.Behaviors
 
             using (this.DeferGlowChanges())
             {
-                this.UpdateGlowVisibility(false);
+                this.UpdateGlowVisibility(true);
 
                 foreach (var glowWindow in this.glowWindows)
                 {
@@ -584,7 +584,7 @@ namespace ControlzEx.Behaviors
         {
             using (this.DeferGlowChanges())
             {
-                this.UpdateGlowVisibility(false);
+                this.UpdateGlowVisibility(true);
 
                 foreach (var glowWindow in this.glowWindows)
                 {
