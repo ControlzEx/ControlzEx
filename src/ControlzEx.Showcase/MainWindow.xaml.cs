@@ -61,7 +61,7 @@ namespace ControlzEx.Showcase
             return new Brush[] { null }.Concat(brushes);
         }
 
-        private void ButtonOpenChildWindowOnClick(object sender, RoutedEventArgs e)
+        private MainWindow CreateNewWindow()
         {
             var window = new MainWindow
             {
@@ -69,8 +69,16 @@ namespace ControlzEx.Showcase
                 SetOwner =
                 {
                     IsChecked = this.SetOwner.IsChecked
-                }
+                },
+                IsGlowTransitionEnabled = this.IsGlowTransitionEnabled
             };
+
+            return window;
+        }
+
+        private void ButtonOpenChildWindowOnClick(object sender, RoutedEventArgs e)
+        {
+            var window = this.CreateNewWindow();
 
             if (this.SetOwner.IsChecked == true)
             {
@@ -82,10 +90,7 @@ namespace ControlzEx.Showcase
 
         private void ButtonOpenModalChildWindowOnClick(object sender, RoutedEventArgs e)
         {
-            var window = new MainWindow
-            {
-                WindowStartupLocation = WindowStartupLocation.Manual
-            };
+            var window = this.CreateNewWindow();
 
             if (this.SetOwner.IsChecked == true)
             {
@@ -97,11 +102,8 @@ namespace ControlzEx.Showcase
 
         private void ButtonOpenPseudoModalChildWindowOnClick(object sender, RoutedEventArgs e)
         {
-            var window = new MainWindow
-            {
-                WindowStartupLocation = WindowStartupLocation.Manual,
-                Owner = this // for this to work we always have to set the owner
-            };
+            var window = this.CreateNewWindow();
+            window.Owner = this; // for this to work we always have to set the owner
 
             // We have to use closing, otherwise the owner window won't be activated.
             window.Closing += this.PseudoModalWindow_Closing;
