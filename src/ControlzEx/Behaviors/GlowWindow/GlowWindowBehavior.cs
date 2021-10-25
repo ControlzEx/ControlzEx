@@ -19,7 +19,7 @@ namespace ControlzEx.Behaviors
 
     public class GlowWindowBehavior : Behavior<Window>
     {
-        private static readonly TimeSpan glowTimerDelay = TimeSpan.FromMilliseconds(200); //200 ms delay, the same as in visual studio
+        private static readonly TimeSpan glowTimerDelay = TimeSpan.FromMilliseconds(200); // 200 ms delay, the same as regular window animations
         private DispatcherTimer? makeGlowVisibleTimer;
         private WindowInteropHelper? windowHelper;
         private IntPtr windowHandle;
