@@ -234,22 +234,18 @@ namespace ControlzEx.Behaviors
                 return IntPtr.Zero;
             }
 
+            var message = (WM)msg;
+            //System.Diagnostics.Trace.WriteLine($"{DateTime.Now} {hwnd} {message} {wParam} {lParam}");
+
             // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
-            switch ((WM)msg)
+            switch (message)
             {
                 case WM.CLOSE:
                     this.StopTimer();
                     this.DestroyGlowWindows();
                     break;
 
-                case WM.MOVE:
-                {
-                    this.positionUpdateRequired = true;
-                    NativeMethods.PostMessage(hwnd, WM.USER, IntPtr.Zero, IntPtr.Zero);
-                    break;
-                }
-
-                // Z-Index must be updated when WINDOWPOSCHANGED
+                case WM.WINDOWPOSCHANGING:
                 case WM.WINDOWPOSCHANGED:
                 {
                     // If the owner is TopMost we don't receive the regular move message, so we must check that here...
@@ -259,17 +255,22 @@ namespace ControlzEx.Behaviors
                     {
                         using (this.DeferGlowChanges())
                         {
-                            this.UpdateGlowVisibility(windowPos.flags.HasFlag(SWP.SHOWWINDOW));
+                            this.UpdateGlowVisibility(NativeMethods.IsWindowVisible(this.windowHandle));
                         }
                     }
 
                     break;
                 }
 
+                case WM.MOVE:
                 case WM.SIZE:
                 {
-                    this.positionUpdateRequired = true;
-                    NativeMethods.PostMessage(hwnd, WM.USER, IntPtr.Zero, IntPtr.Zero);
+                    if (this.positionUpdateRequired == false)
+                    {
+                        this.positionUpdateRequired = true;
+                        NativeMethods.PostMessage(hwnd, WM.USER, IntPtr.Zero, IntPtr.Zero);
+                    }
+
                     break;
                 }
 
