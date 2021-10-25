@@ -2628,6 +2628,11 @@ namespace ControlzEx.Standard
         public POINT minPosition;
         public POINT maxPosition;
         public RECT normalPosition;
+
+        public override string ToString()
+        {
+            return $"flags: {this.flags}; showCmd: {this.showCmd}; minPosition: {this.minPosition}; maxPosition: {this.maxPosition}; normalPosition: {this.normalPosition};";
+        }
     }
 
     [Obsolete(DesignerConstants.Win32ElementWarning)]
