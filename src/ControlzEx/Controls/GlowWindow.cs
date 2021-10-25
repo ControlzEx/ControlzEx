@@ -918,12 +918,12 @@ namespace ControlzEx.Controls.Internal
                         : flags | SWP.HIDEWINDOW | SWP.NOMOVE | SWP.NOSIZE;
                 }
 
-                if (!this.InvalidatedValuesHasFlag(FieldInvalidationTypes.Location))
+                if (this.InvalidatedValuesHasFlag(FieldInvalidationTypes.Location) == false)
                 {
                     flags |= SWP.NOMOVE;
                 }
 
-                if (!this.InvalidatedValuesHasFlag(FieldInvalidationTypes.Size))
+                if (this.InvalidatedValuesHasFlag(FieldInvalidationTypes.Size) == false)
                 {
                     flags |= SWP.NOSIZE;
                 }
