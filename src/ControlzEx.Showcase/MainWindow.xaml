@@ -321,7 +321,7 @@
                                                 BorderBrush="Black"
                                                 Background="{Binding ElementName=Window, Path=Background}" />
                                         <ComboBox Margin="4"
-                                                  Width="100"
+                                                  MinWidth="100"
                                                   VerticalAlignment="Center"
                                                   HorizontalContentAlignment="Stretch"
                                                   IsEditable="True"
@@ -367,7 +367,7 @@
                                                 BorderBrush="Black"
                                                 Background="{Binding ElementName=Window, Path=BorderBrush}" />
                                         <ComboBox Margin="4"
-                                                  Width="100"
+                                                  MinWidth="100"
                                                   VerticalAlignment="Center"
                                                   HorizontalContentAlignment="Stretch"
                                                   IsEditable="True"
@@ -486,7 +486,7 @@
                                             </Border.Background>
                                         </Border>
                                         <ComboBox Margin="4"
-                                                  Width="100"
+                                                  MinWidth="100"
                                                   VerticalAlignment="Center"
                                                   HorizontalContentAlignment="Stretch"
                                                   IsEditable="True"
@@ -530,7 +530,7 @@
                                             </Border.Background>
                                         </Border>
                                         <ComboBox Margin="4"
-                                                  Width="100"
+                                                  MinWidth="100"
                                                   VerticalAlignment="Center"
                                                   HorizontalAlignment="Stretch"
                                                   HorizontalContentAlignment="Stretch"
@@ -567,7 +567,7 @@
                                     <StackPanel Orientation="Horizontal">
                                         <TextBox Margin="4"
                                                  Padding="2"
-                                                 Width="30"
+                                                 MinWidth="30"
                                                  VerticalAlignment="Center"
                                                  Text="{Binding ElementName=Window, Path=GlowDepth, Mode=TwoWay}" />
                                         <CheckBox x:Name="AnimateGlowDepth" 
@@ -627,14 +627,14 @@
                                     <StackPanel Margin="4"
                                                 VerticalAlignment="Center"
                                                 Orientation="Horizontal">
-                                        <TextBox Width="35"
+                                        <TextBox MinWidth="35"
                                                  Margin="0 0 2 0"
                                                  Padding="2"
                                                  VerticalAlignment="Center"
                                                  IsReadOnly="True"
                                                  Text="{Binding ElementName=Window, Path=Left, Mode=OneWay}" />
 
-                                        <TextBox Width="35"
+                                        <TextBox MinWidth="35"
                                                  Margin="0 0 2 0"
                                                  Padding="2"
                                                  VerticalAlignment="Center"
@@ -648,14 +648,14 @@
                                     <StackPanel Margin="4"
                                                 VerticalAlignment="Center"
                                                 Orientation="Horizontal">
-                                        <TextBox Width="35"
+                                        <TextBox MinWidth="35"
                                                  Margin="0 0 2 0"
                                                  Padding="2"
                                                  VerticalAlignment="Center"
                                                  IsReadOnly="True"
                                                  Text="{Binding ElementName=Window, Path=ActualWidth, Mode=OneWay}" />
 
-                                        <TextBox Width="35"
+                                        <TextBox MinWidth="35"
                                                  Margin="0 0 2 0"
                                                  Padding="2"
                                                  VerticalAlignment="Center"
@@ -669,13 +669,13 @@
                                     <StackPanel Margin="4"
                                                 VerticalAlignment="Center"
                                                 Orientation="Horizontal">
-                                        <TextBox Width="35"
+                                        <TextBox MinWidth="35"
                                                  Margin="0 0 2 0"
                                                  Padding="2"
                                                  VerticalAlignment="Center"
                                                  Text="{Binding ElementName=Window, Path=MinWidth, Mode=TwoWay}" />
 
-                                        <TextBox Width="35"
+                                        <TextBox MinWidth="35"
                                                  Margin="0 0 2 0"
                                                  Padding="2"
                                                  VerticalAlignment="Center"
@@ -692,13 +692,13 @@
                                     <StackPanel Margin="4"
                                                 VerticalAlignment="Center"
                                                 Orientation="Horizontal">
-                                        <TextBox Width="35"
+                                        <TextBox MinWidth="35"
                                                  Margin="0 0 2 0"
                                                  Padding="2"
                                                  VerticalAlignment="Center"
                                                  Text="{Binding ElementName=Window, Path=MaxWidth, Mode=TwoWay}" />
 
-                                        <TextBox Width="35"
+                                        <TextBox MinWidth="35"
                                                  Margin="0 0 2 0"
                                                  Padding="2"
                                                  VerticalAlignment="Center"
