@@ -546,12 +546,11 @@ namespace ControlzEx.Behaviors
                     };
                     this.makeGlowVisibleTimer.Tick += this.OnDelayedVisibilityTimerTick;
                 }
-                else
-                {
-                    this.makeGlowVisibleTimer.Stop();
-                }
 
-                this.makeGlowVisibleTimer.Start();
+                if (this.makeGlowVisibleTimer.IsEnabled == false)
+                {
+                    this.makeGlowVisibleTimer.Start();
+                }
             }
             else
             {
@@ -562,14 +561,7 @@ namespace ControlzEx.Behaviors
 
         private void StopTimer()
         {
-            if (this.makeGlowVisibleTimer is null)
-            {
-                return;
-            }
-
-            this.makeGlowVisibleTimer.Stop();
-            this.makeGlowVisibleTimer.Tick -= this.OnDelayedVisibilityTimerTick;
-            this.makeGlowVisibleTimer = null;
+            this.makeGlowVisibleTimer?.Stop();
         }
 
         private void OnDelayedVisibilityTimerTick(object? sender, EventArgs e)
