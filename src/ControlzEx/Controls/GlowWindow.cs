@@ -795,12 +795,26 @@ namespace ControlzEx.Controls.Internal
                     return new IntPtr(3) /* MA_NOACTIVATE */;
 
                 case WM.DISPLAYCHANGE:
+                {
                     if (this.IsVisible)
                     {
                         this.RenderLayeredWindow();
                     }
 
                     break;
+                }
+
+                case WM.SHOWWINDOW:
+                {
+                    // Prevent glow from getting visible before the owner/parent is visible
+                    if (wParam == new IntPtr(1)
+                        && lParam == new IntPtr(3))
+                    {
+                        return IntPtr.Zero;
+                    }
+
+                    break;
+                }
             }
 
             return base.WndProc(hwnd, message, wParam, lParam);
