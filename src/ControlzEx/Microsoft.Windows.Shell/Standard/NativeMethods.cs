@@ -2384,6 +2384,12 @@ namespace ControlzEx.Standard
             this._y = y;
         }
 
+        public POINT(Point point)
+        {
+            this._x = (int)point.X;
+            this._y = (int)point.Y;
+        }
+
         public int X
         {
             get { return this._x; }
@@ -3593,12 +3599,14 @@ namespace ControlzEx.Standard
         {
             // maybe we can use ReBarWindow32 isntead Shell_TrayWnd
             var hwnd = FindWindow("Shell_TrayWnd", null);
-            var monitorWithTaskbarOnIt = MonitorFromWindow(hwnd, MonitorOptions.MONITOR_DEFAULTTONEAREST);
+            var windowRect = GetWindowRect(hwnd);
+            var monitorWithTaskbarOnIt = MonitorFromPoint(new POINT(windowRect.Position), MonitorOptions.MONITOR_DEFAULTTONEAREST);
 
             if (!Equals(monitor, monitorWithTaskbarOnIt))
             {
                 hwnd = FindWindow("Shell_SecondaryTrayWnd", null);
-                monitorWithTaskbarOnIt = MonitorFromWindow(hwnd, MonitorOptions.MONITOR_DEFAULTTONEAREST);
+                windowRect = GetWindowRect(hwnd);
+                monitorWithTaskbarOnIt = MonitorFromPoint(new POINT(windowRect.Position), MonitorOptions.MONITOR_DEFAULTTONEAREST);
 
                 if (!Equals(monitor, monitorWithTaskbarOnIt))
                 {
