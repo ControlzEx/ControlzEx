@@ -470,6 +470,12 @@ namespace ControlzEx.Controls
                 return;
             }
 
+            var contentPresenter = this.CreateChildContentPresenter(item, tabItem);
+            this.itemsHolder?.Children.Add(contentPresenter);
+        }
+        
+        protected virtual ContentPresenter CreateChildContentPresenter(object? item, TabItem tabItem)
+        {
             // the actual child to be added
             var contentPresenter = new ContentPresenter
             {
@@ -487,7 +493,7 @@ namespace ControlzEx.Controls
             SetOwningItem(contentPresenter, item);
             SetOwningTabItem(contentPresenter, owningTabItem);
 
-            this.itemsHolder?.Children.Add(contentPresenter);
+            return contentPresenter;
         }
 
         /// <summary>
