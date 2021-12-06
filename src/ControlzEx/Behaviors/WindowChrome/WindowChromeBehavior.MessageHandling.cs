@@ -969,7 +969,7 @@ namespace ControlzEx.Behaviors
             var resizeBorderThickness = this.ResizeBorderThickness;
 
             // Allow resize of up to some pixels inside the window itself
-            onTopResizeBorder = mousePosition.Y < (windowRect.Top + 4);
+            onTopResizeBorder = mousePosition.Y <= (windowRect.Top + this.ResizeBorderThickness.Top);
 
             // Determine if the point is at the top or bottom of the window.
             uRow = GetHTRow(windowRect, mousePosition, resizeBorderThickness);
