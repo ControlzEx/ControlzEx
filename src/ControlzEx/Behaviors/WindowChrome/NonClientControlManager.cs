@@ -131,7 +131,7 @@ namespace ControlzEx.Behaviors
         {
             var point = LogicalPointFromLParam(owner, lParam);
 
-            if (VisualTreeHelper.HitTest(owner, point)?.VisualHit is Visual visualHit
+            if (owner.InputHitTest(point) is Visual visualHit
                 && NonClientControlProperties.GetHitTestResult(visualHit) is var res
                 && res != HT.NOWHERE)
             {
