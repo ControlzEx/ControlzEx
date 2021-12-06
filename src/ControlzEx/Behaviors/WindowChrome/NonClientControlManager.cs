@@ -142,7 +142,8 @@ namespace ControlzEx.Behaviors
 
                 while (currentControl is not null)
                 {
-                    if (currentControl.ReadLocalValue(NonClientControlProperties.HitTestResultProperty) is HT and not HT.NOWHERE)
+                    var valueSource = DependencyPropertyHelper.GetValueSource(currentControl, NonClientControlProperties.HitTestResultProperty);
+                    if (valueSource.BaseValueSource is not BaseValueSource.Inherited and not BaseValueSource.Unknown)
                     {
                         control = currentControl;
                         break;
