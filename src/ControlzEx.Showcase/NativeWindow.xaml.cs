@@ -55,7 +55,9 @@ namespace ControlzEx.Showcase
     {
         public static void UpdateWindowEffect(Window window, bool isWindowActive = true)
         {
-            //window.Background = Brushes.Transparent;
+            window.Background = Brushes.Transparent;
+            // This is important to prevent black squares from appearing randomly
+            ((HwndSource)HwndSource.FromVisual(window)).CompositionTarget.BackgroundColor = Colors.Transparent;
 
             UpdateWindowEffect(new WindowInteropHelper(window).EnsureHandle(), isWindowActive);
         }
