@@ -726,8 +726,17 @@ namespace ControlzEx.Behaviors
             return IntPtr.Zero;
         }
 
+        private bool isTrackingMouseEvents;
+
         private IntPtr _HandleNCMOUSEMOVE(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
+            if (this.isTrackingMouseEvents == false)
+            {
+                var settings = new NativeMethods.TRACKMOUSEEVENT(NativeMethods.TMEFlags.TME_LEAVE | NativeMethods.TMEFlags.TME_NONCLIENT, this.windowHandle, 0);
+                NativeMethods.TrackMouseEvent(ref settings);
+                this.isTrackingMouseEvents = true;
+            }
+
             handled = this.nonClientControlManager?.HoverTrackedControl(lParam) == true;
 
             return IntPtr.Zero;
@@ -742,6 +751,7 @@ namespace ControlzEx.Behaviors
 
         private IntPtr _HandleNCMOUSELEAVE(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
+            this.isTrackingMouseEvents = false;
             this.nonClientControlManager?.ClearTrackedControl();
             handled = false;
             return IntPtr.Zero;
