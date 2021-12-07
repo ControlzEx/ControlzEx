@@ -137,23 +137,26 @@ namespace ControlzEx.Behaviors
 
             var point = LogicalPointFromLParam(owner, lParam);
 
-            // If the cursor is on the window edge we must not hit test controls.
-            // Otherwise we have no chance to un-track controls when the cursor leaves the window.
-            // todo: find a better solution as this does not completely solve the problem when the mouse is moved over the buttons fast and then leaves the window...
-            if (point.X.AreClose(0)
-                || point.X.AreClose(owner.Width)
-                || point.Y.AreClose(0)
-                || point.Y.AreClose(owner.Height))
-            {
-                hitTestResult = HT.NOWHERE;
-                return null;
-            }
-
             if (owner.InputHitTest(point) is Visual visualHit
                 && NonClientControlProperties.GetHitTestResult(visualHit) is var res
                 && res != HT.NOWHERE)
             {
                 hitTestResult = res;
+
+                // If the cursor is on the window edge we must not hit test controls.
+                // Otherwise we have no chance to un-track controls when the cursor leaves the window.
+                // todo: find a better solution as this does not completely solve the problem when the mouse is moved over the buttons fast and then leaves the window...
+                if (hitTestResult is HT.MAXBUTTON or HT.MINBUTTON or HT.CLOSE)
+                {
+                    if (point.X.AreClose(0)
+                        || point.X.AreClose(owner.Width)
+                        || point.Y.AreClose(0)
+                        || point.Y.AreClose(owner.Height))
+                    {
+                        hitTestResult = HT.NOWHERE;
+                        return null;
+                    }
+                }
 
                 DependencyObject control = visualHit;
                 var currentControl = control;
