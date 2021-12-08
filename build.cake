@@ -28,9 +28,9 @@ var isLocal = BuildSystem.IsLocalBuild;
 // Set build version
 if (isLocal == false || verbosity == Verbosity.Verbose)
 {
-    GitVersion(new GitVersionSettings { OutputType = GitVersionOutput.BuildServer });
+    GitVersion(new GitVersionSettings { OutputType = GitVersionOutput.BuildServer, NoFetch = true });
 }
-GitVersion gitVersion = GitVersion(new GitVersionSettings { OutputType = GitVersionOutput.Json });
+GitVersion gitVersion = GitVersion(new GitVersionSettings { OutputType = GitVersionOutput.Json, NoFetch = true });
 
 var isPullRequest = AppVeyor.Environment.PullRequest.IsPullRequest;
 var branchName = gitVersion.BranchName;
