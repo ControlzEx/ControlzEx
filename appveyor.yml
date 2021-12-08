@@ -17,7 +17,7 @@ environment:
     secure: BSPdW2TgnQtoQXXbeDECug==
 
 skip_tags: true
-image: Visual Studio 2019 Preview
+image: Visual Studio 2019
 test: off
 
 install:
