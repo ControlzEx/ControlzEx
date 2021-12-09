@@ -574,6 +574,11 @@ namespace ControlzEx.Controls.Internal
         private bool pendingDelayRender;
         private string title;
 
+#pragma warning disable SA1310
+        private static readonly IntPtr SW_PARENTCLOSING = new IntPtr(1);
+        private static readonly IntPtr SW_PARENTOPENING = new IntPtr(3);
+#pragma warning restore SA1310
+
         private bool IsDeferringChanges => this.behavior.DeferGlowChangesCount > 0;
 
         private static ushort SharedWindowClassAtom
@@ -807,8 +812,7 @@ namespace ControlzEx.Controls.Internal
                 case WM.SHOWWINDOW:
                 {
                     // Prevent glow from getting visible before the owner/parent is visible
-                    if (wParam == new IntPtr(1)
-                        && lParam == new IntPtr(3))
+                    if (lParam == SW_PARENTOPENING)
                     {
                         return IntPtr.Zero;
                     }
