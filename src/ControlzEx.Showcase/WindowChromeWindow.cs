@@ -68,7 +68,6 @@ namespace ControlzEx.Showcase
         private void InitializeGlowWindowBehavior()
         {
             var behavior = new GlowWindowBehavior();
-            //behavior.IsGlowTransitionEnabled = true;
             BindingOperations.SetBinding(behavior, GlowWindowBehavior.GlowDepthProperty, new Binding { Path = new PropertyPath(GlowDepthProperty), Source = this });
             BindingOperations.SetBinding(behavior, GlowWindowBehavior.GlowColorProperty, new Binding { Path = new PropertyPath(GlowColorProperty), Source = this });
             BindingOperations.SetBinding(behavior, GlowWindowBehavior.NonActiveGlowColorProperty, new Binding { Path = new PropertyPath(NonActiveGlowColorProperty), Source = this });
