@@ -1,29 +1,31 @@
-<local:WindowChromeWindow x:Class="ControlzEx.Showcase.MainWindow"
-                          xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                          xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
-                          xmlns:controlzEx="urn:controlzex"
-                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                          xmlns:local="clr-namespace:ControlzEx.Showcase"
-                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                          xmlns:system="clr-namespace:System;assembly=mscorlib"
-                          xmlns:views="clr-namespace:ControlzEx.Showcase.Views"
-                          xmlns:native="clr-namespace:ControlzEx.Standard;assembly=ControlzEx"
-                          x:Name="Window"
-                          Title="ControlzEx.Showcase"
-                          Width="800"
-                          Height="600"
-                          MinWidth="80"
-                          MinHeight="60"
-                          Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
-                          FlowDirection="LeftToRight"
-                          GlowColor="Navy"
-                          NonActiveGlowColor="Crimson"
-                          Style="{StaticResource {x:Type local:WindowChromeWindow}}"
-                          WindowStartupLocation="CenterScreen"
-                          WindowState="Normal"
-                          mc:Ignorable="d">
-    <local:WindowChromeWindow.Resources>
+<controlzEx:WindowChromeWindow x:Class="ControlzEx.Showcase.MainWindow"
+                               xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                               xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                               xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
+                               xmlns:controlzEx="urn:controlzex"
+                               xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                               xmlns:local="clr-namespace:ControlzEx.Showcase"
+                               xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                               xmlns:system="clr-namespace:System;assembly=mscorlib"
+                               xmlns:views="clr-namespace:ControlzEx.Showcase.Views"
+                               xmlns:native="clr-namespace:ControlzEx.Standard;assembly=ControlzEx"
+                               x:Name="Window"
+                               Title="ControlzEx.Showcase"
+                               Width="800"
+                               Height="600"
+                               MinWidth="80"
+                               MinHeight="60"
+                               Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
+                               FlowDirection="LeftToRight"
+                               GlowColor="Navy"
+                               NonActiveGlowColor="Crimson"
+                               Style="{StaticResource {x:Type controlzEx:WindowChromeWindow}}"
+                               WindowStartupLocation="CenterScreen"
+                               WindowState="Normal"
+                               SizeToContent="Manual"
+                               Topmost="False"
+                               mc:Ignorable="d">
+    <controlzEx:WindowChromeWindow.Resources>
         <ObjectDataProvider x:Key="ResizeModeEnumValues"
                             MethodName="GetValues"
                             ObjectType="{x:Type ResizeMode}">
@@ -47,7 +49,7 @@
                 <x:Type TypeName="native:DWM_WINDOW_CORNER_PREFERENCE" />
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
-    </local:WindowChromeWindow.Resources>
+    </controlzEx:WindowChromeWindow.Resources>
 
     <Grid SnapsToDevicePixels="True">
         <Grid>
@@ -805,4 +807,4 @@
             </controlzEx:TabControlEx>
         </Grid>
     </Grid>
-</local:WindowChromeWindow>
+</controlzEx:WindowChromeWindow>

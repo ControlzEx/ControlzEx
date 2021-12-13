@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:ControlzEx.Showcase"
              xmlns:theming="clr-namespace:ControlzEx.Showcase.Theming"
-             xmlns:controlzex="urn:controlzex"
+             xmlns:controlzEx="urn:controlzex"
              StartupUri="MainWindow.xaml"
              ShutdownMode="OnMainWindowClose">
     <Application.Resources>
@@ -21,7 +21,7 @@
             <SolidColorBrush x:Key="Button.Disabled.Border" Color="#FFADB2B5" />
             <SolidColorBrush x:Key="Button.Disabled.Foreground" Color="#FF838383" />
             
-            <Style x:Key="{x:Type local:WindowChromeWindow}" TargetType="{x:Type local:WindowChromeWindow}">
+            <Style x:Key="{x:Type controlzEx:WindowChromeWindow}" TargetType="{x:Type controlzEx:WindowChromeWindow}">
                 <Setter Property="BorderThickness" Value="1" />
                 <Setter Property="BorderBrush" Value="{x:Null}" />
                 <Setter Property="NCActiveBrush" Value="{Binding Background, RelativeSource={RelativeSource Self}}" />
@@ -29,7 +29,7 @@
                 <Setter Property="NCNonActiveBrush" Value="{Binding Source={x:Static SystemColors.WindowFrameBrush}}" />
                 <Setter Property="Template">
                     <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type local:WindowChromeWindow}">
+                        <ControlTemplate TargetType="{x:Type controlzEx:WindowChromeWindow}">
                             <Grid Background="{TemplateBinding Background}">
                                 <AdornerDecorator>
                                     <ContentPresenter />
@@ -82,11 +82,11 @@
             <Style x:Key="WindowTitleBarButton"
                    TargetType="Button">
                 <Style.Triggers>
-                    <Trigger Property="controlzex:NonClientControlProperties.IsNCMouseOver" Value="true">
+                    <Trigger Property="controlzEx:NonClientControlProperties.IsNCMouseOver" Value="true">
                         <Setter Property="Background" Value="{StaticResource Button.MouseOver.Background}" />
                         <Setter Property="BorderBrush" Value="{StaticResource Button.MouseOver.Border}" />
                     </Trigger>
-                    <Trigger Property="controlzex:NonClientControlProperties.IsNCPressed" Value="true">
+                    <Trigger Property="controlzEx:NonClientControlProperties.IsNCPressed" Value="true">
                         <Setter Property="Background" Value="{StaticResource Button.Pressed.Background}" />
                         <Setter Property="BorderBrush" Value="{StaticResource Button.Pressed.Border}" />
                     </Trigger>

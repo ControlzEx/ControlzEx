@@ -129,24 +129,26 @@ namespace ControlzEx.Behaviors
 
         private void UpdateMinimizeSystemMenu(bool isVisible)
         {
-            if (this.windowHandle != IntPtr.Zero)
+            if (this.windowHandle == IntPtr.Zero)
             {
-                if (this.hwndSource?.IsDisposed == true || this.hwndSource?.RootVisual is null)
-                {
-                    return;
-                }
-
-                if (isVisible)
-                {
-                    this._ModifyStyle(0, WS.MINIMIZEBOX);
-                }
-                else
-                {
-                    this._ModifyStyle(WS.MINIMIZEBOX, 0);
-                }
-
-                this._UpdateSystemMenu(this.AssociatedObject?.WindowState);
+                return;
             }
+
+            if (this.hwndSource?.IsDisposed == true)
+            {
+                return;
+            }
+
+            if (isVisible)
+            {
+                this._ModifyStyle(0, WS.MINIMIZEBOX);
+            }
+            else
+            {
+                this._ModifyStyle(WS.MINIMIZEBOX, 0);
+            }
+
+            this._UpdateSystemMenu(this.AssociatedObject?.WindowState);
         }
 
         /// <summary>
@@ -172,24 +174,26 @@ namespace ControlzEx.Behaviors
 
         private void UpdateMaxRestoreSystemMenu(bool isVisible)
         {
-            if (this.windowHandle != IntPtr.Zero)
+            if (this.windowHandle == IntPtr.Zero)
             {
-                if (this.hwndSource?.IsDisposed == true || this.hwndSource?.RootVisual is null)
-                {
-                    return;
-                }
-
-                if (isVisible)
-                {
-                    this._ModifyStyle(0, WS.MAXIMIZEBOX);
-                }
-                else
-                {
-                    this._ModifyStyle(WS.MAXIMIZEBOX, 0);
-                }
-
-                this._UpdateSystemMenu(this.AssociatedObject?.WindowState);
+                return;
             }
+
+            if (this.hwndSource?.IsDisposed == true)
+            {
+                return;
+            }
+
+            if (isVisible)
+            {
+                this._ModifyStyle(0, WS.MAXIMIZEBOX);
+            }
+            else
+            {
+                this._ModifyStyle(WS.MAXIMIZEBOX, 0);
+            }
+
+            this._UpdateSystemMenu(this.AssociatedObject?.WindowState);
         }
 
         /// <summary>
@@ -220,10 +224,10 @@ namespace ControlzEx.Behaviors
         /// <inheritdoc />
         protected override void OnAttached()
         {
+            base.OnAttached();
+
             // no transparency, because it has more then one unwanted issues
-            if (this.AssociatedObject.AllowsTransparency
-                && this.AssociatedObject.IsLoaded == false
-                && new WindowInteropHelper(this.AssociatedObject).Handle == IntPtr.Zero)
+            if (this.AssociatedObject.AllowsTransparency)
             {
                 try
                 {
@@ -239,13 +243,10 @@ namespace ControlzEx.Behaviors
             this.borderThicknessChangeNotifier = new PropertyChangeNotifier(this.AssociatedObject, Control.BorderThicknessProperty);
             this.borderThicknessChangeNotifier.ValueChanged += this.BorderThicknessChangeNotifierOnValueChanged;
 
-            this.AssociatedObject.SourceInitialized += this.AssociatedObject_SourceInitialized;
-            this.AssociatedObject.Loaded += this.AssociatedObject_Loaded;
-            this.AssociatedObject.Unloaded += this.AssociatedObject_Unloaded;
             this.AssociatedObject.Closed += this.AssociatedObject_Closed;
             this.AssociatedObject.StateChanged += this.AssociatedObject_StateChanged;
 
-            base.OnAttached();
+            this.Initialize();
         }
 
         /// <summary>
@@ -315,15 +316,10 @@ namespace ControlzEx.Behaviors
             this.OnCleanup();
 
             // clean up events
-            this.AssociatedObject.SourceInitialized -= this.AssociatedObject_SourceInitialized;
-            this.AssociatedObject.Loaded -= this.AssociatedObject_Loaded;
-            this.AssociatedObject.Unloaded -= this.AssociatedObject_Unloaded;
             this.AssociatedObject.Closed -= this.AssociatedObject_Closed;
             this.AssociatedObject.StateChanged -= this.AssociatedObject_StateChanged;
 
             this.hwndSource?.RemoveHook(this.WindowProc);
-
-            this._RestoreStandardChromeState(isClosing);
         }
 
         /// <summary>
@@ -342,9 +338,9 @@ namespace ControlzEx.Behaviors
             base.OnDetaching();
         }
 
-        private void AssociatedObject_SourceInitialized(object? sender, EventArgs e)
+        private void Initialize()
         {
-            this.windowHandle = new WindowInteropHelper(this.AssociatedObject).Handle;
+            this.windowHandle = new WindowInteropHelper(this.AssociatedObject).EnsureHandle();
             this.nonClientControlManager = new NonClientControlManager(this.AssociatedObject);
 
             if (this.windowHandle == IntPtr.Zero)
@@ -370,21 +366,6 @@ namespace ControlzEx.Behaviors
 
             // handle the maximized state here too (to handle the border in a correct way)
             this.HandleStateChanged();
-        }
-
-#pragma warning disable CA2109
-        /// <summary>
-        /// Is called when the associated object of this instance is loaded
-        /// </summary>
-        protected virtual void AssociatedObject_Loaded(object? sender, RoutedEventArgs e)
-        {
-            //this._UpdateFrameState(true);
-        }
-#pragma warning restore CA2109
-
-        private void AssociatedObject_Unloaded(object? sender, RoutedEventArgs e)
-        {
-            this.Cleanup(false);
         }
 
         private void AssociatedObject_Closed(object? sender, EventArgs e)

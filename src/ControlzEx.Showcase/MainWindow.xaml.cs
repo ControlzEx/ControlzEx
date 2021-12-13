@@ -1,3 +1,5 @@
+#pragma warning disable WPF0015
+
 namespace ControlzEx.Showcase
 {
     using System;
@@ -12,6 +14,7 @@ namespace ControlzEx.Showcase
     using System.Windows.Media.Animation;
     using ControlzEx.Native;
     using ControlzEx.Standard;
+    using ControlzEx.Theming;
 
     public partial class MainWindow
     {
@@ -27,6 +30,8 @@ namespace ControlzEx.Showcase
 
             this.Colors = GetColors().ToList();
             this.Brushes = GetBrushes().ToList();
+
+            //WindowEffectManager.UpdateWindowEffect(this, this.IsActive);
         }
 
         public List<Color> Colors
@@ -42,6 +47,20 @@ namespace ControlzEx.Showcase
         }
 
         public int LoadedCount { get; set; }
+
+        protected override void OnActivated(EventArgs e)
+        {
+            base.OnActivated(e);
+
+            //WindowEffectManager.UpdateWindowEffect(this, this.IsActive);
+        }
+
+        protected override void OnDeactivated(EventArgs e)
+        {
+            base.OnDeactivated(e);
+
+            //WindowEffectManager.UpdateWindowEffect(this, this.IsActive);
+        }
 
         public static IEnumerable<Color> GetColors()
         {
