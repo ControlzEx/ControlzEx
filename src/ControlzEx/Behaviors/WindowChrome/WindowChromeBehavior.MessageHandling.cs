@@ -8,6 +8,7 @@ namespace ControlzEx.Behaviors
     using System.Security;
     using System.Windows;
     using System.Windows.Data;
+    using System.Windows.Media;
     using ControlzEx.Standard;
     using ControlzEx.Windows.Shell;
     using HANDLE_MESSAGE = System.Collections.Generic.KeyValuePair<ControlzEx.Standard.WM, ControlzEx.Standard.MessageHandler>;
@@ -77,11 +78,14 @@ namespace ControlzEx.Behaviors
         {
             if (this.windowHandle == IntPtr.Zero
                 || this.hwndSource is null
-                || this.hwndSource.IsDisposed)
+                || this.hwndSource.IsDisposed
+                || this.hwndSource.CompositionTarget is null)
             {
                 // Not yet hooked.
                 return;
             }
+
+            this.hwndSource.CompositionTarget.BackgroundColor = Colors.Transparent;
 
             // Force this the first time.
             this._UpdateSystemMenu(this.AssociatedObject.WindowState);
@@ -107,22 +111,9 @@ namespace ControlzEx.Behaviors
             // Only expecting messages for our cached HWND.
             Assert.AreEqual(hwnd, this.windowHandle);
 
-            // Check if window has a RootVisual to workaround issue #13 (Win32Exception on closing window).
-            // RootVisual gets cleared when the window is closing. This happens in CloseWindowFromWmClose of the Window class.
-            if (this.hwndSource?.RootVisual is null)
-            {
-                return IntPtr.Zero;
-            }
-
             var message = (WM)msg;
 
-            //{
-            //var monitor = NativeMethods.MonitorFromWindow(this.windowHandle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
-            // System.Diagnostics.Trace.WriteLine(monitor.ToString("X"));
-            //var monitorInfo = NativeMethods.GetMonitorInfo(monitor);
-            //System.Diagnostics.Trace.WriteLine($"{message.ToString().PadRight(20)} {monitorInfo.rcWork}");
-            //}
-            //System.Diagnostics.Trace.WriteLine($"{DateTime.Now} {hwnd} {message} {wParam} {lParam}");
+            System.Diagnostics.Trace.WriteLine($"{DateTime.Now} {hwnd} {message} {wParam} {lParam}");
 
             switch (message)
             {
@@ -775,12 +766,14 @@ namespace ControlzEx.Behaviors
                 if (this.IgnoreTaskbarOnMaximize
                     && this._GetHwndState() == WindowState.Maximized)
                 {
-                    structure.styleNew |= WS.OVERLAPPED | WS.SYSMENU | WS.THICKFRAME;
+                    structure.styleNew |= WS.OVERLAPPED;
                     structure.styleNew &= ~WS.CAPTION;
+                    //structure.styleNew &= ~WS.SYSMENU; // todo: must be removed for mica effect
                 }
                 else
                 {
-                    structure.styleNew |= WS.OVERLAPPED | WS.CAPTION | WS.SYSMENU | WS.THICKFRAME;
+                    structure.styleNew |= WS.OVERLAPPED | WS.CAPTION;
+                    //structure.styleNew &= ~WS.SYSMENU; // todo: must be removed for mica effect
                 }
 
                 Marshal.StructureToPtr(structure, lParam, fDeleteOld: true);
@@ -954,7 +947,8 @@ namespace ControlzEx.Behaviors
             }
             else
             {
-                this._ModifyStyle(0, WS.CAPTION);
+                //this._ModifyStyle(WS.SYSMENU, WS.CAPTION);
+                this._ModifyStyle(0, WS.CAPTION); // todo: mica
             }
         }
 
@@ -1051,28 +1045,5 @@ namespace ControlzEx.Behaviors
                 return 1;
             }
         }
-
-        #region Remove Custom Chrome Methods
-
-        /// <SecurityNote>
-        ///   Critical : Calls critical methods
-        /// </SecurityNote>
-        [SecurityCritical]
-        private void _RestoreStandardChromeState(bool isClosing)
-        {
-            this.VerifyAccess();
-
-            if (isClosing
-                || this.hwndSource is null
-                || this.hwndSource.IsDisposed
-                || this.hwndSource.RootVisual is null)
-            {
-                return;
-            }
-
-            this.AssociatedObject.InvalidateMeasure();
-        }
-
-        #endregion
     }
 }

@@ -157,22 +157,13 @@ namespace ControlzEx.Behaviors
         {
             base.OnAttached();
 
-            if (this.AssociatedObject.IsLoaded)
-            {
-                this.AssociatedObjectSourceInitialized(this.AssociatedObject, EventArgs.Empty);
-                this.UpdateGlowWindowPositions(true);
-            }
-            else
-            {
-                this.AssociatedObject.SourceInitialized += this.AssociatedObjectSourceInitialized;
-            }
+            this.Initialize();
+            this.UpdateGlowWindowPositions(true);
         }
 
         /// <inheritdoc />
         protected override void OnDetaching()
         {
-            this.AssociatedObject.SourceInitialized -= this.AssociatedObjectSourceInitialized;
-
             this.hwndSource?.RemoveHook(this.AssociatedObjectWindowProc);
 
             this.AssociatedObject.Closed -= this.AssociatedObjectOnClosed;
@@ -195,7 +186,7 @@ namespace ControlzEx.Behaviors
             this.UpdateGlowActiveState();
         }
 
-        private void AssociatedObjectSourceInitialized(object? sender, EventArgs e)
+        private void Initialize()
         {
             this.windowHelper = new WindowInteropHelper(this.AssociatedObject);
             this.windowHandle = this.windowHelper.EnsureHandle();
@@ -229,12 +220,8 @@ namespace ControlzEx.Behaviors
 
         private IntPtr AssociatedObjectWindowProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
-            if (this.hwndSource?.RootVisual is null)
-            {
-                return IntPtr.Zero;
-            }
-
             var message = (WM)msg;
+
             //System.Diagnostics.Trace.WriteLine($"{DateTime.Now} {hwnd} {message} {wParam} {lParam}");
 
             // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
@@ -383,7 +370,9 @@ namespace ControlzEx.Behaviors
                 {
                     var result = this.AssociatedObject is not null
                            && this.AssociatedObject.ResizeMode != ResizeMode.NoResize
-                           && this.GlowDepth > 0;
+                           && this.GlowDepth > 0
+                           && this.GlowColor is not null
+                           && this.NonActiveGlowColor is not null;
                     if (result == false)
                     {
                         return false;
@@ -544,10 +533,20 @@ namespace ControlzEx.Behaviors
                     {
                         Interval = glowTimerDelay
                     };
+
                     this.makeGlowVisibleTimer.Tick += this.OnDelayedVisibilityTimerTick;
+
+                    // If we are early, wait for the window content to be rendered
+                    if (this.AssociatedObject.IsLoaded == false)
+                    {
+                        this.AssociatedObject.ContentRendered += this.AssociatedObjectOnContentRendered;
+                        return;
+                    }
                 }
 
-                if (this.makeGlowVisibleTimer.IsEnabled == false)
+                // If we are early, wait for the window content to be rendered
+                if (this.AssociatedObject.IsLoaded
+                    && this.makeGlowVisibleTimer.IsEnabled == false)
                 {
                     this.makeGlowVisibleTimer.Start();
                 }
@@ -557,6 +556,12 @@ namespace ControlzEx.Behaviors
                 this.StopTimer();
                 this.IsGlowVisible = shouldShowGlow;
             }
+        }
+
+        private void AssociatedObjectOnContentRendered(object? sender, EventArgs e)
+        {
+            this.AssociatedObject.ContentRendered -= this.AssociatedObjectOnContentRendered;
+            this.UpdateGlowVisibility(true);
         }
 
         private void StopTimer()
