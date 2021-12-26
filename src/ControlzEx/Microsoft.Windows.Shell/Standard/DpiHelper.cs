@@ -117,11 +117,7 @@ namespace ControlzEx.Standard
 
         public static DpiScale GetDpi(this Visual visual)
         {
-#if OWNDPISCALE
-            return new DpiScale(1, 1);
-#else
             return VisualTreeHelper.GetDpi(visual);
-#endif
         }
 
         internal static DpiScale GetDpi(this Window window)
@@ -131,72 +127,4 @@ namespace ControlzEx.Standard
 
         #endregion Per monitor dpi support
     }
-
-#if OWNDPISCALE
-    /// <summary>Stores DPI information from which a <see cref="T:System.Windows.Media.Visual" /> or <see cref="T:System.Windows.UIElement" /> is rendered.</summary>
-    public struct DpiScale
-    {
-        private readonly double dpiScaleX;
-        private readonly double dpiScaleY;
-
-        /// <summary>Gets the DPI scale on the X axis.</summary>
-        /// <returns>The DPI scale for the X axis.</returns>
-        public double DpiScaleX
-        {
-            get
-            {
-                return this.dpiScaleX;
-            }
-        }
-
-        /// <summary>Gets the DPI scale on the Yaxis.</summary>
-        /// <returns>The DPI scale for the Y axis.</returns>
-        public double DpiScaleY
-        {
-            get
-            {
-                return this.dpiScaleY;
-            }
-        }
-
-        /// <summary>Get or sets the PixelsPerDip at which the text should be rendered.</summary>
-        /// <returns>The current <see cref="P:System.Windows.DpiScale.PixelsPerDip" /> value.</returns>
-        public double PixelsPerDip
-        {
-            get
-            {
-                return this.dpiScaleY;
-            }
-        }
-
-        /// <summary>Gets the DPI along X axis.</summary>
-        /// <returns>The DPI along the X axis.</returns>
-        public double PixelsPerInchX
-        {
-            get
-            {
-                return 96.0 * this.dpiScaleX;
-            }
-        }
-
-        /// <summary>Gets the DPI along Y axis.</summary>
-        /// <returns>The DPI along the Y axis.</returns>
-        public double PixelsPerInchY
-        {
-            get
-            {
-                return 96.0 * this.dpiScaleY;
-            }
-        }
-
-        /// <summary>Initializes a new instance of the <see cref="T:System.Windows.DpiScale" /> structure.</summary>
-        /// <param name="dpiScaleX">The DPI scale on the X axis.</param>
-        /// <param name="dpiScaleY">The DPI scale on the Y axis. </param>
-        public DpiScale(double dpiScaleX, double dpiScaleY)
-        {
-            this.dpiScaleX = dpiScaleX;
-            this.dpiScaleY = dpiScaleY;
-        }
-    }
-#endif
 }

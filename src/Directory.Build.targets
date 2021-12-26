@@ -1,8 +1,4 @@
 <Project>
-    <PropertyGroup Condition=" '$(TargetFramework)' == 'net452' ">
-        <DefineConstants>$(DefineConstants);OWNDPISCALE</DefineConstants>
-    </PropertyGroup>
-
     <!-- AssemblyInfo -->
     <PropertyGroup>
         <Company>https://github.com/ControlzEx/ControlzEx</Company>
