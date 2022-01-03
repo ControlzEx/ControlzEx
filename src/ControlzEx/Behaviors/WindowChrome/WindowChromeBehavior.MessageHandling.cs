@@ -184,21 +184,12 @@ namespace ControlzEx.Behaviors
             if (this.AssociatedObject.ShowInTaskbar == false
                 && this._GetHwndState() == WindowState.Minimized)
             {
-                var modified = this._ModifyStyle(WS.VISIBLE, 0);
-
-                // Minimize the window with ShowInTaskbar == false cause Windows to redraw the caption.
-                // Letting the default WndProc handle the message without the WS_VISIBLE
-                // style applied bypasses the redraw.
-                var lRet = NativeMethods.DefWindowProc(this.windowHandle, uMsg, wParam, lParam);
-
-                // Put back the style we removed.
-                if (modified)
+                // Minimize the window with ShowInTaskbar == false might cause Windows to redraw the caption.
+                using (new SuppressRedrawScope(this.windowHandle))
                 {
-                    this._ModifyStyle(0, WS.VISIBLE);
+                    handled = true;
+                    return NativeMethods.DefWindowProc(this.windowHandle, uMsg, wParam, lParam);
                 }
-
-                handled = true;
-                return lRet;
             }
 
             handled = false;
