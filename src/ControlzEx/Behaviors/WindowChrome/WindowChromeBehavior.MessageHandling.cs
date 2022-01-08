@@ -113,7 +113,7 @@ namespace ControlzEx.Behaviors
 
             var message = (WM)msg;
 
-            System.Diagnostics.Trace.WriteLine($"{DateTime.Now} {hwnd} {message} {wParam} {lParam}");
+            //System.Diagnostics.Trace.WriteLine($"{DateTime.Now} {hwnd} {message} {wParam} {lParam}");
 
             switch (message)
             {
