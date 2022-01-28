@@ -5,6 +5,7 @@
     using System.Windows;
     using System.Windows.Input;
     using System.Windows.Threading;
+    using ControlzEx.Internal.KnownBoxes;
 
     /// <summary>
     /// Helper class for a common focusing problem.
@@ -49,7 +50,7 @@
         internal bool AlwaysShowFocusVisualInternal
         {
             get { return (bool?)this.alwaysShowFocusVisual?.GetValue(null, null) ?? false; }
-            set { this.alwaysShowFocusVisual?.SetValue(null, value, null); }
+            set { this.alwaysShowFocusVisual?.SetValue(null, BooleanBoxes.Box(value), null); }
         }
 
         /// <summary>
@@ -82,7 +83,7 @@
             = DependencyProperty.RegisterAttached("AlwaysShowFocusVisual",
                                                   typeof(bool),
                                                   typeof(KeyboardNavigationEx),
-                                                  new FrameworkPropertyMetadata(default(bool), OnAlwaysShowFocusVisualChanged));
+                                                  new FrameworkPropertyMetadata(BooleanBoxes.FalseBox, OnAlwaysShowFocusVisualChanged));
 
         private static void OnAlwaysShowFocusVisualChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
         {
@@ -116,7 +117,7 @@
         [AttachedPropertyBrowsableForType(typeof(UIElement))]
         public static void SetAlwaysShowFocusVisual(UIElement element, bool value)
         {
-            element.SetValue(AlwaysShowFocusVisualProperty, value);
+            element.SetValue(AlwaysShowFocusVisualProperty, BooleanBoxes.Box(value));
         }
     }
 }

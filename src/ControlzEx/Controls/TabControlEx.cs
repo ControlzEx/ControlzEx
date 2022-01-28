@@ -12,6 +12,7 @@ namespace ControlzEx.Controls
     using System.Windows.Threading;
     using ControlzEx.Automation.Peers;
     using ControlzEx.Internal;
+    using ControlzEx.Internal.KnownBoxes;
 
     /// <summary>
     /// The standard WPF TabControl is quite bad in the fact that it only
@@ -45,13 +46,15 @@ namespace ControlzEx.Controls
 
         private Panel? itemsHolder;
 
+#pragma warning disable WPF0010
         /// <summary>Identifies the <see cref="ChildContentVisibility"/> dependency property.</summary>
         public static readonly DependencyProperty ChildContentVisibilityProperty
-            = DependencyProperty.Register(nameof(ChildContentVisibility), typeof(Visibility), typeof(TabControlEx), new PropertyMetadata(Visibility.Visible));
+            = DependencyProperty.Register(nameof(ChildContentVisibility), typeof(Visibility), typeof(TabControlEx), new PropertyMetadata(VisibilityBoxes.Visible));
 
         /// <summary>Identifies the <see cref="TabPanelVisibility"/> dependency property.</summary>
         public static readonly DependencyProperty TabPanelVisibilityProperty =
-            DependencyProperty.Register(nameof(TabPanelVisibility), typeof(Visibility), typeof(TabControlEx), new PropertyMetadata(Visibility.Visible));
+            DependencyProperty.Register(nameof(TabPanelVisibility), typeof(Visibility), typeof(TabControlEx), new PropertyMetadata(VisibilityBoxes.Visible));
+#pragma warning restore WPF0010
 
         public static readonly DependencyProperty OwningTabItemProperty = DependencyProperty.RegisterAttached("OwningTabItem", typeof(TabItem), typeof(TabControlEx), new PropertyMetadata(default(TabItem)));
 
@@ -92,7 +95,7 @@ namespace ControlzEx.Controls
         }
 
         /// <summary>Identifies the <see cref="MoveFocusToContentWhenSelectionChanges"/> dependency property.</summary>
-        public static readonly DependencyProperty MoveFocusToContentWhenSelectionChangesProperty = DependencyProperty.Register(nameof(MoveFocusToContentWhenSelectionChanges), typeof(bool), typeof(TabControlEx), new PropertyMetadata(default(bool)));
+        public static readonly DependencyProperty MoveFocusToContentWhenSelectionChangesProperty = DependencyProperty.Register(nameof(MoveFocusToContentWhenSelectionChanges), typeof(bool), typeof(TabControlEx), new PropertyMetadata(BooleanBoxes.FalseBox));
 
         /// <summary>
         /// Gets or sets whether keyboard focus should be moved to the content area when the selected item changes.
@@ -100,7 +103,7 @@ namespace ControlzEx.Controls
         public bool MoveFocusToContentWhenSelectionChanges
         {
             get => (bool)this.GetValue(MoveFocusToContentWhenSelectionChangesProperty);
-            set => this.SetValue(MoveFocusToContentWhenSelectionChangesProperty, value);
+            set => this.SetValue(MoveFocusToContentWhenSelectionChangesProperty, BooleanBoxes.Box(value));
         }
 
         static TabControlEx()
@@ -123,7 +126,7 @@ namespace ControlzEx.Controls
         {
             get => (Visibility)this.GetValue(TabPanelVisibilityProperty);
 
-            set => this.SetValue(TabPanelVisibilityProperty, value);
+            set => this.SetValue(TabPanelVisibilityProperty, VisibilityBoxes.Box(value));
         }
 
         /// <summary>
@@ -135,7 +138,7 @@ namespace ControlzEx.Controls
         public Visibility ChildContentVisibility
         {
             get => (Visibility)this.GetValue(ChildContentVisibilityProperty);
-            set => this.SetValue(ChildContentVisibilityProperty, value);
+            set => this.SetValue(ChildContentVisibilityProperty, VisibilityBoxes.Box(value));
         }
 
         /// <inheritdoc />

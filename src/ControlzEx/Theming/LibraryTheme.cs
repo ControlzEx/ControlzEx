@@ -5,6 +5,7 @@ namespace ControlzEx.Theming
     using System.Windows;
     using System.Windows.Media;
     using ControlzEx.Internal;
+    using ControlzEx.Internal.KnownBoxes;
     using JetBrains.Annotations;
 
     /// <summary>
@@ -51,8 +52,8 @@ namespace ControlzEx.Theming
 
             this.LibraryThemeProvider = libraryThemeProvider;
 
-            this.IsRuntimeGenerated = (bool)(resourceDictionary[Theme.ThemeIsRuntimeGeneratedKey] ?? false);
-            this.IsHighContrast = (bool)(resourceDictionary[Theme.ThemeIsHighContrastKey] ?? false);
+            this.IsRuntimeGenerated = (bool)(resourceDictionary[Theme.ThemeIsRuntimeGeneratedKey] ?? BooleanBoxes.Box(false));
+            this.IsHighContrast = (bool)(resourceDictionary[Theme.ThemeIsHighContrastKey] ?? BooleanBoxes.Box(false));
 
             this.Name = (string)resourceDictionary[Theme.ThemeNameKey];
             this.Origin = (string)resourceDictionary[Theme.ThemeOriginKey];
@@ -61,7 +62,7 @@ namespace ControlzEx.Theming
             this.ColorScheme = (string)resourceDictionary[Theme.ThemeColorSchemeKey];
             this.AlternativeColorScheme = (string)resourceDictionary[LibraryTheme.LibraryThemeAlternativeColorSchemeKey];
             this.PrimaryAccentColor = resourceDictionary[Theme.ThemePrimaryAccentColorKey] as Color? ?? throw new ArgumentException($"Resource key \"{Theme.ThemePrimaryAccentColorKey}\" is missing, is null or is not a color.");
-            this.ShowcaseBrush = (Brush)resourceDictionary[Theme.ThemeShowcaseBrushKey] ?? new SolidColorBrush(this.PrimaryAccentColor);
+            this.ShowcaseBrush = (Brush?)resourceDictionary[Theme.ThemeShowcaseBrushKey] ?? new SolidColorBrush(this.PrimaryAccentColor);
 
             this.AddResource(resourceDictionary);
 
@@ -146,7 +147,7 @@ namespace ControlzEx.Theming
 
         public override string ToString()
         {
-            return $"DisplayName={this.DisplayName}, Name={this.Name}, Origin={this.Origin}, IsHighContrast={this.IsHighContrast}";
+            return $"DisplayName={this.DisplayName}, Name={this.Name}, Origin={this.Origin}, IsHighContrast={this.IsHighContrast.ToString()}";
         }
 
         public static string? GetThemeName(ResourceDictionary resourceDictionary)

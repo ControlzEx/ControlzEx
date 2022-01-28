@@ -1,0 +1,15 @@
+<Window x:Class="ControlzEx.Showcase.NativeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:ControlzEx.Showcase"
+        mc:Ignorable="d"
+
+        Title="NativeWindow" Height="450" Width="800">
+    <Grid Margin="10 30 147 0" Background="LightBlue">
+        <!-- WindowStyle="None" -->
+        <!-- AllowsTransparency="True" -->
+        <!-- Background="#727A7A7A"         -->
+    </Grid>
+</Window>

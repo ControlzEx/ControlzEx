@@ -3,12 +3,17 @@ namespace ControlzEx.Theming
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.Linq;
+    using System.Runtime.CompilerServices;
     using System.Windows;
     using System.Windows.Markup;
     using System.Windows.Media;
+    using ControlzEx.Internal.KnownBoxes;
+    using JetBrains.Annotations;
 
-    public class RuntimeThemeGenerator
+    [PublicAPI]
+    public class RuntimeThemeGenerator : INotifyPropertyChanged
     {
         public static RuntimeThemeGenerator Current { get; set; }
 
@@ -138,8 +143,8 @@ namespace ControlzEx.Theming
             var preparedXamlContent = libraryThemeProvider.PrepareXamlContent(this, xamlContent, runtimeThemeColorValues);
 
             var resourceDictionary = (ResourceDictionary)XamlReader.Parse(preparedXamlContent);
-            resourceDictionary.Add(Theme.ThemeIsRuntimeGeneratedKey, true);
-            resourceDictionary[Theme.ThemeIsHighContrastKey] = runtimeThemeColorValues.Options.IsHighContrast;
+            resourceDictionary.Add(Theme.ThemeIsRuntimeGeneratedKey, BooleanBoxes.TrueBox);
+            resourceDictionary[Theme.ThemeIsHighContrastKey] = BooleanBoxes.Box(runtimeThemeColorValues.Options.IsHighContrast);
             resourceDictionary[LibraryTheme.RuntimeThemeColorValuesKey] = runtimeThemeColorValues;
 
             libraryThemeProvider.PrepareRuntimeThemeResourceDictionary(this, resourceDictionary, runtimeThemeColorValues);
@@ -212,6 +217,14 @@ namespace ControlzEx.Theming
             return Color.FromRgb((byte)(color.R + highlightFactor > 255 ? 255 : color.R + highlightFactor),
                                   (byte)(color.G + highlightFactor > 255 ? 255 : color.G + highlightFactor),
                                   (byte)(color.B + highlightFactor > 255 ? 255 : color.B + highlightFactor));
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
