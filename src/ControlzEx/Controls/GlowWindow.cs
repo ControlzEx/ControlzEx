@@ -685,6 +685,13 @@ namespace ControlzEx.Controls.Internal
             this.orientation = orientation;
 
             this.TargetWindowHandle = new WindowInteropHelper(this.targetWindow).EnsureHandle();
+
+            if (this.TargetWindowHandle == IntPtr.Zero
+                || NativeMethods.IsWindow(this.TargetWindowHandle) == false)
+            {
+                throw new Exception($"TargetWindowHandle {this.TargetWindowHandle} must be a window.");
+            }
+
             this.title = $"Glow_{this.orientation}";
         }
 
@@ -720,11 +727,6 @@ namespace ControlzEx.Controls.Internal
         {
             const WS_EX EX_STYLE = WS_EX.TOOLWINDOW | WS_EX.LAYERED;
             const WS STYLE = WS.POPUP | WS.CLIPSIBLINGS | WS.CLIPCHILDREN;
-
-            if (NativeMethods.IsWindow(this.TargetWindowHandle) == false)
-            {
-                throw new Exception($"TargetWindowHandle {this.TargetWindowHandle} must be a window.");
-            }
 
             var windowHandle = NativeMethods.CreateWindowEx(EX_STYLE, this.WindowClassAtom, string.Empty, STYLE, 0, 0, 0, 0, this.TargetWindowHandle, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
 
