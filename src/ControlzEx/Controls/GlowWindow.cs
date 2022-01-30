@@ -721,7 +721,18 @@ namespace ControlzEx.Controls.Internal
             const WS_EX EX_STYLE = WS_EX.TOOLWINDOW | WS_EX.LAYERED;
             const WS STYLE = WS.POPUP | WS.CLIPSIBLINGS | WS.CLIPCHILDREN;
 
+            if (NativeMethods.IsWindow(this.TargetWindowHandle) == false)
+            {
+                throw new Exception($"TargetWindowHandle {this.TargetWindowHandle} must be a window.");
+            }
+
             var windowHandle = NativeMethods.CreateWindowEx(EX_STYLE, new IntPtr(this.WindowClassAtom), string.Empty, STYLE, 0, 0, 0, 0, this.TargetWindowHandle, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
+
+            if (windowHandle == IntPtr.Zero)
+            {
+                throw new Win32Exception();
+            }
+
             return windowHandle;
         }
 
