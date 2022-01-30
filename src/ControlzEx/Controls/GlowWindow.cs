@@ -728,6 +728,11 @@ namespace ControlzEx.Controls.Internal
             const WS_EX EX_STYLE = WS_EX.TOOLWINDOW | WS_EX.LAYERED;
             const WS STYLE = WS.POPUP | WS.CLIPSIBLINGS | WS.CLIPCHILDREN;
 
+            if (this.WindowClassAtom == 0)
+            {
+                throw new Exception("Invalid window class atom.");
+            }
+
             var windowHandle = NativeMethods.CreateWindowEx(EX_STYLE, this.WindowClassAtom, string.Empty, STYLE, 0, 0, 0, 0, this.TargetWindowHandle, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
 
             if (windowHandle == IntPtr.Zero)
