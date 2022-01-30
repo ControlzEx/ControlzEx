@@ -4032,7 +4032,7 @@ namespace ControlzEx.Standard
         }
 
         [CLSCompliant(false)]
-        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern ushort RegisterClass(ref WNDCLASS lpWndClass);
 
         [DllImport("user32.dll", EntryPoint = "RegisterWindowMessage", SetLastError = true, CharSet = CharSet.Unicode)]

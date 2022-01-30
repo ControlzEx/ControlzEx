@@ -6,6 +6,7 @@ namespace ControlzEx.Controls.Internal
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.Diagnostics.CodeAnalysis;
     using System.Runtime.InteropServices;
     using System.Text;
@@ -88,7 +89,14 @@ namespace ControlzEx.Controls.Internal
             lpWndClass.lpszClassName = className;
             lpWndClass.lpszMenuName = null;
             lpWndClass.style = 0u;
-            return NativeMethods.RegisterClass(ref lpWndClass);
+            var registerClass = NativeMethods.RegisterClass(ref lpWndClass);
+
+            if (registerClass == 0)
+            {
+                throw new Win32Exception();
+            }
+
+            return registerClass;
         }
 
         private void SubclassWndProc()
