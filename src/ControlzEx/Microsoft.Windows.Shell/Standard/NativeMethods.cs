@@ -3130,7 +3130,7 @@ namespace ControlzEx.Standard
 
         [CLSCompliant(false)]
         [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-        public static extern IntPtr CreateWindowEx(WS_EX dwExStyle, IntPtr classAtom, string lpWindowName, WS dwStyle, int x, int y, int nWidth, int nHeight, IntPtr hWndParent, IntPtr hMenu, IntPtr hInstance, IntPtr lpParam);
+        public static extern IntPtr CreateWindowEx(WS_EX dwExStyle, ushort classAtom, string lpWindowName, WS dwStyle, int x, int y, int nWidth, int nHeight, IntPtr hWndParent, IntPtr hMenu, IntPtr hInstance, IntPtr lpParam);
 
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.NoInlining)]

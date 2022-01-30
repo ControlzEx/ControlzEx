@@ -726,7 +726,7 @@ namespace ControlzEx.Controls.Internal
                 throw new Exception($"TargetWindowHandle {this.TargetWindowHandle} must be a window.");
             }
 
-            var windowHandle = NativeMethods.CreateWindowEx(EX_STYLE, new IntPtr(this.WindowClassAtom), string.Empty, STYLE, 0, 0, 0, 0, this.TargetWindowHandle, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
+            var windowHandle = NativeMethods.CreateWindowEx(EX_STYLE, this.WindowClassAtom, string.Empty, STYLE, 0, 0, 0, 0, this.TargetWindowHandle, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
 
             if (windowHandle == IntPtr.Zero)
             {
