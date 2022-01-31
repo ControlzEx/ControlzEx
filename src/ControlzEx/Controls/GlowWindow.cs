@@ -31,7 +31,7 @@ namespace ControlzEx.Controls.Internal
 
         private ushort wndClassAtom;
 
-        private Delegate? wndProc;
+        private WndProc? wndProc;
 
         public static int LastDestroyWindowError { get; private set; }
 
@@ -79,24 +79,11 @@ namespace ControlzEx.Controls.Internal
         [CLSCompliant(false)]
         protected ushort RegisterClass(string className)
         {
-            var lpWndClass = default(WNDCLASS);
-            lpWndClass.cbClsExtra = 0;
-            lpWndClass.cbWndExtra = 0;
-            lpWndClass.hbrBackground = IntPtr.Zero;
-            lpWndClass.hCursor = IntPtr.Zero;
-            lpWndClass.hIcon = IntPtr.Zero;
+            var lpWndClass = WNDCLASSEX.New();
             lpWndClass.lpfnWndProc = this.wndProc = new WndProc(this.WndProc);
             lpWndClass.lpszClassName = className;
-            lpWndClass.lpszMenuName = null;
-            lpWndClass.style = 0u;
-            var registerClass = NativeMethods.RegisterClass(ref lpWndClass);
 
-            if (registerClass == 0)
-            {
-                throw new Win32Exception();
-            }
-
-            return registerClass;
+            return NativeMethods.RegisterClassEx(ref lpWndClass);
         }
 
         private void SubclassWndProc()
@@ -536,7 +523,8 @@ namespace ControlzEx.Controls.Internal
             GlowDepth = 1 << 7
         }
 
-        private const string GlowWindowClassName = "ControlzEx_GlowWindow";
+        // Class name should be unique per process
+        private static readonly string glowWindowClassName = "ControlzEx_GlowWindow_" + Guid.NewGuid();
 
         private readonly Window targetWindow;
         private readonly GlowWindowBehavior behavior;
@@ -595,17 +583,11 @@ namespace ControlzEx.Controls.Internal
             {
                 if (sharedWindowClassAtom == 0)
                 {
-                    var lpWndClass = default(WNDCLASS);
-                    lpWndClass.cbClsExtra = 0;
-                    lpWndClass.cbWndExtra = 0;
-                    lpWndClass.hbrBackground = IntPtr.Zero;
-                    lpWndClass.hCursor = IntPtr.Zero;
-                    lpWndClass.hIcon = IntPtr.Zero;
-                    lpWndClass.lpfnWndProc = sharedWndProc = NativeMethods.DefWindowProc;
-                    lpWndClass.lpszClassName = GlowWindowClassName;
-                    lpWndClass.lpszMenuName = null;
-                    lpWndClass.style = 0u;
-                    sharedWindowClassAtom = NativeMethods.RegisterClass(ref lpWndClass);
+                    var lpWndClass = WNDCLASSEX.New();
+                    lpWndClass.lpfnWndProc = sharedWndProc = new WndProc(NativeMethods.DefWindowProc);
+                    lpWndClass.lpszClassName = glowWindowClassName;
+
+                    sharedWindowClassAtom = NativeMethods.RegisterClassEx(ref lpWndClass);
                 }
 
                 return sharedWindowClassAtom;
@@ -737,7 +719,7 @@ namespace ControlzEx.Controls.Internal
 
             if (windowHandle == IntPtr.Zero)
             {
-                throw new Win32Exception();
+                HRESULT.ThrowLastError();
             }
 
             return windowHandle;

@@ -2719,33 +2719,6 @@ namespace ControlzEx.Standard
         }
     }
 
-    [CLSCompliant(false)]
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-    public struct WNDCLASS
-    {
-        public uint style;
-
-        public Delegate lpfnWndProc;
-
-        public int cbClsExtra;
-
-        public int cbWndExtra;
-
-        public IntPtr hInstance;
-
-        public IntPtr hIcon;
-
-        public IntPtr hCursor;
-
-        public IntPtr hbrBackground;
-
-        [MarshalAs(UnmanagedType.LPWStr)]
-        public string? lpszMenuName;
-
-        [MarshalAs(UnmanagedType.LPWStr)]
-        public string lpszClassName;
-    }
-
     [Obsolete(DesignerConstants.Win32ElementWarning)]
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
     public struct WNDCLASSEX
@@ -2753,6 +2726,7 @@ namespace ControlzEx.Standard
         public int cbSize;
         [CLSCompliant(false)]
         public CS style;
+        [MarshalAs(UnmanagedType.FunctionPtr)]
         public WndProc lpfnWndProc;
         public int cbClsExtra;
         public int cbWndExtra;
@@ -2761,10 +2735,31 @@ namespace ControlzEx.Standard
         public IntPtr hCursor;
         public IntPtr hbrBackground;
         [MarshalAs(UnmanagedType.LPWStr)]
-        public string lpszMenuName;
+        public string? lpszMenuName;
         [MarshalAs(UnmanagedType.LPWStr)]
-        public string lpszClassName;
+        public string? lpszClassName;
         public IntPtr hIconSm;
+
+        //Use this function to make a new one with cbSize already filled in.
+        //For example:
+        //var WndClss = WNDCLASSEX.Build()
+        public static WNDCLASSEX New()
+        {
+            var nw = new WNDCLASSEX
+            {
+                cbSize = Marshal.SizeOf(typeof(WNDCLASSEX)),
+                style = 0u,
+                cbClsExtra = 0,
+                cbWndExtra = 0,
+                hbrBackground = IntPtr.Zero,
+                hCursor = IntPtr.Zero,
+                hIcon = IntPtr.Zero,
+                lpszMenuName = null,
+                hIconSm = IntPtr.Zero
+            };
+
+            return nw;
+        }
     }
 
     [Obsolete(DesignerConstants.Win32ElementWarning)]
@@ -3148,7 +3143,7 @@ namespace ControlzEx.Standard
             IntPtr hInstance,
             IntPtr lpParam)
         {
-            IntPtr ret = _CreateWindowEx(dwExStyle, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndOwner, hMenu, hInstance, lpParam);
+            var ret = _CreateWindowEx(dwExStyle, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndOwner, hMenu, hInstance, lpParam);
             if (ret == IntPtr.Zero)
             {
                 HRESULT.ThrowLastError();
@@ -4014,15 +4009,16 @@ namespace ControlzEx.Standard
         }
 
         [DllImport("user32.dll", SetLastError = true, EntryPoint = "RegisterClassExW")]
-        private static extern short _RegisterClassEx([In] ref WNDCLASSEX lpwcx);
+        private static extern ushort _RegisterClassEx([In] ref WNDCLASSEX lpwcx);
 
         // Note that this will throw HRESULT_FROM_WIN32(ERROR_CLASS_ALREADY_EXISTS) on duplicate registration.
         // If needed, consider adding a Try* version of this function that returns the error code since that
         // may be ignorable.
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public static short RegisterClassEx(ref WNDCLASSEX lpwcx)
+        [CLSCompliant(false)]
+        public static ushort RegisterClassEx(ref WNDCLASSEX lpwcx)
         {
-            short ret = _RegisterClassEx(ref lpwcx);
+            var ret = _RegisterClassEx(ref lpwcx);
             if (ret == 0)
             {
                 HRESULT.ThrowLastError();
@@ -4030,10 +4026,6 @@ namespace ControlzEx.Standard
 
             return ret;
         }
-
-        [CLSCompliant(false)]
-        [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-        public static extern ushort RegisterClass(ref WNDCLASS lpWndClass);
 
         [DllImport("user32.dll", EntryPoint = "RegisterWindowMessage", SetLastError = true, CharSet = CharSet.Unicode)]
         private static extern uint _RegisterWindowMessage([MarshalAs(UnmanagedType.LPWStr)] string lpString);
