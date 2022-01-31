@@ -330,8 +330,8 @@ namespace ControlzEx.Behaviors
         {
             for (var i = 0; i < this.glowWindows.Length; i++)
             {
-                var orCreateGlowWindow = this.GetOrCreateGlowWindow(i);
-                orCreateGlowWindow.EnsureHandle();
+                var gowWindow = this.GetOrCreateGlowWindow(i);
+                gowWindow.EnsureHandle();
             }
         }
 
