@@ -8,7 +8,6 @@ namespace ControlzEx.Controls.Internal
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Runtime.InteropServices;
-    using System.Text;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Interop;
@@ -723,33 +722,6 @@ namespace ControlzEx.Controls.Internal
 
             switch (message)
             {
-                case WM.GETTEXTLENGTH:
-                {
-                    var encoding = NativeMethods.IsWindowUnicode(hwnd)
-                        ? Encoding.Unicode
-                        : Encoding.ASCII;
-
-                    var titleBytes = encoding.GetBytes(this.title);
-                    return new IntPtr(titleBytes.Length);
-                }
-
-                case WM.GETTEXT:
-                {
-                    var encoding = NativeMethods.IsWindowUnicode(hwnd)
-                        ? Encoding.Unicode
-                        : Encoding.ASCII;
-
-                    var maxLength = Math.Min(this.title.Length, wParam.ToInt32());
-                    // Cut text
-                    var substring = this.title.Substring(0, maxLength);
-                    // Get bytes and add terminating null char
-                    var titleBytes = encoding.GetBytes(substring + "\0");
-                    Marshal.Copy(titleBytes, 0, lParam, titleBytes.Length);
-                    // We have return the length without the terminating null char
-                    var bytesLengthWithoutTerminatingNull = titleBytes.Length - 1;
-                    return new IntPtr(bytesLengthWithoutTerminatingNull);
-                }
-
                 case WM.DESTROY:
                     this.Dispose();
                     break;

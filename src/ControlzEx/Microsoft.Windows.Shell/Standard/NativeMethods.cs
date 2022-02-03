@@ -3768,10 +3768,10 @@ namespace ControlzEx.Standard
         [CLSCompliant(false)]
         public static extern void SetWindowThemeAttribute([In] IntPtr hwnd, [In] WINDOWTHEMEATTRIBUTETYPE eAttribute, [In] ref WTA_OPTIONS pvAttribute, [In] uint cbAttribute);
 
-        [DllImport("user32.dll", EntryPoint = "GetWindowLong", SetLastError = true)]
+        [DllImport("user32.dll", EntryPoint = "GetWindowLongW", SetLastError = true)]
         private static extern IntPtr GetWindowLongPtr32(IntPtr hWnd, GWL nIndex);
 
-        [DllImport("user32.dll", EntryPoint = "GetWindowLongPtr", SetLastError = true)]
+        [DllImport("user32.dll", EntryPoint = "GetWindowLongPtrW", SetLastError = true)]
         private static extern IntPtr GetWindowLongPtr64(IntPtr hWnd, GWL nIndex);
 
         /// <summary>
@@ -3975,7 +3975,7 @@ namespace ControlzEx.Standard
             MAPVK_VSC_TO_VK_EX = 0x3,
         }
 
-        [DllImport("user32.dll", EntryPoint = "PostMessage", SetLastError = true)]
+        [DllImport("user32.dll", EntryPoint = "PostMessageW", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool _PostMessage(IntPtr hWnd, WM Msg, IntPtr wParam, IntPtr lParam);
 
@@ -4143,10 +4143,10 @@ namespace ControlzEx.Standard
             return new IntPtr(SetWindowLongPtr32(hwnd, nIndex, dwNewLong.ToInt32()));
         }
 
-        [DllImport("user32.dll", EntryPoint = "SetWindowLong", SetLastError = true)]
+        [DllImport("user32.dll", EntryPoint = "SetWindowLongW", SetLastError = true)]
         private static extern int SetWindowLongPtr32(IntPtr hWnd, GWL nIndex, int dwNewLong);
 
-        [DllImport("user32.dll", EntryPoint = "SetWindowLongPtr", SetLastError = true)]
+        [DllImport("user32.dll", EntryPoint = "SetWindowLongPtrW", SetLastError = true)]
         private static extern IntPtr SetWindowLongPtr64(IntPtr hWnd, GWL nIndex, IntPtr dwNewLong);
 
         [DllImport("user32.dll", EntryPoint = "SetWindowRgn", SetLastError = true)]
@@ -4292,7 +4292,7 @@ namespace ControlzEx.Standard
         public static extern int SendInput(int nInputs, ref INPUT pInputs, int cbSize);
 
         // Depending on the message, callers may want to call GetLastError based on the return value.
-        [DllImport("user32.dll", SetLastError = true)]
+        [DllImport("user32.dll", SetLastError = true, EntryPoint = "SendMessageW")]
         public static extern IntPtr SendMessage(IntPtr hWnd, WM Msg, IntPtr wParam, IntPtr lParam);
 
         public static void RaiseNonClientMouseMessageAsClient(IntPtr hWnd, WM msg, IntPtr wParam, IntPtr lParam)
