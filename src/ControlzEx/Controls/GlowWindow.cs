@@ -6,7 +6,6 @@ namespace ControlzEx.Controls.Internal
 {
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel;
     using System.Diagnostics.CodeAnalysis;
     using System.Runtime.InteropServices;
     using System.Text;
@@ -29,25 +28,14 @@ namespace ControlzEx.Controls.Internal
 
         private bool isHandleCreationAllowed = true;
 
-        private ushort wndClassAtom;
-
         private WndProc? wndProc;
+
+        public abstract string ClassName { get; }
 
         public static int LastDestroyWindowError { get; private set; }
 
         [CLSCompliant(false)]
-        protected ushort WindowClassAtom
-        {
-            get
-            {
-                if (this.wndClassAtom == 0)
-                {
-                    this.wndClassAtom = this.CreateWindowClassCore();
-                }
-
-                return this.wndClassAtom;
-            }
-        }
+        protected ushort WindowClassAtom { get; private set; }
 
         public IntPtr Handle
         {
@@ -63,27 +51,35 @@ namespace ControlzEx.Controls.Internal
         [CLSCompliant(false)]
         protected virtual ushort CreateWindowClassCore()
         {
-            return this.RegisterClass("ControlzEx_HwndWrapper_" + Guid.NewGuid().ToString());
+            return this.RegisterClass(this.ClassName);
         }
 
         protected virtual void DestroyWindowClassCore()
         {
-            if (this.wndClassAtom != 0)
+            if (this.WindowClassAtom != 0)
             {
                 var moduleHandle = NativeMethods.GetModuleHandle(null);
-                NativeMethods.UnregisterClass(this.wndClassAtom, moduleHandle);
-                this.wndClassAtom = 0;
+                NativeMethods.UnregisterClass(this.WindowClassAtom, moduleHandle);
+                this.WindowClassAtom = 0;
             }
         }
 
         [CLSCompliant(false)]
         protected ushort RegisterClass(string className)
         {
-            var lpWndClass = WNDCLASSEX.New();
-            lpWndClass.lpfnWndProc = this.wndProc = new WndProc(this.WndProc);
-            lpWndClass.lpszClassName = className;
+            this.wndProc = new WndProc(this.WndProc);
 
-            return NativeMethods.RegisterClassEx(ref lpWndClass);
+            var lpWndClass = new WNDCLASSEX
+            {
+                cbSize = Marshal.SizeOf(typeof(WNDCLASSEX)),
+                hInstance = NativeMethods.GetModuleHandle(null),
+                lpfnWndProc = this.wndProc,
+                lpszClassName = className,
+            };
+
+            var atom = NativeMethods.RegisterClassEx(ref lpWndClass);
+
+            return atom;
         }
 
         private void SubclassWndProc()
@@ -130,6 +126,7 @@ namespace ControlzEx.Controls.Internal
             }
 
             this.isHandleCreationAllowed = false;
+            this.WindowClassAtom = this.CreateWindowClassCore();
             this.handle = this.CreateWindowCore();
 
             if (this.IsWindowSubClassed)
@@ -507,6 +504,7 @@ namespace ControlzEx.Controls.Internal
         }
     }
 
+    [CLSCompliant(false)]
     [PublicAPI]
     public sealed class GlowWindow : HwndWrapper, IGlowWindow
     {
@@ -522,9 +520,6 @@ namespace ControlzEx.Controls.Internal
             Visibility = 1 << 6,
             GlowDepth = 1 << 7
         }
-
-        // Class name should be unique per process
-        private static readonly string glowWindowClassName = "ControlzEx_GlowWindow_" + Guid.NewGuid();
 
         private readonly Window targetWindow;
         private readonly GlowWindowBehavior behavior;
@@ -577,15 +572,21 @@ namespace ControlzEx.Controls.Internal
 
         private bool IsDeferringChanges => this.behavior.DeferGlowChangesCount > 0;
 
-        private static ushort SharedWindowClassAtom
+        private ushort SharedWindowClassAtom
         {
             get
             {
                 if (sharedWindowClassAtom == 0)
                 {
-                    var lpWndClass = WNDCLASSEX.New();
-                    lpWndClass.lpfnWndProc = sharedWndProc = new WndProc(NativeMethods.DefWindowProc);
-                    lpWndClass.lpszClassName = glowWindowClassName;
+                    sharedWndProc ??= new WndProc(NativeMethods.DefWindowProc);
+
+                    var lpWndClass = new WNDCLASSEX
+                    {
+                        cbSize = Marshal.SizeOf(typeof(WNDCLASSEX)),
+                        hInstance = NativeMethods.GetModuleHandle(null),
+                        lpfnWndProc = sharedWndProc,
+                        lpszClassName = this.ClassName,
+                    };
 
                     sharedWindowClassAtom = NativeMethods.RegisterClassEx(ref lpWndClass);
                 }
@@ -593,6 +594,8 @@ namespace ControlzEx.Controls.Internal
                 return sharedWindowClassAtom;
             }
         }
+
+        public override string ClassName { get; } = "ControlzEx_GlowWindow";
 
         public bool IsVisible
         {
@@ -694,10 +697,9 @@ namespace ControlzEx.Controls.Internal
             }
         }
 
-        [CLSCompliant(false)]
         protected override ushort CreateWindowClassCore()
         {
-            return SharedWindowClassAtom;
+            return this.SharedWindowClassAtom;
         }
 
         protected override void DestroyWindowClassCore()
@@ -710,17 +712,7 @@ namespace ControlzEx.Controls.Internal
             const WS_EX EX_STYLE = WS_EX.TOOLWINDOW | WS_EX.LAYERED;
             const WS STYLE = WS.POPUP | WS.CLIPSIBLINGS | WS.CLIPCHILDREN;
 
-            if (this.WindowClassAtom == 0)
-            {
-                throw new Exception("Invalid window class atom.");
-            }
-
-            var windowHandle = NativeMethods.CreateWindowEx(EX_STYLE, this.WindowClassAtom, string.Empty, STYLE, 0, 0, 0, 0, this.TargetWindowHandle, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
-
-            if (windowHandle == IntPtr.Zero)
-            {
-                HRESULT.ThrowLastError();
-            }
+            var windowHandle = NativeMethods.CreateWindowEx(EX_STYLE, this.ClassName, this.title, STYLE, 0, 0, 0, 0, this.TargetWindowHandle, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
 
             return windowHandle;
         }
