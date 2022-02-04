@@ -11,7 +11,6 @@ namespace ControlzEx.Behaviors
     using System.Windows.Media;
     using ControlzEx.Standard;
     using ControlzEx.Windows.Shell;
-    using HANDLE_MESSAGE = System.Collections.Generic.KeyValuePair<ControlzEx.Standard.WM, ControlzEx.Standard.MessageHandler>;
     using Point = System.Windows.Point;
 
     public partial class WindowChromeBehavior
