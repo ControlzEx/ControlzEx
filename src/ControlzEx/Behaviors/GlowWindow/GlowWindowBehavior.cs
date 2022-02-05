@@ -124,7 +124,15 @@ namespace ControlzEx.Behaviors
         {
             var behavior = (GlowWindowBehavior)d;
             behavior.UpdateDWMBorder();
-            behavior.UpdateGlowVisibility(true);
+
+            if (behavior.IsUsingDWMBorder)
+            {
+                behavior.DestroyGlowWindows();
+            }
+            else
+            {
+                behavior.UpdateGlowVisibility(true);
+            }
         }
 
         /// <summary>
@@ -152,6 +160,9 @@ namespace ControlzEx.Behaviors
             get => (bool)this.GetValue(DWMSupportsBorderColorProperty);
             private set => this.SetValue(DWMSupportsBorderColorPropertyKey, BooleanBoxes.Box(value));
         }
+
+        public bool IsUsingDWMBorder => this.DWMSupportsBorderColor
+                                        && this.PreferDWMBorderColor;
 
         protected override void OnAttached()
         {
@@ -198,8 +209,10 @@ namespace ControlzEx.Behaviors
             this.AssociatedObject.Activated += this.AssociatedObjectActivatedOrDeactivated;
             this.AssociatedObject.Deactivated += this.AssociatedObjectActivatedOrDeactivated;
 
-            this.CreateGlowWindowHandles();
-            this.UpdateDWMBorder();
+            if (this.IsUsingDWMBorder == false)
+            {
+                this.CreateGlowWindowHandles();
+            }
         }
 
         private void AssociatedObjectOnClosed(object? o, EventArgs args)
@@ -221,6 +234,11 @@ namespace ControlzEx.Behaviors
         private IntPtr AssociatedObjectWindowProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             var message = (WM)msg;
+
+            if (this.IsUsingDWMBorder)
+            {
+                return IntPtr.Zero;
+            }
 
             //System.Diagnostics.Trace.WriteLine($"{DateTime.Now} {hwnd} {message} {wParam} {lParam}");
 
@@ -283,6 +301,8 @@ namespace ControlzEx.Behaviors
                 this.glowWindows[i]?.Dispose();
                 this.glowWindows[i] = null;
             }
+
+            this.isGlowVisible = false;
         }
 
         public void EndDeferGlowChanges()
@@ -378,8 +398,7 @@ namespace ControlzEx.Behaviors
                         return false;
                     }
 
-                    if (this.DWMSupportsBorderColor
-                        && this.PreferDWMBorderColor)
+                    if (this.IsUsingDWMBorder)
                     {
                         return false;
                     }
