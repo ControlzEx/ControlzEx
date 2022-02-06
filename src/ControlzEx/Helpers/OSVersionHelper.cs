@@ -4,7 +4,7 @@ namespace ControlzEx.Helpers
 {
     using System;
     using System.Runtime.InteropServices;
-    using ControlzEx.Standard;
+    using global::Windows.Win32;
 
     public static class OSVersionHelper
     {
@@ -177,9 +177,9 @@ namespace ControlzEx.Helpers
 
         public static Version GetOSVersion()
         {
-            var osv = default(RTL_OSVERSIONINFOEX);
+            var osv = default(PInvoke.RTL_OSVERSIONINFOEX);
             osv.dwOSVersionInfoSize = (uint)Marshal.SizeOf(osv);
-            NativeMethods.RtlGetVersion(out osv);
+            PInvoke.RtlGetVersion(out osv);
             return new Version((int)osv.dwMajorVersion, (int)osv.dwMinorVersion, (int)osv.dwBuildNumber, (int)osv.dwRevision);
         }
     }

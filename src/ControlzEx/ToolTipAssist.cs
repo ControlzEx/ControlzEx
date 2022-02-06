@@ -6,8 +6,9 @@
     using System.Windows.Controls;
     using System.Windows.Controls.Primitives;
     using System.Windows.Input;
+    using ControlzEx.Internal;
     using ControlzEx.Internal.KnownBoxes;
-    using ControlzEx.Standard;
+    using global::Windows.Win32;
 
     public static class ToolTipAssist
     {
@@ -162,11 +163,11 @@
 
             if (MonitorHelper.TryGetMonitorInfoFromPoint(out var mInfo))
             {
-                Debug.WriteLine(">>rcWork    >> w: {0} \t h: {1}", mInfo.rcWork.Width, mInfo.rcWork.Height);
-                Debug.WriteLine(">>rcMonitor >> w: {0} \t h: {1}", mInfo.rcMonitor.Width, mInfo.rcMonitor.Height);
+                Debug.WriteLine(">>rcWork    >> w: {0} \t h: {1}", mInfo.rcWork.GetWidth(), mInfo.rcWork.GetHeight());
+                Debug.WriteLine(">>rcMonitor >> w: {0} \t h: {1}", mInfo.rcMonitor.GetWidth(), mInfo.rcMonitor.GetHeight());
 
-                var monitorWorkWidth = Math.Abs(mInfo.rcWork.Width);
-                var monitorWorkHeight = Math.Abs(mInfo.rcWork.Height);
+                var monitorWorkWidth = Math.Abs(mInfo.rcWork.GetWidth());
+                var monitorWorkHeight = Math.Abs(mInfo.rcWork.GetHeight());
 
                 if (monitorWorkWidth == 0
                     || monitorWorkHeight == 0)
@@ -175,8 +176,8 @@
                     return;
                 }
 
-                topLeftFromScreen.X = -mInfo.rcWork.Left + topLeftFromScreen.X;
-                topLeftFromScreen.Y = -mInfo.rcWork.Top + topLeftFromScreen.Y;
+                topLeftFromScreen.X = -mInfo.rcWork.left + topLeftFromScreen.X;
+                topLeftFromScreen.Y = -mInfo.rcWork.top + topLeftFromScreen.Y;
 
                 var locationX = (int)topLeftFromScreen.X % monitorWorkWidth;
                 var locationY = (int)topLeftFromScreen.Y % monitorWorkHeight;

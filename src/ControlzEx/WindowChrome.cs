@@ -1,12 +1,9 @@
-﻿// ReSharper disable once CheckNamespace
-namespace ControlzEx.Windows.Shell
+﻿namespace ControlzEx
 {
     using System;
     using System.ComponentModel;
     using System.Windows;
-    using ControlzEx;
     using ControlzEx.Internal.KnownBoxes;
-    using ControlzEx.Standard;
 
 #pragma warning disable SA1602 // Enumeration items should be documented
     public enum ResizeGripDirection
@@ -37,7 +34,6 @@ namespace ControlzEx.Windows.Shell
         [Category(DesignerConstants.LibraryName)]
         public static bool GetIsHitTestVisibleInChrome(IInputElement inputElement)
         {
-            Verify.IsNotNull(inputElement, "inputElement");
             if (inputElement is not DependencyObject dependencyObject)
             {
                 throw new ArgumentException("The element must be a DependencyObject", nameof(inputElement));
@@ -48,7 +44,6 @@ namespace ControlzEx.Windows.Shell
 
         public static void SetIsHitTestVisibleInChrome(IInputElement inputElement, bool hitTestVisible)
         {
-            Verify.IsNotNull(inputElement, "inputElement");
             if (inputElement is not DependencyObject dependencyObject)
             {
                 throw new ArgumentException("The element must be a DependencyObject", nameof(inputElement));
@@ -66,7 +61,6 @@ namespace ControlzEx.Windows.Shell
         [Category(DesignerConstants.LibraryName)]
         public static ResizeGripDirection GetResizeGripDirection(IInputElement inputElement)
         {
-            Verify.IsNotNull(inputElement, "inputElement");
             if (inputElement is not DependencyObject dependencyObject)
             {
                 throw new ArgumentException("The element must be a DependencyObject", nameof(inputElement));
@@ -77,7 +71,6 @@ namespace ControlzEx.Windows.Shell
 
         public static void SetResizeGripDirection(IInputElement inputElement, ResizeGripDirection direction)
         {
-            Verify.IsNotNull(inputElement, "inputElement");
             if (inputElement is not DependencyObject dependencyObject)
             {
                 throw new ArgumentException("The element must be a DependencyObject", nameof(inputElement));

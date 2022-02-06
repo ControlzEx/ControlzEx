@@ -4,7 +4,7 @@
 // they're not particular to any library functionality.
 // Because the classes here are internal, it's likely this file
 // might be included in multiple assemblies.
-namespace ControlzEx.Standard
+namespace ControlzEx.Internal
 {
     using System;
 

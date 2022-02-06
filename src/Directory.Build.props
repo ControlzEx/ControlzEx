@@ -72,4 +72,11 @@
         <SourceRoot Include="$(MSBuildThisFileDirectory)/" />
     </ItemGroup>
 
+    <!-- Sign assembly -->
+    <PropertyGroup>
+      <SignAssembly>True</SignAssembly>
+      <AssemblyOriginatorKeyFile>$(MSBuildProjectDirectory)\..\SharedKey.snk</AssemblyOriginatorKeyFile>
+      <DelaySign>false</DelaySign>
+      <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
+    </PropertyGroup>
 </Project>

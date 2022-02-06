@@ -12,9 +12,9 @@ namespace ControlzEx.Showcase
     using System.Windows.Interop;
     using System.Windows.Media;
     using System.Windows.Media.Animation;
-    using ControlzEx.Native;
-    using ControlzEx.Standard;
-    using ControlzEx.Theming;
+    using global::Windows.Win32;
+    using global::Windows.Win32.Foundation;
+    using global::Windows.Win32.UI.WindowsAndMessaging;
 
     public partial class MainWindow
     {
@@ -129,8 +129,8 @@ namespace ControlzEx.Showcase
 
             var ownerHandle = new WindowInteropHelper(window.Owner).Handle;
 #pragma warning disable 618
-            var windowStyle = NativeMethods.GetWindowStyle(ownerHandle);
-            NativeMethods.SetWindowStyle(ownerHandle, windowStyle | WS.DISABLED);
+            var windowStyle = PInvoke.GetWindowStyle(new HWND(ownerHandle));
+            PInvoke.SetWindowStyle(new HWND(ownerHandle), windowStyle | WINDOW_STYLE.WS_DISABLED);
 #pragma warning restore 618
 
             window.Show();
@@ -145,8 +145,8 @@ namespace ControlzEx.Showcase
 
             var ownerHandle = new WindowInteropHelper(((Window)sender).Owner).Handle;
 #pragma warning disable 618
-            var windowStyle = NativeMethods.GetWindowStyle(ownerHandle);
-            NativeMethods.SetWindowStyle(ownerHandle, windowStyle & ~WS.DISABLED);
+            var windowStyle = PInvoke.GetWindowStyle(new HWND(ownerHandle));
+            PInvoke.SetWindowStyle(new HWND(ownerHandle), windowStyle & ~WINDOW_STYLE.WS_DISABLED);
 #pragma warning restore 618
         }
 

@@ -9,15 +9,20 @@ namespace ControlzEx.Behaviors
     using System.Windows;
     using System.Windows.Data;
     using System.Windows.Media;
-    using ControlzEx.Standard;
-    using ControlzEx.Windows.Shell;
+    using ControlzEx.Internal;
+    using ControlzEx.Native;
+    using global::Windows.Win32;
+    using global::Windows.Win32.Foundation;
+    using global::Windows.Win32.Graphics.Gdi;
+    using global::Windows.Win32.UI.Input.KeyboardAndMouse;
+    using global::Windows.Win32.UI.WindowsAndMessaging;
     using Point = System.Windows.Point;
 
     public partial class WindowChromeBehavior
     {
         #region Fields
 
-        private const SWP SwpFlags = SWP.FRAMECHANGED | SWP.NOSIZE | SWP.NOMOVE | SWP.NOZORDER | SWP.NOOWNERZORDER | SWP.NOACTIVATE;
+        private const SET_WINDOW_POS_FLAGS SwpFlags = SET_WINDOW_POS_FLAGS.SWP_FRAMECHANGED | SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOZORDER | SET_WINDOW_POS_FLAGS.SWP_NOOWNERZORDER | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE;
 
         private WindowState lastMenuState;
         private WINDOWPOS lastWindowpos;
@@ -46,7 +51,6 @@ namespace ControlzEx.Behaviors
             foreach (var bp in boundProperties)
             {
                 // This list must be declared after the DP's are assigned.
-                Assert.IsNotNull(bp.DependencyProperty);
                 BindingOperations.SetBinding(
                     this,
                     bp.DependencyProperty,
@@ -101,15 +105,17 @@ namespace ControlzEx.Behaviors
 
         #region WindowProc and Message Handlers
 
+        private IntPtr WindowProc(IntPtr hwnd, int msg, IntPtr wparam, nint lparam, ref bool handled)
+        {
+            return this.WindowProc(hwnd, msg, (nuint)wparam.ToInt64(), lparam, ref handled);
+        }
+
         /// <SecurityNote>
         ///   Critical : Accesses critical _hwnd
         /// </SecurityNote>
         [SecurityCritical]
-        private IntPtr WindowProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        private IntPtr WindowProc(IntPtr hwnd, int msg, nuint wParam, nint lParam, ref bool handled)
         {
-            // Only expecting messages for our cached HWND.
-            Assert.AreEqual(hwnd, this.windowHandle);
-
             var message = (WM)msg;
 
             //System.Diagnostics.Trace.WriteLine($"{DateTime.Now} {hwnd} {message} {wParam} {lParam}");
@@ -178,7 +184,7 @@ namespace ControlzEx.Behaviors
         ///   Critical : Calls critical methods
         /// </SecurityNote>
         [SecurityCritical]
-        private IntPtr _HandleNCUAHDRAWCAPTION(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        private IntPtr _HandleNCUAHDRAWCAPTION(WM uMsg, nuint wParam, nint lParam, out bool handled)
         {
             if (this.AssociatedObject.ShowInTaskbar == false
                 && this._GetHwndState() == WindowState.Minimized)
@@ -187,7 +193,7 @@ namespace ControlzEx.Behaviors
                 using (new SuppressRedrawScope(this.windowHandle))
                 {
                     handled = true;
-                    return NativeMethods.DefWindowProc(this.windowHandle, uMsg, wParam, lParam);
+                    return PInvoke.DefWindowProc(this.windowHandle, (uint)uMsg, wParam, lParam);
                 }
             }
 
@@ -195,13 +201,13 @@ namespace ControlzEx.Behaviors
             return IntPtr.Zero;
         }
 
-        private IntPtr _HandleSETICONOrSETTEXT(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        private IntPtr _HandleSETICONOrSETTEXT(WM uMsg, nuint wParam, nint lParam, out bool handled)
         {
             // Setting the caption text and icon cause Windows to redraw the caption.
             using (new SuppressRedrawScope(this.windowHandle))
             {
                 handled = true;
-                return NativeMethods.DefWindowProc(this.windowHandle, uMsg, wParam, lParam);
+                return PInvoke.DefWindowProc(this.windowHandle, (uint)uMsg, wParam, lParam);
             }
         }
 
@@ -209,7 +215,7 @@ namespace ControlzEx.Behaviors
         ///   Critical : Calls critical methods
         /// </SecurityNote>
         [SecurityCritical]
-        private IntPtr _HandleSYSCOMMAND(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        private IntPtr _HandleSYSCOMMAND(WM uMsg, nuint wParam, nint lParam, out bool handled)
         {
             handled = false;
 
@@ -220,18 +226,18 @@ namespace ControlzEx.Behaviors
         ///   Critical : Calls critical methods
         /// </SecurityNote>
         [SecurityCritical]
-        private IntPtr _HandleNCACTIVATE(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        private IntPtr _HandleNCACTIVATE(WM uMsg, nuint wParam, nint lParam, out bool handled)
         {
             // Despite MSDN's documentation of lParam not being used,
             // calling DefWindowProc with lParam set to -1 causes Windows not to draw over the caption.
 
             // Directly call DefWindowProc with a custom parameter
             // which bypasses any other handling of the message.
-            var lRet = NativeMethods.DefWindowProc(this.windowHandle, WM.NCACTIVATE, wParam, new IntPtr(-1));
+            var lRet = PInvoke.DefWindowProc(this.windowHandle, (uint)WM.NCACTIVATE, wParam, new IntPtr(-1));
             // We don't have any non client area, so we can just discard this message by handling it
             handled = true;
 
-            this.IsNCActive = wParam.ToInt32() != 0;
+            this.IsNCActive = wParam != 0;
 
             if (this.IsNCActive == false)
             {
@@ -250,18 +256,18 @@ namespace ControlzEx.Behaviors
         [SecurityCritical]
         private static RECT AdjustWorkingAreaForAutoHide(IntPtr monitorContainingApplication, RECT area)
         {
-            var hwnd = NativeMethods.GetTaskBarHandleForMonitor(monitorContainingApplication);
+            var hwnd = PInvoke.GetTaskBarHandleForMonitor(new HMONITOR(monitorContainingApplication));
 
             if (hwnd == IntPtr.Zero)
             {
                 return area;
             }
 
-            var abd = default(APPBARDATA);
+            var abd = default(PInvoke.APPBARDATA);
             abd.cbSize = Marshal.SizeOf(abd);
             abd.hWnd = hwnd;
-            NativeMethods.SHAppBarMessage((int)ABMsg.ABM_GETTASKBARPOS, ref abd);
-            var autoHide = Convert.ToBoolean(NativeMethods.SHAppBarMessage((int)ABMsg.ABM_GETSTATE, ref abd));
+            PInvoke.SHAppBarMessage((int)PInvoke.ABMsg.ABM_GETTASKBARPOS, ref abd);
+            var autoHide = Convert.ToBoolean(PInvoke.SHAppBarMessage((int)PInvoke.ABMsg.ABM_GETSTATE, ref abd));
 
             if (autoHide == false)
             {
@@ -270,17 +276,17 @@ namespace ControlzEx.Behaviors
 
             switch (abd.uEdge)
             {
-                case (int)ABEdge.ABE_LEFT:
-                    area.Left += 2;
+                case (int)PInvoke.ABEdge.ABE_LEFT:
+                    area.left += 2;
                     break;
-                case (int)ABEdge.ABE_RIGHT:
-                    area.Right -= 2;
+                case (int)PInvoke.ABEdge.ABE_RIGHT:
+                    area.right -= 2;
                     break;
-                case (int)ABEdge.ABE_TOP:
-                    area.Top += 2;
+                case (int)PInvoke.ABEdge.ABE_TOP:
+                    area.top += 2;
                     break;
-                case (int)ABEdge.ABE_BOTTOM:
-                    area.Bottom -= 2;
+                case (int)PInvoke.ABEdge.ABE_BOTTOM:
+                    area.bottom -= 2;
                     break;
                 default:
                     return area;
@@ -299,7 +305,7 @@ namespace ControlzEx.Behaviors
         // At least on RTM Win7 we can avoid the problem by making the client area not extactly match the non-client
         // area, so we added the SacrificialEdge property.
         [SecurityCritical]
-        private IntPtr _HandleNCCALCSIZE(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        private IntPtr _HandleNCCALCSIZE(WM uMsg, nuint wParam, nint lParam, out bool handled)
         {
             // lParam is an [in, out] that can be either a RECT* (wParam == FALSE) or an NCCALCSIZE_PARAMS*.
             // Since the first field of NCCALCSIZE_PARAMS is a RECT and is the only field we care about
@@ -314,7 +320,7 @@ namespace ControlzEx.Behaviors
                 // We have to get the monitor preferably from the window position as the info for the window handle might not yet be updated.
                 // As we update lastWindowpos in WINDOWPOSCHANGING we have the right "future" position and thus can get the correct monitor from that.
                 var monitor = MonitorHelper.MonitorFromWindowPosOrWindow(this.lastWindowpos, this.windowHandle);
-                var monitorInfo = NativeMethods.GetMonitorInfo(monitor);
+                var monitorInfo = PInvoke.GetMonitorInfo(monitor);
                 //System.Diagnostics.Trace.WriteLine(monitorInfo.rcWork);
 
                 var monitorRect = this.IgnoreTaskbarOnMaximize
@@ -322,27 +328,27 @@ namespace ControlzEx.Behaviors
                     : monitorInfo.rcWork;
 
                 var rc = Marshal.PtrToStructure<RECT>(lParam);
-                rc.Left = monitorRect.Left;
-                rc.Top = monitorRect.Top;
-                rc.Right = monitorRect.Right;
-                rc.Bottom = monitorRect.Bottom;
+                rc.left = monitorRect.left;
+                rc.top = monitorRect.top;
+                rc.right = monitorRect.right;
+                rc.bottom = monitorRect.bottom;
 
                 // monitor and work area will be equal if taskbar is hidden
                 if (this.IgnoreTaskbarOnMaximize == false
-                    && monitorInfo.rcMonitor.Height == monitorInfo.rcWork.Height
-                    && monitorInfo.rcMonitor.Width == monitorInfo.rcWork.Width)
+                    && monitorInfo.rcMonitor.GetHeight() == monitorInfo.rcWork.GetHeight()
+                    && monitorInfo.rcMonitor.GetWidth() == monitorInfo.rcWork.GetWidth())
                 {
                     rc = AdjustWorkingAreaForAutoHide(monitor, rc);
                 }
 
                 Marshal.StructureToPtr(rc, lParam, true);
             }
-            else if (NativeMethods.GetWindowStyle(this.windowHandle).HasFlag(WS.CAPTION))
+            else if (PInvoke.GetWindowStyle(this.windowHandle).HasFlag(WINDOW_STYLE.WS_CAPTION))
             {
                 var rcBefore = Marshal.PtrToStructure<RECT>(lParam);
-                NativeMethods.DefWindowProc(this.windowHandle, uMsg, wParam, lParam);
+                PInvoke.DefWindowProc(this.windowHandle, (uint)uMsg, wParam, lParam);
                 var rc = Marshal.PtrToStructure<RECT>(lParam);
-                rc.Top = rcBefore.Top; // Remove titlebar
+                rc.top = rcBefore.top; // Remove titlebar
                 Marshal.StructureToPtr(rc, lParam, true);
             }
 
@@ -353,7 +359,7 @@ namespace ControlzEx.Behaviors
             // client area. So we simply ask for a redraw (WVR_REDRAW)
 
             var retVal = IntPtr.Zero;
-            if (wParam.ToInt32() != 0) // wParam == TRUE
+            if (wParam != 0) // wParam == TRUE
             {
                 // Using the combination of WVR.VALIDRECTS and WVR.REDRAW gives the smoothest
                 // resize behavior we can achieve here.
@@ -397,7 +403,7 @@ namespace ControlzEx.Behaviors
         ///   Critical : Calls critical methods
         /// </SecurityNote>
         [SecurityCritical]
-        private IntPtr _HandleNCPAINT(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        private IntPtr _HandleNCPAINT(WM uMsg, nuint wParam, nint lParam, out bool handled)
         {
             handled = false;
             return IntPtr.Zero;
@@ -407,7 +413,7 @@ namespace ControlzEx.Behaviors
         ///   Critical : Calls critical methods
         /// </SecurityNote>
         [SecurityCritical]
-        private IntPtr _HandleNCHITTEST(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        private IntPtr _HandleNCHITTEST(WM uMsg, nuint wParam, nint lParam, out bool handled)
         {
             // We always want to handle hit-testing
             handled = true;
@@ -417,7 +423,7 @@ namespace ControlzEx.Behaviors
             return new IntPtr((int)hitTestResult);
         }
 
-        private HT GetHitTestResult(IntPtr lParam)
+        private HT GetHitTestResult(nint lParam)
         {
             if (NonClientControlManager.GetControlUnderMouse(this.AssociatedObject, lParam, out var res) is not null
                 && res != HT.CAPTION)
@@ -479,18 +485,18 @@ namespace ControlzEx.Behaviors
         ///   Critical : Calls critical method
         /// </SecurityNote>
         [SecurityCritical]
-        private IntPtr _HandleNCRBUTTONUP(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        private IntPtr _HandleNCRBUTTONUP(WM uMsg, nuint wParam, nint lParam, out bool handled)
         {
             handled = false;
 
             // Emulate the system behavior of clicking the right mouse button over the caption area
             // to bring up the system menu.
-            var hitTest = (HT)(Environment.Is64BitProcess ? wParam.ToInt64() : wParam.ToInt32());
+            var hitTest = (HT)wParam;
             if (hitTest is HT.CAPTION or HT.MINBUTTON or HT.MAXBUTTON or HT.CLOSE)
             {
                 handled = true;
 
-                Windows.Shell.SystemCommands.ShowSystemMenuPhysicalCoordinates(this.AssociatedObject, Utility.GetPoint(lParam));
+                ControlzEx.SystemCommands.ShowSystemMenuPhysicalCoordinates(this.AssociatedObject, Utility.GetPoint(lParam));
             }
 
             return IntPtr.Zero;
@@ -500,7 +506,7 @@ namespace ControlzEx.Behaviors
         ///   Critical : Calls critical method
         /// </SecurityNote>
         [SecurityCritical]
-        private IntPtr _HandleSIZE(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        private IntPtr _HandleSIZE(WM uMsg, nuint wParam, nint lParam, out bool handled)
         {
             const int SIZE_MAXIMIZED = 2;
 
@@ -515,7 +521,7 @@ namespace ControlzEx.Behaviors
             // maximized.  Not forcing this update will eventually cause the
             // default caption to be drawn.
             WindowState? state = null;
-            if ((Environment.Is64BitProcess ? wParam.ToInt64() : wParam.ToInt32()) == SIZE_MAXIMIZED)
+            if (wParam == SIZE_MAXIMIZED)
             {
                 state = WindowState.Maximized;
             }
@@ -531,10 +537,8 @@ namespace ControlzEx.Behaviors
         ///   Critical : Calls critical Marshal.PtrToStructure
         /// </SecurityNote>
         [SecurityCritical]
-        private IntPtr _HandleWINDOWPOSCHANGING(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        private IntPtr _HandleWINDOWPOSCHANGING(WM uMsg, nuint wParam, nint lParam, out bool handled)
         {
-            Assert.IsNotDefault(lParam);
-
             this.UpdateWindowStyle();
 
             var windowpos = Marshal.PtrToStructure<WINDOWPOS>(lParam);
@@ -547,7 +551,7 @@ namespace ControlzEx.Behaviors
             // I have no clue why this works, I tried this because VS2013 has this flag removed on fullscreen window moves
             if (this.IgnoreTaskbarOnMaximize
                 && this._GetHwndState() == WindowState.Maximized
-                && windowpos.flags == SWP.FRAMECHANGED)
+                && windowpos.flags == SET_WINDOW_POS_FLAGS.SWP_FRAMECHANGED)
             {
                 windowpos.flags = 0;
                 Marshal.StructureToPtr(windowpos, lParam, true);
@@ -558,7 +562,7 @@ namespace ControlzEx.Behaviors
                 return IntPtr.Zero;
             }
 
-            if ((windowpos.flags & SWP.NOMOVE) != 0)
+            if ((windowpos.flags & SET_WINDOW_POS_FLAGS.SWP_NOMOVE) != 0)
             {
                 handled = false;
                 return IntPtr.Zero;
@@ -572,8 +576,8 @@ namespace ControlzEx.Behaviors
                 return IntPtr.Zero;
             }
 
-            if ((windowpos.flags & SWP.NOMOVE) == 0
-                && (windowpos.flags & SWP.NOSIZE) == 0
+            if ((windowpos.flags & SET_WINDOW_POS_FLAGS.SWP_NOMOVE) == 0
+                && (windowpos.flags & SET_WINDOW_POS_FLAGS.SWP_NOSIZE) == 0
                 && windowpos.cx > 0
                 && windowpos.cy > 0)
             {
@@ -599,7 +603,7 @@ namespace ControlzEx.Behaviors
         ///   Critical : Calls critical Marshal.PtrToStructure
         /// </SecurityNote>
         [SecurityCritical]
-        private IntPtr _HandleWINDOWPOSCHANGED(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        private IntPtr _HandleWINDOWPOSCHANGED(WM uMsg, nuint wParam, nint lParam, out bool handled)
         {
             // http://blogs.msdn.com/oldnewthing/archive/2008/01/15/7113860.aspx
             // The WM_WINDOWPOSCHANGED message is sent at the end of the window
@@ -607,8 +611,6 @@ namespace ControlzEx.Behaviors
             // notifications, WM_MOVE, WM_SIZE, and WM_SHOWWINDOW. But it doesn't
             // suffer from the same limitations as WM_SHOWWINDOW, so you can
             // reliably use it to react to the window being shown or hidden.
-
-            Assert.IsNotDefault(lParam);
 
             this._UpdateSystemMenu(null);
 
@@ -621,7 +623,7 @@ namespace ControlzEx.Behaviors
         ///   Critical : Calls critical methods
         /// </SecurityNote>
         [SecurityCritical]
-        private IntPtr _HandleGETMINMAXINFO(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        private IntPtr _HandleGETMINMAXINFO(WM uMsg, nuint wParam, nint lParam, out bool handled)
         {
             /*
              * This is a workaround for wrong windows behaviour.
@@ -632,24 +634,24 @@ namespace ControlzEx.Behaviors
              * MonitorFromWindow gives us the wrong (old) monitor! This is fixed in _HandleMoveForRealSize.
              */
             if (this.IgnoreTaskbarOnMaximize
-                && NativeMethods.IsZoomed(this.windowHandle))
+                && PInvoke.IsZoomed(this.windowHandle))
             {
                 var mmi = Marshal.PtrToStructure<MINMAXINFO>(lParam);
 
-                var monitor = NativeMethods.MonitorFromWindow(this.windowHandle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
+                var monitor = PInvoke.MonitorFromWindow(this.windowHandle, MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
                 if (monitor != IntPtr.Zero)
                 {
-                    var monitorInfo = NativeMethods.GetMonitorInfo(monitor);
+                    var monitorInfo = PInvoke.GetMonitorInfo(monitor);
                     var rcWorkArea = monitorInfo.rcWork;
                     var rcMonitorArea = monitorInfo.rcMonitor;
 
-                    mmi.ptMaxPosition.X = Math.Abs(rcWorkArea.Left - rcMonitorArea.Left);
-                    mmi.ptMaxPosition.Y = Math.Abs(rcWorkArea.Top - rcMonitorArea.Top);
+                    mmi.ptMaxPosition.x = Math.Abs(rcWorkArea.left - rcMonitorArea.left);
+                    mmi.ptMaxPosition.y = Math.Abs(rcWorkArea.top - rcMonitorArea.top);
 
-                    mmi.ptMaxSize.X = Math.Abs(monitorInfo.rcMonitor.Width);
-                    mmi.ptMaxSize.Y = Math.Abs(monitorInfo.rcMonitor.Height);
-                    mmi.ptMaxTrackSize.X = mmi.ptMaxSize.X;
-                    mmi.ptMaxTrackSize.Y = mmi.ptMaxSize.Y;
+                    mmi.ptMaxSize.x = Math.Abs(monitorInfo.rcMonitor.GetWidth());
+                    mmi.ptMaxSize.y = Math.Abs(monitorInfo.rcMonitor.GetHeight());
+                    mmi.ptMaxTrackSize.x = mmi.ptMaxSize.x;
+                    mmi.ptMaxTrackSize.y = mmi.ptMaxSize.y;
                 }
 
                 Marshal.StructureToPtr(mmi, lParam, true);
@@ -666,7 +668,7 @@ namespace ControlzEx.Behaviors
         ///   Critical : Calls critical methods
         /// </SecurityNote>
         [SecurityCritical]
-        private IntPtr _HandleMOVEForRealSize(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        private IntPtr _HandleMOVEForRealSize(WM uMsg, nuint wParam, nint lParam, out bool handled)
         {
             /*
              * This is a workaround for wrong windows behaviour (with multi monitor system).
@@ -677,11 +679,11 @@ namespace ControlzEx.Behaviors
             var state = this._GetHwndState();
             if (state == WindowState.Maximized)
             {
-                var monitorFromWindow = NativeMethods.MonitorFromWindow(this.windowHandle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
+                var monitorFromWindow = PInvoke.MonitorFromWindow(this.windowHandle, MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
                 if (monitorFromWindow != IntPtr.Zero)
                 {
                     var ignoreTaskBar = this.IgnoreTaskbarOnMaximize;
-                    var monitorInfo = NativeMethods.GetMonitorInfo(monitorFromWindow);
+                    var monitorInfo = PInvoke.GetMonitorInfo(monitorFromWindow);
                     var rcMonitorArea = ignoreTaskBar ? monitorInfo.rcMonitor : monitorInfo.rcWork;
                     /*
                      * ASYNCWINDOWPOS
@@ -699,7 +701,7 @@ namespace ControlzEx.Behaviors
                      * area are saved and copied back into the client area after the window is sized or repositioned.
                      * 
                      */
-                    NativeMethods.SetWindowPos(this.windowHandle, IntPtr.Zero, rcMonitorArea.Left, rcMonitorArea.Top, rcMonitorArea.Width, rcMonitorArea.Height, SWP.ASYNCWINDOWPOS | SWP.FRAMECHANGED | SWP.NOCOPYBITS);
+                    PInvoke.SetWindowPos(this.windowHandle, default, rcMonitorArea.left, rcMonitorArea.top, rcMonitorArea.GetWidth(), rcMonitorArea.GetHeight(), SET_WINDOW_POS_FLAGS.SWP_ASYNCWINDOWPOS | SET_WINDOW_POS_FLAGS.SWP_FRAMECHANGED | SET_WINDOW_POS_FLAGS.SWP_NOCOPYBITS);
                 }
             }
 
@@ -709,12 +711,17 @@ namespace ControlzEx.Behaviors
 
         private bool isTrackingMouseEvents;
 
-        private IntPtr _HandleNCMOUSEMOVE(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        private unsafe IntPtr _HandleNCMOUSEMOVE(WM uMsg, nuint wParam, nint lParam, out bool handled)
         {
             if (this.isTrackingMouseEvents == false)
             {
-                var settings = new NativeMethods.TRACKMOUSEEVENT(NativeMethods.TMEFlags.TME_LEAVE | NativeMethods.TMEFlags.TME_NONCLIENT, this.windowHandle, 0);
-                NativeMethods.TrackMouseEvent(ref settings);
+                var settings = new TRACKMOUSEEVENT
+                {
+                    cbSize = (uint)Marshal.SizeOf<TRACKMOUSEEVENT>(),
+                    dwFlags = TRACKMOUSEEVENT_FLAGS.TME_LEAVE | TRACKMOUSEEVENT_FLAGS.TME_NONCLIENT,
+                    hwndTrack = this.windowHandle
+                };
+                PInvoke.TrackMouseEvent(&settings);
                 this.isTrackingMouseEvents = true;
             }
 
@@ -723,14 +730,14 @@ namespace ControlzEx.Behaviors
             return IntPtr.Zero;
         }
 
-        private IntPtr _HandleMOUSEMOVE(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        private IntPtr _HandleMOUSEMOVE(WM uMsg, nuint wParam, nint lParam, out bool handled)
         {
             this.nonClientControlManager?.ClearTrackedControl();
             handled = false;
             return IntPtr.Zero;
         }
 
-        private IntPtr _HandleNCMOUSELEAVE(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        private IntPtr _HandleNCMOUSELEAVE(WM uMsg, nuint wParam, nint lParam, out bool handled)
         {
             this.isTrackingMouseEvents = false;
             this.nonClientControlManager?.ClearTrackedControl();
@@ -738,32 +745,32 @@ namespace ControlzEx.Behaviors
             return IntPtr.Zero;
         }
 
-        private IntPtr _HandleMOUSELEAVE(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        private IntPtr _HandleMOUSELEAVE(WM uMsg, nuint wParam, nint lParam, out bool handled)
         {
             this.nonClientControlManager?.ClearTrackedControl();
             handled = false;
             return IntPtr.Zero;
         }
 
-        private IntPtr _HandleStyleChanging(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        private IntPtr _HandleStyleChanging(WM uMsg, nuint wParam, nint lParam, out bool handled)
         {
             handled = false;
 
-            if ((GWL)wParam.ToInt64() == GWL.STYLE)
+            if ((WINDOW_LONG_PTR_INDEX)wParam == WINDOW_LONG_PTR_INDEX.GWL_STYLE)
             {
                 var structure = Marshal.PtrToStructure<STYLESTRUCT>(lParam);
 
                 if (this.IgnoreTaskbarOnMaximize
                     && this._GetHwndState() == WindowState.Maximized)
                 {
-                    structure.styleNew |= WS.OVERLAPPED;
-                    structure.styleNew &= ~WS.CAPTION;
-                    //structure.styleNew &= ~WS.SYSMENU; // todo: must be removed for mica effect
+                    structure.styleNew |= (uint)WINDOW_STYLE.WS_OVERLAPPED;
+                    structure.styleNew &= (uint)~WINDOW_STYLE.WS_CAPTION;
+                    //structure.styleNew &= (uint)~WINDOW_STYLE.WS_SYSMENU; // todo: must be removed for mica effect
                 }
                 else
                 {
-                    structure.styleNew |= WS.OVERLAPPED | WS.CAPTION;
-                    //structure.styleNew &= ~WS.SYSMENU; // todo: must be removed for mica effect
+                    structure.styleNew |= (uint)(WINDOW_STYLE.WS_OVERLAPPED | WINDOW_STYLE.WS_CAPTION);
+                    //structure.styleNew &= (uint)~WINDOW_STYLE.WS_SYSMENU; // todo: must be removed for mica effect
                 }
 
                 Marshal.StructureToPtr(structure, lParam, fDeleteOld: true);
@@ -772,7 +779,7 @@ namespace ControlzEx.Behaviors
             return IntPtr.Zero;
         }
 
-        private IntPtr _HandleDestroy(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        private IntPtr _HandleDestroy(WM uMsg, nuint wParam, nint lParam, out bool handled)
         {
             handled = false;
 
@@ -781,24 +788,24 @@ namespace ControlzEx.Behaviors
             return IntPtr.Zero;
         }
 
-        private IntPtr _HandleNCLBUTTONDOWN(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        private IntPtr _HandleNCLBUTTONDOWN(WM uMsg, nuint wParam, nint lParam, out bool handled)
         {
             handled = this.nonClientControlManager?.PressTrackedControl(lParam) == true;
 
             return IntPtr.Zero;
         }
 
-        private IntPtr _HandleNCLBUTTONUP(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        private IntPtr _HandleNCLBUTTONUP(WM uMsg, nuint wParam, nint lParam, out bool handled)
         {
             handled = this.nonClientControlManager?.ClickTrackedControl(lParam) == true;
 
             return IntPtr.Zero;
         }
 
-        private IntPtr _HandleNCRBUTTONMessages(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        private IntPtr _HandleNCRBUTTONMessages(WM uMsg, nuint wParam, nint lParam, out bool handled)
         {
             handled = true;
-            NativeMethods.RaiseNonClientMouseMessageAsClient(this.windowHandle, uMsg, wParam, lParam);
+            PInvoke.RaiseNonClientMouseMessageAsClient(this.windowHandle, uMsg, wParam, lParam);
 
             return IntPtr.Zero;
         }
@@ -813,17 +820,16 @@ namespace ControlzEx.Behaviors
         ///   Critical : Calls critical methods
         /// </SecurityNote>
         [SecurityCritical]
-        private bool _ModifyStyle(WS removeStyle, WS addStyle)
+        private bool _ModifyStyle(WINDOW_STYLE removeStyle, WINDOW_STYLE addStyle)
         {
-            Assert.IsNotDefault(this.windowHandle);
-            var dwStyle = NativeMethods.GetWindowStyle(this.windowHandle);
+            var dwStyle = PInvoke.GetWindowStyle(this.windowHandle);
             var dwNewStyle = (dwStyle & ~removeStyle) | addStyle;
             if (dwStyle == dwNewStyle)
             {
                 return false;
             }
 
-            NativeMethods.SetWindowStyle(this.windowHandle, dwNewStyle);
+            PInvoke.SetWindowStyle(this.windowHandle, dwNewStyle);
             return true;
         }
 
@@ -836,13 +842,13 @@ namespace ControlzEx.Behaviors
         [SecurityCritical]
         private WindowState _GetHwndState()
         {
-            var wpl = NativeMethods.GetWindowPlacement(this.windowHandle);
+            var wpl = PInvoke.GetWindowPlacement(this.windowHandle);
             switch (wpl.showCmd)
             {
-                case SW.SHOWMINIMIZED:
+                case SHOW_WINDOW_CMD.SW_SHOWMINIMIZED:
                     return WindowState.Minimized;
 
-                case SW.SHOWMAXIMIZED:
+                case SHOW_WINDOW_CMD.SW_SHOWMAXIMIZED:
                     return WindowState.Maximized;
             }
 
@@ -860,8 +866,8 @@ namespace ControlzEx.Behaviors
         private Rect _GetWindowRect()
         {
             // Get the window rectangle.
-            var windowPosition = NativeMethods.GetWindowRect(this.windowHandle);
-            return new Rect(windowPosition.Left, windowPosition.Top, windowPosition.Width, windowPosition.Height);
+            var windowPosition = PInvoke.GetWindowRect(this.windowHandle);
+            return new Rect(windowPosition.left, windowPosition.top, windowPosition.GetWidth(), windowPosition.GetHeight());
         }
 
         /// <summary>
@@ -879,8 +885,8 @@ namespace ControlzEx.Behaviors
         [SecurityCritical]
         private void _UpdateSystemMenu(WindowState? assumeState)
         {
-            const MF MF_ENABLED = MF.ENABLED | MF.BYCOMMAND;
-            const MF MF_DISABLED = MF.GRAYED | MF.DISABLED | MF.BYCOMMAND;
+            const MENU_ITEM_FLAGS MF_ENABLED = MENU_ITEM_FLAGS.MF_ENABLED | MENU_ITEM_FLAGS.MF_BYCOMMAND;
+            const MENU_ITEM_FLAGS MF_DISABLED = MENU_ITEM_FLAGS.MF_GRAYED | MENU_ITEM_FLAGS.MF_DISABLED | MENU_ITEM_FLAGS.MF_BYCOMMAND;
 
             var state = assumeState ?? this._GetHwndState();
 
@@ -889,39 +895,39 @@ namespace ControlzEx.Behaviors
             {
                 this.lastMenuState = state;
 
-                var menuHandle = NativeMethods.GetSystemMenu(this.windowHandle, false);
+                var menuHandle = PInvoke.GetSystemMenu(this.windowHandle, false);
                 if (menuHandle != IntPtr.Zero)
                 {
-                    var dwStyle = NativeMethods.GetWindowStyle(this.windowHandle);
+                    var dwStyle = PInvoke.GetWindowStyle(this.windowHandle);
 
-                    var canMinimize = Utility.IsFlagSet((int)dwStyle, (int)WS.MINIMIZEBOX);
-                    var canMaximize = Utility.IsFlagSet((int)dwStyle, (int)WS.MAXIMIZEBOX);
-                    var canSize = Utility.IsFlagSet((int)dwStyle, (int)WS.THICKFRAME);
+                    var canMinimize = Utility.IsFlagSet((int)dwStyle, (int)WINDOW_STYLE.WS_MINIMIZEBOX);
+                    var canMaximize = Utility.IsFlagSet((int)dwStyle, (int)WINDOW_STYLE.WS_MAXIMIZEBOX);
+                    var canSize = Utility.IsFlagSet((int)dwStyle, (int)WINDOW_STYLE.WS_THICKFRAME);
 
                     switch (state)
                     {
                         case WindowState.Maximized:
-                            NativeMethods.EnableMenuItem(menuHandle, SC.RESTORE, canMaximize ? MF_ENABLED : MF_DISABLED);
-                            NativeMethods.EnableMenuItem(menuHandle, SC.MOVE, MF_DISABLED);
-                            NativeMethods.EnableMenuItem(menuHandle, SC.SIZE, MF_DISABLED);
-                            NativeMethods.EnableMenuItem(menuHandle, SC.MINIMIZE, canMinimize ? MF_ENABLED : MF_DISABLED);
-                            NativeMethods.EnableMenuItem(menuHandle, SC.MAXIMIZE, MF_DISABLED);
+                            PInvoke.EnableMenuItem(menuHandle, (uint)SC.RESTORE, canMaximize ? MF_ENABLED : MF_DISABLED);
+                            PInvoke.EnableMenuItem(menuHandle, (uint)SC.MOVE, MF_DISABLED);
+                            PInvoke.EnableMenuItem(menuHandle, (uint)SC.SIZE, MF_DISABLED);
+                            PInvoke.EnableMenuItem(menuHandle, (uint)SC.MINIMIZE, canMinimize ? MF_ENABLED : MF_DISABLED);
+                            PInvoke.EnableMenuItem(menuHandle, (uint)SC.MAXIMIZE, MF_DISABLED);
                             break;
 
                         case WindowState.Minimized:
-                            NativeMethods.EnableMenuItem(menuHandle, SC.RESTORE, MF_ENABLED);
-                            NativeMethods.EnableMenuItem(menuHandle, SC.MOVE, MF_DISABLED);
-                            NativeMethods.EnableMenuItem(menuHandle, SC.SIZE, MF_DISABLED);
-                            NativeMethods.EnableMenuItem(menuHandle, SC.MINIMIZE, MF_DISABLED);
-                            NativeMethods.EnableMenuItem(menuHandle, SC.MAXIMIZE, canMaximize ? MF_ENABLED : MF_DISABLED);
+                            PInvoke.EnableMenuItem(menuHandle, (uint)SC.RESTORE, MF_ENABLED);
+                            PInvoke.EnableMenuItem(menuHandle, (uint)SC.MOVE, MF_DISABLED);
+                            PInvoke.EnableMenuItem(menuHandle, (uint)SC.SIZE, MF_DISABLED);
+                            PInvoke.EnableMenuItem(menuHandle, (uint)SC.MINIMIZE, MF_DISABLED);
+                            PInvoke.EnableMenuItem(menuHandle, (uint)SC.MAXIMIZE, canMaximize ? MF_ENABLED : MF_DISABLED);
                             break;
 
                         default:
-                            NativeMethods.EnableMenuItem(menuHandle, SC.RESTORE, MF_DISABLED);
-                            NativeMethods.EnableMenuItem(menuHandle, SC.MOVE, MF_ENABLED);
-                            NativeMethods.EnableMenuItem(menuHandle, SC.SIZE, canSize ? MF_ENABLED : MF_DISABLED);
-                            NativeMethods.EnableMenuItem(menuHandle, SC.MINIMIZE, canMinimize ? MF_ENABLED : MF_DISABLED);
-                            NativeMethods.EnableMenuItem(menuHandle, SC.MAXIMIZE, canMaximize ? MF_ENABLED : MF_DISABLED);
+                            PInvoke.EnableMenuItem(menuHandle, (uint)SC.RESTORE, MF_DISABLED);
+                            PInvoke.EnableMenuItem(menuHandle, (uint)SC.MOVE, MF_ENABLED);
+                            PInvoke.EnableMenuItem(menuHandle, (uint)SC.SIZE, canSize ? MF_ENABLED : MF_DISABLED);
+                            PInvoke.EnableMenuItem(menuHandle, (uint)SC.MINIMIZE, canMinimize ? MF_ENABLED : MF_DISABLED);
+                            PInvoke.EnableMenuItem(menuHandle, (uint)SC.MAXIMIZE, canMaximize ? MF_ENABLED : MF_DISABLED);
                             break;
                     }
                 }
@@ -933,12 +939,12 @@ namespace ControlzEx.Behaviors
             if (this.IgnoreTaskbarOnMaximize
                 && this._GetHwndState() == WindowState.Maximized)
             {
-                this._ModifyStyle(WS.CAPTION, 0);
+                this._ModifyStyle(WINDOW_STYLE.WS_CAPTION, 0);
             }
             else
             {
-                //this._ModifyStyle(WS.SYSMENU, WS.CAPTION);
-                this._ModifyStyle(0, WS.CAPTION); // todo: mica
+                //this._ModifyStyle(WINDOW_STYLE.WS_SYSMENU, WINDOW_STYLE.WS_CAPTION);
+                this._ModifyStyle(0, WINDOW_STYLE.WS_CAPTION); // todo: mica
             }
         }
 

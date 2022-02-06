@@ -11,10 +11,38 @@ namespace ControlzEx.Behaviors
     using System.Windows.Interop;
     using System.Windows.Threading;
     using ControlzEx;
+    using ControlzEx.Internal;
     using ControlzEx.Internal.KnownBoxes;
     using ControlzEx.Native;
-    using ControlzEx.Standard;
+    using global::Windows.Win32;
+    using global::Windows.Win32.Foundation;
+    using global::Windows.Win32.Graphics.Dwm;
+    using global::Windows.Win32.Graphics.Gdi;
+    using global::Windows.Win32.UI.WindowsAndMessaging;
     using Microsoft.Xaml.Behaviors;
+
+    public enum WindowCornerPreference
+    {
+        /// <summary>
+        /// Use the windows default.
+        /// </summary>
+        Default = DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_DEFAULT,
+
+        /// <summary>
+        /// Do NOT round window corners.
+        /// </summary>
+        DoNotRound = DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_DONOTROUND,
+
+        /// <summary>
+        /// Round window corners.
+        /// </summary>
+        Round = DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUND,
+
+        /// <summary>
+        /// Round window corners with small radius.
+        /// </summary>
+        RoundSmall = DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUNDSMALL,
+    }
 
     /// <summary>
     /// With this class we can make custom window styles.
@@ -26,7 +54,7 @@ namespace ControlzEx.Behaviors
         ///   Critical : Critical member
         /// </SecurityNote>
         [SecurityCritical]
-        private IntPtr windowHandle;
+        private HWND windowHandle;
 
         /// <summary>Underlying HWND for the _window.</summary>
         /// <SecurityNote>
@@ -141,11 +169,11 @@ namespace ControlzEx.Behaviors
 
             if (isVisible)
             {
-                this._ModifyStyle(0, WS.MINIMIZEBOX);
+                this._ModifyStyle(0, WINDOW_STYLE.WS_MINIMIZEBOX);
             }
             else
             {
-                this._ModifyStyle(WS.MINIMIZEBOX, 0);
+                this._ModifyStyle(WINDOW_STYLE.WS_MINIMIZEBOX, 0);
             }
 
             this._UpdateSystemMenu(this.AssociatedObject?.WindowState);
@@ -186,11 +214,11 @@ namespace ControlzEx.Behaviors
 
             if (isVisible)
             {
-                this._ModifyStyle(0, WS.MAXIMIZEBOX);
+                this._ModifyStyle(0, WINDOW_STYLE.WS_MAXIMIZEBOX);
             }
             else
             {
-                this._ModifyStyle(WS.MAXIMIZEBOX, 0);
+                this._ModifyStyle(WINDOW_STYLE.WS_MAXIMIZEBOX, 0);
             }
 
             this._UpdateSystemMenu(this.AssociatedObject?.WindowState);
@@ -206,11 +234,11 @@ namespace ControlzEx.Behaviors
         }
 
         public static readonly DependencyProperty CornerPreferenceProperty = 
-            DependencyProperty.Register(nameof(CornerPreference), typeof(DWM_WINDOW_CORNER_PREFERENCE), typeof(WindowChromeBehavior), new PropertyMetadata(DWM_WINDOW_CORNER_PREFERENCE.DEFAULT, OnCornerPreferenceChanged));
+            DependencyProperty.Register(nameof(CornerPreference), typeof(WindowCornerPreference), typeof(WindowChromeBehavior), new PropertyMetadata(WindowCornerPreference.Default, OnCornerPreferenceChanged));
 
-        public DWM_WINDOW_CORNER_PREFERENCE CornerPreference
+        public WindowCornerPreference CornerPreference
         {
-            get => (DWM_WINDOW_CORNER_PREFERENCE)this.GetValue(CornerPreferenceProperty);
+            get => (WindowCornerPreference)this.GetValue(CornerPreferenceProperty);
             set => this.SetValue(CornerPreferenceProperty, value);
         }
 
@@ -218,7 +246,7 @@ namespace ControlzEx.Behaviors
         {
             var behavior = (WindowChromeBehavior)d;
 
-            behavior.UpdateDWMCornerPreference((DWM_WINDOW_CORNER_PREFERENCE)e.NewValue);
+            behavior.UpdateDWMCornerPreference((WindowCornerPreference)e.NewValue);
         }
 
         /// <inheritdoc />
@@ -254,11 +282,11 @@ namespace ControlzEx.Behaviors
         /// </summary>
         public static Thickness GetDefaultResizeBorderThickness()
         {
-            var dpiX = NativeMethods.GetDeviceCaps(SafeDC.GetDesktop(), DeviceCap.LOGPIXELSX);
-            var dpiY = NativeMethods.GetDeviceCaps(SafeDC.GetDesktop(), DeviceCap.LOGPIXELSY);
-            var xframe = NativeMethods.GetSystemMetrics(SM.CXFRAME);
-            var yframe = NativeMethods.GetSystemMetrics(SM.CYFRAME);
-            var padding = NativeMethods.GetSystemMetrics(SM.CXPADDEDBORDER);
+            var dpiX = PInvoke.GetDeviceCaps(PInvoke.GetDC(default), GET_DEVICE_CAPS_INDEX.LOGPIXELSX);
+            var dpiY = PInvoke.GetDeviceCaps(PInvoke.GetDC(default), GET_DEVICE_CAPS_INDEX.LOGPIXELSY);
+            var xframe = PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXFRAME);
+            var yframe = PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CYFRAME);
+            var padding = PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXPADDEDBORDER);
             xframe += padding;
             yframe += padding;
             var logical = DpiHelper.DeviceSizeToLogical(new Size(xframe, yframe), dpiX / 96.0, dpiY / 96.0);
@@ -340,7 +368,7 @@ namespace ControlzEx.Behaviors
 
         private void Initialize()
         {
-            this.windowHandle = new WindowInteropHelper(this.AssociatedObject).EnsureHandle();
+            this.windowHandle = new(new WindowInteropHelper(this.AssociatedObject).EnsureHandle());
             this.nonClientControlManager = new NonClientControlManager(this.AssociatedObject);
 
             if (this.windowHandle == IntPtr.Zero)
@@ -410,7 +438,7 @@ namespace ControlzEx.Behaviors
                 return;
             }
 
-            NativeMethods.SetWindowPos(this.windowHandle, IntPtr.Zero, 0, 0, 0, 0, SwpFlags);
+            PInvoke.SetWindowPos(this.windowHandle, default, 0, 0, 0, 0, SwpFlags);
         }
 
         /// <summary>
@@ -426,7 +454,7 @@ namespace ControlzEx.Behaviors
 
                 if (this.windowHandle != IntPtr.Zero)
                 {
-                    monitor = UnsafeNativeMethods.MonitorFromWindow(this.windowHandle, MonitorOptions.MONITOR_DEFAULTTONEAREST);
+                    monitor = PInvoke.MonitorFromWindow(this.windowHandle, MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
                 }
 
                 if (monitor != IntPtr.Zero)
@@ -437,17 +465,17 @@ namespace ControlzEx.Behaviors
                     if (this.KeepBorderOnMaximize
                         && this.savedBorderThickness.HasValue)
                     {
-                        var monitorInfo = NativeMethods.GetMonitorInfo(monitor);
+                        var monitorInfo = PInvoke.GetMonitorInfo(monitor);
                         var monitorRect = this.IgnoreTaskbarOnMaximize ? monitorInfo.rcMonitor : monitorInfo.rcWork;
 
                         // If the maximized window will have a width less than the monitor size, show the right border.
-                        if (this.AssociatedObject.MaxWidth < monitorRect.Width)
+                        if (this.AssociatedObject.MaxWidth < monitorRect.GetWidth())
                         {
                             rightBorderThickness = this.savedBorderThickness.Value.Right;
                         }
 
                         // If the maximized window will have a height less than the monitor size, show the bottom border.
-                        if (this.AssociatedObject.MaxHeight < monitorRect.Height)
+                        if (this.AssociatedObject.MaxHeight < monitorRect.GetHeight())
                         {
                             bottomBorderThickness = this.savedBorderThickness.Value.Bottom;
                         }
@@ -469,6 +497,11 @@ namespace ControlzEx.Behaviors
             this.borderThicknessChangeNotifier.RaiseValueChanged = true;
         }
 
+        private bool UpdateDWMCornerPreference(WindowCornerPreference cornerPreference)
+        {
+            return this.UpdateDWMCornerPreference((DWM_WINDOW_CORNER_PREFERENCE)cornerPreference);
+        }
+
         private bool UpdateDWMCornerPreference(DWM_WINDOW_CORNER_PREFERENCE cornerPreference)
         {
             if (this.windowHandle == IntPtr.Zero)
@@ -476,7 +509,7 @@ namespace ControlzEx.Behaviors
                 return false;
             }
 
-            return DwmHelper.SetWindowAttributeValue(this.windowHandle, DWMWINDOWATTRIBUTE.WINDOW_CORNER_PREFERENCE, (int)cornerPreference);
+            return DwmHelper.SetWindowAttributeValue(this.windowHandle, DWMWINDOWATTRIBUTE.DWMWA_WINDOW_CORNER_PREFERENCE, (int)cornerPreference);
         }
 
         private static void Invoke(DispatcherObject dispatcherObject, Action invokeAction)

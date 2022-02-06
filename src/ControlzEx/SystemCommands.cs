@@ -1,4 +1,4 @@
-﻿namespace ControlzEx.Windows.Shell
+﻿namespace ControlzEx
 {
     using System;
     using System.Security;
@@ -7,8 +7,9 @@
     using System.Windows.Interop;
     using System.Windows.Media;
     using ControlzEx.Internal;
-    using ControlzEx.Native;
-    using ControlzEx.Standard;
+    using global::Windows.Win32;
+    using global::Windows.Win32.Foundation;
+    using global::Windows.Win32.UI.WindowsAndMessaging;
 
     [Obsolete(DesignerConstants.Win32ElementWarning)]
     public static class SystemCommands
@@ -41,34 +42,30 @@
                 return;
             }
 
-            NativeMethods.PostMessage(hwnd, WM.SYSCOMMAND, new IntPtr((int)command), IntPtr.Zero);
+            PInvoke.PostMessage(new HWND(hwnd), WM.SYSCOMMAND, (nuint)command, default);
         }
 
         [SecuritySafeCritical]
         public static void CloseWindow(Window window)
         {
-            Verify.IsNotNull(window, "window");
             PostSystemCommand(window, SC.CLOSE);
         }
 
         [SecuritySafeCritical]
         public static void MaximizeWindow(Window window)
         {
-            Verify.IsNotNull(window, "window");
             PostSystemCommand(window, SC.MAXIMIZE);
         }
 
         [SecuritySafeCritical]
         public static void MinimizeWindow(Window window)
         {
-            Verify.IsNotNull(window, "window");
             PostSystemCommand(window, SC.MINIMIZE);
         }
 
         [SecuritySafeCritical]
         public static void RestoreWindow(Window window)
         {
-            Verify.IsNotNull(window, "window");
             PostSystemCommand(window, SC.RESTORE);
         }
 
@@ -94,8 +91,6 @@
         [SecuritySafeCritical]
         public static void ShowSystemMenu(Visual visual, Point elementPoint)
         {
-            Verify.IsNotNull(visual, "visual");
-
             var screenLocation = visual.PointToScreen(elementPoint);
 
             ShowSystemMenuPhysicalCoordinates(visual, screenLocation);
@@ -111,7 +106,12 @@
         [SecuritySafeCritical]
         public static void ShowSystemMenuPhysicalCoordinates(Visual visual, Point physicalScreenLocation)
         {
-            var hwndSource = (HwndSource)PresentationSource.FromVisual(visual);
+            var hwndSource = (HwndSource?)PresentationSource.FromVisual(visual);
+
+            if (hwndSource is null)
+            {
+                return;
+            }
 
             ShowSystemMenuPhysicalCoordinates(hwndSource, physicalScreenLocation);
         }
@@ -124,10 +124,8 @@
         /// So you have to pass the final coordinates.
         /// </remarks>
         [SecuritySafeCritical]
-        public static void ShowSystemMenuPhysicalCoordinates(HwndSource source, Point physicalScreenLocation)
+        public static unsafe void ShowSystemMenuPhysicalCoordinates(HwndSource source, Point physicalScreenLocation)
         {
-            Verify.IsNotNull(source, "source");
-
             var hwnd = source.Handle;
 
             if (WindowHelper.IsWindowHandleValid(hwnd) == false)
@@ -135,12 +133,13 @@
                 return;
             }
 
-            var hmenu = NativeMethods.GetSystemMenu(hwnd, false);
-            var flags = NativeMethods.GetSystemMetrics(SM.MENUDROPALIGNMENT);
-            var cmd = NativeMethods.TrackPopupMenuEx(hmenu, Constants.TPM_LEFTBUTTON | Constants.TPM_RETURNCMD | (uint)flags, (int)physicalScreenLocation.X, (int)physicalScreenLocation.Y, hwnd, IntPtr.Zero);
-            if (cmd != 0)
+            var hmenu = PInvoke.GetSystemMenu(new HWND(hwnd), false);
+            var flags = PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_MENUDROPALIGNMENT);
+            TPMPARAMS tpmparams;
+            var cmd = PInvoke.TrackPopupMenuEx(hmenu, (uint)(TRACK_POPUP_MENU_FLAGS.TPM_LEFTBUTTON | TRACK_POPUP_MENU_FLAGS.TPM_RETURNCMD | (TRACK_POPUP_MENU_FLAGS)flags), (int)physicalScreenLocation.X, (int)physicalScreenLocation.Y, new(hwnd), &tpmparams);
+            if (cmd == true)
             {
-                NativeMethods.PostMessage(hwnd, WM.SYSCOMMAND, new IntPtr(cmd), IntPtr.Zero);
+                PInvoke.PostMessage(hwnd, WM.SYSCOMMAND, (nuint)cmd.Value, default);
             }
         }
     }

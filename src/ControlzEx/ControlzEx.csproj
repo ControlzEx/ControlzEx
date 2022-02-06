@@ -32,14 +32,6 @@
       </None>
     </ItemGroup>
 
-    <!-- Sign assembly -->
-    <PropertyGroup>
-        <SignAssembly>True</SignAssembly>
-        <AssemblyOriginatorKeyFile>$(MSBuildProjectDirectory)\..\SharedKey.snk</AssemblyOriginatorKeyFile>
-        <DelaySign>false</DelaySign>
-        <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
-    </PropertyGroup>
-
     <ItemGroup>
         <Compile DependentUpon="%(Filename)" SubType="Code" Update="**\obj\**\*.g$(DefaultLanguageSourceExtension)" />
         <Compile DependentUpon="%(Filename)" SubType="Designer" Update="**\*.xaml$(DefaultLanguageSourceExtension)" />
@@ -59,8 +51,10 @@
     <!-- reference includes -->
     <ItemGroup>
         <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" IncludeAssets="build; native" />
-    </ItemGroup>
-    <ItemGroup>
-      <Folder Include="Internal\KnownBoxes" />
+
+        <PackageReference Include="Microsoft.Windows.CsWin32">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
 </Project>

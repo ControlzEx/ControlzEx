@@ -1,8 +1,6 @@
-﻿#nullable enable
-namespace ControlzEx.Internal
+﻿namespace ControlzEx.Internal
 {
     using System.Windows;
-    using JetBrains.Annotations;
 
     public static class ResourceDictionaryHelper
     {
