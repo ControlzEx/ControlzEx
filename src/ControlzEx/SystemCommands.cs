@@ -1,6 +1,7 @@
 ﻿namespace ControlzEx
 {
     using System;
+    using System.Runtime.InteropServices;
     using System.Security;
     using System.Windows;
     using System.Windows.Input;
@@ -135,9 +136,12 @@
 
             var hmenu = PInvoke.GetSystemMenu(new HWND(hwnd), false);
             var flags = PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_MENUDROPALIGNMENT);
-            TPMPARAMS tpmparams;
+            var tpmparams = new TPMPARAMS
+            {
+                cbSize = (uint)Marshal.SizeOf<TPMPARAMS>()
+            };
             var cmd = PInvoke.TrackPopupMenuEx(hmenu, (uint)(TRACK_POPUP_MENU_FLAGS.TPM_LEFTBUTTON | TRACK_POPUP_MENU_FLAGS.TPM_RETURNCMD | (TRACK_POPUP_MENU_FLAGS)flags), (int)physicalScreenLocation.X, (int)physicalScreenLocation.Y, new(hwnd), &tpmparams);
-            if (cmd == true)
+            if (cmd.Value != 0)
             {
                 PInvoke.PostMessage(hwnd, WM.SYSCOMMAND, (nuint)cmd.Value, default);
             }
