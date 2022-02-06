@@ -7,8 +7,6 @@ namespace ControlzEx
     using System.Windows.Media;
     using ControlzEx.Behaviors;
     using ControlzEx.Internal.KnownBoxes;
-    using ControlzEx.Standard;
-    using ControlzEx.Theming;
     using Microsoft.Xaml.Behaviors;
 
     public class WindowChromeWindow : Window
@@ -244,12 +242,12 @@ namespace ControlzEx
 
 #pragma warning disable WPF0010
         public static readonly DependencyProperty CornerPreferenceProperty = DependencyProperty.Register(
-            nameof(CornerPreference), typeof(DWM_WINDOW_CORNER_PREFERENCE), typeof(WindowChromeWindow), new PropertyMetadata(WindowChromeBehavior.CornerPreferenceProperty.DefaultMetadata.DefaultValue));
+            nameof(CornerPreference), typeof(WindowCornerPreference), typeof(WindowChromeWindow), new PropertyMetadata(WindowChromeBehavior.CornerPreferenceProperty.DefaultMetadata.DefaultValue));
 #pragma warning restore WPF0010
 
-        public DWM_WINDOW_CORNER_PREFERENCE CornerPreference
+        public WindowCornerPreference CornerPreference
         {
-            get => (DWM_WINDOW_CORNER_PREFERENCE)this.GetValue(CornerPreferenceProperty);
+            get => (WindowCornerPreference)this.GetValue(CornerPreferenceProperty);
             set => this.SetValue(CornerPreferenceProperty, value);
         }
     }

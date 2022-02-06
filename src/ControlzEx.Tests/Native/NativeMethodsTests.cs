@@ -1,6 +1,7 @@
 ﻿namespace ControlzEx.Tests.Native
 {
-    using ControlzEx.Standard;
+    using global::Windows.Win32;
+    using global::Windows.Win32.Graphics.Gdi;
     using NUnit.Framework;
 
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -10,17 +11,17 @@
         [Test]
         public void GetMonitorInfoShouldReturnValidData()
         {
-            var cursorPos = NativeMethods.GetCursorPos();
+            var cursorPos = PInvoke.GetCursorPos();
 
-            var monitor = NativeMethods.MonitorFromPoint(cursorPos, MonitorOptions.MONITOR_DEFAULTTONEAREST);
+            var monitor = PInvoke.MonitorFromPoint(cursorPos, MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
 
-            var monitorInfo = NativeMethods.GetMonitorInfo(monitor);
+            var monitorInfo = PInvoke.GetMonitorInfo(monitor);
 
-            Assert.That(monitorInfo.rcMonitor.Width, Is.GreaterThan(0));
-            Assert.That(monitorInfo.rcMonitor.Height, Is.GreaterThan(0));
+            Assert.That(monitorInfo.rcMonitor.GetWidth(), Is.GreaterThan(0));
+            Assert.That(monitorInfo.rcMonitor.GetHeight(), Is.GreaterThan(0));
 
-            Assert.That(monitorInfo.rcWork.Width, Is.GreaterThan(0));
-            Assert.That(monitorInfo.rcWork.Width, Is.GreaterThan(0));
+            Assert.That(monitorInfo.rcWork.GetWidth(), Is.GreaterThan(0));
+            Assert.That(monitorInfo.rcWork.GetHeight(), Is.GreaterThan(0));
         }
     }
 }

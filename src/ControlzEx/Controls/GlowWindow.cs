@@ -15,7 +15,10 @@ namespace ControlzEx.Controls.Internal
     using ControlzEx.Behaviors;
     using ControlzEx.Helpers;
     using ControlzEx.Native;
-    using ControlzEx.Standard;
+    using global::Windows.Win32;
+    using global::Windows.Win32.Foundation;
+    using global::Windows.Win32.Graphics.Gdi;
+    using global::Windows.Win32.UI.WindowsAndMessaging;
     using JetBrains.Annotations;
 
 #pragma warning disable 618, SA1602, SA1401
@@ -27,7 +30,7 @@ namespace ControlzEx.Controls.Internal
 
         private bool isHandleCreationAllowed = true;
 
-        private WndProc? wndProc;
+        private WNDPROC? wndProc;
 
         public abstract string ClassName { get; }
 
@@ -57,34 +60,37 @@ namespace ControlzEx.Controls.Internal
         {
             if (this.WindowClassAtom != 0)
             {
-                var moduleHandle = NativeMethods.GetModuleHandle(null);
-                NativeMethods.UnregisterClass(this.WindowClassAtom, moduleHandle);
+                var moduleHandle = PInvoke.GetModuleHandle((string?)null);
+                PInvoke.UnregisterClass(this.ClassName, moduleHandle);
                 this.WindowClassAtom = 0;
             }
         }
 
         [CLSCompliant(false)]
-        protected ushort RegisterClass(string className)
+        protected unsafe ushort RegisterClass(string className)
         {
-            this.wndProc = new WndProc(this.WndProc);
+            this.wndProc = this.WndProcWrapper;
 
-            var lpWndClass = new WNDCLASSEX
+            fixed (char* cls = className)
             {
-                cbSize = Marshal.SizeOf(typeof(WNDCLASSEX)),
-                hInstance = NativeMethods.GetModuleHandle(null),
-                lpfnWndProc = this.wndProc,
-                lpszClassName = className,
-            };
+                var lpWndClass = new WNDCLASSEXW
+                {
+                    cbSize = (uint)Marshal.SizeOf(typeof(WNDCLASSEXW)),
+                    hInstance = new(PInvoke.GetModuleHandle((string?)null).DangerousGetHandle()),
+                    lpfnWndProc = this.wndProc,
+                    lpszClassName = cls,
+                };
 
-            var atom = NativeMethods.RegisterClassEx(ref lpWndClass);
+                var atom = PInvoke.RegisterClassEx(lpWndClass);
 
-            return atom;
+                return atom;
+            }
         }
 
         private void SubclassWndProc()
         {
-            this.wndProc = new WndProc(this.WndProc);
-            NativeMethods.SetWindowLongPtr(this.handle, GWL.WNDPROC, Marshal.GetFunctionPointerForDelegate(this.wndProc));
+            this.wndProc = this.WndProcWrapper;
+            PInvoke.SetWindowLongPtr(new HWND(this.handle), WINDOW_LONG_PTR_INDEX.GWL_WNDPROC, Marshal.GetFunctionPointerForDelegate(this.wndProc));
         }
 
         protected abstract IntPtr CreateWindowCore();
@@ -93,18 +99,24 @@ namespace ControlzEx.Controls.Internal
         {
             if (this.handle != IntPtr.Zero)
             {
-                if (NativeMethods.DestroyWindow(this.handle) == false)
+                if (PInvoke.DestroyWindow(new HWND(this.handle)) == false)
                 {
                     LastDestroyWindowError = Marshal.GetLastWin32Error();
                 }
 
-                this.handle = IntPtr.Zero;
+                this.handle = default;
             }
         }
 
-        protected virtual IntPtr WndProc(IntPtr hwnd, WM message, IntPtr wParam, IntPtr lParam)
+        private LRESULT WndProcWrapper(HWND hwnd, uint msg, WPARAM wParam, LPARAM lParam)
         {
-            return NativeMethods.DefWindowProc(hwnd, message, wParam, lParam);
+            return new LRESULT(this.WndProc(hwnd, msg, wParam, lParam));
+        }
+
+        [CLSCompliant(false)]
+        protected virtual nint WndProc(nint hwnd, uint msg, nuint wParam, nint lParam)
+        {
+            return PInvoke.DefWindowProc(new HWND(hwnd), msg, wParam, lParam);
         }
 
         public IntPtr EnsureHandle()
@@ -244,11 +256,11 @@ namespace ControlzEx.Controls.Internal
 
         private static readonly Dictionary<CachedBitmapInfoKey, CachedBitmapInfo?[]> transparencyMasks = new();
 
-        private readonly IntPtr pbits;
+        private IntPtr pbits;
 
         private readonly BITMAPINFO bitmapInfo;
 
-        public SafeHBITMAP Handle { get; }
+        public SafeHandle Handle { get; }
 
         public IntPtr DiBits => this.pbits;
 
@@ -256,9 +268,9 @@ namespace ControlzEx.Controls.Internal
 
         public int Height => -this.bitmapInfo.bmiHeader.biHeight;
 
-        public GlowBitmap(SafeDC hdcScreen, int width, int height)
+        public unsafe GlowBitmap(SafeHandle hdcScreen, int width, int height)
         {
-            this.bitmapInfo.bmiHeader.biSize = Marshal.SizeOf(typeof(BITMAPINFOHEADER));
+            this.bitmapInfo.bmiHeader.biSize = (uint)Marshal.SizeOf(typeof(BITMAPINFOHEADER));
             this.bitmapInfo.bmiHeader.biPlanes = 1;
             this.bitmapInfo.bmiHeader.biBitCount = 32;
             this.bitmapInfo.bmiHeader.biCompression = 0;
@@ -266,7 +278,12 @@ namespace ControlzEx.Controls.Internal
             this.bitmapInfo.bmiHeader.biYPelsPerMeter = 0;
             this.bitmapInfo.bmiHeader.biWidth = width;
             this.bitmapInfo.bmiHeader.biHeight = -height;
-            this.Handle = NativeMethods.CreateDIBSection(hdcScreen, ref this.bitmapInfo, out this.pbits, IntPtr.Zero, 0);
+
+            fixed (BITMAPINFO* pbitmapinfo = &this.bitmapInfo)
+            {
+                this.Handle = new DeleteObjectSafeHandle(PInvoke.CreateDIBSection(new HDC(hdcScreen.DangerousGetHandle()), pbitmapinfo, DIB_USAGE.DIB_RGB_COLORS, out var bits, default, 0));
+                this.pbits = bits;
+            }
         }
 
         protected override void DisposeNativeResources()
@@ -393,7 +410,7 @@ namespace ControlzEx.Controls.Internal
 
     public sealed class GlowDrawingContext : DisposableObject
     {
-        public BLENDFUNCTION Blend;
+        internal BLENDFUNCTION Blend;
 
         private readonly GlowBitmap? windowBitmap;
 
@@ -424,17 +441,17 @@ namespace ControlzEx.Controls.Internal
             }
         }
 
-        public SafeDC? ScreenDc { get; private set; }
+        public SafeHandle? ScreenDc { get; private set; }
 
-        public SafeDC? WindowDc { get; }
+        public SafeHandle? WindowDc { get; }
 
-        public SafeDC? BackgroundDc { get; }
+        public SafeHandle? BackgroundDc { get; }
 
         public int Width => this.windowBitmap?.Width ?? 0;
 
         public int Height => this.windowBitmap?.Height ?? 0;
 
-        private static SafeDC? desktopDC;
+        private static SafeHandle? desktopDC;
 
         public GlowDrawingContext(int width, int height)
         {
@@ -447,7 +464,7 @@ namespace ControlzEx.Controls.Internal
 
             try
             {
-                this.WindowDc = SafeDC.CreateCompatibleDC(this.ScreenDc);
+                this.WindowDc = PInvoke.CreateCompatibleDC(this.ScreenDc);
             }
             catch
             {
@@ -455,7 +472,7 @@ namespace ControlzEx.Controls.Internal
                 desktopDC = null;
                 this.SetupDesktopDC();
 
-                this.WindowDc = SafeDC.CreateCompatibleDC(this.ScreenDc);
+                this.WindowDc = PInvoke.CreateCompatibleDC(this.ScreenDc);
             }
 
             if (this.WindowDc.DangerousGetHandle() == IntPtr.Zero)
@@ -463,7 +480,7 @@ namespace ControlzEx.Controls.Internal
                 return;
             }
 
-            this.BackgroundDc = SafeDC.CreateCompatibleDC(this.ScreenDc);
+            this.BackgroundDc = PInvoke.CreateCompatibleDC(this.ScreenDc);
 
             if (this.BackgroundDc.DangerousGetHandle() == IntPtr.Zero)
             {
@@ -473,14 +490,14 @@ namespace ControlzEx.Controls.Internal
             this.Blend.BlendOp = 0;
             this.Blend.BlendFlags = 0;
             this.Blend.SourceConstantAlpha = byte.MaxValue;
-            this.Blend.AlphaFormat = AC.SRC_ALPHA;
+            this.Blend.AlphaFormat = 0x01; // AC_SRC_ALPHA;
             this.windowBitmap = new GlowBitmap(this.ScreenDc, width, height);
-            NativeMethods.SelectObject(this.WindowDc, this.windowBitmap.Handle);
+            PInvoke.SelectObject(this.WindowDc, this.windowBitmap.Handle);
         }
 
         private void SetupDesktopDC()
         {
-            desktopDC ??= SafeDC.GetDesktop();
+            desktopDC ??= new DeleteDCSafeHandle(PInvoke.GetDC(default));
 
             this.ScreenDc = desktopDC;
             if (this.ScreenDc.DangerousGetHandle() == IntPtr.Zero)
@@ -534,7 +551,7 @@ namespace ControlzEx.Controls.Internal
         // Member to keep reference alive
         // ReSharper disable NotAccessedField.Local
 #pragma warning disable IDE0052 // Remove unread private members
-        private static WndProc? sharedWndProc;
+        private static WNDPROC? sharedWndProc;
 #pragma warning restore IDE0052 // Remove unread private members
         // ReSharper restore NotAccessedField.Local
 
@@ -565,29 +582,32 @@ namespace ControlzEx.Controls.Internal
         private string title;
 
 #pragma warning disable SA1310
-        private static readonly IntPtr SW_PARENTCLOSING = new IntPtr(1);
-        private static readonly IntPtr SW_PARENTOPENING = new IntPtr(3);
+        private static readonly LPARAM SW_PARENTCLOSING = new(1);
+        private static readonly LPARAM SW_PARENTOPENING = new(3);
 #pragma warning restore SA1310
 
         private bool IsDeferringChanges => this.behavior.DeferGlowChangesCount > 0;
 
-        private ushort SharedWindowClassAtom
+        private unsafe ushort SharedWindowClassAtom
         {
             get
             {
                 if (sharedWindowClassAtom == 0)
                 {
-                    sharedWndProc ??= new WndProc(NativeMethods.DefWindowProc);
+                    sharedWndProc ??= PInvoke.DefWindowProc;
 
-                    var lpWndClass = new WNDCLASSEX
+                    fixed (char* cls = this.ClassName)
                     {
-                        cbSize = Marshal.SizeOf(typeof(WNDCLASSEX)),
-                        hInstance = NativeMethods.GetModuleHandle(null),
-                        lpfnWndProc = sharedWndProc,
-                        lpszClassName = this.ClassName,
-                    };
+                        var lpWndClass = new WNDCLASSEXW
+                        {
+                            cbSize = (uint)Marshal.SizeOf(typeof(WNDCLASSEXW)),
+                            hInstance = new(PInvoke.GetModuleHandle((string?)null).DangerousGetHandle()),
+                            lpfnWndProc = sharedWndProc,
+                            lpszClassName = cls,
+                        };
 
-                    sharedWindowClassAtom = NativeMethods.RegisterClassEx(ref lpWndClass);
+                        sharedWindowClassAtom = PInvoke.RegisterClassEx(lpWndClass);
+                    }
                 }
 
                 return sharedWindowClassAtom;
@@ -656,7 +676,7 @@ namespace ControlzEx.Controls.Internal
             set => this.UpdateProperty(ref this.inactiveGlowColor, value, FieldInvalidationTypes.InactiveColor | FieldInvalidationTypes.Render);
         }
 
-        private IntPtr TargetWindowHandle { get; }
+        private HWND TargetWindowHandle { get; }
 
         protected override bool IsWindowSubClassed => true;
 
@@ -668,10 +688,10 @@ namespace ControlzEx.Controls.Internal
             this.behavior = behavior ?? throw new ArgumentNullException(nameof(behavior));
             this.orientation = orientation;
 
-            this.TargetWindowHandle = new WindowInteropHelper(this.targetWindow).EnsureHandle();
+            this.TargetWindowHandle = new(new WindowInteropHelper(this.targetWindow).EnsureHandle());
 
             if (this.TargetWindowHandle == IntPtr.Zero
-                || NativeMethods.IsWindow(this.TargetWindowHandle) == false)
+                || PInvoke.IsWindow(this.TargetWindowHandle) == false)
             {
                 throw new Exception($"TargetWindowHandle {this.TargetWindowHandle} must be a window.");
             }
@@ -706,18 +726,19 @@ namespace ControlzEx.Controls.Internal
             // Do nothing here as we registered a shared class/atom
         }
 
-        protected override IntPtr CreateWindowCore()
+        protected override unsafe IntPtr CreateWindowCore()
         {
-            const WS_EX EX_STYLE = WS_EX.TOOLWINDOW | WS_EX.LAYERED;
-            const WS STYLE = WS.POPUP | WS.CLIPSIBLINGS | WS.CLIPCHILDREN;
+            const WINDOW_EX_STYLE EX_STYLE = WINDOW_EX_STYLE.WS_EX_TOOLWINDOW | WINDOW_EX_STYLE.WS_EX_LAYERED;
+            const WINDOW_STYLE STYLE = WINDOW_STYLE.WS_POPUP | WINDOW_STYLE.WS_CLIPSIBLINGS | WINDOW_STYLE.WS_CLIPCHILDREN;
 
-            var windowHandle = NativeMethods.CreateWindowEx(EX_STYLE, this.ClassName, this.title, STYLE, 0, 0, 0, 0, this.TargetWindowHandle, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
+            var windowHandle = PInvoke.CreateWindowEx(EX_STYLE, this.ClassName, this.title, STYLE, 0, 0, 0, 0, this.TargetWindowHandle, null, null, null);
 
             return windowHandle;
         }
 
-        protected override IntPtr WndProc(IntPtr hwnd, WM message, IntPtr wParam, IntPtr lParam)
+        protected override nint WndProc(nint hwnd, uint msg, nuint wParam, nint lParam)
         {
+            var message = (WM)msg;
             //System.Diagnostics.Trace.WriteLine($"{DateTime.Now} {hwnd} {message} {wParam} {lParam}");
 
             switch (message)
@@ -727,7 +748,7 @@ namespace ControlzEx.Controls.Internal
                     break;
 
                 case WM.NCHITTEST:
-                    return new IntPtr((int)this.WmNcHitTest(lParam));
+                    return (nint)this.WmNcHitTest(lParam);
 
                 case WM.NCLBUTTONDOWN:
                 case WM.NCLBUTTONDBLCLK:
@@ -738,38 +759,38 @@ namespace ControlzEx.Controls.Internal
                 case WM.NCXBUTTONDOWN:
                 case WM.NCXBUTTONDBLCLK:
                 {
-                    NativeMethods.SendMessage(this.TargetWindowHandle, message, wParam, IntPtr.Zero);
-                    return IntPtr.Zero;
+                    PInvoke.SendMessage(this.TargetWindowHandle, (uint)message, wParam, IntPtr.Zero);
+                    return default;
                 }
 
                 case WM.WINDOWPOSCHANGED:
                 case WM.WINDOWPOSCHANGING:
                 {
                     var windowpos = Marshal.PtrToStructure<WINDOWPOS>(lParam);
-                    windowpos.flags |= SWP.NOACTIVATE;
+                    windowpos.flags |= SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE;
                     Marshal.StructureToPtr(windowpos, lParam, true);
                     break;
                 }
 
                 case WM.SETFOCUS:
                     // Move focus back as we don't want to get focused
-                    NativeMethods.SetFocus(wParam);
-                    return IntPtr.Zero;
+                    PInvoke.SetFocus(new HWND((nint)wParam));
+                    return default;
 
                 case WM.ACTIVATE:
-                    return IntPtr.Zero;
+                    return default;
 
                 case WM.NCACTIVATE:
-                    NativeMethods.SendMessage(this.TargetWindowHandle, message, wParam, lParam);
+                    PInvoke.SendMessage(this.TargetWindowHandle, (uint)message, wParam, lParam);
                     // We have to return true according to https://docs.microsoft.com/en-us/windows/win32/winmsg/wm-ncactivate
                     // If we don't do that here the owner window can't be activated.
-                    return new IntPtr(1);
+                    return 1;
 
                 case WM.MOUSEACTIVATE:
                     // WA_CLICKACTIVE = 2
-                    NativeMethods.SendMessage(this.TargetWindowHandle, WM.ACTIVATE, new IntPtr(2), IntPtr.Zero);
+                    PInvoke.SendMessage(this.TargetWindowHandle, (uint)WM.ACTIVATE, new(2), IntPtr.Zero);
 
-                    return new IntPtr(3) /* MA_NOACTIVATE */;
+                    return 3 /* MA_NOACTIVATE */;
 
                 case WM.DISPLAYCHANGE:
                 {
@@ -786,36 +807,37 @@ namespace ControlzEx.Controls.Internal
                     // Prevent glow from getting visible before the owner/parent is visible
                     if (lParam == SW_PARENTOPENING)
                     {
-                        return IntPtr.Zero;
+                        return default;
                     }
 
                     break;
                 }
             }
 
-            return base.WndProc(hwnd, message, wParam, lParam);
+            return base.WndProc(hwnd, msg, wParam, lParam);
         }
 
-        private HT WmNcHitTest(IntPtr lParam)
+        private unsafe HT WmNcHitTest(IntPtr lParam)
         {
             if (this.IsDisposed)
             {
                 return HT.NOWHERE;
             }
 
-            var xLParam = Utility.GET_X_LPARAM(lParam);
-            var yLParam = Utility.GET_Y_LPARAM(lParam);
-            var lpRect = NativeMethods.GetWindowRect(this.Handle);
+            var xLParam = PInvoke.GetXLParam(lParam.ToInt32());
+            var yLParam = PInvoke.GetYLParam(lParam.ToInt32());
+            RECT lpRect = default;
+            PInvoke.GetWindowRect(new HWND(this.Handle), &lpRect);
 
             switch (this.orientation)
             {
                 case Dock.Left:
-                    if (yLParam - this.cornerGripThickness < lpRect.Top)
+                    if (yLParam - this.cornerGripThickness < lpRect.top)
                     {
                         return HT.TOPLEFT;
                     }
 
-                    if (yLParam + this.cornerGripThickness > lpRect.Bottom)
+                    if (yLParam + this.cornerGripThickness > lpRect.bottom)
                     {
                         return HT.BOTTOMLEFT;
                     }
@@ -823,12 +845,12 @@ namespace ControlzEx.Controls.Internal
                     return HT.LEFT;
 
                 case Dock.Right:
-                    if (yLParam - this.cornerGripThickness < lpRect.Top)
+                    if (yLParam - this.cornerGripThickness < lpRect.top)
                     {
                         return HT.TOPRIGHT;
                     }
 
-                    if (yLParam + this.cornerGripThickness > lpRect.Bottom)
+                    if (yLParam + this.cornerGripThickness > lpRect.bottom)
                     {
                         return HT.BOTTOMRIGHT;
                     }
@@ -836,12 +858,12 @@ namespace ControlzEx.Controls.Internal
                     return HT.RIGHT;
 
                 case Dock.Top:
-                    if (xLParam - this.cornerGripThickness < lpRect.Left)
+                    if (xLParam - this.cornerGripThickness < lpRect.left)
                     {
                         return HT.TOPLEFT;
                     }
 
-                    if (xLParam + this.cornerGripThickness > lpRect.Right)
+                    if (xLParam + this.cornerGripThickness > lpRect.right)
                     {
                         return HT.TOPRIGHT;
                     }
@@ -849,12 +871,12 @@ namespace ControlzEx.Controls.Internal
                     return HT.TOP;
 
                 default:
-                    if (xLParam - this.cornerGripThickness < lpRect.Left)
+                    if (xLParam - this.cornerGripThickness < lpRect.left)
                     {
                         return HT.BOTTOMLEFT;
                     }
 
-                    if (xLParam + this.cornerGripThickness > lpRect.Right)
+                    if (xLParam + this.cornerGripThickness > lpRect.right)
                     {
                         return HT.BOTTOMRIGHT;
                     }
@@ -900,31 +922,31 @@ namespace ControlzEx.Controls.Internal
 
             if (this.InvalidatedValuesHasFlag(FieldInvalidationTypes.Location | FieldInvalidationTypes.Size | FieldInvalidationTypes.Visibility))
             {
-                var flags = SWP.NOZORDER | SWP.NOACTIVATE | SWP.NOOWNERZORDER;
+                var flags = SET_WINDOW_POS_FLAGS.SWP_NOZORDER | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE | SET_WINDOW_POS_FLAGS.SWP_NOOWNERZORDER;
                 if (this.InvalidatedValuesHasFlag(FieldInvalidationTypes.Visibility))
                 {
                     flags = this.IsVisible
-                        ? flags | SWP.SHOWWINDOW
-                        : flags | SWP.HIDEWINDOW | SWP.NOMOVE | SWP.NOSIZE;
+                        ? flags | SET_WINDOW_POS_FLAGS.SWP_SHOWWINDOW
+                        : flags | SET_WINDOW_POS_FLAGS.SWP_HIDEWINDOW | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOSIZE;
                 }
 
                 if (this.InvalidatedValuesHasFlag(FieldInvalidationTypes.Location) == false)
                 {
-                    flags |= SWP.NOMOVE;
+                    flags |= SET_WINDOW_POS_FLAGS.SWP_NOMOVE;
                 }
 
                 if (this.InvalidatedValuesHasFlag(FieldInvalidationTypes.Size) == false)
                 {
-                    flags |= SWP.NOSIZE;
+                    flags |= SET_WINDOW_POS_FLAGS.SWP_NOSIZE;
                 }
 
                 if (windowPosInfo == IntPtr.Zero)
                 {
-                    NativeMethods.SetWindowPos(this.Handle, IntPtr.Zero, this.Left, this.Top, this.Width, this.Height, flags);
+                    PInvoke.SetWindowPos(new HWND(this.Handle), default, this.Left, this.Top, this.Width, this.Height, flags);
                 }
                 else
                 {
-                    NativeMethods.DeferWindowPos(windowPosInfo, this.Handle, IntPtr.Zero, this.Left, this.Top, this.Width, this.Height, flags);
+                    PInvoke.DeferWindowPos(windowPosInfo, new HWND(this.Handle), default, this.Left, this.Top, this.Width, this.Height, flags);
                 }
             }
         }
@@ -975,7 +997,7 @@ namespace ControlzEx.Controls.Internal
             }
         }
 
-        private void RenderLayeredWindow()
+        private unsafe void RenderLayeredWindow()
         {
             if (this.IsDisposed
                 || this.Width == 0
@@ -1008,11 +1030,14 @@ namespace ControlzEx.Controls.Internal
                     throw new ArgumentOutOfRangeException(nameof(this.orientation), this.orientation, null);
             }
 
-            var pptDest = new POINT(this.Left, this.Top);
-            var psize = new SIZE(this.Width, this.Height);
-            var pptSrc = new POINT(0, 0);
+            var pptDest = new POINT { x = this.Left, y = this.Top };
+            var psize = new SIZE { cx = this.Width, cy = this.Height };
+            var pptSrc = new POINT { x = 0, y = 0 };
 
-            NativeMethods.UpdateLayeredWindow(this.Handle, glowDrawingContext.ScreenDc, ref pptDest, ref psize, glowDrawingContext.WindowDc, ref pptSrc, 0, ref glowDrawingContext.Blend, ULW.ALPHA);
+            fixed (BLENDFUNCTION* blend = &glowDrawingContext.Blend)
+            {
+                PInvoke.UpdateLayeredWindow(new HWND(this.Handle), new HDC(glowDrawingContext.ScreenDc.DangerousGetHandle()), &pptDest, &psize, new HDC(glowDrawingContext.WindowDc.DangerousGetHandle()), &pptSrc, 0, blend, UPDATE_LAYERED_WINDOW_FLAGS.ULW_ALPHA);
+            }
         }
 
         private GlowBitmap? GetOrCreateBitmap(GlowDrawingContext drawingContext, GlowBitmapPart bitmapPart)
@@ -1077,21 +1102,21 @@ namespace ControlzEx.Controls.Internal
             var num3 = num2 - leftBottomBitmap.Height;
             var num4 = num3 - num;
 
-            NativeMethods.SelectObject(drawingContext.BackgroundDc, cornerTopLeftBitmap.Handle);
-            NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), 0, 0, cornerTopLeftBitmap.Width, cornerTopLeftBitmap.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, cornerTopLeftBitmap.Width, cornerTopLeftBitmap.Height, drawingContext.Blend);
-            NativeMethods.SelectObject(drawingContext.BackgroundDc, leftTopBitmap.Handle);
-            NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), 0, bitmapHeight, leftTopBitmap.Width, leftTopBitmap.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, leftTopBitmap.Width, leftTopBitmap.Height, drawingContext.Blend);
+            PInvoke.SelectObject(drawingContext.BackgroundDc, cornerTopLeftBitmap.Handle);
+            PInvoke.AlphaBlend(drawingContext.WindowDc, 0, 0, cornerTopLeftBitmap.Width, cornerTopLeftBitmap.Height, drawingContext.BackgroundDc, 0, 0, cornerTopLeftBitmap.Width, cornerTopLeftBitmap.Height, drawingContext.Blend);
+            PInvoke.SelectObject(drawingContext.BackgroundDc, leftTopBitmap.Handle);
+            PInvoke.AlphaBlend(drawingContext.WindowDc, 0, bitmapHeight, leftTopBitmap.Width, leftTopBitmap.Height, drawingContext.BackgroundDc, 0, 0, leftTopBitmap.Width, leftTopBitmap.Height, drawingContext.Blend);
 
             if (num4 > 0)
             {
-                NativeMethods.SelectObject(drawingContext.BackgroundDc, leftBitmap.Handle);
-                NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), 0, num, leftBitmap.Width, num4, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, leftBitmap.Width, leftBitmap.Height, drawingContext.Blend);
+                PInvoke.SelectObject(drawingContext.BackgroundDc, leftBitmap.Handle);
+                PInvoke.AlphaBlend(drawingContext.WindowDc, 0, num, leftBitmap.Width, num4, drawingContext.BackgroundDc, 0, 0, leftBitmap.Width, leftBitmap.Height, drawingContext.Blend);
             }
 
-            NativeMethods.SelectObject(drawingContext.BackgroundDc, leftBottomBitmap.Handle);
-            NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), 0, num3, leftBottomBitmap.Width, leftBottomBitmap.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, leftBottomBitmap.Width, leftBottomBitmap.Height, drawingContext.Blend);
-            NativeMethods.SelectObject(drawingContext.BackgroundDc, cornerBottomLeftBitmap.Handle);
-            NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), 0, num2, cornerBottomLeftBitmap.Width, cornerBottomLeftBitmap.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, cornerBottomLeftBitmap.Width, cornerBottomLeftBitmap.Height, drawingContext.Blend);
+            PInvoke.SelectObject(drawingContext.BackgroundDc, leftBottomBitmap.Handle);
+            PInvoke.AlphaBlend(drawingContext.WindowDc, 0, num3, leftBottomBitmap.Width, leftBottomBitmap.Height, drawingContext.BackgroundDc, 0, 0, leftBottomBitmap.Width, leftBottomBitmap.Height, drawingContext.Blend);
+            PInvoke.SelectObject(drawingContext.BackgroundDc, cornerBottomLeftBitmap.Handle);
+            PInvoke.AlphaBlend(drawingContext.WindowDc, 0, num2, cornerBottomLeftBitmap.Width, cornerBottomLeftBitmap.Height, drawingContext.BackgroundDc, 0, 0, cornerBottomLeftBitmap.Width, cornerBottomLeftBitmap.Height, drawingContext.Blend);
         }
 
         private void DrawRight(GlowDrawingContext drawingContext)
@@ -1115,21 +1140,21 @@ namespace ControlzEx.Controls.Internal
             var num3 = num2 - rightBottomBitmap.Height;
             var num4 = num3 - num;
 
-            NativeMethods.SelectObject(drawingContext.BackgroundDc, cornerTopRightBitmap.Handle);
-            NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), 0, 0, cornerTopRightBitmap.Width, cornerTopRightBitmap.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, cornerTopRightBitmap.Width, cornerTopRightBitmap.Height, drawingContext.Blend);
-            NativeMethods.SelectObject(drawingContext.BackgroundDc, rightTopBitmap.Handle);
-            NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), 0, bitmapHeight, rightTopBitmap.Width, rightTopBitmap.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, rightTopBitmap.Width, rightTopBitmap.Height, drawingContext.Blend);
+            PInvoke.SelectObject(drawingContext.BackgroundDc, cornerTopRightBitmap.Handle);
+            PInvoke.AlphaBlend(drawingContext.WindowDc, 0, 0, cornerTopRightBitmap.Width, cornerTopRightBitmap.Height, drawingContext.BackgroundDc, 0, 0, cornerTopRightBitmap.Width, cornerTopRightBitmap.Height, drawingContext.Blend);
+            PInvoke.SelectObject(drawingContext.BackgroundDc, rightTopBitmap.Handle);
+            PInvoke.AlphaBlend(drawingContext.WindowDc, 0, bitmapHeight, rightTopBitmap.Width, rightTopBitmap.Height, drawingContext.BackgroundDc, 0, 0, rightTopBitmap.Width, rightTopBitmap.Height, drawingContext.Blend);
 
             if (num4 > 0)
             {
-                NativeMethods.SelectObject(drawingContext.BackgroundDc, rightBitmap.Handle);
-                NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), 0, num, rightBitmap.Width, num4, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, rightBitmap.Width, rightBitmap.Height, drawingContext.Blend);
+                PInvoke.SelectObject(drawingContext.BackgroundDc, rightBitmap.Handle);
+                PInvoke.AlphaBlend(drawingContext.WindowDc, 0, num, rightBitmap.Width, num4, drawingContext.BackgroundDc, 0, 0, rightBitmap.Width, rightBitmap.Height, drawingContext.Blend);
             }
 
-            NativeMethods.SelectObject(drawingContext.BackgroundDc, rightBottomBitmap.Handle);
-            NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), 0, num3, rightBottomBitmap.Width, rightBottomBitmap.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, rightBottomBitmap.Width, rightBottomBitmap.Height, drawingContext.Blend);
-            NativeMethods.SelectObject(drawingContext.BackgroundDc, cornerBottomRightBitmap.Handle);
-            NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), 0, num2, cornerBottomRightBitmap.Width, cornerBottomRightBitmap.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, cornerBottomRightBitmap.Width, cornerBottomRightBitmap.Height, drawingContext.Blend);
+            PInvoke.SelectObject(drawingContext.BackgroundDc, rightBottomBitmap.Handle);
+            PInvoke.AlphaBlend(drawingContext.WindowDc, 0, num3, rightBottomBitmap.Width, rightBottomBitmap.Height, drawingContext.BackgroundDc, 0, 0, rightBottomBitmap.Width, rightBottomBitmap.Height, drawingContext.Blend);
+            PInvoke.SelectObject(drawingContext.BackgroundDc, cornerBottomRightBitmap.Handle);
+            PInvoke.AlphaBlend(drawingContext.WindowDc, 0, num2, cornerBottomRightBitmap.Width, cornerBottomRightBitmap.Height, drawingContext.BackgroundDc, 0, 0, cornerBottomRightBitmap.Width, cornerBottomRightBitmap.Height, drawingContext.Blend);
         }
 
         private void DrawTop(GlowDrawingContext drawingContext)
@@ -1150,17 +1175,17 @@ namespace ControlzEx.Controls.Internal
             var num3 = drawingContext.Width - this.GlowDepth - topRightBitmap.Width;
             var num4 = num3 - num2;
 
-            NativeMethods.SelectObject(drawingContext.BackgroundDc, topLeftBitmap.Handle);
-            NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), num, 0, topLeftBitmap.Width, topLeftBitmap.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, topLeftBitmap.Width, topLeftBitmap.Height, drawingContext.Blend);
+            PInvoke.SelectObject(drawingContext.BackgroundDc, topLeftBitmap.Handle);
+            PInvoke.AlphaBlend(drawingContext.WindowDc, num, 0, topLeftBitmap.Width, topLeftBitmap.Height, drawingContext.BackgroundDc, 0, 0, topLeftBitmap.Width, topLeftBitmap.Height, drawingContext.Blend);
 
             if (num4 > 0)
             {
-                NativeMethods.SelectObject(drawingContext.BackgroundDc, topBitmap.Handle);
-                NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), num2, 0, num4, topBitmap.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, topBitmap.Width, topBitmap.Height, drawingContext.Blend);
+                PInvoke.SelectObject(drawingContext.BackgroundDc, topBitmap.Handle);
+                PInvoke.AlphaBlend(drawingContext.WindowDc, num2, 0, num4, topBitmap.Height, drawingContext.BackgroundDc, 0, 0, topBitmap.Width, topBitmap.Height, drawingContext.Blend);
             }
 
-            NativeMethods.SelectObject(drawingContext.BackgroundDc, topRightBitmap.Handle);
-            NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), num3, 0, topRightBitmap.Width, topRightBitmap.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, topRightBitmap.Width, topRightBitmap.Height, drawingContext.Blend);
+            PInvoke.SelectObject(drawingContext.BackgroundDc, topRightBitmap.Handle);
+            PInvoke.AlphaBlend(drawingContext.WindowDc, num3, 0, topRightBitmap.Width, topRightBitmap.Height, drawingContext.BackgroundDc, 0, 0, topRightBitmap.Width, topRightBitmap.Height, drawingContext.Blend);
         }
 
         private void DrawBottom(GlowDrawingContext drawingContext)
@@ -1181,17 +1206,17 @@ namespace ControlzEx.Controls.Internal
             var num3 = drawingContext.Width - this.GlowDepth - bottomRightBitmap.Width;
             var num4 = num3 - num2;
 
-            NativeMethods.SelectObject(drawingContext.BackgroundDc, bottomLeftBitmap.Handle);
-            NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), num, 0, bottomLeftBitmap.Width, bottomLeftBitmap.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, bottomLeftBitmap.Width, bottomLeftBitmap.Height, drawingContext.Blend);
+            PInvoke.SelectObject(drawingContext.BackgroundDc, bottomLeftBitmap.Handle);
+            PInvoke.AlphaBlend(drawingContext.WindowDc, num, 0, bottomLeftBitmap.Width, bottomLeftBitmap.Height, drawingContext.BackgroundDc, 0, 0, bottomLeftBitmap.Width, bottomLeftBitmap.Height, drawingContext.Blend);
 
             if (num4 > 0)
             {
-                NativeMethods.SelectObject(drawingContext.BackgroundDc, bottomBitmap.Handle);
-                NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), num2, 0, num4, bottomBitmap.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, bottomBitmap.Width, bottomBitmap.Height, drawingContext.Blend);
+                PInvoke.SelectObject(drawingContext.BackgroundDc, bottomBitmap.Handle);
+                PInvoke.AlphaBlend(drawingContext.WindowDc, num2, 0, num4, bottomBitmap.Height, drawingContext.BackgroundDc, 0, 0, bottomBitmap.Width, bottomBitmap.Height, drawingContext.Blend);
             }
 
-            NativeMethods.SelectObject(drawingContext.BackgroundDc, bottomRightBitmap.Handle);
-            NativeMethods.AlphaBlend(drawingContext.WindowDc.DangerousGetHandle(), num3, 0, bottomRightBitmap.Width, bottomRightBitmap.Height, drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, bottomRightBitmap.Width, bottomRightBitmap.Height, drawingContext.Blend);
+            PInvoke.SelectObject(drawingContext.BackgroundDc, bottomRightBitmap.Handle);
+            PInvoke.AlphaBlend(drawingContext.WindowDc, num3, 0, bottomRightBitmap.Width, bottomRightBitmap.Height, drawingContext.BackgroundDc, 0, 0, bottomRightBitmap.Width, bottomRightBitmap.Height, drawingContext.Blend);
         }
 
         public void UpdateWindowPos()
@@ -1199,7 +1224,7 @@ namespace ControlzEx.Controls.Internal
             var targetWindowHandle = this.TargetWindowHandle;
 
             if (this.IsVisible == false
-                || NativeMethods.GetMappedClientRect(targetWindowHandle, out var lpRect) == false)
+                || PInvoke.GetMappedClientRect(targetWindowHandle, out var lpRect) == false)
             {
                 return;
             }
@@ -1207,30 +1232,30 @@ namespace ControlzEx.Controls.Internal
             switch (this.orientation)
             {
                 case Dock.Left:
-                    this.Left = lpRect.Left - this.GlowDepth;
-                    this.Top = lpRect.Top - this.GlowDepth;
+                    this.Left = lpRect.left - this.GlowDepth;
+                    this.Top = lpRect.top - this.GlowDepth;
                     this.Width = this.GlowDepth;
-                    this.Height = lpRect.Height + this.GlowDepth + this.GlowDepth;
+                    this.Height = lpRect.GetHeight() + this.GlowDepth + this.GlowDepth;
                     break;
 
                 case Dock.Top:
-                    this.Left = lpRect.Left - this.GlowDepth;
-                    this.Top = lpRect.Top - this.GlowDepth;
-                    this.Width = lpRect.Width + this.GlowDepth + this.GlowDepth;
+                    this.Left = lpRect.left - this.GlowDepth;
+                    this.Top = lpRect.top - this.GlowDepth;
+                    this.Width = lpRect.GetWidth() + this.GlowDepth + this.GlowDepth;
                     this.Height = this.GlowDepth;
                     break;
 
                 case Dock.Right:
-                    this.Left = lpRect.Right;
-                    this.Top = lpRect.Top - this.GlowDepth;
+                    this.Left = lpRect.right;
+                    this.Top = lpRect.top - this.GlowDepth;
                     this.Width = this.GlowDepth;
-                    this.Height = lpRect.Height + this.GlowDepth + this.GlowDepth;
+                    this.Height = lpRect.GetHeight() + this.GlowDepth + this.GlowDepth;
                     break;
 
                 case Dock.Bottom:
-                    this.Left = lpRect.Left - this.GlowDepth;
-                    this.Top = lpRect.Bottom;
-                    this.Width = lpRect.Width + this.GlowDepth + this.GlowDepth;
+                    this.Left = lpRect.left - this.GlowDepth;
+                    this.Top = lpRect.bottom;
+                    this.Width = lpRect.GetWidth() + this.GlowDepth + this.GlowDepth;
                     this.Height = this.GlowDepth;
                     break;
             }

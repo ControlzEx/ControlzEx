@@ -3,7 +3,7 @@ namespace ControlzEx.Theming
 {
     using System;
     using System.Windows.Media;
-    using ControlzEx.Standard;
+    using ControlzEx.Internal;
 
     /// <summary>
     /// This struct represent a Color in HSL (Hue, Saturation, Luminance)

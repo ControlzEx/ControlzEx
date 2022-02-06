@@ -1,4 +1,4 @@
-#pragma warning disable CS0618
+#pragma warning disable CS0618, CA1060, CA1815, CA1008, CA1045, CA1401
 
 namespace ControlzEx.Theming
 {
@@ -7,7 +7,10 @@ namespace ControlzEx.Theming
     using System.Windows;
     using System.Windows.Interop;
     using ControlzEx.Helpers;
-    using ControlzEx.Standard;
+    using ControlzEx.Internal;
+    using global::Windows.Win32;
+    using global::Windows.Win32.Graphics.Dwm;
+    using global::Windows.Win32.UI.Controls;
 
     public static class WindowEffectManager
     {
@@ -41,7 +44,7 @@ namespace ControlzEx.Theming
 
         private static void EnableMicaEffect(IntPtr windowHandle, bool isDarkTheme)
         {
-            DwmHelper.WindowExtendIntoClientArea(windowHandle, new MARGINS(-1, -1, -1, -1));
+            DwmHelper.WindowExtendIntoClientArea(windowHandle, new MARGINS { cxLeftWidth = -1, cyTopHeight = -1, cxRightWidth = -1, cyBottomHeight = -1 });
             //var value = NativeMethods.DwmGetWindowAttribute(windowHandle, DWMWINDOWATTRIBUTE.CAPTION_BUTTON_BOUNDS, out RECT rect, Marshal.SizeOf<RECT>());
 
             var trueValue = 0x01;
@@ -50,20 +53,21 @@ namespace ControlzEx.Theming
             // Set dark mode before applying the material, otherwise you'll get an ugly flash when displaying the window.
             if (isDarkTheme)
             {
-                DwmHelper.SetWindowAttributeValue(windowHandle, DWMWINDOWATTRIBUTE.USE_IMMERSIVE_DARK_MODE, trueValue);
+                DwmHelper.SetWindowAttributeValue(windowHandle, DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE, trueValue);
             }
             else
             {
-                DwmHelper.SetWindowAttributeValue(windowHandle, DWMWINDOWATTRIBUTE.USE_IMMERSIVE_DARK_MODE, falseValue);
+                DwmHelper.SetWindowAttributeValue(windowHandle, DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE, falseValue);
             }
 
-            DwmHelper.SetWindowAttributeValue(windowHandle, DWMWINDOWATTRIBUTE.MICA_EFFECT, trueValue);
+            //MICA_EFFECT = 1029,                   // [set] BOOL, Enables or disables the Mica window effect
+            DwmHelper.SetWindowAttributeValue(windowHandle, (DWMWINDOWATTRIBUTE)1029, trueValue);
         }
 
         private static void SetAccentPolicy(IntPtr windowHandle, bool isWindowActive, bool isDarkTheme)
         {
             //DwmHelper.WindowExtendIntoClientArea(windowHandle, new MARGINS(-1, -1, -1, -1));
-            DwmHelper.WindowExtendIntoClientArea(windowHandle, new MARGINS(0, 0, 0, 1));
+            DwmHelper.WindowExtendIntoClientArea(windowHandle, new MARGINS { cyBottomHeight = 1 });
             //DwmHelper.SetWindowAttributeValue(windowHandle, DWMWINDOWATTRIBUTE.VISIBLE_FRAME_BORDER_THICKNESS, 0);
 
             var accentPolicy = default(AccentPolicy);
@@ -90,8 +94,46 @@ namespace ControlzEx.Theming
                 SizeOfData = accentPolicySize,
                 Data = accentPtr
             };
-            NativeMethods.SetWindowCompositionAttribute(windowHandle, ref data);
+            SetWindowCompositionAttribute(windowHandle, ref data);
             Marshal.FreeHGlobal(accentPtr);
         }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct AccentPolicy
+        {
+            public AccentState AccentState;
+            public int AccentFlags;
+            public uint GradientColor;
+            public int AnimationId;
+        }
+
+        public enum AccentState
+        {
+            ACCENT_DISABLED = 0,
+            ACCENT_ENABLE_GRADIENT = 1,
+            ACCENT_ENABLE_TRANSPARENTGRADIENT = 2,
+            ACCENT_ENABLE_BLURBEHIND = 3,
+            ACCENT_ENABLE_ACRYLICBLURBEHIND = 4, // RS4 1803
+            ACCENT_ENABLE_HOSTBACKDROP = 5, // RS5 1809
+            ACCENT_INVALID_STATE = 6
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct WindowCompositionAttributeData
+        {
+            public WindowCompositionAttribute Attribute;
+            public IntPtr Data;
+            public int SizeOfData;
+        }
+
+        public enum WindowCompositionAttribute
+        {
+            // ...
+            WCA_ACCENT_POLICY = 19
+            // ...
+        }
+
+        [DllImport("user32.dll")]
+        public static extern int SetWindowCompositionAttribute(IntPtr hwnd, ref WindowCompositionAttributeData data);
     }
 }

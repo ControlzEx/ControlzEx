@@ -3,7 +3,7 @@
 namespace ControlzEx.Behaviors
 {
     using System.Windows;
-    using ControlzEx.Standard;
+    using ControlzEx.Native;
 
     public static class NonClientControlProperties
     {

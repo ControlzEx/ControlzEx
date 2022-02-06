@@ -1,9 +1,13 @@
 ﻿#pragma warning disable 1591, 618
-namespace ControlzEx.Standard
+namespace ControlzEx.Internal
 {
     using System;
     using System.Diagnostics;
     using System.Windows;
+    using global::Windows.Win32;
+    using global::Windows.Win32.Foundation;
+    using global::Windows.Win32.Graphics.Gdi;
+    using global::Windows.Win32.UI.WindowsAndMessaging;
 
     internal static class MonitorHelper
     {
@@ -17,46 +21,46 @@ namespace ControlzEx.Standard
                 return rect;
             }
 
-            var monitor = MonitorFromRectOrWindow(new RECT(rect), windowHandle);
+            var monitor = MonitorFromRectOrWindow(rect.ToRECT(), windowHandle);
             if (monitor == IntPtr.Zero)
             {
                 return rect;
             }
 
-            var monitorInfo = NativeMethods.GetMonitorInfo(monitor);
+            var monitorInfo = PInvoke.GetMonitorInfo(monitor);
 
             var workAreaRect = ignoreTaskbar
                 ? monitorInfo.rcMonitor
                 : monitorInfo.rcWork;
 
-            if (rect.Width > workAreaRect.Width)
+            if (rect.Width > workAreaRect.GetWidth())
             {
-                rect.Width = workAreaRect.Width;
+                rect.Width = workAreaRect.GetWidth();
             }
 
-            if (rect.Height > workAreaRect.Height)
+            if (rect.Height > workAreaRect.GetHeight())
             {
-                rect.Height = workAreaRect.Height;
+                rect.Height = workAreaRect.GetHeight();
             }
 
-            if (rect.Right > workAreaRect.Right)
+            if (rect.Right > workAreaRect.right)
             {
-                rect.X = workAreaRect.Right - rect.Width;
+                rect.X = workAreaRect.right - rect.Width;
             }
 
-            if (rect.Left < workAreaRect.Left)
+            if (rect.Left < workAreaRect.left)
             {
-                rect.X = workAreaRect.Left;
+                rect.X = workAreaRect.left;
             }
 
-            if (rect.Bottom > workAreaRect.Bottom)
+            if (rect.Bottom > workAreaRect.bottom)
             {
-                rect.Y = workAreaRect.Bottom - rect.Height;
+                rect.Y = workAreaRect.bottom - rect.Height;
             }
 
-            if (rect.Top < workAreaRect.Top)
+            if (rect.Top < workAreaRect.top)
             {
-                rect.Y = workAreaRect.Top;
+                rect.Y = workAreaRect.top;
             }
 
             return rect;
@@ -64,40 +68,41 @@ namespace ControlzEx.Standard
 
         private static void FindMaximumSingleMonitorRectangle(Rect windowRect, out Rect screenSubRect, out Rect monitorRect)
         {
-            var windowRect2 = new RECT(windowRect);
+            var windowRect2 = windowRect.ToRECT();
             FindMaximumSingleMonitorRectangle(windowRect2, out var screenSubRect2, out var monitorRect2);
-            screenSubRect = new Rect(screenSubRect2.Position, screenSubRect2.Size);
-            monitorRect = new Rect(monitorRect2.Position, monitorRect2.Size);
+            screenSubRect = new(screenSubRect2.GetPosition(), screenSubRect2.GetSize());
+            monitorRect = new(monitorRect2.GetPosition(), monitorRect2.GetSize());
         }
 
-        private static void FindMaximumSingleMonitorRectangle(RECT windowRect, out RECT screenSubRect, out RECT monitorRect)
+        private static unsafe void FindMaximumSingleMonitorRectangle(RECT windowRect, out RECT screenSubRect, out RECT monitorRect)
         {
             var rect = new RECT
             {
-                Left = 0,
-                Right = 0,
-                Top = 0,
-                Bottom = 0
+                left = 0,
+                right = 0,
+                top = 0,
+                bottom = 0
             };
 
             screenSubRect = rect;
 
-            rect = new RECT
+            rect = new()
             {
-                Left = 0,
-                Right = 0,
-                Top = 0,
-                Bottom = 0
+                left = 0,
+                right = 0,
+                top = 0,
+                bottom = 0
             };
 
             monitorRect = rect;
 
-            var monitorFromRect = NativeMethods.MonitorFromRect(ref windowRect, MonitorOptions.MONITOR_DEFAULTTONEAREST);
+            var monitorFromRect = PInvoke.MonitorFromRect(&windowRect, MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
             if (monitorFromRect != IntPtr.Zero)
             {
-                var monitorInfo = NativeMethods.GetMonitorInfo(monitorFromRect);
+                var monitorInfo = PInvoke.GetMonitorInfo(monitorFromRect);
                 var lprcSrc = monitorInfo.rcWork;
-                NativeMethods.IntersectRect(out var lprcDst, ref lprcSrc, ref windowRect);
+                RECT lprcDst;
+                PInvoke.IntersectRect(&lprcDst, &lprcSrc, &windowRect);
                 screenSubRect = lprcDst;
                 monitorRect = monitorInfo.rcWork;
             }
@@ -105,29 +110,29 @@ namespace ControlzEx.Standard
 
         public static IntPtr MonitorFromWindowPosOrWindow(WINDOWPOS windowpos, IntPtr hwnd)
         {
-            var windowRect = new RECT(windowpos);
+            var windowRect = windowpos.ToRECT();
 
             return MonitorFromRectOrWindow(windowRect, hwnd);
         }
 
-        public static IntPtr MonitorFromRectOrWindow(RECT windowRect, IntPtr hwnd)
+        public static unsafe IntPtr MonitorFromRectOrWindow(RECT windowRect, IntPtr hwnd)
         {
-            var monitorFromWindow = NativeMethods.MonitorFromWindow(hwnd, MonitorOptions.MONITOR_DEFAULTTONEAREST);
+            var monitorFromWindow = PInvoke.MonitorFromWindow(new(hwnd), MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
 
-            if (windowRect.IsEmpty)
+            if (windowRect.IsEmpty())
             {
                 return monitorFromWindow;
             }
 
-            var monitorFromRect = NativeMethods.MonitorFromRect(ref windowRect, MonitorOptions.MONITOR_DEFAULTTONEAREST);
+            var monitorFromRect = PInvoke.MonitorFromRect(&windowRect, MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
 
             return monitorFromRect;
         }
 
         public static MONITORINFO MonitorInfoFromWindow(IntPtr hWnd)
         {
-            var hMonitor = NativeMethods.MonitorFromWindow(hWnd, MonitorOptions.MONITOR_DEFAULTTONEAREST);
-            var monitorInfo = NativeMethods.GetMonitorInfo(hMonitor);
+            var hMonitor = PInvoke.MonitorFromWindow(new(hWnd), MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
+            var monitorInfo = PInvoke.GetMonitorInfo(hMonitor);
             return monitorInfo;
         }
 
@@ -139,11 +144,11 @@ namespace ControlzEx.Standard
         {
             try
             {
-                var cursorPos = NativeMethods.GetCursorPos();
-                var monitor = NativeMethods.MonitorFromPoint(cursorPos, MonitorOptions.MONITOR_DEFAULTTONEAREST);
+                var cursorPos = PInvoke.GetCursorPos();
+                var monitor = PInvoke.MonitorFromPoint(cursorPos, MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
                 if (monitor != IntPtr.Zero)
                 {
-                    monitorInfo = NativeMethods.GetMonitorInfo(monitor);
+                    monitorInfo = PInvoke.GetMonitorInfo(monitor);
                     return true;
                 }
             }

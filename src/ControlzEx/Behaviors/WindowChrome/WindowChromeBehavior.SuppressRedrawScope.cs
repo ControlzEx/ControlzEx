@@ -4,41 +4,43 @@
 namespace ControlzEx.Behaviors
 {
     using System;
-    using ControlzEx.Native;
-    using ControlzEx.Standard;
+    using global::Windows.Win32;
+    using global::Windows.Win32.Foundation;
+    using global::Windows.Win32.Graphics.Gdi;
+    using global::Windows.Win32.UI.WindowsAndMessaging;
 
     public partial class WindowChromeBehavior
     {
         private class SuppressRedrawScope : IDisposable
         {
-            private readonly IntPtr hwnd;
+            private readonly HWND hwnd;
 
             private readonly bool suppressedRedraw;
 
             public SuppressRedrawScope(IntPtr hwnd)
             {
-                this.hwnd = hwnd;
+                this.hwnd = new HWND(hwnd);
 
-                if (((WS)NativeMethods.GetWindowLongPtr(hwnd, GWL.STYLE) & WS.VISIBLE) != 0)
+                if ((PInvoke.GetWindowStyle(this.hwnd) & WINDOW_STYLE.WS_VISIBLE) != 0)
                 {
                     this.SetRedraw(state: false);
                     this.suppressedRedraw = true;
                 }
             }
 
-            public void Dispose()
+            public unsafe void Dispose()
             {
                 if (this.suppressedRedraw)
                 {
                     this.SetRedraw(state: true);
-                    const Constants.RedrawWindowFlags FLAGS = Constants.RedrawWindowFlags.Invalidate | Constants.RedrawWindowFlags.AllChildren | Constants.RedrawWindowFlags.Frame;
-                    NativeMethods.RedrawWindow(this.hwnd, IntPtr.Zero, IntPtr.Zero, FLAGS);
+                    const REDRAW_WINDOW_FLAGS FLAGS = REDRAW_WINDOW_FLAGS.RDW_INVALIDATE | REDRAW_WINDOW_FLAGS.RDW_ALLCHILDREN | REDRAW_WINDOW_FLAGS.RDW_FRAME;
+                    PInvoke.RedrawWindow(this.hwnd, default, null, FLAGS);
                 }
             }
 
             private void SetRedraw(bool state)
             {
-                NativeMethods.SendMessage(this.hwnd, WM.SETREDRAW, new IntPtr(Convert.ToInt32(state)), IntPtr.Zero);
+                PInvoke.SendMessage(this.hwnd, WM.SETREDRAW, (nuint)Convert.ToInt32(state), default);
             }
         }
     }

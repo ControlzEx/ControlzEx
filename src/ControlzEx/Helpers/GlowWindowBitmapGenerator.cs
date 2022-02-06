@@ -6,7 +6,7 @@ namespace ControlzEx.Helpers
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
     using ControlzEx.Controls.Internal;
-    using ControlzEx.Standard;
+    using ControlzEx.Internal;
 
     public static class GlowWindowBitmapGenerator
     {

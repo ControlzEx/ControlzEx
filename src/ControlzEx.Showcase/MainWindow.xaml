@@ -8,7 +8,6 @@
                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                xmlns:system="clr-namespace:System;assembly=mscorlib"
                                xmlns:views="clr-namespace:ControlzEx.Showcase.Views"
-                               xmlns:native="clr-namespace:ControlzEx.Standard;assembly=ControlzEx"
                                x:Name="Window"
                                Title="ControlzEx.Showcase"
                                Width="800"
@@ -44,9 +43,9 @@
 
         <ObjectDataProvider x:Key="CornerPreferenceEnumValues"
                             MethodName="GetValues"
-                            ObjectType="{x:Type native:DWM_WINDOW_CORNER_PREFERENCE}">
+                            ObjectType="{x:Type controlzEx:WindowCornerPreference}">
             <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="native:DWM_WINDOW_CORNER_PREFERENCE" />
+                <x:Type TypeName="controlzEx:WindowCornerPreference" />
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
     </controlzEx:WindowChromeWindow.Resources>

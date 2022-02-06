@@ -2,6 +2,7 @@ namespace ControlzEx.Controls
 {
     using System;
     using System.Windows.Media;
+    using global::Windows.Win32.Foundation;
 
     public interface IGlowWindow : IDisposable
     {

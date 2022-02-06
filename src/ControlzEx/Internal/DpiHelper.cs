@@ -1,6 +1,5 @@
 ﻿#pragma warning disable 1591, 1573, 618, CA1060
-// ReSharper disable once CheckNamespace
-namespace ControlzEx.Standard
+namespace ControlzEx.Internal
 {
     using System;
     using System.Windows;

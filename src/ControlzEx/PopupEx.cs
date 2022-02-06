@@ -10,6 +10,9 @@ namespace ControlzEx
     using System.Windows.Input;
     using System.Windows.Interop;
     using ControlzEx.Internal.KnownBoxes;
+    using global::Windows.Win32;
+    using global::Windows.Win32.Foundation;
+    using global::Windows.Win32.UI.WindowsAndMessaging;
 
     /// <summary>
     /// This custom popup can be used by validation error templates or something else.
@@ -160,7 +163,7 @@ namespace ControlzEx
             this.RefreshPosition();
         }
 
-        private void SetTopmostState(bool isTop)
+        private unsafe void SetTopmostState(bool isTop)
         {
             isTop &= this.AllowTopMost;
 
@@ -181,23 +184,25 @@ namespace ControlzEx
                 return;
             }
 
-            var hwnd = hwndSource.Handle;
+            var hwnd = new HWND(hwndSource.Handle);
 
             RECT rect;
-            if (!GetWindowRect(hwnd, out rect))
+            if (!PInvoke.GetWindowRect(hwnd, &rect))
             {
                 return;
             }
 
             //Debug.WriteLine("setting z-order " + isTop);
 
-            var left = rect.Left;
-            var top = rect.Top;
-            var width = rect.Width;
-            var height = rect.Height;
+            const SET_WINDOW_POS_FLAGS swp = SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE | SET_WINDOW_POS_FLAGS.SWP_NOOWNERZORDER | SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOREDRAW | SET_WINDOW_POS_FLAGS.SWP_NOSENDCHANGING;
+
+            var left = rect.left;
+            var top = rect.top;
+            var width = rect.GetWidth();
+            var height = rect.GetHeight();
             if (isTop)
             {
-                SetWindowPos(hwnd, HWND_TOPMOST, left, top, width, height, SWP.TOPMOST);
+                PInvoke.SetWindowPos(hwnd, HWND_TOPMOST, left, top, width, height, swp);
             }
             else
             {
@@ -205,9 +210,9 @@ namespace ControlzEx
                 // the titlebar (as opposed to other parts of the external
                 // window) unless I first set the popup to HWND_BOTTOM
                 // then HWND_TOP before HWND_NOTOPMOST
-                SetWindowPos(hwnd, HWND_BOTTOM, left, top, width, height, SWP.TOPMOST);
-                SetWindowPos(hwnd, HWND_TOP, left, top, width, height, SWP.TOPMOST);
-                SetWindowPos(hwnd, HWND_NOTOPMOST, left, top, width, height, SWP.TOPMOST);
+                PInvoke.SetWindowPos(hwnd, HWND_BOTTOM, left, top, width, height, swp);
+                PInvoke.SetWindowPos(hwnd, HWND_TOP, left, top, width, height, swp);
+                PInvoke.SetWindowPos(hwnd, HWND_NOTOPMOST, left, top, width, height, swp);
             }
 
             this.appliedTopMost = isTop;
@@ -223,177 +228,13 @@ namespace ControlzEx
 
         private Window? hostWindow;
         private bool? appliedTopMost;
-        
-#pragma warning disable SA1310 // Field names should not contain underscore
-        private static readonly IntPtr HWND_TOPMOST = new(-1);
-        private static readonly IntPtr HWND_NOTOPMOST = new(-2);
-        private static readonly IntPtr HWND_TOP = new(0);
-        private static readonly IntPtr HWND_BOTTOM = new(1);
-#pragma warning restore SA1310 // Field names should not contain underscore
 
-#pragma warning disable SA1602 // Enumeration items should be documented
-        /// <summary>
-        /// SetWindowPos options
-        /// </summary>
-        [Flags]
-        internal enum SWP
-        {
-            ASYNCWINDOWPOS = 0x4000,
-            DEFERERASE = 0x2000,
-            DRAWFRAME = 0x0020,
-            FRAMECHANGED = 0x0020,
-            HIDEWINDOW = 0x0080,
-            NOACTIVATE = 0x0010,
-            NOCOPYBITS = 0x0100,
-            NOMOVE = 0x0002,
-            NOOWNERZORDER = 0x0200,
-            NOREDRAW = 0x0008,
-            NOREPOSITION = 0x0200,
-            NOSENDCHANGING = 0x0400,
-            NOSIZE = 0x0001,
-            NOZORDER = 0x0004,
-            SHOWWINDOW = 0x0040,
-            TOPMOST = NOACTIVATE | NOOWNERZORDER | NOSIZE | NOMOVE | NOREDRAW | NOSENDCHANGING,
-        }
-#pragma warning restore SA1602 // Enumeration items should be documented
+        #pragma warning disable SA1310
+        private static readonly HWND HWND_TOPMOST = new(-1);
+        private static readonly HWND HWND_NOTOPMOST = new(-2);
+        private static readonly HWND HWND_TOP = new(0);
+        private static readonly HWND HWND_BOTTOM = new(1);
 
-        internal static int LOWORD(int i)
-        {
-            return (short)(i & 0xFFFF);
-        }
-
-#pragma warning disable SA1307 // Accessible fields should begin with upper-case letter
-        [StructLayout(LayoutKind.Sequential)]
-        internal struct POINT
-        {
-            public int x;
-            public int y;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        internal struct SIZE
-        {
-            public int cx;
-            public int cy;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        internal struct RECT
-        {
-            private int left;
-            private int top;
-            private int right;
-            private int bottom;
-
-            public void Offset(int dx, int dy)
-            {
-                this.left += dx;
-                this.top += dy;
-                this.right += dx;
-                this.bottom += dy;
-            }
-
-            public int Left
-            {
-                get { return this.left; }
-                set { this.left = value; }
-            }
-
-            public int Right
-            {
-                get { return this.right; }
-                set { this.right = value; }
-            }
-
-            public int Top
-            {
-                get { return this.top; }
-                set { this.top = value; }
-            }
-
-            public int Bottom
-            {
-                get { return this.bottom; }
-                set { this.bottom = value; }
-            }
-
-            public int Width
-            {
-                get { return this.right - this.left; }
-            }
-
-            public int Height
-            {
-                get { return this.bottom - this.top; }
-            }
-
-            public POINT Position
-            {
-                get { return new POINT { x = this.left, y = this.top }; }
-            }
-
-            public SIZE Size
-            {
-                get { return new SIZE { cx = this.Width, cy = this.Height }; }
-            }
-
-            public static RECT Union(RECT rect1, RECT rect2)
-            {
-                return new RECT
-                {
-                    Left = Math.Min(rect1.Left, rect2.Left),
-                    Top = Math.Min(rect1.Top, rect2.Top),
-                    Right = Math.Max(rect1.Right, rect2.Right),
-                    Bottom = Math.Max(rect1.Bottom, rect2.Bottom),
-                };
-            }
-
-            public override bool Equals(object? obj)
-            {
-                try
-                {
-                    var rc = (RECT)obj!;
-                    return rc.bottom == this.bottom
-                           && rc.left == this.left
-                           && rc.right == this.right
-                           && rc.top == this.top;
-                }
-                catch (InvalidCastException)
-                {
-                    return false;
-                }
-            }
-
-            public override int GetHashCode()
-            {
-                return (this.left << 16 | LOWORD(this.right)) ^ (this.top << 16 | LOWORD(this.bottom));
-            }
-        }
-        
 #pragma warning restore SA1307 // Accessible fields should begin with upper-case letter
-
-        [SecurityCritical]
-        [DllImport("user32.dll", EntryPoint = "GetWindowRect", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
-
-        [SecurityCritical]
-        [DllImport("user32.dll", EntryPoint = "SetWindowPos", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-#pragma warning disable SA1300 // Element should begin with upper-case letter
-        private static extern bool _SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, SWP uFlags);
-#pragma warning restore SA1300 // Element should begin with upper-case letter
-
-        [SecurityCritical]
-        private static bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, SWP uFlags)
-        {
-            if (!_SetWindowPos(hWnd, hWndInsertAfter, x, y, cx, cy, uFlags))
-            {
-                // If this fails it's never worth taking down the process.  Let the caller deal with the error if they want.
-                return false;
-            }
-
-            return true;
-        }
     }
 }

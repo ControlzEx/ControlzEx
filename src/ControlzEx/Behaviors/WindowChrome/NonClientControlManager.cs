@@ -8,7 +8,9 @@ namespace ControlzEx.Behaviors
     using System.Windows.Automation.Provider;
     using System.Windows.Interop;
     using System.Windows.Media;
-    using ControlzEx.Standard;
+    using ControlzEx.Internal;
+    using ControlzEx.Native;
+    using global::Windows.Win32;
 
     public class NonClientControlManager
     {
@@ -79,7 +81,7 @@ namespace ControlzEx.Behaviors
             if (nonClientControlClickStrategy is NonClientControlClickStrategy.MouseEvent)
             {
                 // Raising LBUTTONDOWN here automatically causes a LBUTTONUP to be raised by windows later correctly
-                NativeMethods.RaiseMouseMessage(this.OwnerHandle, WM.LBUTTONDOWN, IntPtr.Zero, lParam);
+                PInvoke.RaiseMouseMessage(this.OwnerHandle, WM.LBUTTONDOWN, default, lParam);
 
                 return true;
             }
