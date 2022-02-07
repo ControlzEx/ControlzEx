@@ -194,7 +194,7 @@ namespace ControlzEx
 
             //Debug.WriteLine("setting z-order " + isTop);
 
-            const SET_WINDOW_POS_FLAGS swp = SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE | SET_WINDOW_POS_FLAGS.SWP_NOOWNERZORDER | SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOREDRAW | SET_WINDOW_POS_FLAGS.SWP_NOSENDCHANGING;
+            const SET_WINDOW_POS_FLAGS SWP_TOPMOST = SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE | SET_WINDOW_POS_FLAGS.SWP_NOOWNERZORDER | SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOREDRAW | SET_WINDOW_POS_FLAGS.SWP_NOSENDCHANGING;
 
             var left = rect.left;
             var top = rect.top;
@@ -202,7 +202,7 @@ namespace ControlzEx
             var height = rect.GetHeight();
             if (isTop)
             {
-                PInvoke.SetWindowPos(hwnd, HWND_TOPMOST, left, top, width, height, swp);
+                PInvoke.SetWindowPos(hwnd, HWND_TOPMOST, left, top, width, height, SWP_TOPMOST);
             }
             else
             {
@@ -210,9 +210,9 @@ namespace ControlzEx
                 // the titlebar (as opposed to other parts of the external
                 // window) unless I first set the popup to HWND_BOTTOM
                 // then HWND_TOP before HWND_NOTOPMOST
-                PInvoke.SetWindowPos(hwnd, HWND_BOTTOM, left, top, width, height, swp);
-                PInvoke.SetWindowPos(hwnd, HWND_TOP, left, top, width, height, swp);
-                PInvoke.SetWindowPos(hwnd, HWND_NOTOPMOST, left, top, width, height, swp);
+                PInvoke.SetWindowPos(hwnd, HWND_BOTTOM, left, top, width, height, SWP_TOPMOST);
+                PInvoke.SetWindowPos(hwnd, HWND_TOP, left, top, width, height, SWP_TOPMOST);
+                PInvoke.SetWindowPos(hwnd, HWND_NOTOPMOST, left, top, width, height, SWP_TOPMOST);
             }
 
             this.appliedTopMost = isTop;
