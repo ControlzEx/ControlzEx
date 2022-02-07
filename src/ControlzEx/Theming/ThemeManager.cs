@@ -9,6 +9,7 @@ namespace ControlzEx.Theming
     using System.ComponentModel;
     using System.Diagnostics;
     using System.Linq;
+    using System.Runtime.CompilerServices;
     using System.Security;
     using System.Windows;
     using System.Windows.Data;
@@ -21,7 +22,7 @@ namespace ControlzEx.Theming
     /// A class that allows for the detection and alteration of a theme.
     /// </summary>
     [PublicAPI]
-    public class ThemeManager
+    public class ThemeManager : INotifyPropertyChanged
     {
         /// <summary>
         /// Gets the name for the light base color.
@@ -1314,6 +1315,14 @@ namespace ControlzEx.Theming
                 color = default;
                 return false;
             }
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 
