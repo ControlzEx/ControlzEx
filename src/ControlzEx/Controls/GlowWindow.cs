@@ -7,6 +7,7 @@ namespace ControlzEx.Controls.Internal
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using System.Runtime.CompilerServices;
     using System.Runtime.InteropServices;
     using System.Windows;
     using System.Windows.Controls;
@@ -26,6 +27,7 @@ namespace ControlzEx.Controls.Internal
     [PublicAPI]
     public abstract class HwndWrapper : DisposableObject
     {
+        private HWND hwnd;
         private IntPtr handle;
 
         private bool isHandleCreationAllowed = true;
@@ -45,6 +47,15 @@ namespace ControlzEx.Controls.Internal
             {
                 this.EnsureHandle();
                 return this.handle;
+            }
+        }
+
+        internal HWND Hwnd
+        {
+            get
+            {
+                this.EnsureHandle();
+                return this.hwnd;
             }
         }
 
@@ -76,7 +87,7 @@ namespace ControlzEx.Controls.Internal
                 var lpWndClass = new WNDCLASSEXW
                 {
                     cbSize = (uint)Marshal.SizeOf(typeof(WNDCLASSEXW)),
-                    hInstance = new(PInvoke.GetModuleHandle((string?)null).DangerousGetHandle()),
+                    hInstance = PInvoke.GetModuleHandle((PCWSTR)null),
                     lpfnWndProc = this.wndProc,
                     lpszClassName = cls,
                 };
@@ -90,7 +101,7 @@ namespace ControlzEx.Controls.Internal
         private void SubclassWndProc()
         {
             this.wndProc = this.WndProcWrapper;
-            PInvoke.SetWindowLongPtr(new HWND(this.handle), WINDOW_LONG_PTR_INDEX.GWL_WNDPROC, Marshal.GetFunctionPointerForDelegate(this.wndProc));
+            PInvoke.SetWindowLongPtr(this.Hwnd, WINDOW_LONG_PTR_INDEX.GWL_WNDPROC, Marshal.GetFunctionPointerForDelegate(this.wndProc));
         }
 
         protected abstract IntPtr CreateWindowCore();
@@ -99,12 +110,13 @@ namespace ControlzEx.Controls.Internal
         {
             if (this.handle != IntPtr.Zero)
             {
-                if (PInvoke.DestroyWindow(new HWND(this.handle)) == false)
+                if (PInvoke.DestroyWindow(this.hwnd) == false)
                 {
                     LastDestroyWindowError = Marshal.GetLastWin32Error();
                 }
 
                 this.handle = default;
+                this.hwnd = default;
             }
         }
 
@@ -601,7 +613,7 @@ namespace ControlzEx.Controls.Internal
                         var lpWndClass = new WNDCLASSEXW
                         {
                             cbSize = (uint)Marshal.SizeOf(typeof(WNDCLASSEXW)),
-                            hInstance = new(PInvoke.GetModuleHandle((string?)null).DangerousGetHandle()),
+                            hInstance = PInvoke.GetModuleHandle((PCWSTR)null),
                             lpfnWndProc = sharedWndProc,
                             lpszClassName = cls,
                         };
@@ -827,7 +839,7 @@ namespace ControlzEx.Controls.Internal
             var xLParam = PInvoke.GetXLParam(lParam.ToInt32());
             var yLParam = PInvoke.GetYLParam(lParam.ToInt32());
             RECT lpRect = default;
-            PInvoke.GetWindowRect(new HWND(this.Handle), &lpRect);
+            PInvoke.GetWindowRect(this.Hwnd, &lpRect);
 
             switch (this.orientation)
             {
@@ -942,11 +954,11 @@ namespace ControlzEx.Controls.Internal
 
                 if (windowPosInfo == IntPtr.Zero)
                 {
-                    PInvoke.SetWindowPos(new HWND(this.Handle), default, this.Left, this.Top, this.Width, this.Height, flags);
+                    PInvoke.SetWindowPos(this.Hwnd, default, this.Left, this.Top, this.Width, this.Height, flags);
                 }
                 else
                 {
-                    PInvoke.DeferWindowPos(windowPosInfo, new HWND(this.Handle), default, this.Left, this.Top, this.Width, this.Height, flags);
+                    PInvoke.DeferWindowPos(windowPosInfo, this.Hwnd, default, this.Left, this.Top, this.Width, this.Height, flags);
                 }
             }
         }
@@ -1036,7 +1048,8 @@ namespace ControlzEx.Controls.Internal
 
             fixed (BLENDFUNCTION* blend = &glowDrawingContext.Blend)
             {
-                PInvoke.UpdateLayeredWindow(new HWND(this.Handle), new HDC(glowDrawingContext.ScreenDc.DangerousGetHandle()), &pptDest, &psize, new HDC(glowDrawingContext.WindowDc.DangerousGetHandle()), &pptSrc, 0, blend, UPDATE_LAYERED_WINDOW_FLAGS.ULW_ALPHA);
+                //PInvoke.UpdateLayeredWindow(this.Hwnd, glowDrawingContext.ScreenDc, pptDest, psize, glowDrawingContext.WindowDc, pptSrc, 0, glowDrawingContext.Blend, UPDATE_LAYERED_WINDOW_FLAGS.ULW_ALPHA);
+                PInvoke.UpdateLayeredWindow(this.Hwnd, new HDC(glowDrawingContext.ScreenDc.DangerousGetHandle()), &pptDest, &psize, new HDC(glowDrawingContext.WindowDc.DangerousGetHandle()), &pptSrc, 0, blend, UPDATE_LAYERED_WINDOW_FLAGS.ULW_ALPHA);
             }
         }
 
