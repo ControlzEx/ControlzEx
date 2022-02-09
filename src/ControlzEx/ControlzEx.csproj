@@ -50,8 +50,6 @@
 
     <!-- reference includes -->
     <ItemGroup>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" IncludeAssets="build; native" />
-
         <PackageReference Include="Microsoft.Windows.CsWin32">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
