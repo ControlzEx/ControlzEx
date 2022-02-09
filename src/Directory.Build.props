@@ -17,7 +17,7 @@
         <AutoGenerateBindingRedirects Condition=" $(TargetFramework.StartsWith('net4')) ">true</AutoGenerateBindingRedirects>
         <LangVersion>9.0</LangVersion>
         <DebugSymbols>true</DebugSymbols>
-        <DebugType>full</DebugType>
+        <DebugType>embedded</DebugType>
         <!-- CA1021: Avoid out parameters -->
         <!-- CA1045: Do not pass types by reference -->
         <!-- CA1051: Do not declare visible instance fields -->
@@ -62,8 +62,6 @@
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <!-- Optional: Embed source files that are not tracked by the source control manager to the PDB -->
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
-        <!-- Optional: Include PDB in the built .nupkg -->
-        <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
         <!-- https://github.com/dotnet/sourcelink/blob/master/docs/README.md#embedallsources -->
         <EmbedAllSources>true</EmbedAllSources>
     </PropertyGroup>
