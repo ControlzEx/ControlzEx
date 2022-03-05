@@ -2,23 +2,23 @@
     <ItemGroup>
         <PackageVersion Include="XamlColorSchemeGenerator" Version="4.0.0-rc0155" />
         <PackageVersion Include="System.Text.Json" Version="5.0.2" />
-        <PackageVersion Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.31" />
+        <PackageVersion Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
     </ItemGroup>
 
     <ItemGroup Label="Test">
-        <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="16.10.0" />
-        <PackageVersion Include="NUnit3TestAdapter" Version="4.0" />
+        <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
+        <PackageVersion Include="NUnit3TestAdapter" Version="4.2.1" />
 
         <PackageVersion Include="NUnit" Version="3.13.2" />
     </ItemGroup>
 
     <ItemGroup Label="Build">
-        <PackageVersion Include="JetBrains.Annotations" Version="2021.1.0" />
+        <PackageVersion Include="JetBrains.Annotations" Version="2021.3.0" />
 
         <PackageVersion Include="Microsoft.Windows.CsWin32" Version="0.1.635-beta" />
 
-        <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="3.10.0" />
-        <PackageVersion Include="StyleCop.Analyzers" Version="1.2.0-beta.333" />
-        <PackageVersion Include="WpfAnalyzers" Version="3.5.4" />
+        <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.1.0" />
+        <PackageVersion Include="StyleCop.Analyzers" Version="1.2.0-beta.406" />
+        <PackageVersion Include="WpfAnalyzers" Version="4.0.2" />
     </ItemGroup>
 </Project>
