@@ -1,8 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+    <!-- Project properties -->
   <PropertyGroup>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    
+
     <IsTestProject>true</IsTestProject>
     <IsPackable>false</IsPackable>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
@@ -13,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ControlzEx\ControlzEx.csproj" />
   </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="NUnit3TestAdapter" />
@@ -25,9 +27,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <XAMLColorSchemeGeneratorItems Include="Themes\Themes\Theme.Template.xaml">
-      <ParametersFile>Themes\Themes\GeneratorParameters.json</ParametersFile>
-      <OutputPath>Themes\Themes</OutputPath>
+      <XAMLColorSchemeGeneratorItems Include="Themes\Themes\Theme.Template.xaml">
+        <ParametersFile>Themes\Themes\GeneratorParameters.json</ParametersFile>
+        <OutputPath>Themes\Themes</OutputPath>
     </XAMLColorSchemeGeneratorItems>
   </ItemGroup>
 </Project>

@@ -2,13 +2,10 @@
 <Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
     <!-- Project properties -->
     <PropertyGroup>
-        <AssemblyName>ControlzEx.Showcase</AssemblyName>
-        <RootNamespace>ControlzEx.Showcase</RootNamespace>
         <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
         <IsPackable>false</IsPackable>
         <ApplicationIcon>..\..\logo.ico</ApplicationIcon>
-    </PropertyGroup>
-    <PropertyGroup>
+
         <OutputType>WinExe</OutputType>
         <NoWarn>SA1652;WPF0041</NoWarn>
         <ApplicationManifest>app.manifest</ApplicationManifest>
