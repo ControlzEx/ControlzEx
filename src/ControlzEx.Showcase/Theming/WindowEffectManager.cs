@@ -12,7 +12,7 @@ namespace ControlzEx.Theming
     using global::Windows.Win32.Graphics.Dwm;
     using global::Windows.Win32.UI.Controls;
 
-    public static class WindowEffectManager
+    internal static class WindowEffectManager
     {
         public static void UpdateWindowEffect(Window window, bool isWindowActive = true)
         {
@@ -107,6 +107,7 @@ namespace ControlzEx.Theming
             public int AnimationId;
         }
 
+#pragma warning disable SA1602
         public enum AccentState
         {
             ACCENT_DISABLED = 0,
@@ -117,6 +118,7 @@ namespace ControlzEx.Theming
             ACCENT_ENABLE_HOSTBACKDROP = 5, // RS5 1809
             ACCENT_INVALID_STATE = 6
         }
+#pragma warning restore SA1602
 
         [StructLayout(LayoutKind.Sequential)]
         public struct WindowCompositionAttributeData
@@ -126,12 +128,14 @@ namespace ControlzEx.Theming
             public int SizeOfData;
         }
 
+#pragma warning disable SA1602
         public enum WindowCompositionAttribute
         {
             // ...
             WCA_ACCENT_POLICY = 19
             // ...
         }
+#pragma warning restore SA1602
 
         [DllImport("user32.dll")]
         public static extern int SetWindowCompositionAttribute(IntPtr hwnd, ref WindowCompositionAttributeData data);
