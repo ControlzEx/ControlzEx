@@ -6,6 +6,8 @@ namespace ControlzEx.Controls.Internal
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.Runtime.CompilerServices;
     using System.Runtime.InteropServices;
@@ -28,7 +30,6 @@ namespace ControlzEx.Controls.Internal
     public abstract class HwndWrapper : DisposableObject
     {
         private HWND hwnd;
-        private IntPtr handle;
 
         private bool isHandleCreationAllowed = true;
 
@@ -41,14 +42,7 @@ namespace ControlzEx.Controls.Internal
         [CLSCompliant(false)]
         protected ushort WindowClassAtom { get; private set; }
 
-        public IntPtr Handle
-        {
-            get
-            {
-                this.EnsureHandle();
-                return this.handle;
-            }
-        }
+        public IntPtr Handle => this.Hwnd;
 
         internal HWND Hwnd
         {
@@ -108,14 +102,13 @@ namespace ControlzEx.Controls.Internal
 
         protected virtual void DestroyWindowCore()
         {
-            if (this.handle != IntPtr.Zero)
+            if (this.hwnd != IntPtr.Zero)
             {
                 if (PInvoke.DestroyWindow(this.hwnd) == false)
                 {
                     LastDestroyWindowError = Marshal.GetLastWin32Error();
                 }
 
-                this.handle = default;
                 this.hwnd = default;
             }
         }
@@ -133,9 +126,9 @@ namespace ControlzEx.Controls.Internal
 
         public IntPtr EnsureHandle()
         {
-            if (this.handle != IntPtr.Zero)
+            if (this.hwnd != IntPtr.Zero)
             {
-                return this.handle;
+                return this.hwnd;
             }
 
             if (this.isHandleCreationAllowed == false)
@@ -150,14 +143,14 @@ namespace ControlzEx.Controls.Internal
 
             this.isHandleCreationAllowed = false;
             this.WindowClassAtom = this.CreateWindowClassCore();
-            this.handle = this.CreateWindowCore();
+            this.hwnd = new HWND(this.CreateWindowCore());
 
             if (this.IsWindowSubClassed)
             {
                 this.SubclassWndProc();
             }
 
-            return this.handle;
+            return this.hwnd;
         }
 
         protected override void DisposeNativeResources()
@@ -954,7 +947,13 @@ namespace ControlzEx.Controls.Internal
 
                 if (windowPosInfo == IntPtr.Zero)
                 {
-                    PInvoke.SetWindowPos(this.Hwnd, default, this.Left, this.Top, this.Width, this.Height, flags);
+                    var result = PInvoke.SetWindowPos(this.Hwnd, default, this.Left, this.Top, this.Width, this.Height, flags);
+
+                    if (result == false)
+                    {
+                        var message = new Win32Exception().Message;
+                        Trace.WriteLine(message);
+                    }
                 }
                 else
                 {

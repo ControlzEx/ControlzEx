@@ -237,11 +237,14 @@ namespace ControlzEx.Behaviors
 
         private bool positionUpdateRequired;
 
+        private bool parentWindowWasClosed;
+
         private IntPtr AssociatedObjectWindowProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             var message = (WM)msg;
 
-            if (this.IsUsingDWMBorder)
+            if (this.IsUsingDWMBorder
+                || this.parentWindowWasClosed)
             {
                 return IntPtr.Zero;
             }
@@ -254,6 +257,7 @@ namespace ControlzEx.Behaviors
                 case WM.CLOSE:
                     this.StopTimer();
                     this.DestroyGlowWindows();
+                    this.parentWindowWasClosed = true;
                     break;
 
                 case WM.WINDOWPOSCHANGING:
@@ -313,14 +317,14 @@ namespace ControlzEx.Behaviors
 
         public void EndDeferGlowChanges()
         {
-            var windowPosInfo = PInvoke.BeginDeferWindowPos(this.glowWindows.Length);
+            var windowPosInfo = IntPtr.Zero; // PInvoke.BeginDeferWindowPos(this.glowWindows.Length);
 
             foreach (var glowWindow in this.glowWindows)
             {
                 glowWindow?.CommitChanges(windowPosInfo);
             }
 
-            PInvoke.EndDeferWindowPos(windowPosInfo);
+            //PInvoke.EndDeferWindowPos(windowPosInfo);
         }
 
         private IGlowWindow GetOrCreateGlowWindow(int index)
