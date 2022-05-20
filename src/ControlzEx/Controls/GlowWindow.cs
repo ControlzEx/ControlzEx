@@ -947,13 +947,7 @@ namespace ControlzEx.Controls.Internal
 
                 if (windowPosInfo == IntPtr.Zero)
                 {
-                    var result = PInvoke.SetWindowPos(this.Hwnd, default, this.Left, this.Top, this.Width, this.Height, flags);
-
-                    if (result == false)
-                    {
-                        var message = new Win32Exception().Message;
-                        Trace.WriteLine(message);
-                    }
+                    PInvoke.SetWindowPos(this.Hwnd, default, this.Left, this.Top, this.Width, this.Height, flags);
                 }
                 else
                 {

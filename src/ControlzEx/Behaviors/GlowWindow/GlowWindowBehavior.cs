@@ -317,14 +317,14 @@ namespace ControlzEx.Behaviors
 
         public void EndDeferGlowChanges()
         {
-            var windowPosInfo = IntPtr.Zero; // PInvoke.BeginDeferWindowPos(this.glowWindows.Length);
+            var windowPosInfo = PInvoke.BeginDeferWindowPos(this.glowWindows.Length);
 
             foreach (var glowWindow in this.glowWindows)
             {
                 glowWindow?.CommitChanges(windowPosInfo);
             }
 
-            //PInvoke.EndDeferWindowPos(windowPosInfo);
+            PInvoke.EndDeferWindowPos(windowPosInfo);
         }
 
         private IGlowWindow GetOrCreateGlowWindow(int index)
