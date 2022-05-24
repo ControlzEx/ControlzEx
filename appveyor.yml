@@ -23,7 +23,7 @@ test: off
 
 install:
   - ps: Invoke-WebRequest 'https://dot.net/v1/dotnet-install.ps1' -OutFile 'dotnet-install.ps1'
-  - ps: ./dotnet-install.ps1 -Version 6.0.100 -InstallDir "C:\Program Files\dotnet"
+  - ps: ./dotnet-install.ps1 -Version 6.0.300 -InstallDir "C:\Program Files\dotnet"
 
 pull_requests:
   do_not_increment_build_number: false
