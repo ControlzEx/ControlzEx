@@ -147,7 +147,7 @@ namespace ControlzEx.Behaviors
 
                 // If the cursor is on the window edge we must not hit test controls.
                 // Otherwise we have no chance to un-track controls when the cursor leaves the window.
-                // todo: find a better solution as this does not completely solve the problem when the mouse is moved over the buttons fast and then leaves the window...
+                // This is left here in case someone uses this class without using PInvoke.TrackMouseEvent.
                 if (hitTestResult is HT.MAXBUTTON or HT.MINBUTTON or HT.CLOSE)
                 {
                     if (point.X.AreClose(0)
