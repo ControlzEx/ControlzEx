@@ -385,6 +385,7 @@ namespace Windows.Win32
         }
     }
 
+    [Flags]
     internal enum WVR
     {
         ALIGNTOP = 0x0010,
