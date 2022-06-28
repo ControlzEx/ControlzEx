@@ -47,7 +47,8 @@
                                             HorizontalAlignment="Right"
                                             VerticalAlignment="Bottom"
                                             IsTabStop="false"
-                                            Visibility="Collapsed" />
+                                            Visibility="Collapsed"
+                                            controlzEx:WindowChrome.ResizeGripDirection="BottomRight" />
                             </Grid>
                             <ControlTemplate.Triggers>
                                 <MultiTrigger>
