@@ -4,7 +4,6 @@
     using global::Windows.Win32.UI.WindowsAndMessaging;
     using NUnit.Framework;
 
-#pragma warning disable CS0618 // Type or member is obsolete
     [TestFixture]
     public class NativeExtensionTests
     {
