@@ -9,7 +9,7 @@
     public class NativeExtensionTests
     {
         [Test]
-        public void RectConvertedFromMonitorPositionIsCorrectSize()
+        public void RectConvertedFromWindowPositionIsCorrectSize()
         {
             const int WIDTH = 800;
             const int HEIGHT = 600;
