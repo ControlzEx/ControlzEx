@@ -90,7 +90,10 @@ namespace ControlzEx.Showcase
                     IsChecked = this.SetOwner.IsChecked
                 },
                 IsGlowTransitionEnabled = this.IsGlowTransitionEnabled,
-                PreferDWMBorderColor = this.PreferDWMBorderColor
+                PreferDWMBorderColor = this.PreferDWMBorderColor,
+                CornerPreference = this.CornerPreference,
+                UseRadialGradientForCorners = this.UseRadialGradientForCorners,
+                GlowDepth = this.GlowDepth
             };
 
             return window;
