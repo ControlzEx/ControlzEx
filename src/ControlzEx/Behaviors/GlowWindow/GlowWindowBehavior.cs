@@ -401,8 +401,7 @@ namespace ControlzEx.Behaviors
                     var result = this.AssociatedObject is not null
                            && this.AssociatedObject.ResizeMode != ResizeMode.NoResize
                            && this.GlowDepth > 0
-                           && this.GlowColor is not null
-                           && this.NonActiveGlowColor is not null;
+                           && ((this.GlowColor is not null && this.AssociatedObject.IsActive) || (this.NonActiveGlowColor is not null && this.AssociatedObject.IsActive == false));
                     if (result == false)
                     {
                         return false;
