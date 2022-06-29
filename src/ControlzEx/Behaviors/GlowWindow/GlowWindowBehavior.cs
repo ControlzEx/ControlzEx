@@ -499,7 +499,7 @@ namespace ControlzEx.Behaviors
                            && color.HasValue;
             var attrValue = useColor && this.PreferDWMBorderColor
                         ? (int)new COLORREF(color!.Value).dwColor
-                        : -2;
+                        : -2 /* Disable DWM border */;
             this.DWMSupportsBorderColor = DwmHelper.SetWindowAttributeValue(this.windowHandle, DWMWINDOWATTRIBUTE.DWMWA_BORDER_COLOR, attrValue);
 
             return this.DWMSupportsBorderColor;
