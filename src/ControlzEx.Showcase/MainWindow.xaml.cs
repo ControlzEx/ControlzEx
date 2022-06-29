@@ -85,6 +85,7 @@ namespace ControlzEx.Showcase
             var window = new MainWindow
             {
                 WindowStartupLocation = WindowStartupLocation.Manual,
+                WindowStyle = this.WindowStyle,
                 SetOwner =
                 {
                     IsChecked = this.SetOwner.IsChecked
@@ -307,6 +308,16 @@ namespace ControlzEx.Showcase
             {
                 this.ButtonOpenChildWindowOnClick(this, null);
             }
+        }
+
+        private void HandleClearGlowColorClick(object sender, RoutedEventArgs e)
+        {
+            this.glowColorComboBox.Text = null;
+        }
+
+        private void HandleClearNonActiveGlowColorClick(object sender, RoutedEventArgs e)
+        {
+            this.nonActiveGlowColorComboBox.Text = null;
         }
     }
 }

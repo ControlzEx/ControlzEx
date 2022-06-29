@@ -486,7 +486,8 @@
                                                 <SolidColorBrush Color="{Binding ElementName=Window, Path=GlowColor}" />
                                             </Border.Background>
                                         </Border>
-                                        <ComboBox Margin="4"
+                                        <ComboBox x:Name="glowColorComboBox"
+                                                  Margin="4"
                                                   MinWidth="100"
                                                   VerticalAlignment="Center"
                                                   HorizontalContentAlignment="Stretch"
@@ -515,6 +516,8 @@
                                                 </DataTemplate>
                                             </ComboBox.ItemTemplate>
                                         </ComboBox>
+
+                                        <Button Click="HandleClearGlowColorClick">Set NULL</Button>
                                     </StackPanel>
 
                                     <Label>
@@ -530,7 +533,8 @@
                                                 <SolidColorBrush Color="{Binding ElementName=Window, Path=NonActiveGlowColor}" />
                                             </Border.Background>
                                         </Border>
-                                        <ComboBox Margin="4"
+                                        <ComboBox x:Name="nonActiveGlowColorComboBox"
+                                                  Margin="4"
                                                   MinWidth="100"
                                                   VerticalAlignment="Center"
                                                   HorizontalAlignment="Stretch"
@@ -560,6 +564,8 @@
                                                 </DataTemplate>
                                             </ComboBox.ItemTemplate>
                                         </ComboBox>
+
+                                        <Button Click="HandleClearNonActiveGlowColorClick">Set NULL</Button>
                                     </StackPanel>
 
                                     <Label>
