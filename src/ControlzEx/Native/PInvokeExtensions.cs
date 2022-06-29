@@ -58,8 +58,8 @@ namespace Windows.Win32
             {
                 left = windowpos.x,
                 top = windowpos.y,
-                right = (int)windowpos.cx - windowpos.x,
-                bottom = (int)windowpos.cy - windowpos.y
+                right = windowpos.x + windowpos.cx,
+                bottom = windowpos.y + windowpos.cy
             };
         }
     }
