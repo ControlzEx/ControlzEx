@@ -89,7 +89,8 @@ namespace ControlzEx.Showcase
                 {
                     IsChecked = this.SetOwner.IsChecked
                 },
-                IsGlowTransitionEnabled = this.IsGlowTransitionEnabled
+                IsGlowTransitionEnabled = this.IsGlowTransitionEnabled,
+                PreferDWMBorderColor = this.PreferDWMBorderColor
             };
 
             return window;
