@@ -446,9 +446,7 @@ namespace ControlzEx.Behaviors
             if (ht != HT.CLIENT
                 || this.AssociatedObject.ResizeMode == ResizeMode.CanResizeWithGrip)
             {
-                var mousePosWindow = mousePosScreen;
-                mousePosWindow.Offset(-windowRect.X, -windowRect.Y);
-                mousePosWindow = DpiHelper.DevicePixelsToLogical(mousePosWindow, dpi.DpiScaleX, dpi.DpiScaleY);
+                var mousePosWindow = this.AssociatedObject.PointFromScreen(mousePosScreen);
 
                 // If the app is asking for content to be treated as client then that takes precedence over _everything_, even DWM caption buttons.
                 // This allows apps to set the glass frame to be non-empty, still cover it with WPF content to hide all the glass,
