@@ -624,7 +624,16 @@ namespace ControlzEx.Controls.Internal
         public bool IsVisible
         {
             get => this.isVisible;
-            set => this.UpdateProperty(ref this.isVisible, value, FieldInvalidationTypes.Render | FieldInvalidationTypes.Visibility);
+            set
+            {
+                this.UpdateProperty(ref this.isVisible, value, FieldInvalidationTypes.Render | FieldInvalidationTypes.Visibility);
+
+                if (value
+                    && this.InvalidatedValuesHasFlag(FieldInvalidationTypes.Visibility))
+                {
+                    this.UpdateWindowPos();
+                }
+            }
         }
 
         public int Left
