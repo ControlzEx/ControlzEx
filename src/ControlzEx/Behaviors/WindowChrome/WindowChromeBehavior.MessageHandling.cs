@@ -425,10 +425,10 @@ namespace ControlzEx.Behaviors
 
         private HT GetHitTestResult(nint lParam)
         {
-            if (NonClientControlManager.GetControlUnderMouse(this.AssociatedObject, lParam, out var res) is not null
-                && res != HT.CAPTION)
+            if (NonClientControlManager.GetControlUnderMouse(this.AssociatedObject, lParam, out var htFromNcControlManager) is not null
+                && htFromNcControlManager != HT.CAPTION)
             {
-                return res;
+                return htFromNcControlManager;
             }
 
             var dpi = this.AssociatedObject.GetDpi();
@@ -438,12 +438,12 @@ namespace ControlzEx.Behaviors
             var windowRect = this._GetWindowRect();
 
             var preventResize = this._GetHwndState() == WindowState.Maximized || this.AssociatedObject.ResizeMode is ResizeMode.NoResize;
-            var ht = preventResize
+            var htFromTestNca = preventResize
                 ? HT.CLIENT
                 : this._HitTestNca(DpiHelper.DeviceRectToLogical(windowRect, dpi.DpiScaleX, dpi.DpiScaleY),
                                    DpiHelper.DevicePixelsToLogical(mousePosScreen, dpi.DpiScaleX, dpi.DpiScaleY));
 
-            if (ht != HT.CLIENT
+            if (htFromTestNca != HT.CLIENT
                 || this.AssociatedObject.ResizeMode == ResizeMode.CanResizeWithGrip)
             {
                 var mousePosWindow = this.AssociatedObject.PointFromScreen(mousePosScreen);
@@ -470,13 +470,13 @@ namespace ControlzEx.Behaviors
                 }
             }
 
-            if (res != HT.NOWHERE
-                && ht == HT.CLIENT)
+            if (htFromNcControlManager != HT.NOWHERE
+                && htFromTestNca == HT.CLIENT)
             {
-                return res;
+                return htFromNcControlManager;
             }
 
-            return ht;
+            return htFromTestNca;
         }
 
         /// <SecurityNote>
