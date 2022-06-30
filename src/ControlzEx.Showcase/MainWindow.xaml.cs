@@ -94,7 +94,10 @@ namespace ControlzEx.Showcase
                 PreferDWMBorderColor = this.PreferDWMBorderColor,
                 CornerPreference = this.CornerPreference,
                 UseRadialGradientForCorners = this.UseRadialGradientForCorners,
-                GlowDepth = this.GlowDepth
+                GlowDepth = this.GlowDepth,
+                GlowColor = this.GlowColor,
+                NonActiveGlowColor = this.NonActiveGlowColor,
+                NCNonActiveBrush = this.NCNonActiveBrush
             };
 
             return window;
