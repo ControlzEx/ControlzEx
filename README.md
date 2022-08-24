@@ -147,7 +147,7 @@ Most of the fixes and improvements are from [MahApps.Metro](https://github.com/M
 
 Concrete implementation of techniques described here:
 
-[http://blogs.msdn.com/b/wpfsdk/archive/2008/09/08/custom-window-chrome-in-wpf.aspx](http://blogs.msdn.com/b/wpfsdk/archive/2008/09/08/custom-window-chrome-in-wpf.aspx)
+[Blog entry from Microsoft on custom Window chrome](https://web.archive.org/web/20150221141007/http://blogs.msdn.com/b/wpfsdk/archive/2008/09/08/custom-window-chrome-in-wpf.aspx)
 
 It's a fork of the original Microsoft WPF Shell Integration Library. Current Microsofts implementation can be found:
 
