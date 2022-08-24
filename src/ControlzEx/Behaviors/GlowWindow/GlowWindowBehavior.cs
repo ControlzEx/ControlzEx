@@ -224,7 +224,7 @@ namespace ControlzEx.Behaviors
         private void AssociatedObjectOnClosed(object? o, EventArgs args)
         {
             this.AssociatedObject.Closed -= this.AssociatedObjectOnClosed;
-
+            this.parentWindowWasClosed = true;
             // todo: detach here????
 
             this.StopTimer();
@@ -254,12 +254,6 @@ namespace ControlzEx.Behaviors
             // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
             switch (message)
             {
-                case WM.CLOSE:
-                    this.StopTimer();
-                    this.DestroyGlowWindows();
-                    this.parentWindowWasClosed = true;
-                    break;
-
                 case WM.WINDOWPOSCHANGING:
                 case WM.WINDOWPOSCHANGED:
                 {
