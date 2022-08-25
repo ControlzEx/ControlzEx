@@ -8,6 +8,7 @@ namespace ControlzEx.Controls
     using System.Windows.Automation.Peers;
     using System.Windows.Controls;
     using System.Windows.Controls.Primitives;
+    using System.Windows.Data;
     using System.Windows.Input;
     using System.Windows.Threading;
     using ControlzEx.Automation.Peers;
@@ -201,6 +202,7 @@ namespace ControlzEx.Controls
                             if (contentPresenter is not null)
                             {
                                 this.itemsHolder.Children.Remove(contentPresenter);
+                                BindingOperations.ClearAllBindings(contentPresenter);
                             }
                         }
                     }
@@ -482,11 +484,20 @@ namespace ControlzEx.Controls
             // the actual child to be added
             var contentPresenter = new ContentPresenter
             {
-                Content = item is TabItem itemAsTabItem ? itemAsTabItem.Content : item,
                 Visibility = Visibility.Collapsed
             };
 
-            var owningTabItem = item as TabItem ?? (TabItem)this.ItemContainerGenerator.ContainerFromItem(item);
+            var itemAsTabItem = item as TabItem;
+            if (itemAsTabItem is not null)
+            {
+                contentPresenter.SetBinding(ContentPresenter.ContentProperty, new Binding(nameof(TabItem.Content)) { Source = itemAsTabItem });
+            }
+            else
+            {
+                contentPresenter.Content = item;
+            }
+
+            var owningTabItem = itemAsTabItem ?? (TabItem)this.ItemContainerGenerator.ContainerFromItem(item);
 
             if (owningTabItem is null)
             {
