@@ -643,13 +643,13 @@ namespace ControlzEx.Behaviors
                     var rcWorkArea = monitorInfo.rcWork;
                     var rcMonitorArea = monitorInfo.rcMonitor;
 
-                    mmi.ptMaxPosition.x = Math.Abs(rcWorkArea.left - rcMonitorArea.left);
-                    mmi.ptMaxPosition.y = Math.Abs(rcWorkArea.top - rcMonitorArea.top);
+                    mmi.ptMaxPosition.X = Math.Abs(rcWorkArea.left - rcMonitorArea.left);
+                    mmi.ptMaxPosition.Y = Math.Abs(rcWorkArea.top - rcMonitorArea.top);
 
-                    mmi.ptMaxSize.x = Math.Abs(monitorInfo.rcMonitor.GetWidth());
-                    mmi.ptMaxSize.y = Math.Abs(monitorInfo.rcMonitor.GetHeight());
-                    mmi.ptMaxTrackSize.x = mmi.ptMaxSize.x;
-                    mmi.ptMaxTrackSize.y = mmi.ptMaxSize.y;
+                    mmi.ptMaxSize.X = Math.Abs(monitorInfo.rcMonitor.GetWidth());
+                    mmi.ptMaxSize.Y = Math.Abs(monitorInfo.rcMonitor.GetHeight());
+                    mmi.ptMaxTrackSize.X = mmi.ptMaxSize.X;
+                    mmi.ptMaxTrackSize.Y = mmi.ptMaxSize.Y;
                 }
 
                 Marshal.StructureToPtr(mmi, lParam, true);

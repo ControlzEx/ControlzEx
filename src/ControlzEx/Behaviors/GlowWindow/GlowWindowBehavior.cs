@@ -20,6 +20,7 @@ namespace ControlzEx.Behaviors
     using global::Windows.Win32.Graphics.Dwm;
     using global::Windows.Win32.UI.WindowsAndMessaging;
     using Microsoft.Xaml.Behaviors;
+    using COLORREF = Windows.Win32.COLORREF;
 
     public class GlowWindowBehavior : Behavior<Window>
     {
