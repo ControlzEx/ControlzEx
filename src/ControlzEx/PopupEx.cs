@@ -202,7 +202,7 @@ namespace ControlzEx
             var height = rect.GetHeight();
             if (isTop)
             {
-                PInvoke.SetWindowPos(hwnd, HWND_TOPMOST, left, top, width, height, SWP_TOPMOST);
+                PInvoke.SetWindowPos(hwnd, HWND.HWND_TOPMOST, left, top, width, height, SWP_TOPMOST);
             }
             else
             {
@@ -210,9 +210,9 @@ namespace ControlzEx
                 // the titlebar (as opposed to other parts of the external
                 // window) unless I first set the popup to HWND_BOTTOM
                 // then HWND_TOP before HWND_NOTOPMOST
-                PInvoke.SetWindowPos(hwnd, HWND_BOTTOM, left, top, width, height, SWP_TOPMOST);
-                PInvoke.SetWindowPos(hwnd, HWND_TOP, left, top, width, height, SWP_TOPMOST);
-                PInvoke.SetWindowPos(hwnd, HWND_NOTOPMOST, left, top, width, height, SWP_TOPMOST);
+                PInvoke.SetWindowPos(hwnd, HWND.HWND_BOTTOM, left, top, width, height, SWP_TOPMOST);
+                PInvoke.SetWindowPos(hwnd, HWND.HWND_TOP, left, top, width, height, SWP_TOPMOST);
+                PInvoke.SetWindowPos(hwnd, HWND.HWND_NOTOPMOST, left, top, width, height, SWP_TOPMOST);
             }
 
             this.appliedTopMost = isTop;
@@ -228,13 +228,5 @@ namespace ControlzEx
 
         private Window? hostWindow;
         private bool? appliedTopMost;
-
-        #pragma warning disable SA1310
-        private static readonly HWND HWND_TOPMOST = new(new IntPtr(-1));
-        private static readonly HWND HWND_NOTOPMOST = new(new IntPtr(-2));
-        private static readonly HWND HWND_TOP = new(IntPtr.Zero);
-        private static readonly HWND HWND_BOTTOM = new(new IntPtr(1));
-
-#pragma warning restore SA1307 // Accessible fields should begin with upper-case letter
     }
 }

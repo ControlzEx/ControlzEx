@@ -49,3 +49,4 @@ UnregisterClass
 UpdateLayeredWindow
 WINDOWPOS
 WINDOW_LONG_PTR_INDEX
+HWND_*
