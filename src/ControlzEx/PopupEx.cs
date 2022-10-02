@@ -230,10 +230,10 @@ namespace ControlzEx
         private bool? appliedTopMost;
 
         #pragma warning disable SA1310
-        private static readonly HWND HWND_TOPMOST = new(-1);
-        private static readonly HWND HWND_NOTOPMOST = new(-2);
-        private static readonly HWND HWND_TOP = new(0);
-        private static readonly HWND HWND_BOTTOM = new(1);
+        private static readonly HWND HWND_TOPMOST = new(new IntPtr(-1));
+        private static readonly HWND HWND_NOTOPMOST = new(new IntPtr(-2));
+        private static readonly HWND HWND_TOP = new(IntPtr.Zero);
+        private static readonly HWND HWND_BOTTOM = new(new IntPtr(1));
 
 #pragma warning restore SA1307 // Accessible fields should begin with upper-case letter
     }

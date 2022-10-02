@@ -133,9 +133,9 @@ namespace Windows.Win32
             return rect;
         }
 
-        public static unsafe POINT GetCursorPos()
+        public static unsafe System.Drawing.Point GetCursorPos()
         {
-            var rect = default(POINT);
+            var rect = default(System.Drawing.Point);
             var result = GetCursorPos(&rect);
             return rect;
         }
@@ -145,13 +145,13 @@ namespace Windows.Win32
             // maybe we can use ReBarWindow32 instead Shell_TrayWnd
             var hwnd = FindWindow("Shell_TrayWnd", null);
             var windowRect = GetWindowRect(hwnd);
-            var monitorWithTaskbarOnIt = MonitorFromPoint(new() { x = windowRect.left, y = windowRect.top }, MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
+            var monitorWithTaskbarOnIt = MonitorFromPoint(new() { X = windowRect.left, Y = windowRect.top }, MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
 
             if (!monitor.Equals(monitorWithTaskbarOnIt))
             {
                 hwnd = FindWindow("Shell_SecondaryTrayWnd", null);
                 windowRect = GetWindowRect(hwnd);
-                monitorWithTaskbarOnIt = MonitorFromPoint(new() { x = windowRect.left, y = windowRect.top }, MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
+                monitorWithTaskbarOnIt = MonitorFromPoint(new() { X = windowRect.left, Y = windowRect.top }, MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
 
                 if (!monitor.Equals(monitorWithTaskbarOnIt))
                 {
@@ -171,19 +171,19 @@ namespace Windows.Win32
 
         public static unsafe void RaiseMouseMessage(IntPtr hWnd, WM msg, nuint wParam, nint lParam, bool send = true)
         {
-            var mousePoint = default(POINT);
-            mousePoint.x = GetXLParam((int)lParam);
-            mousePoint.y = GetYLParam((int)lParam);
+            var mousePoint = default(System.Drawing.Point);
+            mousePoint.X = GetXLParam((int)lParam);
+            mousePoint.Y = GetYLParam((int)lParam);
             var point = mousePoint;
             ScreenToClient(new(hWnd), &point);
 
             if (send)
             {
-                SendMessage(hWnd, msg, PressedMouseButtons, MakeParam(point.x, point.y));
+                SendMessage(hWnd, msg, PressedMouseButtons, MakeParam(point.X, point.Y));
             }
             else
             {
-                PostMessage(hWnd, msg, PressedMouseButtons, MakeParam(point.x, point.y));
+                PostMessage(hWnd, msg, PressedMouseButtons, MakeParam(point.X, point.Y));
             }
         }
 

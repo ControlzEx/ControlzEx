@@ -6,10 +6,7 @@ namespace ControlzEx.Controls.Internal
 {
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
-    using System.Runtime.CompilerServices;
     using System.Runtime.InteropServices;
     using System.Windows;
     using System.Windows.Controls;
@@ -23,6 +20,7 @@ namespace ControlzEx.Controls.Internal
     using global::Windows.Win32.Graphics.Gdi;
     using global::Windows.Win32.UI.WindowsAndMessaging;
     using JetBrains.Annotations;
+    using COLORREF = Windows.Win32.Foundation.COLORREF;
 
 #pragma warning disable 618, SA1602, SA1401
 
@@ -1044,14 +1042,22 @@ namespace ControlzEx.Controls.Internal
                     throw new ArgumentOutOfRangeException(nameof(this.orientation), this.orientation, null);
             }
 
-            var pptDest = new POINT { x = this.Left, y = this.Top };
+            var pptDest = new System.Drawing.Point { X = this.Left, Y = this.Top };
             var psize = new SIZE { cx = this.Width, cy = this.Height };
-            var pptSrc = new POINT { x = 0, y = 0 };
+            var pptSrc = new System.Drawing.Point { X = 0, Y = 0 };
+            var color = default(COLORREF);
 
             fixed (BLENDFUNCTION* blend = &glowDrawingContext.Blend)
             {
-                //PInvoke.UpdateLayeredWindow(this.Hwnd, glowDrawingContext.ScreenDc, pptDest, psize, glowDrawingContext.WindowDc, pptSrc, 0, glowDrawingContext.Blend, UPDATE_LAYERED_WINDOW_FLAGS.ULW_ALPHA);
-                PInvoke.UpdateLayeredWindow(this.Hwnd, new HDC(glowDrawingContext.ScreenDc.DangerousGetHandle()), &pptDest, &psize, new HDC(glowDrawingContext.WindowDc.DangerousGetHandle()), &pptSrc, 0, blend, UPDATE_LAYERED_WINDOW_FLAGS.ULW_ALPHA);
+                PInvoke.UpdateLayeredWindow(this.Hwnd,
+                                            new HDC(glowDrawingContext.ScreenDc.DangerousGetHandle()),
+                                            &pptDest,
+                                            &psize,
+                                            new HDC(glowDrawingContext.WindowDc.DangerousGetHandle()),
+                                            &pptSrc,
+                                            color,
+                                            blend,
+                                            UPDATE_LAYERED_WINDOW_FLAGS.ULW_ALPHA);
             }
         }
 
