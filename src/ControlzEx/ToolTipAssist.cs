@@ -84,6 +84,30 @@
             element.SetValue(AutoMoveVerticalOffsetProperty, value);
         }
 
+        public static readonly DependencyProperty AutoMoveIgnoreErrorsProperty
+            = DependencyProperty.RegisterAttached("AutoMoveIgnoreErrors",
+                                                  typeof(bool),
+                                                  typeof(ToolTipAssist),
+                                                  new FrameworkPropertyMetadata(false));
+
+        /// <summary>
+        /// Gets whether to ignore any errors occurring while moving the Tooltip.
+        /// </summary>
+        [AttachedPropertyBrowsableForType(typeof(ToolTip))]
+        public static bool GetAutoMoveIgnoreErrors(ToolTip element)
+        {
+            return (bool)element.GetValue(AutoMoveIgnoreErrorsProperty);
+        }
+
+        /// <summary>
+        /// Sets whether to ignore any errors occurring while moving the Tooltip.
+        /// </summary>
+        [AttachedPropertyBrowsableForType(typeof(ToolTip))]
+        public static void SetAutoMoveIgnoreErrors(ToolTip element, bool value)
+        {
+            element.SetValue(AutoMoveIgnoreErrorsProperty, value);
+        }
+
         private static void OnAutoMoveChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
         {
             var toolTip = (ToolTip)dependencyObject;
@@ -136,6 +160,70 @@
 
         private static void MoveToolTip(IInputElement? target, ToolTip? toolTip)
         {
+            void Move()
+            {
+                toolTip.SetCurrentValue(ToolTip.PlacementProperty, PlacementMode.Relative);
+
+                var hOffsetFromToolTip = GetAutoMoveHorizontalOffset(toolTip);
+                var vOffsetFromToolTip = GetAutoMoveVerticalOffset(toolTip);
+
+                var dpi = DpiHelper.GetDpi(toolTip);
+
+                Debug.WriteLine(">>dpi       >> x: {0} \t y: {1}", dpi.DpiScaleX, dpi.DpiScaleY);
+
+                var hDPIOffset = DpiHelper.TransformToDeviceX(toolTip.PlacementTarget, hOffsetFromToolTip, dpi.DpiScaleX);
+                var vDPIOffset = DpiHelper.TransformToDeviceY(toolTip.PlacementTarget, vOffsetFromToolTip, dpi.DpiScaleY);
+
+                var position = Mouse.GetPosition(toolTip.PlacementTarget);
+                var newHorizontalOffset = position.X + hDPIOffset;
+                var newVerticalOffset = position.Y + vDPIOffset;
+
+                var topLeftFromScreen = toolTip.PlacementTarget.PointToScreen(new Point(0, 0));
+
+                if (MonitorHelper.TryGetMonitorInfoFromPoint(out var mInfo))
+                {
+                    Debug.WriteLine(">>rcWork    >> w: {0} \t h: {1}", mInfo.rcWork.GetWidth(), mInfo.rcWork.GetHeight());
+                    Debug.WriteLine(">>rcMonitor >> w: {0} \t h: {1}", mInfo.rcMonitor.GetWidth(), mInfo.rcMonitor.GetHeight());
+
+                    var monitorWorkWidth = Math.Abs(mInfo.rcWork.GetWidth());
+                    var monitorWorkHeight = Math.Abs(mInfo.rcWork.GetHeight());
+
+                    if (monitorWorkWidth == 0
+                        || monitorWorkHeight == 0)
+                    {
+                        Trace.TraceError("Got wrong monitor info values ({0})", mInfo.rcWork);
+                        return;
+                    }
+
+                    topLeftFromScreen.X = -mInfo.rcWork.left + topLeftFromScreen.X;
+                    topLeftFromScreen.Y = -mInfo.rcWork.top + topLeftFromScreen.Y;
+
+                    var locationX = (int)topLeftFromScreen.X % monitorWorkWidth;
+                    var locationY = (int)topLeftFromScreen.Y % monitorWorkHeight;
+
+                    var renderDpiWidth = DpiHelper.TransformToDeviceX(toolTip.PlacementTarget, toolTip.RenderSize.Width, dpi.DpiScaleX);
+                    var rightX = locationX + newHorizontalOffset + renderDpiWidth;
+                    if (rightX > monitorWorkWidth)
+                    {
+                        newHorizontalOffset = position.X - toolTip.RenderSize.Width - (0.5 * hDPIOffset);
+                    }
+
+                    var renderDPIHeight = DpiHelper.TransformToDeviceY(toolTip.PlacementTarget, toolTip.RenderSize.Height, dpi.DpiScaleY);
+                    var bottomY = locationY + newVerticalOffset + renderDPIHeight;
+                    if (bottomY > monitorWorkHeight)
+                    {
+                        newVerticalOffset = position.Y - toolTip.RenderSize.Height - (0.5 * vDPIOffset);
+                    }
+
+                    Debug.WriteLine(">>tooltip   >> bY: {0:F} \t rX: {1:F}", bottomY, rightX);
+
+                    toolTip.HorizontalOffset = newHorizontalOffset;
+                    toolTip.VerticalOffset = newVerticalOffset;
+
+                    Debug.WriteLine(">>offset    >> ho: {0:F} \t vo: {1:F}", toolTip.HorizontalOffset, toolTip.VerticalOffset);
+                }
+            }
+
             if (toolTip is null
                 || target is null
                 || toolTip.PlacementTarget is null)
@@ -143,65 +231,20 @@
                 return;
             }
 
-            toolTip.SetCurrentValue(ToolTip.PlacementProperty, PlacementMode.Relative);
-
-            var hOffsetFromToolTip = GetAutoMoveHorizontalOffset(toolTip);
-            var vOffsetFromToolTip = GetAutoMoveVerticalOffset(toolTip);
-
-            var dpi = DpiHelper.GetDpi(toolTip);
-
-            Debug.WriteLine(">>dpi       >> x: {0} \t y: {1}", dpi.DpiScaleX, dpi.DpiScaleY);
-
-            var hDPIOffset = DpiHelper.TransformToDeviceX(toolTip.PlacementTarget, hOffsetFromToolTip, dpi.DpiScaleX);
-            var vDPIOffset = DpiHelper.TransformToDeviceY(toolTip.PlacementTarget, vOffsetFromToolTip, dpi.DpiScaleY);
-
-            var position = Mouse.GetPosition(toolTip.PlacementTarget);
-            var newHorizontalOffset = position.X + hDPIOffset;
-            var newVerticalOffset = position.Y + vDPIOffset;
-
-            var topLeftFromScreen = toolTip.PlacementTarget.PointToScreen(new Point(0, 0));
-
-            if (MonitorHelper.TryGetMonitorInfoFromPoint(out var mInfo))
+            if (GetAutoMoveIgnoreErrors(toolTip))
             {
-                Debug.WriteLine(">>rcWork    >> w: {0} \t h: {1}", mInfo.rcWork.GetWidth(), mInfo.rcWork.GetHeight());
-                Debug.WriteLine(">>rcMonitor >> w: {0} \t h: {1}", mInfo.rcMonitor.GetWidth(), mInfo.rcMonitor.GetHeight());
-
-                var monitorWorkWidth = Math.Abs(mInfo.rcWork.GetWidth());
-                var monitorWorkHeight = Math.Abs(mInfo.rcWork.GetHeight());
-
-                if (monitorWorkWidth == 0
-                    || monitorWorkHeight == 0)
+                try
                 {
-                    Trace.TraceError("Got wrong monitor info values ({0})", mInfo.rcWork);
-                    return;
+                    Move();
                 }
-
-                topLeftFromScreen.X = -mInfo.rcWork.left + topLeftFromScreen.X;
-                topLeftFromScreen.Y = -mInfo.rcWork.top + topLeftFromScreen.Y;
-
-                var locationX = (int)topLeftFromScreen.X % monitorWorkWidth;
-                var locationY = (int)topLeftFromScreen.Y % monitorWorkHeight;
-
-                var renderDpiWidth = DpiHelper.TransformToDeviceX(toolTip.PlacementTarget, toolTip.RenderSize.Width, dpi.DpiScaleX);
-                var rightX = locationX + newHorizontalOffset + renderDpiWidth;
-                if (rightX > monitorWorkWidth)
+                catch (Exception)
                 {
-                    newHorizontalOffset = position.X - toolTip.RenderSize.Width - (0.5 * hDPIOffset);
+                    // TODO Trace anything here?
                 }
-
-                var renderDPIHeight = DpiHelper.TransformToDeviceY(toolTip.PlacementTarget, toolTip.RenderSize.Height, dpi.DpiScaleY);
-                var bottomY = locationY + newVerticalOffset + renderDPIHeight;
-                if (bottomY > monitorWorkHeight)
-                {
-                    newVerticalOffset = position.Y - toolTip.RenderSize.Height - (0.5 * vDPIOffset);
-                }
-
-                Debug.WriteLine(">>tooltip   >> bY: {0:F} \t rX: {1:F}", bottomY, rightX);
-
-                toolTip.HorizontalOffset = newHorizontalOffset;
-                toolTip.VerticalOffset = newVerticalOffset;
-
-                Debug.WriteLine(">>offset    >> ho: {0:F} \t vo: {1:F}", toolTip.HorizontalOffset, toolTip.VerticalOffset);
+            }
+            else
+            {
+                Move();
             }
         }
     }
