@@ -136,7 +136,8 @@
         {
             if (toolTip is null
                 || target is null
-                || toolTip.PlacementTarget is null)
+                || toolTip.PlacementTarget is null
+                || PresentationSource.FromVisual(toolTip.PlacementTarget) is null)
             {
                 return;
             }
