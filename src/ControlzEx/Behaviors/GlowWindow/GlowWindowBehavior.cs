@@ -388,29 +388,24 @@ namespace ControlzEx.Behaviors
                     return false;
                 }
 
-                var handle = this.windowHandle;
-                if (PInvoke.IsWindowVisible(handle)
-                    && PInvoke.IsIconic(handle) == false
-                    && PInvoke.IsZoomed(handle) == false)
+                if (this.IsUsingDWMBorder)
                 {
-                    var result = this.AssociatedObject is not null
-                           && this.AssociatedObject.ResizeMode != ResizeMode.NoResize
-                           && this.GlowDepth > 0
-                           && ((this.GlowColor is not null && this.AssociatedObject.IsActive) || (this.NonActiveGlowColor is not null && this.AssociatedObject.IsActive == false));
-                    if (result == false)
-                    {
-                        return false;
-                    }
-
-                    if (this.IsUsingDWMBorder)
-                    {
-                        return false;
-                    }
-
-                    return true;
+                    return false;
                 }
 
-                return false;
+                var handle = this.windowHandle;
+                if (PInvoke.IsWindowVisible(handle) == false
+                    // minimized?
+                    || PInvoke.IsIconic(handle)
+                    // maximized
+                    || PInvoke.IsZoomed(handle))
+                {
+                    return false;
+                }
+
+                return this.AssociatedObject is not null
+                       && this.GlowDepth > 0
+                       && ((this.GlowColor is not null && this.AssociatedObject.IsActive) || (this.NonActiveGlowColor is not null && this.AssociatedObject.IsActive == false));
             }
         }
 

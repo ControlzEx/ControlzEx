@@ -831,7 +831,8 @@ namespace ControlzEx.Controls.Internal
 
         private unsafe HT WmNcHitTest(IntPtr lParam)
         {
-            if (this.IsDisposed)
+            if (this.IsDisposed
+                || this.targetWindow.ResizeMode == ResizeMode.NoResize)
             {
                 return HT.NOWHERE;
             }
