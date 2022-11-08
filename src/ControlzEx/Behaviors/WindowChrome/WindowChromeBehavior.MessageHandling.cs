@@ -777,12 +777,12 @@ namespace ControlzEx.Behaviors
                     && this._GetHwndState() == WindowState.Maximized)
                 {
                     structure.styleNew |= (uint)WINDOW_STYLE.WS_OVERLAPPED;
-                    structure.styleNew &= (uint)~WINDOW_STYLE.WS_CAPTION;
+                    //structure.styleNew &= (uint)~WINDOW_STYLE.WS_CAPTION;
                     //structure.styleNew &= (uint)~WINDOW_STYLE.WS_SYSMENU; // todo: must be removed for mica effect
                 }
                 else
                 {
-                    structure.styleNew |= (uint)(WINDOW_STYLE.WS_OVERLAPPED | WINDOW_STYLE.WS_CAPTION);
+                    //structure.styleNew |= (uint)(WINDOW_STYLE.WS_OVERLAPPED | WINDOW_STYLE.WS_CAPTION);
                     //structure.styleNew &= (uint)~WINDOW_STYLE.WS_SYSMENU; // todo: must be removed for mica effect
                 }
 
@@ -957,7 +957,7 @@ namespace ControlzEx.Behaviors
             else
             {
                 //this._ModifyStyle(WINDOW_STYLE.WS_SYSMENU, WINDOW_STYLE.WS_CAPTION);
-                this._ModifyStyle(0, WINDOW_STYLE.WS_CAPTION); // todo: mica
+                //this._ModifyStyle(0, WINDOW_STYLE.WS_CAPTION); // todo: mica
             }
         }
 
