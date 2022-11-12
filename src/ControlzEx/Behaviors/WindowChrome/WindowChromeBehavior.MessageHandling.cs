@@ -9,6 +9,7 @@ namespace ControlzEx.Behaviors
     using System.Windows;
     using System.Windows.Data;
     using System.Windows.Media;
+    using ControlzEx.Helpers;
     using ControlzEx.Internal;
     using ControlzEx.Native;
     using global::Windows.Win32;
@@ -343,12 +344,26 @@ namespace ControlzEx.Behaviors
 
                 Marshal.StructureToPtr(rc, lParam, true);
             }
-            else if (PInvoke.GetWindowStyle(this.windowHandle).HasFlag(WINDOW_STYLE.WS_CAPTION))
+            else if (OSVersionHelper.IsWindows10_OrGreater
+                     && PInvoke.GetWindowStyle(this.windowHandle).HasFlag(WINDOW_STYLE.WS_CAPTION))
             {
                 var rcBefore = Marshal.PtrToStructure<RECT>(lParam);
                 PInvoke.DefWindowProc(this.windowHandle, (uint)uMsg, wParam, lParam);
                 var rc = Marshal.PtrToStructure<RECT>(lParam);
                 rc.top = rcBefore.top; // Remove titlebar
+                Marshal.StructureToPtr(rc, lParam, true);
+            }
+            else if (OSVersionHelper.IsWindows10_OrGreater == false
+                     && this._GetHwndState() == WindowState.Normal
+                     && wParam != 0)
+            {
+                var rc = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT))!;
+
+                // We have to add or remove one pixel on any side of the window to force a flicker free resize.
+                // Removing pixels would result in a smaller client area.
+                // Adding pixels does not seem to really increase the client area.
+                rc.bottom += 1;
+
                 Marshal.StructureToPtr(rc, lParam, true);
             }
 
