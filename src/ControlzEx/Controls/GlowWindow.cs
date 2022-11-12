@@ -415,7 +415,9 @@ namespace ControlzEx.Controls.Internal
     {
         internal BLENDFUNCTION Blend;
 
+#pragma warning disable CA2213
         private readonly GlowBitmap? windowBitmap;
+#pragma warning restore CA2213
 
         [MemberNotNullWhen(true, nameof(ScreenDc))]
         [MemberNotNullWhen(true, nameof(WindowDc))]
@@ -1092,6 +1094,7 @@ namespace ControlzEx.Controls.Internal
             {
                 using (cache[i])
                 {
+                    cache[i]?.Dispose();
                     cache[i] = null;
                 }
             }
