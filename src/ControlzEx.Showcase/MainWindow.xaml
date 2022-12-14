@@ -228,6 +228,13 @@
                                                 Padding="4"
                                                 Click="ButtonOpenPseudoModalChildWindowOnClick"
                                                 Content="Open pseudo modal child window" />
+
+                                        <Button MinWidth="100"
+                                                Margin="4"
+                                                Padding="4"
+                                                Click="ButtonSleepOnClick"
+                                                Content="Sleep"
+                                                ToolTip="Sleeps the current thread to simulate some workload and test this windows behavior" />
                                     </WrapPanel>
                                 </StackPanel>
                             </Expander>

@@ -7,6 +7,7 @@ namespace ControlzEx.Showcase
     using System.ComponentModel;
     using System.Linq;
     using System.Reflection;
+    using System.Threading;
     using System.Windows;
     using System.Windows.Input;
     using System.Windows.Interop;
@@ -142,6 +143,11 @@ namespace ControlzEx.Showcase
 #pragma warning restore 618
 
             window.Show();
+        }
+
+        private void ButtonSleepOnClick(object sender, RoutedEventArgs e)
+        {
+            Thread.Sleep(TimeSpan.FromSeconds(10));
         }
 
         private void PseudoModalWindow_Closing(object sender, CancelEventArgs e)
