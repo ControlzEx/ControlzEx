@@ -74,11 +74,11 @@
 
                 <!-- <ProgressBar IsIndeterminate="True" /> -->
 
-                <TextBlock x:Name="TitlebarText"
-                           Grid.Column="1"
+                <TextBlock Grid.Column="1"
                            Margin="4 0 0 0"
                            HorizontalAlignment="Center"
-                           Text="Use GridSplitter below to move content above titlebar" />
+                           Text="Use GridSplitter below to move content above titlebar"
+                           TextTrimming="CharacterEllipsis" />
 
                 <UniformGrid Grid.Column="2" Columns="3">
                     <Button Style="{StaticResource WindowTitleBarButton}"
@@ -130,8 +130,7 @@
                                       Header="Actions"
                                       IsExpanded="True">
                                 <WrapPanel Orientation="Horizontal">
-                                    <Button x:Name="MinimizeButton"
-                                            MinWidth="100"
+                                    <Button MinWidth="100"
                                             Margin="4"
                                             Padding="4"
                                             Click="ButtonMinimizeOnClick"
@@ -148,8 +147,7 @@
                                             </Style>
                                         </Button.Style>
                                     </Button>
-                                    <Button x:Name="MaximizeButton" 
-                                            MinWidth="100"
+                                    <Button MinWidth="100"
                                             Margin="4"
                                             Padding="4"
                                             Click="ButtonMaximizeOnClick"
@@ -304,16 +302,14 @@
                                     <Label>
                                         Style
                                     </Label>
-                                    <ComboBox x:Name="StyleComboBox"
-                                              Margin="4"
+                                    <ComboBox Margin="4"
                                               VerticalAlignment="Center"
                                               ItemsSource="{Binding Source={StaticResource WindowStyleEnumValues}}"
                                               SelectedItem="{Binding ElementName=Window, Path=WindowStyle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                     <Label>
                                         ResizeMode
                                     </Label>
-                                    <ComboBox x:Name="ResizeModeComboBox"
-                                              Margin="4"
+                                    <ComboBox Margin="4"
                                               VerticalAlignment="Center"
                                               ItemsSource="{Binding Source={StaticResource ResizeModeEnumValues}}"
                                               SelectedItem="{Binding ElementName=Window, Path=ResizeMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
@@ -451,8 +447,7 @@
                                     <Label>
                                         CornerPreference
                                     </Label>
-                                    <ComboBox x:Name="CornerPreferenceComboBox"
-                                              Margin="4"
+                                    <ComboBox Margin="4"
                                               VerticalAlignment="Center"
                                               ItemsSource="{Binding Source={StaticResource CornerPreferenceEnumValues}}"
                                               SelectedItem="{Binding ElementName=Window, Path=CornerPreference, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
@@ -584,8 +579,7 @@
                                                  MinWidth="30"
                                                  VerticalAlignment="Center"
                                                  Text="{Binding ElementName=Window, Path=GlowDepth, Mode=TwoWay}" />
-                                        <CheckBox x:Name="AnimateGlowDepth" 
-                                                  Margin="4"
+                                        <CheckBox Margin="4"
                                                   Padding="2"
                                                   VerticalAlignment="Center"
                                                   VerticalContentAlignment="Center"
