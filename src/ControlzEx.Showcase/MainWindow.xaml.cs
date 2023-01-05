@@ -86,7 +86,9 @@ namespace ControlzEx.Showcase
             var window = new MainWindow
             {
                 WindowStartupLocation = WindowStartupLocation.Manual,
-                WindowStyle = this.WindowStyle,
+                AllowsTransparency = this.chkAllowsTransparency.IsChecked == true,
+                WindowStyle = this.chkAllowsTransparency.IsChecked == true ? WindowStyle.None : this.WindowStyle,
+                Background = this.chkAllowsTransparency.IsChecked == true ? System.Windows.Media.Brushes.Transparent : this.Background,
                 SetOwner =
                 {
                     IsChecked = this.SetOwner.IsChecked

@@ -69,7 +69,7 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <Border Grid.ColumnSpan="10" Background="{Binding ElementName=Window, Path=NCCurrentBrush}" />
-                
+
                 <ProgressBar Grid.Column="0" Width="20" IsIndeterminate="True" />
 
                 <!-- <ProgressBar IsIndeterminate="True" /> -->
@@ -313,7 +313,15 @@
                                               VerticalAlignment="Center"
                                               ItemsSource="{Binding Source={StaticResource ResizeModeEnumValues}}"
                                               SelectedItem="{Binding ElementName=Window, Path=ResizeMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                    
+
+                                    <Label>
+                                        AllowsTransparency (next window)
+                                    </Label>
+                                    <CheckBox x:Name="chkAllowsTransparency"
+                                              Margin="4"
+                                              VerticalAlignment="Center"
+                                              IsChecked="{Binding ElementName=Window, Path=AllowsTransparency, Mode=OneTime, UpdateSourceTrigger=PropertyChanged}" />
+
                                     <Label>
                                         Background
                                     </Label>
