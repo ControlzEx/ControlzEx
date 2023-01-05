@@ -7,8 +7,10 @@ namespace ControlzEx
     using System.Windows.Media;
     using ControlzEx.Behaviors;
     using ControlzEx.Internal.KnownBoxes;
+    using JetBrains.Annotations;
     using Microsoft.Xaml.Behaviors;
 
+    [PublicAPI]
     public class WindowChromeWindow : Window
     {
         static WindowChromeWindow()
@@ -16,12 +18,14 @@ namespace ControlzEx
             DefaultStyleKeyProperty.OverrideMetadata(typeof(WindowChromeWindow), new FrameworkPropertyMetadata(typeof(WindowChromeWindow)));
         }
 
-        public WindowChromeWindow()
+        protected override void OnSourceInitialized(EventArgs e)
         {
+            base.OnSourceInitialized(e);
+
             this.InitializeBehaviors();
         }
 
-        private void InitializeBehaviors()
+        protected virtual void InitializeBehaviors()
         {
             this.InitializeWindowChromeBehavior();
 
@@ -31,7 +35,7 @@ namespace ControlzEx
         /// <summary>
         /// Initializes the WindowChromeBehavior which is needed to render the custom WindowChrome.
         /// </summary>
-        private void InitializeWindowChromeBehavior()
+        protected virtual void InitializeWindowChromeBehavior()
         {
             var behavior = new WindowChromeBehavior();
             BindingOperations.SetBinding(behavior, WindowChromeBehavior.ResizeBorderThicknessProperty, new Binding { Path = new PropertyPath(ResizeBorderThicknessProperty), Source = this });
@@ -49,7 +53,7 @@ namespace ControlzEx
         /// <summary>
         /// Initializes the WindowChromeBehavior which is needed to render the custom WindowChrome.
         /// </summary>
-        private void InitializeGlowWindowBehavior()
+        protected virtual void InitializeGlowWindowBehavior()
         {
             var behavior = new GlowWindowBehavior();
             BindingOperations.SetBinding(behavior, GlowWindowBehavior.GlowDepthProperty, new Binding { Path = new PropertyPath(GlowDepthProperty), Source = this });
@@ -236,10 +240,8 @@ namespace ControlzEx
             private set => this.SetValue(DWMSupportsBorderColorProperty, BooleanBoxes.Box(value));
         }
 
-#pragma warning disable WPF0010
         public static readonly DependencyProperty CornerPreferenceProperty = DependencyProperty.Register(
-            nameof(CornerPreference), typeof(WindowCornerPreference), typeof(WindowChromeWindow), new PropertyMetadata(WindowChromeBehavior.CornerPreferenceProperty.DefaultMetadata.DefaultValue));
-#pragma warning restore WPF0010
+            nameof(CornerPreference), typeof(WindowCornerPreference), typeof(WindowChromeWindow), new PropertyMetadata((WindowCornerPreference)WindowChromeBehavior.CornerPreferenceProperty.DefaultMetadata.DefaultValue));
 
         public WindowCornerPreference CornerPreference
         {
