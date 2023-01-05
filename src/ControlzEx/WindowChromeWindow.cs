@@ -14,10 +14,6 @@ namespace ControlzEx
         static WindowChromeWindow()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(WindowChromeWindow), new FrameworkPropertyMetadata(typeof(WindowChromeWindow)));
-
-            WindowStyleProperty.OverrideMetadata(typeof(WindowChromeWindow), new FrameworkPropertyMetadata(WindowStyle.SingleBorderWindow));
-
-            AllowsTransparencyProperty.OverrideMetadata(typeof(WindowChromeWindow), new FrameworkPropertyMetadata(BooleanBoxes.FalseBox));
         }
 
         public WindowChromeWindow()

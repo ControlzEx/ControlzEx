@@ -254,19 +254,6 @@ namespace ControlzEx.Behaviors
         {
             base.OnAttached();
 
-            // no transparency, because it has more then one unwanted issues
-            if (this.AssociatedObject.AllowsTransparency)
-            {
-                try
-                {
-                    this.AssociatedObject.SetCurrentValue(Window.AllowsTransparencyProperty, BooleanBoxes.FalseBox);
-                }
-                catch (Exception)
-                {
-                    //For some reason, we can't determine if the window has loaded or not, so we swallow the exception.
-                }
-            }
-
             this.savedBorderThickness = this.AssociatedObject.BorderThickness;
             this.borderThicknessChangeNotifier = new PropertyChangeNotifier(this.AssociatedObject, Control.BorderThicknessProperty);
             this.borderThicknessChangeNotifier.ValueChanged += this.BorderThicknessChangeNotifierOnValueChanged;

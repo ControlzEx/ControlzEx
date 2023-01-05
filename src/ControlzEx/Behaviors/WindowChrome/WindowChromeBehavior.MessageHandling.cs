@@ -89,8 +89,6 @@ namespace ControlzEx.Behaviors
                 return;
             }
 
-            this.hwndSource.CompositionTarget.BackgroundColor = Colors.Transparent;
-
             // Force this the first time.
             this._UpdateSystemMenu(this.AssociatedObject.WindowState);
             this.UpdateMinimizeSystemMenu(this.EnableMinimize);
@@ -353,7 +351,7 @@ namespace ControlzEx.Behaviors
                 rc.top = rcBefore.top; // Remove titlebar
                 Marshal.StructureToPtr(rc, lParam, true);
             }
-            else if (OSVersionHelper.IsWindows10_OrGreater == false
+            else if (this.AssociatedObject.AllowsTransparency == false
                      && this._GetHwndState() == WindowState.Normal
                      && wParam != 0)
             {
