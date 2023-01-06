@@ -301,7 +301,7 @@ namespace ControlzEx.Behaviors
         // When windows with glass are maximized on a multi-monitor setup, the glass frame tends to turn black.
         // Also, when windows are resized they tend to flicker black, sometimes staying that way until resized again.
         //
-        // At least on RTM Win7 we can avoid the problem by making the client area not extactly match the non-client
+        // At least on RTM Win7 we can avoid the problem by making the client area not exactly match the non-client
         // area, so we added the SacrificialEdge property.
         [SecurityCritical]
         private IntPtr _HandleNCCALCSIZE(WM uMsg, nuint wParam, nint lParam, out bool handled)
