@@ -201,11 +201,7 @@ namespace ControlzEx.Theming
             }
         }
 
-#if NET5_0_OR_GREATER
         private void ThemesInternalCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
-#else
-        private void ThemesInternalCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-#endif
         {
             switch (e.Action)
             {
@@ -1273,11 +1269,7 @@ namespace ControlzEx.Theming
             }
         }
 
-#if NET5_0_OR_GREATER
         private void HandleStaticPropertyChanged(object? sender, PropertyChangedEventArgs e)
-#else
-        private void HandleStaticPropertyChanged(object sender, PropertyChangedEventArgs e)
-#endif
         {
             if (e.PropertyName == nameof(SystemParameters.HighContrast)
                 && this.isSyncScheduled == false)
