@@ -50,3 +50,5 @@ UpdateLayeredWindow
 WINDOWPOS
 WINDOW_LONG_PTR_INDEX
 HWND_*
+FillRect
+GetStockObject

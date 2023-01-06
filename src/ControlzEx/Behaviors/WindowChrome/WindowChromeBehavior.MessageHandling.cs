@@ -12,6 +12,7 @@ namespace ControlzEx.Behaviors
     using ControlzEx.Helpers;
     using ControlzEx.Internal;
     using ControlzEx.Native;
+    using ControlzEx.Theming;
     using global::Windows.Win32;
     using global::Windows.Win32.Foundation;
     using global::Windows.Win32.Graphics.Gdi;
@@ -24,6 +25,8 @@ namespace ControlzEx.Behaviors
         #region Fields
 
         private const SET_WINDOW_POS_FLAGS SwpFlags = SET_WINDOW_POS_FLAGS.SWP_FRAMECHANGED | SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOZORDER | SET_WINDOW_POS_FLAGS.SWP_NOOWNERZORDER | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE;
+
+        private bool handledERASEBKGNDOnce;
 
         private WindowState lastMenuState;
         private WINDOWPOS lastWindowpos;
@@ -46,9 +49,9 @@ namespace ControlzEx.Behaviors
         {
             // Effective default values for some of these properties are set to be bindings
             // that set them to system defaults.
-            // A more correct way to do this would be to Coerce the value iff the source of the DP was the default value.
+            // A more correct way to do this would be to Coerce the value if the source of the DP was the default value.
             // Unfortunately with the current property system we can't detect whether the value being applied at the time
-            // of the coersion is the default.
+            // of the coercion is the default.
             foreach (var bp in boundProperties)
             {
                 // This list must be declared after the DP's are assigned.
@@ -139,6 +142,8 @@ namespace ControlzEx.Behaviors
                     return this._HandleNCHITTEST(message, wParam, lParam, out handled);
                 case WM.NCPAINT:
                     return this._HandleNCPAINT(message, wParam, lParam, out handled);
+                case WM.ERASEBKGND:
+                    return this._HandleERASEBKGND(message, wParam, lParam, out handled);
                 case WM.NCRBUTTONUP:
                     return this._HandleNCRBUTTONUP(message, wParam, lParam, out handled);
                 case WM.SIZE:
@@ -422,6 +427,43 @@ namespace ControlzEx.Behaviors
         private IntPtr _HandleNCPAINT(WM uMsg, nuint wParam, nint lParam, out bool handled)
         {
             handled = false;
+            return IntPtr.Zero;
+        }
+
+        /// <SecurityNote>
+        ///   Critical : Calls critical methods
+        /// </SecurityNote>
+        [SecurityCritical]
+        private IntPtr _HandleERASEBKGND(WM uMsg, nuint wParam, nint lParam, out bool handled)
+        {
+            handled = false;
+
+            // We handle ERASEBKGND once to paint the window background in the desired theme color.
+            // This also prevents users from seeing a white flash during show.
+            // Handling it always causes issues with WPF rendering.
+            if (this.handledERASEBKGNDOnce == false)
+            {
+                this.handledERASEBKGNDOnce = true;
+
+                unsafe
+                {
+                    RECT rect;
+                    if (PInvoke.GetClientRect(this.windowHandle, &rect) == true)
+                    {
+                        var brush = WindowsThemeHelper.AppsUseLightTheme()
+                            ? new HBRUSH(PInvoke.GetStockObject(GET_STOCK_OBJECT_FLAGS.WHITE_BRUSH))
+                            : new HBRUSH(PInvoke.GetStockObject(GET_STOCK_OBJECT_FLAGS.BLACK_BRUSH));
+                        var dc = PInvoke.GetDC(this.windowHandle);
+
+                        if (PInvoke.FillRect(dc, &rect, brush) != 0)
+                        {
+                            handled = true;
+                            return new IntPtr(1);
+                        }
+                    }
+                }
+            }
+
             return IntPtr.Zero;
         }
 
