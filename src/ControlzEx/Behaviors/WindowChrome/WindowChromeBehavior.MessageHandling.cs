@@ -98,6 +98,7 @@ namespace ControlzEx.Behaviors
             this.UpdateMaxRestoreSystemMenu(this.EnableMaxRestore);
             this.UpdateWindowStyle();
 
+            // Mitigation for https://github.com/dotnet/wpf/issues/5853
             // This forces WPF to render a bit earlier, which reduces the time we see a blank white window on show
             PInvoke.SetWindowPos(this.windowHandle, HWND.Null, 0, 0, 0, 0, SET_WINDOW_POS_FLAGS.SWP_DRAWFRAME | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOOWNERZORDER | SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOZORDER);
 
@@ -433,6 +434,7 @@ namespace ControlzEx.Behaviors
         /// <SecurityNote>
         ///   Critical : Calls critical methods
         /// </SecurityNote>
+        // Mitigation for https://github.com/dotnet/wpf/issues/5853
         [SecurityCritical]
         private IntPtr _HandleERASEBKGND(WM uMsg, nuint wParam, nint lParam, out bool handled)
         {
