@@ -26,7 +26,8 @@ namespace ControlzEx.Behaviors
 
         private const SET_WINDOW_POS_FLAGS SwpFlags = SET_WINDOW_POS_FLAGS.SWP_FRAMECHANGED | SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOZORDER | SET_WINDOW_POS_FLAGS.SWP_NOOWNERZORDER | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE;
 
-        private bool handledERASEBKGNDOnce;
+        private bool handleERASEBKGND;
+        private bool isHandlingERASEBKGND;
 
         private WindowState lastMenuState;
         private WINDOWPOS lastWindowpos;
@@ -443,9 +444,13 @@ namespace ControlzEx.Behaviors
             // We handle ERASEBKGND once to paint the window background in the desired theme color.
             // This also prevents users from seeing a white flash during show.
             // Handling it always causes issues with WPF rendering.
-            if (this.handledERASEBKGNDOnce == false)
+            if (this.handleERASEBKGND)
             {
-                this.handledERASEBKGNDOnce = true;
+                if (this.isHandlingERASEBKGND == false)
+                {
+                    this.AssociatedObject.ContentRendered += AssociatedObjectOnContentRendered;
+                    this.isHandlingERASEBKGND = true;
+                }
 
                 unsafe
                 {
@@ -467,6 +472,13 @@ namespace ControlzEx.Behaviors
             }
 
             return IntPtr.Zero;
+
+            void AssociatedObjectOnContentRendered(object? sender, EventArgs e)
+            {
+                this.handleERASEBKGND = false;
+                this.isHandlingERASEBKGND = false;
+                this.AssociatedObject.ContentRendered -= AssociatedObjectOnContentRendered;
+            }
         }
 
         /// <SecurityNote>
