@@ -477,7 +477,12 @@ namespace ControlzEx.Behaviors
             {
                 this.handleERASEBKGND = false;
                 this.isHandlingERASEBKGND = false;
-                this.AssociatedObject.ContentRendered -= AssociatedObjectOnContentRendered;
+                
+                // In case window is destroyed before the handler runs
+                if (this.AssociatedObject is not null)
+                {
+                    this.AssociatedObject.ContentRendered -= AssociatedObjectOnContentRendered;
+                }
             }
         }
 
