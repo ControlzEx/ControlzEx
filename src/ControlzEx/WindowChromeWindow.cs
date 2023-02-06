@@ -11,7 +11,7 @@ namespace ControlzEx
     using Microsoft.Xaml.Behaviors;
 
     [PublicAPI]
-    public class WindowChromeWindow : Window
+    public partial class WindowChromeWindow : Window
     {
         static WindowChromeWindow()
         {
@@ -21,6 +21,8 @@ namespace ControlzEx
         protected override void OnSourceInitialized(EventArgs e)
         {
             base.OnSourceInitialized(e);
+
+            this.InitializeMessageHandling();
 
             this.InitializeBehaviors();
         }

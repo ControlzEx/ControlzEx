@@ -8,11 +8,9 @@ namespace ControlzEx.Behaviors
     using System.Security;
     using System.Windows;
     using System.Windows.Data;
-    using System.Windows.Media;
     using ControlzEx.Helpers;
     using ControlzEx.Internal;
     using ControlzEx.Native;
-    using ControlzEx.Theming;
     using global::Windows.Win32;
     using global::Windows.Win32.Foundation;
     using global::Windows.Win32.Graphics.Gdi;
@@ -25,9 +23,6 @@ namespace ControlzEx.Behaviors
         #region Fields
 
         private const SET_WINDOW_POS_FLAGS SwpFlags = SET_WINDOW_POS_FLAGS.SWP_FRAMECHANGED | SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOZORDER | SET_WINDOW_POS_FLAGS.SWP_NOOWNERZORDER | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE;
-
-        private bool handleERASEBKGND;
-        private bool isHandlingERASEBKGND;
 
         private WindowState lastMenuState;
         private WINDOWPOS lastWindowpos;
@@ -84,7 +79,7 @@ namespace ControlzEx.Behaviors
         [SecurityCritical]
         private void _ApplyNewCustomChrome()
         {
-            if (this.windowHandle == IntPtr.Zero
+            if (this.windowHandle == HWND.Null
                 || this.hwndSource is null
                 || this.hwndSource.IsDisposed
                 || this.hwndSource.CompositionTarget is null)
@@ -144,8 +139,6 @@ namespace ControlzEx.Behaviors
                     return this._HandleNCHITTEST(message, wParam, lParam, out handled);
                 case WM.NCPAINT:
                     return this._HandleNCPAINT(message, wParam, lParam, out handled);
-                case WM.ERASEBKGND:
-                    return this._HandleERASEBKGND(message, wParam, lParam, out handled);
                 case WM.NCRBUTTONUP:
                     return this._HandleNCRBUTTONUP(message, wParam, lParam, out handled);
                 case WM.SIZE:
@@ -430,60 +423,6 @@ namespace ControlzEx.Behaviors
         {
             handled = false;
             return IntPtr.Zero;
-        }
-
-        /// <SecurityNote>
-        ///   Critical : Calls critical methods
-        /// </SecurityNote>
-        // Mitigation for https://github.com/dotnet/wpf/issues/5853
-        [SecurityCritical]
-        private IntPtr _HandleERASEBKGND(WM uMsg, nuint wParam, nint lParam, out bool handled)
-        {
-            handled = false;
-
-            // We handle ERASEBKGND once to paint the window background in the desired theme color.
-            // This also prevents users from seeing a white flash during show.
-            // Handling it always causes issues with WPF rendering.
-            if (this.handleERASEBKGND)
-            {
-                if (this.isHandlingERASEBKGND == false)
-                {
-                    this.AssociatedObject.ContentRendered += AssociatedObjectOnContentRendered;
-                    this.isHandlingERASEBKGND = true;
-                }
-
-                unsafe
-                {
-                    RECT rect;
-                    if (PInvoke.GetClientRect(this.windowHandle, &rect) == true)
-                    {
-                        var brush = WindowsThemeHelper.AppsUseLightTheme()
-                            ? new HBRUSH(PInvoke.GetStockObject(GET_STOCK_OBJECT_FLAGS.WHITE_BRUSH))
-                            : new HBRUSH(PInvoke.GetStockObject(GET_STOCK_OBJECT_FLAGS.BLACK_BRUSH));
-                        var dc = PInvoke.GetDC(this.windowHandle);
-
-                        if (PInvoke.FillRect(dc, &rect, brush) != 0)
-                        {
-                            handled = true;
-                            return new IntPtr(1);
-                        }
-                    }
-                }
-            }
-
-            return IntPtr.Zero;
-
-            void AssociatedObjectOnContentRendered(object? sender, EventArgs e)
-            {
-                this.handleERASEBKGND = false;
-                this.isHandlingERASEBKGND = false;
-                
-                // In case window is destroyed before the handler runs
-                if (this.AssociatedObject is not null)
-                {
-                    this.AssociatedObject.ContentRendered -= AssociatedObjectOnContentRendered;
-                }
-            }
         }
 
         /// <SecurityNote>

@@ -363,8 +363,6 @@ namespace ControlzEx.Behaviors
                 throw new Exception("Uups, at this point we really need the Handle from the associated object!");
             }
 
-            this.handleERASEBKGND = this.AssociatedObject.IsLoaded == false;
-
             if (this.AssociatedObject.SizeToContent != SizeToContent.Manual
                 && this.AssociatedObject.WindowState == WindowState.Normal)
             {
