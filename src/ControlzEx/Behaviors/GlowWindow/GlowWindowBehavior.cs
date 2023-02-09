@@ -275,6 +275,14 @@ namespace ControlzEx.Behaviors
                 case WM.MOVE:
                 case WM.SIZE:
                 {
+                    if (message == WM.SIZE
+                        && this.AssociatedObject.IsLoaded
+                        && this.updateVisibilityOnWMSIZE)
+                    {
+                        this.updateVisibilityOnWMSIZE = false;
+                        this.UpdateGlowVisibility(true);
+                    }
+
                     if (this.positionUpdateRequired == false)
                     {
                         this.positionUpdateRequired = true;
@@ -361,6 +369,7 @@ namespace ControlzEx.Behaviors
         }
 
         private bool isGlowVisible;
+        private bool updateVisibilityOnWMSIZE;
 
         private bool IsGlowVisible
         {
@@ -557,7 +566,7 @@ namespace ControlzEx.Behaviors
                     // If we are early, wait for the window content to be rendered
                     if (this.AssociatedObject.IsLoaded == false)
                     {
-                        this.AssociatedObject.ContentRendered += this.AssociatedObjectOnContentRendered;
+                        this.updateVisibilityOnWMSIZE = true;
                         return;
                     }
                 }
@@ -574,12 +583,6 @@ namespace ControlzEx.Behaviors
                 this.StopTimer();
                 this.IsGlowVisible = shouldShowGlow;
             }
-        }
-
-        private void AssociatedObjectOnContentRendered(object? sender, EventArgs e)
-        {
-            this.AssociatedObject.ContentRendered -= this.AssociatedObjectOnContentRendered;
-            this.UpdateGlowVisibility(true);
         }
 
         private void StopTimer()
