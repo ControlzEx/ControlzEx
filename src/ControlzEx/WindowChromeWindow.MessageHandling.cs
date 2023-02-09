@@ -4,6 +4,7 @@ namespace ControlzEx
     using System.Security;
     using System.Windows;
     using System.Windows.Interop;
+    using ControlzEx.Internal.KnownBoxes;
     using ControlzEx.Theming;
     using Windows.Win32;
     using Windows.Win32.Foundation;
@@ -11,24 +12,27 @@ namespace ControlzEx
 
     public partial class WindowChromeWindow
     {
-        private HWND windowHandle;
-        private HwndSource? hwndSource;
+        public static readonly DependencyProperty MitigateWhiteFlashDuringShowProperty = DependencyProperty.Register(
+            nameof(MitigateWhiteFlashDuringShow), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(BooleanBoxes.TrueBox));
+
         private bool handleERASEBKGND = true;
+        private HwndSource? hwndSource;
         private bool isHandlingERASEBKGND;
+        private HWND windowHandle;
+
+        public bool MitigateWhiteFlashDuringShow
+        {
+            get => (bool)this.GetValue(MitigateWhiteFlashDuringShowProperty);
+            set => this.SetValue(MitigateWhiteFlashDuringShowProperty, value);
+        }
 
         private void InitializeMessageHandling()
         {
             this.windowHandle = new HWND(new WindowInteropHelper(this).Handle);
             this.hwndSource = HwndSource.FromHwnd(this.windowHandle);
             this.hwndSource?.AddHook(this.WindowProc);
-        }
 
-        protected override void OnContentRendered(EventArgs e)
-        {
-            this.handleERASEBKGND = false;
-            this.isHandlingERASEBKGND = false;
-
-            base.OnContentRendered(e);
+            this.handleERASEBKGND = this.MitigateWhiteFlashDuringShow;
         }
 
         protected override void OnClosed(EventArgs e)
@@ -56,6 +60,16 @@ namespace ControlzEx
 
             switch (message)
             {
+                case WM.SIZE:
+                    if (this.IsLoaded
+                        && this.handleERASEBKGND)
+                    {
+                        this.handleERASEBKGND = false;
+                        this.isHandlingERASEBKGND = false;
+                    }
+
+                    break;
+
                 case WM.ERASEBKGND:
                     return this.HandleERASEBKGND(message, wParam, lParam, out handled);
             }
@@ -64,7 +78,7 @@ namespace ControlzEx
         }
 
         /// <SecurityNote>
-        ///   Critical : Calls critical methods
+        ///     Critical : Calls critical methods
         /// </SecurityNote>
         // Mitigation for https://github.com/dotnet/wpf/issues/5853
         [SecurityCritical]
@@ -90,7 +104,7 @@ namespace ControlzEx
                         var brush = WindowsThemeHelper.AppsUseLightTheme()
                             ? new HBRUSH(PInvoke.GetStockObject(GET_STOCK_OBJECT_FLAGS.WHITE_BRUSH))
                             : new HBRUSH(PInvoke.GetStockObject(GET_STOCK_OBJECT_FLAGS.BLACK_BRUSH));
-                        var dc = PInvoke.GetDC(this.windowHandle);
+                        var dc = new HDC(new IntPtr((nint)wParam));
 
                         if (PInvoke.FillRect(dc, &rect, brush) != 0)
                         {
