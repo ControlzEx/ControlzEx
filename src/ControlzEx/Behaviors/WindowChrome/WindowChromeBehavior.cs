@@ -127,6 +127,14 @@ namespace ControlzEx.Behaviors
         /// </summary>
         public static readonly DependencyProperty KeepBorderOnMaximizeProperty = DependencyProperty.Register(nameof(KeepBorderOnMaximize), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(BooleanBoxes.TrueBox, OnKeepBorderOnMaximizeChanged));
 
+        public static readonly DependencyProperty TopBorderPlaceholderHeightProperty = DependencyProperty.Register(nameof(TopBorderPlaceholderHeight), typeof(int), typeof(WindowChromeBehavior), new PropertyMetadata(IntBoxes.Zero, (o, _) => ((WindowChromeBehavior)o)._OnChromePropertyChangedThatRequiresRepaint()));
+
+        public int TopBorderPlaceholderHeight
+        {
+            get => (int)this.GetValue(TopBorderPlaceholderHeightProperty);
+            set => this.SetValue(TopBorderPlaceholderHeightProperty, value);
+        }
+
         private static readonly DependencyPropertyKey IsNCActivePropertyKey = DependencyProperty.RegisterReadOnly(nameof(IsNCActive), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(BooleanBoxes.FalseBox));
 
         /// <summary>

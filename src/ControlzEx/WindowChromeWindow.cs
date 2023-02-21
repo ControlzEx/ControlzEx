@@ -6,6 +6,7 @@ namespace ControlzEx
     using System.Windows.Data;
     using System.Windows.Media;
     using ControlzEx.Behaviors;
+    using ControlzEx.Converters;
     using ControlzEx.Internal.KnownBoxes;
     using JetBrains.Annotations;
     using Microsoft.Xaml.Behaviors;
@@ -46,6 +47,17 @@ namespace ControlzEx
             BindingOperations.SetBinding(behavior, WindowChromeBehavior.EnableMinimizeProperty, new Binding { Path = new PropertyPath(ShowMinButtonProperty), Source = this });
             BindingOperations.SetBinding(behavior, WindowChromeBehavior.EnableMaxRestoreProperty, new Binding { Path = new PropertyPath(ShowMaxRestoreButtonProperty), Source = this });
             BindingOperations.SetBinding(behavior, WindowChromeBehavior.CornerPreferenceProperty, new Binding { Path = new PropertyPath(CornerPreferenceProperty), Source = this });
+
+            var topBorderPlaceholderHeightBinding = new MultiBinding
+            {
+                Converter = WindowChromeTopBorderPlaceholderHeightConverter.Default
+            };
+            topBorderPlaceholderHeightBinding.Bindings.Add(new Binding { Path = new PropertyPath(GlowColorProperty), Source = this });
+            topBorderPlaceholderHeightBinding.Bindings.Add(new Binding { Path = new PropertyPath(NonActiveGlowColorProperty), Source = this });
+            topBorderPlaceholderHeightBinding.Bindings.Add(new Binding { Path = new PropertyPath(DWMSupportsBorderColorProperty), Source = this });
+            topBorderPlaceholderHeightBinding.Bindings.Add(new Binding { Path = new PropertyPath(PreferDWMBorderColorProperty), Source = this });
+
+            BindingOperations.SetBinding(behavior, WindowChromeBehavior.TopBorderPlaceholderHeightProperty, topBorderPlaceholderHeightBinding);
 
             this.SetBinding(IsNCActiveProperty, new Binding { Path = new PropertyPath(WindowChromeBehavior.IsNCActiveProperty), Source = behavior });
 

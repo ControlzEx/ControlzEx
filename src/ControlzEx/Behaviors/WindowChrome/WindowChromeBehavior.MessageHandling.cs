@@ -352,6 +352,7 @@ namespace ControlzEx.Behaviors
                 PInvoke.DefWindowProc(this.windowHandle, (uint)uMsg, wParam, lParam);
                 var rc = Marshal.PtrToStructure<RECT>(lParam);
                 rc.top = rcBefore.top; // Remove titlebar
+                rc.top += this.TopBorderPlaceholderHeight;
                 Marshal.StructureToPtr(rc, lParam, true);
             }
             else if (this.AssociatedObject.AllowsTransparency == false
@@ -364,6 +365,8 @@ namespace ControlzEx.Behaviors
                 // Removing pixels would result in a smaller client area.
                 // Adding pixels does not seem to really increase the client area.
                 rc.bottom += 1;
+
+                rc.top += this.TopBorderPlaceholderHeight;
 
                 Marshal.StructureToPtr(rc, lParam, true);
             }
