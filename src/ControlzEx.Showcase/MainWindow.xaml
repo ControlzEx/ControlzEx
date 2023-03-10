@@ -48,6 +48,14 @@
                 <x:Type TypeName="controlzEx:WindowCornerPreference" />
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
+        
+        <ObjectDataProvider x:Key="DockEnumValues"
+                            MethodName="GetValues"
+                            ObjectType="{x:Type Dock}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="Dock" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
     </controlzEx:WindowChromeWindow.Resources>
 
     <Grid SnapsToDevicePixels="True">
@@ -109,7 +117,8 @@
                           controlzEx:NonClientControlProperties.HitTestResult="CLIENT"
                           Background="{DynamicResource ControlzEx.Brushes.AccentBaseColorBrush}" />
 
-            <controlzEx:TabControlEx Grid.Row="2">
+            <controlzEx:TabControlEx Grid.Row="2"
+                                     x:Name="tabControlEx">
                 <TabItem Header="WindowChrome">
                     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                         <Grid Grid.IsSharedSizeScope="True">
@@ -748,6 +757,9 @@
 
                 <TabItem Header="TabControlEx">
                     <StackPanel>
+                        <ComboBox ItemsSource="{Binding Source={StaticResource DockEnumValues}}"
+                                  SelectedItem="{Binding ElementName=tabControlEx, Path=TabStripPlacement, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
                         <TextBox Margin="5"
                                  HorizontalAlignment="Center"
                                  Text="Lorem ipsum dolor sit amet, consetetur sadipscing" />
