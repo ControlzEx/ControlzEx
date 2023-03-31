@@ -13,6 +13,9 @@ namespace ControlzEx
     [PublicAPI]
     public partial class WindowChromeWindow : Window
     {
+        private static readonly object defaultContentPadding = new Thickness(0, 1, 0, 0);
+        private static readonly object emptyContentPadding = default(Thickness);
+
         static WindowChromeWindow()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(WindowChromeWindow), new FrameworkPropertyMetadata(typeof(WindowChromeWindow)));
@@ -156,7 +159,12 @@ namespace ControlzEx
         /// <summary>
         /// <see cref="DependencyProperty"/> for <see cref="GlowColor"/>.
         /// </summary>
-        public static readonly DependencyProperty GlowColorProperty = DependencyProperty.Register(nameof(GlowColor), typeof(Color?), typeof(WindowChromeWindow), new PropertyMetadata(null));
+        public static readonly DependencyProperty GlowColorProperty = DependencyProperty.Register(nameof(GlowColor), typeof(Color?), typeof(WindowChromeWindow), new PropertyMetadata(null, OnGlowColorChanged));
+
+        private static void OnGlowColorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((WindowChromeWindow)d).UpdatePadding();
+        }
 
         /// <summary>
         /// Gets or sets a brush which is used as the glow when the window is active.
@@ -170,7 +178,12 @@ namespace ControlzEx
         /// <summary>
         /// <see cref="DependencyProperty"/> for <see cref="NonActiveGlowColor"/>.
         /// </summary>
-        public static readonly DependencyProperty NonActiveGlowColorProperty = DependencyProperty.Register(nameof(NonActiveGlowColor), typeof(Color?), typeof(WindowChromeWindow), new PropertyMetadata(null));
+        public static readonly DependencyProperty NonActiveGlowColorProperty = DependencyProperty.Register(nameof(NonActiveGlowColor), typeof(Color?), typeof(WindowChromeWindow), new PropertyMetadata(null, OnNonActiveGlowColorChanged));
+
+        private static void OnNonActiveGlowColorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((WindowChromeWindow)d).UpdatePadding();
+        }
 
         /// <summary>
         /// Gets or sets a brush which is used as the glow when the window is not active.
@@ -249,6 +262,37 @@ namespace ControlzEx
         {
             get => (WindowCornerPreference)this.GetValue(CornerPreferenceProperty);
             set => this.SetValue(CornerPreferenceProperty, value);
+        }
+
+        protected override void OnActivated(EventArgs e)
+        {
+            base.OnActivated(e);
+            this.UpdatePadding();
+        }
+
+        protected override void OnDeactivated(EventArgs e)
+        {
+            base.OnDeactivated(e);
+            this.UpdatePadding();
+        }
+
+        protected virtual void UpdatePadding()
+        {
+            if (this.IsActive
+                && this.GlowColor is not null)
+            {
+                this.SetCurrentValue(PaddingProperty, defaultContentPadding);
+                return;
+            }
+
+            if (this.IsActive == false
+                && this.NonActiveGlowColor is not null)
+            {
+                this.SetCurrentValue(PaddingProperty, defaultContentPadding);
+                return;
+            }
+
+            this.SetCurrentValue(PaddingProperty, emptyContentPadding);
         }
     }
 }
