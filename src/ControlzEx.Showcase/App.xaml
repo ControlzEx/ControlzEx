@@ -30,7 +30,8 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type controlzEx:WindowChromeWindow}">
-                            <Grid Background="{TemplateBinding Background}">
+                            <Grid Background="{TemplateBinding Background}"
+                                  Margin="{TemplateBinding Padding}">
                                 <AdornerDecorator>
                                     <ContentPresenter />
                                 </AdornerDecorator>

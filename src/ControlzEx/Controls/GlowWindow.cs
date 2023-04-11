@@ -1254,6 +1254,9 @@ namespace ControlzEx.Controls.Internal
                 return;
             }
 
+            // We have to position the glow one px below the top to allow the border/glow to be visible on screenshots
+            lpRect.top += 1;
+
             switch (this.orientation)
             {
                 case Dock.Left:
