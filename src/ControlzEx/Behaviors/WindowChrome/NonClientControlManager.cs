@@ -131,7 +131,8 @@ namespace ControlzEx.Behaviors
 
         public static DependencyObject? GetControlUnderMouse(Window owner, IntPtr lParam, out HT hitTestResult)
         {
-            if (lParam == IntPtr.Zero)
+            if (lParam == IntPtr.Zero
+                || PresentationSource.FromVisual(owner) is null)
             {
                 hitTestResult = HT.NOWHERE;
                 return null;
