@@ -276,8 +276,20 @@ namespace ControlzEx
             this.UpdatePadding();
         }
 
+        protected override void OnStateChanged(EventArgs e)
+        {
+            base.OnStateChanged(e);
+            this.UpdatePadding();
+        }
+
         protected virtual void UpdatePadding()
         {
+            if (this.WindowState == WindowState.Maximized)
+            {
+                this.SetCurrentValue(PaddingProperty, emptyContentPadding);
+                return;
+            }
+
             if (this.IsActive
                 && this.GlowColor is not null)
             {
