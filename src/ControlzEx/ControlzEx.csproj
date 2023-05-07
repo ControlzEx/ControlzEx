@@ -21,6 +21,9 @@
         <RepositoryType>git</RepositoryType>
         <GenerateLibraryLayout>true</GenerateLibraryLayout>
     </PropertyGroup>
+    <ItemGroup>
+      <EmbeddedResource Remove="Resources\*.png" />
+    </ItemGroup>
 
     <ItemGroup>
       <None Include="..\..\logo-mini.png">
@@ -28,14 +31,6 @@
         <PackagePath></PackagePath>
       </None>
     </ItemGroup>
-
-    <!-- Sign assembly -->
-    <PropertyGroup>
-        <SignAssembly>True</SignAssembly>
-        <AssemblyOriginatorKeyFile>$(MSBuildProjectDirectory)\..\SharedKey.snk</AssemblyOriginatorKeyFile>
-        <DelaySign>false</DelaySign>
-        <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
-    </PropertyGroup>
 
     <ItemGroup>
         <Compile DependentUpon="%(Filename)" SubType="Code" Update="**\obj\**\*.g$(DefaultLanguageSourceExtension)" />
@@ -55,6 +50,9 @@
 
     <!-- reference includes -->
     <ItemGroup>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" IncludeAssets="build; native" />
+        <PackageReference Include="Microsoft.Windows.CsWin32">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
 </Project>

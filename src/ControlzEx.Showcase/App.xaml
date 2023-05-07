@@ -3,38 +3,44 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:ControlzEx.Showcase"
              xmlns:theming="clr-namespace:ControlzEx.Showcase.Theming"
-             StartupUri="MainWindow.xaml">
+             xmlns:controlzEx="urn:controlzex"
+             StartupUri="MainWindow.xaml"
+             ShutdownMode="OnMainWindowClose">
     <Application.Resources>
         <ResourceDictionary>
             <theming:ShowcaseLibraryThemeProvider x:Key="{x:Static theming:ShowcaseLibraryThemeProvider.DefaultInstance}" />
             <theming:SecondShowcaseLibraryThemeProvider x:Key="{x:Static theming:SecondShowcaseLibraryThemeProvider.DefaultInstance}" />
 
-            <Style x:Key="{x:Type local:WindowChromeWindow}" TargetType="{x:Type local:WindowChromeWindow}">
+            <SolidColorBrush x:Key="Button.Static.Background" Color="#FFDDDDDD" />
+            <SolidColorBrush x:Key="Button.Static.Border" Color="#FF707070" />
+            <SolidColorBrush x:Key="Button.MouseOver.Background" Color="#FFBEE6FD" />
+            <SolidColorBrush x:Key="Button.MouseOver.Border" Color="#FF3C7FB1" />
+            <SolidColorBrush x:Key="Button.Pressed.Background" Color="#FFC4E5F6" />
+            <SolidColorBrush x:Key="Button.Pressed.Border" Color="#FF2C628B" />
+            <SolidColorBrush x:Key="Button.Disabled.Background" Color="#FFF4F4F4" />
+            <SolidColorBrush x:Key="Button.Disabled.Border" Color="#FFADB2B5" />
+            <SolidColorBrush x:Key="Button.Disabled.Foreground" Color="#FF838383" />
+            
+            <Style x:Key="{x:Type controlzEx:WindowChromeWindow}" TargetType="{x:Type controlzEx:WindowChromeWindow}">
                 <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="BorderBrush" Value="{x:Null}" />
                 <Setter Property="NCActiveBrush" Value="{Binding Background, RelativeSource={RelativeSource Self}}" />
                 <Setter Property="NCCurrentBrush" Value="{Binding NCActiveBrush, RelativeSource={RelativeSource Self}}" />
                 <Setter Property="NCNonActiveBrush" Value="{Binding Source={x:Static SystemColors.WindowFrameBrush}}" />
-                <Setter Property="ResizeBorderThickness" Value="8" />
                 <Setter Property="Template">
                     <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type local:WindowChromeWindow}">
-                            <Grid Background="{TemplateBinding Background}">
+                        <ControlTemplate TargetType="{x:Type controlzEx:WindowChromeWindow}">
+                            <Grid Background="{TemplateBinding Background}"
+                                  Margin="{TemplateBinding Padding}">
                                 <AdornerDecorator>
                                     <ContentPresenter />
                                 </AdornerDecorator>
-
-                                <Border x:Name="PART_Border2"
-                                        HorizontalAlignment="Stretch"
-                                        VerticalAlignment="Stretch"
-                                        Background="{x:Null}"
-                                        BorderThickness="{TemplateBinding BorderThickness}"
-                                        UseLayoutRounding="True" />
 
                                 <Border x:Name="PART_Border"
                                         HorizontalAlignment="Stretch"
                                         VerticalAlignment="Stretch"
                                         Background="{x:Null}"
-                                        BorderBrush="{TemplateBinding GlowBrush}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
                                         BorderThickness="{TemplateBinding BorderThickness}"
                                         UseLayoutRounding="True" />
 
@@ -42,16 +48,10 @@
                                             HorizontalAlignment="Right"
                                             VerticalAlignment="Bottom"
                                             IsTabStop="false"
-                                            Visibility="Collapsed" />
+                                            Visibility="Collapsed"
+                                            controlzEx:WindowChrome.ResizeGripDirection="BottomRight" />
                             </Grid>
                             <ControlTemplate.Triggers>
-                                <!--  handle active/inactive state  -->
-                                <Trigger Property="IsActive" Value="False">
-                                    <Setter TargetName="PART_Border" Property="BorderBrush" Value="{Binding Path=NonActiveGlowBrush, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" />
-                                </Trigger>
-                                <Trigger SourceName="PART_Border" Property="BorderBrush" Value="{x:Null}">
-                                    <Setter TargetName="PART_Border2" Property="BorderBrush" Value="Black" />
-                                </Trigger>
                                 <MultiTrigger>
                                     <MultiTrigger.Conditions>
                                         <Condition Property="Window.ResizeMode" Value="CanResizeWithGrip" />
@@ -81,10 +81,18 @@
                 </Style.Triggers>
             </Style>
 
-            <Style x:Key="NoneWindowStyle"
-                   BasedOn="{StaticResource {x:Type local:WindowChromeWindow}}"
-                   TargetType="{x:Type local:WindowChromeWindow}">
-                <Setter Property="WindowStyle" Value="None" />
+            <Style x:Key="WindowTitleBarButton"
+                   TargetType="Button">
+                <Style.Triggers>
+                    <Trigger Property="controlzEx:NonClientControlProperties.IsNCMouseOver" Value="true">
+                        <Setter Property="Background" Value="{StaticResource Button.MouseOver.Background}" />
+                        <Setter Property="BorderBrush" Value="{StaticResource Button.MouseOver.Border}" />
+                    </Trigger>
+                    <Trigger Property="controlzEx:NonClientControlProperties.IsNCPressed" Value="true">
+                        <Setter Property="Background" Value="{StaticResource Button.Pressed.Background}" />
+                        <Setter Property="BorderBrush" Value="{StaticResource Button.Pressed.Border}" />
+                    </Trigger>
+                </Style.Triggers>
             </Style>
         </ResourceDictionary>
     </Application.Resources>

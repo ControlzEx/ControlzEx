@@ -4,7 +4,9 @@ namespace ControlzEx.Theming
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.ComponentModel;
     using System.Linq;
+    using System.Runtime.CompilerServices;
     using System.Windows;
     using System.Windows.Media;
     using ControlzEx.Internal;
@@ -13,7 +15,7 @@ namespace ControlzEx.Theming
     /// <summary>
     /// Represents a theme.
     /// </summary>
-    public class Theme
+    public class Theme : INotifyPropertyChanged
     {
         /// <summary>
         /// Gets the key for the themes name.
@@ -69,7 +71,7 @@ namespace ControlzEx.Theming
         /// Initializes a new instance.
         /// </summary>
         /// <param name="libraryTheme">The first <see cref="LibraryTheme"/> of the theme.</param>
-        public Theme([NotNull] LibraryTheme libraryTheme)
+        public Theme(LibraryTheme libraryTheme)
             : this(libraryTheme.Name, libraryTheme.DisplayName, libraryTheme.BaseColorScheme, libraryTheme.ColorScheme, libraryTheme.PrimaryAccentColor, libraryTheme.ShowcaseBrush, libraryTheme.IsRuntimeGenerated, libraryTheme.IsHighContrast)
         {
             if (libraryTheme is null)
@@ -199,7 +201,7 @@ namespace ControlzEx.Theming
         /// </summary>
         /// <param name="libraryTheme">The <see cref="LibraryTheme"/> to add.</param>
         /// <returns>This instance for fluent call usage.</returns>
-        public Theme AddLibraryTheme([NotNull] LibraryTheme libraryTheme)
+        public Theme AddLibraryTheme(LibraryTheme libraryTheme)
         {
             if (libraryTheme is null)
             {
@@ -225,10 +227,10 @@ namespace ControlzEx.Theming
         /// <inheritdoc />
         public override string ToString()
         {
-            return $"DisplayName={this.DisplayName}, Name={this.Name}, IsHighContrast={this.IsHighContrast}, IsRuntimeGenerated={this.IsRuntimeGenerated}";
+            return $"DisplayName={this.DisplayName}, Name={this.Name}, IsHighContrast={this.IsHighContrast.ToString()}, IsRuntimeGenerated={this.IsRuntimeGenerated.ToString()}";
         }
 
-        public static string? GetThemeName([NotNull] ResourceDictionary resourceDictionary)
+        public static string? GetThemeName(ResourceDictionary resourceDictionary)
         {
             if (resourceDictionary is null)
             {
@@ -243,7 +245,7 @@ namespace ControlzEx.Theming
             return ResourceDictionaryHelper.GetValueFromKey(resourceDictionary, ThemeNameKey) as string;
         }
 
-        public static Theme? GetThemeInstance([NotNull] ResourceDictionary resourceDictionary)
+        public static Theme? GetThemeInstance(ResourceDictionary resourceDictionary)
         {
             if (resourceDictionary is null)
             {
@@ -295,6 +297,14 @@ namespace ControlzEx.Theming
             }
 
             return false;
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

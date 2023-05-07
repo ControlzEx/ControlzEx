@@ -9,6 +9,7 @@ namespace ControlzEx.Theming
     using System.ComponentModel;
     using System.Diagnostics;
     using System.Linq;
+    using System.Runtime.CompilerServices;
     using System.Security;
     using System.Windows;
     using System.Windows.Data;
@@ -21,7 +22,7 @@ namespace ControlzEx.Theming
     /// A class that allows for the detection and alteration of a theme.
     /// </summary>
     [PublicAPI]
-    public class ThemeManager
+    public class ThemeManager : INotifyPropertyChanged
     {
         /// <summary>
         /// Gets the name for the light base color.
@@ -171,7 +172,7 @@ namespace ControlzEx.Theming
             }
         }
 
-        public void RegisterLibraryThemeProvider([NotNull] LibraryThemeProvider libraryThemeProvider)
+        public void RegisterLibraryThemeProvider(LibraryThemeProvider libraryThemeProvider)
         {
             if (libraryThemeProvider is null)
             {
@@ -200,11 +201,7 @@ namespace ControlzEx.Theming
             }
         }
 
-#if NET5_0_OR_GREATER
         private void ThemesInternalCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
-#else
-        private void ThemesInternalCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-#endif
         {
             switch (e.Action)
             {
@@ -272,7 +269,7 @@ namespace ControlzEx.Theming
             this.themesInternal.Clear();
         }
 
-        public Theme AddLibraryTheme([NotNull] LibraryTheme libraryTheme)
+        public Theme AddLibraryTheme(LibraryTheme libraryTheme)
         {
             var theme = this.GetTheme(libraryTheme.Name, libraryTheme.IsHighContrast);
             if (theme is not null)
@@ -287,7 +284,7 @@ namespace ControlzEx.Theming
             return theme;
         }
 
-        public Theme AddTheme([NotNull] Theme theme)
+        public Theme AddTheme(Theme theme)
         {
             var existingTheme = this.GetTheme(theme.Name, theme.IsHighContrast);
             if (existingTheme is not null)
@@ -303,7 +300,7 @@ namespace ControlzEx.Theming
         /// Gets the <see cref="Theme"/> with the given name.
         /// </summary>
         /// <returns>The <see cref="Theme"/> or <c>null</c>, if the theme wasn't found</returns>
-        public Theme? GetTheme([NotNull] string name, bool highContrast = false)
+        public Theme? GetTheme(string name, bool highContrast = false)
         {
             if (name is null)
             {
@@ -317,7 +314,7 @@ namespace ControlzEx.Theming
         /// Gets the <see cref="Theme"/> with the given name.
         /// </summary>
         /// <returns>The <see cref="Theme"/> or <c>null</c>, if the theme wasn't found</returns>
-        public Theme? GetTheme([NotNull] string baseColorScheme, [NotNull] string colorScheme, bool highContrast = false)
+        public Theme? GetTheme(string baseColorScheme, string colorScheme, bool highContrast = false)
         {
             if (baseColorScheme is null)
             {
@@ -346,7 +343,7 @@ namespace ControlzEx.Theming
         /// </summary>
         /// <param name="resourceDictionary"><see cref="ResourceDictionary"/> from which the theme should be retrieved.</param>
         /// <returns>The <see cref="Theme"/> or <c>null</c>, if the theme wasn't found.</returns>
-        public Theme? GetTheme([NotNull] ResourceDictionary resourceDictionary)
+        public Theme? GetTheme(ResourceDictionary resourceDictionary)
         {
             if (resourceDictionary is null)
             {
@@ -406,7 +403,7 @@ namespace ControlzEx.Theming
         /// Returns BaseLight, if BaseDark is given or vice versa.
         /// Custom Themes must end with "Dark" or "Light" for this to work, for example "CustomDark" and "CustomLight".
         /// </remarks>
-        public Theme? GetInverseTheme([NotNull] Theme theme)
+        public Theme? GetInverseTheme(Theme theme)
         {
             if (theme is null)
             {
@@ -447,7 +444,7 @@ namespace ControlzEx.Theming
         /// <param name="resourceDictionary">The resources.</param>
         /// <returns><c>true</c> if the resource dictionary is an <see cref="Theme"/>; otherwise, <c>false</c>.</returns>
         /// <exception cref="System.ArgumentNullException">resources</exception>
-        public bool IsThemeDictionary([NotNull] ResourceDictionary resourceDictionary)
+        public bool IsThemeDictionary(ResourceDictionary resourceDictionary)
         {
             return Theme.IsThemeDictionary(resourceDictionary);
         }
@@ -460,7 +457,7 @@ namespace ControlzEx.Theming
         /// <param name="resourceDictionary">The resources.</param>
         /// <returns><c>true</c> if the resource dictionary is an <see cref="Theme"/>; otherwise, <c>false</c>.</returns>
         /// <exception cref="System.ArgumentNullException">resources</exception>
-        public bool IsRuntimeGeneratedThemeDictionary([NotNull] ResourceDictionary resourceDictionary)
+        public bool IsRuntimeGeneratedThemeDictionary(ResourceDictionary resourceDictionary)
         {
             return Theme.IsRuntimeGeneratedThemeDictionary(resourceDictionary);
         }
@@ -469,7 +466,7 @@ namespace ControlzEx.Theming
         /// Change the theme for the whole application.
         /// </summary>
         [SecurityCritical]
-        public Theme ChangeTheme([NotNull] Application app, [NotNull] string themeName, bool highContrast = false)
+        public Theme ChangeTheme(Application app, string themeName, bool highContrast = false)
         {
             if (app is null)
             {
@@ -495,7 +492,7 @@ namespace ControlzEx.Theming
         /// Change theme for the given window.
         /// </summary>
         [SecurityCritical]
-        public Theme ChangeTheme([NotNull] FrameworkElement frameworkElement, [NotNull] string themeName, bool highContrast = false)
+        public Theme ChangeTheme(FrameworkElement frameworkElement, string themeName, bool highContrast = false)
         {
             if (frameworkElement is null)
             {
@@ -523,7 +520,7 @@ namespace ControlzEx.Theming
         /// <param name="app">The instance of Application to change.</param>
         /// <param name="newTheme">The theme to apply.</param>
         [SecurityCritical]
-        public Theme ChangeTheme([NotNull] Application app, [NotNull] Theme newTheme)
+        public Theme ChangeTheme(Application app, Theme newTheme)
         {
             if (app is null)
             {
@@ -544,7 +541,7 @@ namespace ControlzEx.Theming
         /// <param name="frameworkElement">The FrameworkElement to change.</param>
         /// <param name="newTheme">The theme to apply.</param>
         [SecurityCritical]
-        public Theme ChangeTheme([NotNull] FrameworkElement frameworkElement, [NotNull] Theme newTheme)
+        public Theme ChangeTheme(FrameworkElement frameworkElement, Theme newTheme)
         {
             if (frameworkElement is null)
             {
@@ -567,7 +564,7 @@ namespace ControlzEx.Theming
         /// <param name="resourceDictionary">The ResourceDictionary to change.</param>
         /// <param name="newTheme">The theme to apply.</param>
         [SecurityCritical]
-        public Theme ChangeTheme(object? target, [NotNull] ResourceDictionary resourceDictionary, [NotNull] Theme newTheme)
+        public Theme ChangeTheme(object? target, ResourceDictionary resourceDictionary, Theme newTheme)
         {
             if (resourceDictionary is null)
             {
@@ -584,7 +581,7 @@ namespace ControlzEx.Theming
         }
 
         [SecurityCritical]
-        private Theme ChangeTheme(object? target, [NotNull] ResourceDictionary resourceDictionary, Theme? oldTheme, [NotNull] Theme newTheme)
+        private Theme ChangeTheme(object? target, ResourceDictionary resourceDictionary, Theme? oldTheme, Theme newTheme)
         {
             if (resourceDictionary is null)
             {
@@ -667,7 +664,7 @@ namespace ControlzEx.Theming
         /// <param name="baseColorScheme">The base color to apply to the ResourceDictionary.</param>
         /// <param name="colorScheme">The color scheme to apply to the ResourceDictionary.</param>
         [SecurityCritical]
-        public Theme? ChangeTheme([NotNull] Application app, [NotNull] string baseColorScheme, [NotNull] string colorScheme)
+        public Theme? ChangeTheme(Application app, string baseColorScheme, string colorScheme)
         {
             if (app is null)
             {
@@ -701,7 +698,7 @@ namespace ControlzEx.Theming
         /// <param name="baseColorScheme">The base color to apply to the ResourceDictionary.</param>
         /// <param name="colorScheme">The color scheme to apply to the ResourceDictionary.</param>
         [SecurityCritical]
-        public Theme? ChangeTheme([NotNull] FrameworkElement frameworkElement, [NotNull] string baseColorScheme, [NotNull] string colorScheme)
+        public Theme? ChangeTheme(FrameworkElement frameworkElement, string baseColorScheme, string colorScheme)
         {
             if (frameworkElement is null)
             {
@@ -737,7 +734,7 @@ namespace ControlzEx.Theming
         /// <param name="baseColorScheme">The base color to apply to the ResourceDictionary.</param>
         /// <param name="colorScheme">The color scheme to apply to the ResourceDictionary.</param>
         [SecurityCritical]
-        public Theme? ChangeTheme(object? target, [NotNull] ResourceDictionary resourceDictionary, Theme oldTheme, [NotNull] string baseColorScheme, [NotNull] string colorScheme)
+        public Theme? ChangeTheme(object? target, ResourceDictionary resourceDictionary, Theme oldTheme, string baseColorScheme, string colorScheme)
         {
             if (resourceDictionary is null)
             {
@@ -758,7 +755,7 @@ namespace ControlzEx.Theming
 
             if (newTheme is null)
             {
-                Trace.TraceError($"Could not find a theme with base color scheme '{baseColorScheme}', color scheme '{colorScheme}' and high contrast equals {oldTheme.IsHighContrast}.");
+                Trace.TraceError($"Could not find a theme with base color scheme '{baseColorScheme}', color scheme '{colorScheme}' and high contrast equals {oldTheme.IsHighContrast.ToString()}.");
                 return null;
             }
 
@@ -771,7 +768,7 @@ namespace ControlzEx.Theming
         /// <param name="app">The application to change.</param>
         /// <param name="baseColorScheme">The base color to apply to the ResourceDictionary.</param>
         [SecurityCritical]
-        public Theme? ChangeThemeBaseColor([NotNull] Application app, [NotNull] string baseColorScheme)
+        public Theme? ChangeThemeBaseColor(Application app, string baseColorScheme)
         {
             if (app is null)
             {
@@ -799,7 +796,7 @@ namespace ControlzEx.Theming
         /// <param name="frameworkElement">The FrameworkElement to change.</param>
         /// <param name="baseColorScheme">The base color to apply to the ResourceDictionary.</param>
         [SecurityCritical]
-        public Theme? ChangeThemeBaseColor([NotNull] FrameworkElement frameworkElement, [NotNull] string baseColorScheme)
+        public Theme? ChangeThemeBaseColor(FrameworkElement frameworkElement, string baseColorScheme)
         {
             if (frameworkElement is null)
             {
@@ -829,7 +826,7 @@ namespace ControlzEx.Theming
         /// <param name="oldTheme">The old/current theme.</param>
         /// <param name="baseColorScheme">The base color to apply to the ResourceDictionary.</param>
         [SecurityCritical]
-        public Theme? ChangeThemeBaseColor(object? target, [NotNull] ResourceDictionary resourceDictionary, Theme? oldTheme, [NotNull] string baseColorScheme)
+        public Theme? ChangeThemeBaseColor(object? target, ResourceDictionary resourceDictionary, Theme? oldTheme, string baseColorScheme)
         {
             if (resourceDictionary is null)
             {
@@ -870,7 +867,7 @@ namespace ControlzEx.Theming
         /// <param name="app">The application to change.</param>
         /// <param name="colorScheme">The color scheme to apply to the ResourceDictionary.</param>
         [SecurityCritical]
-        public Theme? ChangeThemeColorScheme([NotNull] Application app, [NotNull] string colorScheme)
+        public Theme? ChangeThemeColorScheme(Application app, string colorScheme)
         {
             if (app is null)
             {
@@ -898,7 +895,7 @@ namespace ControlzEx.Theming
         /// <param name="frameworkElement">The FrameworkElement to change.</param>
         /// <param name="colorScheme">The color scheme to apply to the ResourceDictionary.</param>
         [SecurityCritical]
-        public Theme? ChangeThemeColorScheme([NotNull] FrameworkElement frameworkElement, [NotNull] string colorScheme)
+        public Theme? ChangeThemeColorScheme(FrameworkElement frameworkElement, string colorScheme)
         {
             if (frameworkElement is null)
             {
@@ -928,7 +925,7 @@ namespace ControlzEx.Theming
         /// <param name="oldTheme">The old/current theme.</param>
         /// <param name="colorScheme">The color scheme to apply to the ResourceDictionary.</param>
         [SecurityCritical]
-        public Theme? ChangeThemeColorScheme(object? target, [NotNull] ResourceDictionary resourceDictionary, Theme? oldTheme, [NotNull] string colorScheme)
+        public Theme? ChangeThemeColorScheme(object? target, ResourceDictionary resourceDictionary, Theme? oldTheme, string colorScheme)
         {
             if (resourceDictionary is null)
             {
@@ -970,7 +967,7 @@ namespace ControlzEx.Theming
         /// <param name="resourceDictionary">The ResourceDictionary to modify.</param>
         /// <param name="newTheme">The theme to apply to the ResourceDictionary.</param>
         [SecurityCritical]
-        public void ApplyThemeResourcesFromTheme([NotNull] ResourceDictionary resourceDictionary, [NotNull] Theme newTheme)
+        public void ApplyThemeResourcesFromTheme(ResourceDictionary resourceDictionary, Theme newTheme)
         {
             if (resourceDictionary is null)
             {
@@ -989,7 +986,7 @@ namespace ControlzEx.Theming
 
         [SecurityCritical]
         // ReSharper disable once SuggestBaseTypeForParameter
-        private void ApplyResourceDictionary([NotNull] ResourceDictionary oldRd, [NotNull] ResourceDictionary newRd)
+        private void ApplyResourceDictionary(ResourceDictionary oldRd, ResourceDictionary newRd)
         {
             if (oldRd is null)
             {
@@ -1008,7 +1005,7 @@ namespace ControlzEx.Theming
             oldRd.EndInit();
         }
 
-        private void ApplyResourceDictionaryEntries([NotNull] ResourceDictionary oldRd, [NotNull] ResourceDictionary newRd)
+        private void ApplyResourceDictionaryEntries(ResourceDictionary oldRd, ResourceDictionary newRd)
         {
             foreach (var newRdMergedDictionary in newRd.MergedDictionaries)
             {
@@ -1066,7 +1063,7 @@ namespace ControlzEx.Theming
         /// Scans the application resources and returns it's theme.
         /// </summary>
         /// <param name="app">The Application instance to scan.</param>
-        public Theme? DetectTheme([NotNull] Application app)
+        public Theme? DetectTheme(Application app)
         {
             if (app is null)
             {
@@ -1081,7 +1078,7 @@ namespace ControlzEx.Theming
         /// </summary>
         /// <param name="frameworkElement">The FrameworkElement to scan.</param>
         /// <remarks>If the theme can't be detected from the <paramref name="frameworkElement"/> we try to detect it from <see cref="Application.Current"/>.</remarks>
-        public Theme? DetectTheme([NotNull] FrameworkElement frameworkElement)
+        public Theme? DetectTheme(FrameworkElement frameworkElement)
         {
             if (frameworkElement is null)
             {
@@ -1100,7 +1097,7 @@ namespace ControlzEx.Theming
         /// Scans a resources and returns it's theme.
         /// </summary>
         /// <param name="resourceDictionary">The ResourceDictionary to scan.</param>
-        public Theme? DetectTheme([NotNull] ResourceDictionary resourceDictionary)
+        public Theme? DetectTheme(ResourceDictionary resourceDictionary)
         {
             if (resourceDictionary is null)
             {
@@ -1272,11 +1269,7 @@ namespace ControlzEx.Theming
             }
         }
 
-#if NET5_0_OR_GREATER
         private void HandleStaticPropertyChanged(object? sender, PropertyChangedEventArgs e)
-#else
-        private void HandleStaticPropertyChanged(object sender, PropertyChangedEventArgs e)
-#endif
         {
             if (e.PropertyName == nameof(SystemParameters.HighContrast)
                 && this.isSyncScheduled == false)
@@ -1314,6 +1307,14 @@ namespace ControlzEx.Theming
                 color = default;
                 return false;
             }
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 

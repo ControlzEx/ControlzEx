@@ -2,45 +2,30 @@
 <Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
     <!-- Project properties -->
     <PropertyGroup>
-        <AssemblyName>ControlzEx.Showcase</AssemblyName>
-        <RootNamespace>ControlzEx.Showcase</RootNamespace>
         <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
         <IsPackable>false</IsPackable>
         <ApplicationIcon>..\..\logo.ico</ApplicationIcon>
-    </PropertyGroup>
-    <PropertyGroup>
+
         <OutputType>WinExe</OutputType>
         <NoWarn>SA1652;WPF0041</NoWarn>
         <ApplicationManifest>app.manifest</ApplicationManifest>
     </PropertyGroup>
-    <PropertyGroup>
-      <DefaultItemExcludes>$(DefaultItemExcludes);**/*.Template.xaml</DefaultItemExcludes>
-    </PropertyGroup>
-    <!-- Items include -->
-    <ItemGroup>
-      <EmbeddedResource Include="**/*.Template.xaml" />
-      <EmbeddedResource Include="**/GeneratorParameters.json" />
-      <UpToDateCheckInput Include="**/*.xaml" />
-    </ItemGroup>
-    
+
     <ItemGroup>
         <ProjectReference Include="..\ControlzEx\ControlzEx.csproj" />
     </ItemGroup>
     <ItemGroup>
         <None Include="app.manifest" />
     </ItemGroup>
+
     <ItemGroup>
-        <Compile DependentUpon="%(Filename)" SubType="Code" Update="**\obj\**\*.g$(DefaultLanguageSourceExtension)" />
-        <Compile DependentUpon="%(Filename)" SubType="Designer" Update="**\*.xaml$(DefaultLanguageSourceExtension)" />
+      <PackageReference Include="XAMLTools.MSBuild" PrivateAssets="All" IncludeAssets="build" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="XamlColorSchemeGenerator" PrivateAssets="All" IncludeAssets="build" />
+      <XAMLColorSchemeGeneratorItems Include="Themes\Themes\Theme.Template.xaml">
+        <ParametersFile>Themes\Themes\GeneratorParameters.json</ParametersFile>
+        <OutputPath>Themes\Themes</OutputPath>
+      </XAMLColorSchemeGeneratorItems>
     </ItemGroup>
-
-    <Target Name="GenerateXamlFiles" BeforeTargets="DispatchToInnerBuilds;PrepareResources;MarkupCompilePass1;MarkupCompilePass2">
-      <!-- Generate theme files -->
-      <Message Text="$(XamlColorSchemeGeneratorExecutable)" />
-      <Exec Command="&quot;$(XamlColorSchemeGeneratorExecutable)&quot;" WorkingDirectory="$(MSBuildProjectDirectory)/Themes/Themes" />
-    </Target>
 </Project>

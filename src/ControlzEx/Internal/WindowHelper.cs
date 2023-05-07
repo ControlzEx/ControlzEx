@@ -1,7 +1,8 @@
 ﻿namespace ControlzEx.Internal
 {
     using System;
-    using ControlzEx.Standard;
+    using global::Windows.Win32;
+    using global::Windows.Win32.Foundation;
 
     internal static class WindowHelper
     {
@@ -9,7 +10,7 @@
         {
             return windowHandle != IntPtr.Zero
 #pragma warning disable 618
-                   && NativeMethods.IsWindow(windowHandle);
+                   && PInvoke.IsWindow(new HWND(windowHandle));
 #pragma warning restore 618
         }
     }

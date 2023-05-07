@@ -62,6 +62,7 @@ artifacts/
 *.tlh
 *.tmp
 *.tmp_proj
+*_wpftmp.csproj
 *.log
 *.binlog
 *.vspscc
@@ -257,8 +258,7 @@ paket-files/
 *.sln.iml
 
 # cake
-tools/*
-!tools/packages.config
+[tT]ools/
 
 # XamlStyler
 !XamlStyler/

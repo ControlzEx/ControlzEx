@@ -13,7 +13,7 @@
         {
             SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext());
 
-            new Application { ShutdownMode = ShutdownMode.OnExplicitShutdown };
+            _ = new Application { ShutdownMode = ShutdownMode.OnExplicitShutdown };
         }
 
         [OneTimeTearDown]

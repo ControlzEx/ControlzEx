@@ -137,19 +137,32 @@ An auto moving ToolTip. More [Info](https://jkarger.de/2014/11/02/how-to-make-th
 
 ## GlowWindowBehavior
 
-The `GlowWindowBehavior` adds a Glow around your window.
+The `GlowWindowBehavior` adds a Glow around your window.  
+Starting with Windows 11 the behavior can be used to control the color of the native window border and automatically does so, when Windows 11 is detected.  
+This can be turned off by setting `PreferDWMBorder` to `false`.
 
 ## WindowChromeBehavior
 
 ControlzEx provides a custom chrome for WPF windows and some other deeper fixes for it.
 
+What it does provide:
+- Draw anywhere inside the window (including the titlebar)
+- Supports every `WindowStyle` (`None`, `SingleBorderWindow`, `ThreeDBorderWindow` and `ToolWindow`)
+- Supports jitter free window resizes
+- Allows you to ignore the taskbar when the window is maximized
+- Provides an `IsNCActive` property
+- Mitigates a bug in Windows that causes newly shown windows to briefly be shown with a pure white background
+- Starting with Windows 11:
+  - Allows you to control rounded corners (through `CornerPreference`)
+  - Supports snap menu on window buttons (through attached properties like `NonClientControlProperties.HitTestResult` and `NonClientControlProperties.ClickStrategy`)
+
 Most of the fixes and improvements are from [MahApps.Metro](https://github.com/MahApps/MahApps.Metro) and [Fluent.Ribbon](https://github.com/fluentribbon/Fluent.Ribbon).
 
 Concrete implementation of techniques described here:
 
-[http://blogs.msdn.com/b/wpfsdk/archive/2008/09/08/custom-window-chrome-in-wpf.aspx](http://blogs.msdn.com/b/wpfsdk/archive/2008/09/08/custom-window-chrome-in-wpf.aspx)
+[Blog entry from Microsoft on custom Window chrome](https://web.archive.org/web/20150221141007/http://blogs.msdn.com/b/wpfsdk/archive/2008/09/08/custom-window-chrome-in-wpf.aspx)
 
-It's a fork of the original Microsoft WPF Shell Integration Library. Current Microsofts implementation can be found:
+It's a fork of the original Microsoft WPF Shell Integration Library. Current Microsoft's implementation can be found:
 
 - [https://github.com/dotnet/wpf](https://github.com/dotnet/wpf)
 - [http://referencesource.microsoft.com](http://referencesource.microsoft.com)
@@ -261,7 +274,9 @@ Your users should now have a simple way to use your icon pack in their applicati
 ```
 
 ## Theming
-ControlzEx provides a `ThemeManager` which helps you to provide Theming to your App. For more information see [this section](Wiki/ThemeManager.md).
+
+ControlzEx provides a `ThemeManager` which helps you to provide Theming to your App.  
+For more information see [this section](Wiki/ThemeManager.md).
 
 ## Licence
 

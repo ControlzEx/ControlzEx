@@ -1,15 +1,13 @@
-﻿#nullable enable
-namespace ControlzEx.Internal
+﻿namespace ControlzEx.Internal
 {
     using System.Windows;
-    using JetBrains.Annotations;
 
     public static class ResourceDictionaryHelper
     {
         /// <summary>
         /// Gets the value associated with <paramref name="key"/> directly from <paramref name="resourceDictionary"/>.
         /// </summary>
-        public static object? GetValueFromKey([NotNull] ResourceDictionary resourceDictionary, object key)
+        public static object? GetValueFromKey(ResourceDictionary resourceDictionary, object key)
         {
             foreach (var resourceKey in resourceDictionary.Keys)
             {
