@@ -21,6 +21,7 @@ namespace ControlzEx
             DefaultStyleKeyProperty.OverrideMetadata(typeof(WindowChromeWindow), new FrameworkPropertyMetadata(typeof(WindowChromeWindow)));
         }
 
+        /// <inheritdoc />
         protected override void OnSourceInitialized(EventArgs e)
         {
             base.OnSourceInitialized(e);
@@ -30,6 +31,9 @@ namespace ControlzEx
             this.InitializeBehaviors();
         }
 
+        /// <summary>
+        /// Used to initialize the required behaviors.
+        /// </summary>
         protected virtual void InitializeBehaviors()
         {
             this.InitializeWindowChromeBehavior();
@@ -73,92 +77,100 @@ namespace ControlzEx
             Interaction.GetBehaviors(this).Add(behavior);
         }
 
+        /// <inheritdoc cref="WindowChromeBehavior.ResizeBorderThickness"/>
         public Thickness ResizeBorderThickness
         {
             get => (Thickness)this.GetValue(ResizeBorderThicknessProperty);
             set => this.SetValue(ResizeBorderThicknessProperty, value);
         }
 
-        // Using a DependencyProperty as the backing store for ResizeBorderThickness.  This enables animation, styling, binding, etc...
+        /// <summary>Identifies the <see cref="ResizeBorderThickness"/> dependency property.</summary>
         public static readonly DependencyProperty ResizeBorderThicknessProperty =
             DependencyProperty.Register(nameof(ResizeBorderThickness), typeof(Thickness), typeof(WindowChromeWindow), new PropertyMetadata(WindowChromeBehavior.ResizeBorderThicknessProperty.DefaultMetadata.DefaultValue));
 
+        /// <inheritdoc cref="GlowWindowBehavior.GlowDepth"/>
+        /// <remarks>
+        /// Only relevant if the DWM border is not used.
+        /// </remarks>
         public int GlowDepth
         {
             get => (int)this.GetValue(GlowDepthProperty);
             set => this.SetValue(GlowDepthProperty, value);
         }
 
-        // Using a DependencyProperty as the backing store for GlowDepth.  This enables animation, styling, binding, etc...
+        /// <summary>Identifies the <see cref="GlowDepth"/> dependency property.</summary>
         public static readonly DependencyProperty GlowDepthProperty =
             DependencyProperty.Register(nameof(GlowDepth), typeof(int), typeof(WindowChromeWindow), new PropertyMetadata(GlowWindowBehavior.GlowDepthProperty.DefaultMetadata.DefaultValue));
 
+        /// <summary>Identifies the <see cref="UseRadialGradientForCorners"/> dependency property.</summary>
         public static readonly DependencyProperty UseRadialGradientForCornersProperty = DependencyProperty.Register(
             nameof(UseRadialGradientForCorners), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(GlowWindowBehavior.UseRadialGradientForCornersProperty.DefaultMetadata.DefaultValue));
 
+        /// <inheritdoc cref="GlowWindowBehavior.UseRadialGradientForCorners"/>
+        /// <remarks>
+        /// Only relevant if the DWM border is not used.
+        /// </remarks>
         public bool UseRadialGradientForCorners
         {
             get => (bool)this.GetValue(UseRadialGradientForCornersProperty);
             set => this.SetValue(UseRadialGradientForCornersProperty, BooleanBoxes.Box(value));
         }
 
+        /// <summary>Identifies the <see cref="IsGlowTransitionEnabled"/> dependency property.</summary>
         public static readonly DependencyProperty IsGlowTransitionEnabledProperty = DependencyProperty.Register(
             nameof(IsGlowTransitionEnabled), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(GlowWindowBehavior.IsGlowTransitionEnabledProperty.DefaultMetadata.DefaultValue));
 
+        /// <inheritdoc cref="GlowWindowBehavior.IsGlowTransitionEnabled"/>
+        /// <remarks>
+        /// Only relevant if the DWM border is not used.
+        /// </remarks>
         public bool IsGlowTransitionEnabled
         {
             get => (bool)this.GetValue(IsGlowTransitionEnabledProperty);
             set => this.SetValue(IsGlowTransitionEnabledProperty, BooleanBoxes.Box(value));
         }
 
+        /// <summary>Identifies the <see cref="IgnoreTaskbarOnMaximize"/> dependency property.</summary>
         public static readonly DependencyProperty IgnoreTaskbarOnMaximizeProperty = DependencyProperty.Register(nameof(IgnoreTaskbarOnMaximize), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(WindowChromeBehavior.IgnoreTaskbarOnMaximizeProperty.DefaultMetadata.DefaultValue));
 
+        /// <inheritdoc cref="WindowChromeBehavior.IgnoreTaskbarOnMaximize"/>
         public bool IgnoreTaskbarOnMaximize
         {
             get => (bool)this.GetValue(IgnoreTaskbarOnMaximizeProperty);
             set => this.SetValue(IgnoreTaskbarOnMaximizeProperty, BooleanBoxes.Box(value));
         }
 
-        /// <summary>
-        /// Gets/sets if the border thickness value should be kept on maximize
-        /// if the MaxHeight/MaxWidth of the window is less than the monitor resolution.
-        /// </summary>
+        /// <inheritdoc cref="WindowChromeBehavior.KeepBorderOnMaximize"/>
         public bool KeepBorderOnMaximize
         {
             get => (bool)this.GetValue(KeepBorderOnMaximizeProperty);
             set => this.SetValue(KeepBorderOnMaximizeProperty, BooleanBoxes.Box(value));
         }
 
-        /// <summary>
-        /// <see cref="DependencyProperty"/> for <see cref="KeepBorderOnMaximize"/>.
-        /// </summary>
+        /// <summary>Identifies the <see cref="KeepBorderOnMaximize"/> dependency property.</summary>
         public static readonly DependencyProperty KeepBorderOnMaximizeProperty = DependencyProperty.Register(nameof(KeepBorderOnMaximize), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(BooleanBoxes.TrueBox));
 
+        /// <summary>Identifies the <see cref="ShowMinButton"/> dependency property.</summary>
         public static readonly DependencyProperty ShowMinButtonProperty = DependencyProperty.Register(nameof(ShowMinButton), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(BooleanBoxes.TrueBox));
 
-        /// <summary>
-        /// Gets or sets whether if the minimize button is visible.
-        /// </summary>
+        /// <inheritdoc cref="WindowChromeBehavior.EnableMinimize"/>
         public bool ShowMinButton
         {
             get => (bool)this.GetValue(ShowMinButtonProperty);
             set => this.SetValue(ShowMinButtonProperty, BooleanBoxes.Box(value));
         }
 
+        /// <summary>Identifies the <see cref="ShowMaxRestoreButton"/> dependency property.</summary>
         public static readonly DependencyProperty ShowMaxRestoreButtonProperty = DependencyProperty.Register(nameof(ShowMaxRestoreButton), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(BooleanBoxes.TrueBox));
 
-        /// <summary>
-        /// Gets or sets whether if the Maximize/Restore button is visible.
-        /// </summary>
+        /// <inheritdoc cref="WindowChromeBehavior.EnableMaxRestore"/>
         public bool ShowMaxRestoreButton
         {
             get => (bool)this.GetValue(ShowMaxRestoreButtonProperty);
             set => this.SetValue(ShowMaxRestoreButtonProperty, BooleanBoxes.Box(value));
         }
 
-        /// <summary>
-        /// <see cref="DependencyProperty"/> for <see cref="GlowColor"/>.
-        /// </summary>
+        /// <summary>Identifies the <see cref="GlowColor"/> dependency property.</summary>
         public static readonly DependencyProperty GlowColorProperty = DependencyProperty.Register(nameof(GlowColor), typeof(Color?), typeof(WindowChromeWindow), new PropertyMetadata(null, OnGlowColorChanged));
 
         private static void OnGlowColorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -166,18 +178,14 @@ namespace ControlzEx
             ((WindowChromeWindow)d).UpdatePadding();
         }
 
-        /// <summary>
-        /// Gets or sets a brush which is used as the glow when the window is active.
-        /// </summary>
+        /// <inheritdoc cref="GlowWindowBehavior.GlowColor"/>
         public Color? GlowColor
         {
             get => (Color?)this.GetValue(GlowColorProperty);
             set => this.SetValue(GlowColorProperty, value);
         }
 
-        /// <summary>
-        /// <see cref="DependencyProperty"/> for <see cref="NonActiveGlowColor"/>.
-        /// </summary>
+        /// <summary>Identifies the <see cref="NonActiveGlowColor"/> dependency property.</summary>
         public static readonly DependencyProperty NonActiveGlowColorProperty = DependencyProperty.Register(nameof(NonActiveGlowColor), typeof(Color?), typeof(WindowChromeWindow), new PropertyMetadata(null, OnNonActiveGlowColorChanged));
 
         private static void OnNonActiveGlowColorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -185,18 +193,14 @@ namespace ControlzEx
             ((WindowChromeWindow)d).UpdatePadding();
         }
 
-        /// <summary>
-        /// Gets or sets a brush which is used as the glow when the window is not active.
-        /// </summary>
+        /// <inheritdoc cref="GlowWindowBehavior.NonActiveGlowColor"/>
         public Color? NonActiveGlowColor
         {
             get => (Color?)this.GetValue(NonActiveGlowColorProperty);
             set => this.SetValue(NonActiveGlowColorProperty, value);
         }
 
-        /// <summary>
-        /// <see cref="DependencyProperty"/> for <see cref="IsNCActive"/>.
-        /// </summary>
+        /// <summary>Identifies the <see cref="IsNCActive"/> dependency property.</summary>
         public static readonly DependencyProperty IsNCActiveProperty = DependencyProperty.Register(nameof(IsNCActive), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(BooleanBoxes.FalseBox));
 
         /// <summary>
@@ -208,24 +212,39 @@ namespace ControlzEx
             private set => this.SetValue(IsNCActiveProperty, BooleanBoxes.Box(value));
         }
 
+        /// <summary>Identifies the <see cref="NCActiveBrush"/> dependency property.</summary>
         public static readonly DependencyProperty NCActiveBrushProperty = DependencyProperty.Register(nameof(NCActiveBrush), typeof(Brush), typeof(WindowChromeWindow), new PropertyMetadata(default(Brush)));
 
+        /// <summary>
+        /// Defines the brush to use when the non-client area is active.
+        /// </summary>
         public Brush? NCActiveBrush
         {
             get => (Brush?)this.GetValue(NCActiveBrushProperty);
             set => this.SetValue(NCActiveBrushProperty, value);
         }
 
+        /// <summary>Identifies the <see cref="NCNonActiveBrush"/> dependency property.</summary>
         public static readonly DependencyProperty NCNonActiveBrushProperty = DependencyProperty.Register(nameof(NCNonActiveBrush), typeof(Brush), typeof(WindowChromeWindow), new PropertyMetadata(default(Brush)));
 
+        /// <summary>
+        /// Defines the brush to use when the non-client area is not active.
+        /// </summary>
         public Brush? NCNonActiveBrush
         {
             get => (Brush?)this.GetValue(NCNonActiveBrushProperty);
             set => this.SetValue(NCNonActiveBrushProperty, value);
         }
 
+        /// <summary>Identifies the <see cref="NCCurrentBrush"/> dependency property.</summary>
         public static readonly DependencyProperty NCCurrentBrushProperty = DependencyProperty.Register(nameof(NCCurrentBrush), typeof(Brush), typeof(WindowChromeWindow), new PropertyMetadata(default(Brush)));
 
+        /// <summary>
+        /// Defines the current non-client area brush (active or inactive).
+        /// </summary>
+        /// <remarks>
+        /// This property should only be set through style triggers.
+        /// </remarks>
         public Brush? NCCurrentBrush
         {
             get => (Brush?)this.GetValue(NCCurrentBrushProperty);
@@ -243,9 +262,7 @@ namespace ControlzEx
             set => this.SetValue(PreferDWMBorderColorProperty, BooleanBoxes.Box(value));
         }
 
-        /// <summary>
-        /// <see cref="DependencyProperty"/> for <see cref="DWMSupportsBorderColor"/>.
-        /// </summary>
+        /// <summary>Identifies the <see cref="DWMSupportsBorderColor"/> dependency property.</summary>
         public static readonly DependencyProperty DWMSupportsBorderColorProperty = DependencyProperty.Register(nameof(DWMSupportsBorderColor), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(BooleanBoxes.FalseBox));
 
         /// <inheritdoc cref="GlowWindowBehavior.DWMSupportsBorderColor"/>
@@ -255,33 +272,41 @@ namespace ControlzEx
             private set => this.SetValue(DWMSupportsBorderColorProperty, BooleanBoxes.Box(value));
         }
 
+        /// <summary>Identifies the <see cref="CornerPreference"/> dependency property.</summary>
         public static readonly DependencyProperty CornerPreferenceProperty = DependencyProperty.Register(
             nameof(CornerPreference), typeof(WindowCornerPreference), typeof(WindowChromeWindow), new PropertyMetadata((WindowCornerPreference)WindowChromeBehavior.CornerPreferenceProperty.DefaultMetadata.DefaultValue));
 
+        /// <inheritdoc cref="WindowChromeBehavior.CornerPreference"/>
         public WindowCornerPreference CornerPreference
         {
             get => (WindowCornerPreference)this.GetValue(CornerPreferenceProperty);
             set => this.SetValue(CornerPreferenceProperty, value);
         }
 
+        /// <inheritdoc />
         protected override void OnActivated(EventArgs e)
         {
             base.OnActivated(e);
             this.UpdatePadding();
         }
 
+        /// <inheritdoc />
         protected override void OnDeactivated(EventArgs e)
         {
             base.OnDeactivated(e);
             this.UpdatePadding();
         }
 
+        /// <inheritdoc />
         protected override void OnStateChanged(EventArgs e)
         {
             base.OnStateChanged(e);
             this.UpdatePadding();
         }
 
+        /// <summary>
+        /// Updates the padding used for the window content.
+        /// </summary>
         protected virtual void UpdatePadding()
         {
             if (this.WindowState == WindowState.Maximized)
