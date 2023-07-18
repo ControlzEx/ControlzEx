@@ -378,6 +378,7 @@ namespace ControlzEx.Behaviors
             this.hwndSource?.AddHook(this.WindowProc);
 
             this._ApplyNewCustomChrome();
+            this.UpdateDWMCornerPreference(this.CornerPreference);
 
             // handle the maximized state here too (to handle the border in a correct way)
             this.HandleStateChanged();
