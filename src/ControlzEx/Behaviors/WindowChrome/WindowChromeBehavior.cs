@@ -258,10 +258,13 @@ namespace ControlzEx.Behaviors
             this.borderThicknessChangeNotifier = new PropertyChangeNotifier(this.AssociatedObject, Control.BorderThicknessProperty);
             this.borderThicknessChangeNotifier.ValueChanged += this.BorderThicknessChangeNotifierOnValueChanged;
 
-            this.AssociatedObject.Closed += this.AssociatedObject_Closed;
-            this.AssociatedObject.StateChanged += this.AssociatedObject_StateChanged;
-
             this.Initialize();
+
+            if (this.AssociatedObject is not null)
+            {
+                this.AssociatedObject.Closed += this.AssociatedObject_Closed;
+                this.AssociatedObject.StateChanged += this.AssociatedObject_StateChanged;
+            }
         }
 
         /// <summary>
@@ -331,8 +334,11 @@ namespace ControlzEx.Behaviors
             this.OnCleanup();
 
             // clean up events
-            this.AssociatedObject.Closed -= this.AssociatedObject_Closed;
-            this.AssociatedObject.StateChanged -= this.AssociatedObject_StateChanged;
+            if (this.AssociatedObject is not null)
+            {
+                this.AssociatedObject.Closed -= this.AssociatedObject_Closed;
+                this.AssociatedObject.StateChanged -= this.AssociatedObject_StateChanged;
+            }
 
             this.hwndSource?.RemoveHook(this.WindowProc);
         }
@@ -378,10 +384,14 @@ namespace ControlzEx.Behaviors
             this.hwndSource?.AddHook(this.WindowProc);
 
             this._ApplyNewCustomChrome();
-            this.UpdateDWMCornerPreference(this.CornerPreference);
 
-            // handle the maximized state here too (to handle the border in a correct way)
-            this.HandleStateChanged();
+            if (this.isCleanedUp is false)
+            {
+                this.UpdateDWMCornerPreference(this.CornerPreference);
+
+                // handle the maximized state here too (to handle the border in a correct way)
+                this.HandleStateChanged();
+            }
         }
 
         private void AssociatedObject_Closed(object? sender, EventArgs e)
@@ -396,6 +406,11 @@ namespace ControlzEx.Behaviors
 
         private void HandleStateChanged()
         {
+            if (this.AssociatedObject is null)
+            {
+                return;
+            }
+
             this.HandleBorderThicknessDuringMaximize();
 
             if (this.AssociatedObject.WindowState == WindowState.Maximized)
@@ -434,6 +449,11 @@ namespace ControlzEx.Behaviors
         /// </summary>
         private void HandleBorderThicknessDuringMaximize()
         {
+            if (this.AssociatedObject is null)
+            {
+                return;
+            }
+
             this.borderThicknessChangeNotifier!.RaiseValueChanged = false;
 
             if (this.AssociatedObject.WindowState == WindowState.Maximized)
