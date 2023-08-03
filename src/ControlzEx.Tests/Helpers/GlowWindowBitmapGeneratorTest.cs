@@ -27,10 +27,9 @@ namespace ControlzEx.Tests.Helpers
 
                 var fileName = Path.Combine(directory, $"{value}.png");
 
-                using (var stream = File.Create(fileName))
-                {
-                    encoder.Save(stream);
-                }
+                using var stream = File.Create(fileName);
+
+                encoder.Save(stream);
             }
         }
     }

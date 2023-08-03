@@ -44,18 +44,16 @@ namespace ControlzEx.Theming
                     continue;
                 }
 
-                using (var stream = this.assembly.GetManifestResourceStream(resourceName))
-                {
-                    if (stream is null)
-                    {
-                        continue;
-                    }
+                using var stream = this.assembly.GetManifestResourceStream(resourceName);
 
-                    using (var reader = new StreamReader(stream))
-                    {
-                        return reader.ReadToEnd();
-                    }
+                if (stream is null)
+                {
+                    continue;
                 }
+
+                using var reader = new StreamReader(stream);
+
+                return reader.ReadToEnd();
             }
 
             return null;
@@ -70,18 +68,16 @@ namespace ControlzEx.Theming
                     continue;
                 }
 
-                using (var stream = this.assembly.GetManifestResourceStream(resourceName))
-                {
-                    if (stream is null)
-                    {
-                        continue;
-                    }
+                using var stream = this.assembly.GetManifestResourceStream(resourceName);
 
-                    using (var reader = new StreamReader(stream))
-                    {
-                        return reader.ReadToEnd();
-                    }
+                if (stream is null)
+                {
+                    continue;
                 }
+
+                using var reader = new StreamReader(stream);
+
+                return reader.ReadToEnd();
             }
 
             return null;
@@ -139,16 +135,15 @@ namespace ControlzEx.Theming
                     continue;
                 }
 
-                using (var reader = new ResourceReader(resourceStream))
-                {
-                    foreach (var dictionaryEntry in reader.OfType<DictionaryEntry>())
-                    {
-                        var theme = this.GetLibraryTheme(dictionaryEntry);
+                using var reader = new ResourceReader(resourceStream);
 
-                        if (theme is not null)
-                        {
-                            yield return theme;
-                        }
+                foreach (var dictionaryEntry in reader.OfType<DictionaryEntry>())
+                {
+                    var theme = this.GetLibraryTheme(dictionaryEntry);
+
+                    if (theme is not null)
+                    {
+                        yield return theme;
                     }
                 }
             }
