@@ -118,6 +118,12 @@ namespace ControlzEx.Behaviors
         [SecurityCritical]
         private IntPtr WindowProc(IntPtr hwnd, int msg, nuint wParam, nint lParam, ref bool handled)
         {
+            if (this.hwndSource is null
+                || this.hwndSource.IsDisposed)
+            {
+                return IntPtr.Zero;
+            }
+
             var message = (WM)msg;
 
             //System.Diagnostics.Trace.WriteLine($"{DateTime.Now} {hwnd} {message} {wParam} {lParam}");
@@ -440,7 +446,7 @@ namespace ControlzEx.Behaviors
         }
 
         private HT GetHitTestResult(nint lParam)
-        {
+        {           
             if (NonClientControlManager.GetControlUnderMouse(this.AssociatedObject, lParam, out var htFromNcControlManager) is not null
                 && htFromNcControlManager != HT.CAPTION)
             {
