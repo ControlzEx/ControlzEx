@@ -119,7 +119,8 @@ namespace ControlzEx.Behaviors
         private IntPtr WindowProc(IntPtr hwnd, int msg, nuint wParam, nint lParam, ref bool handled)
         {
             if (this.hwndSource is null
-                || this.hwndSource.IsDisposed)
+                || this.hwndSource.IsDisposed
+                || this.isCleanedUp)
             {
                 return IntPtr.Zero;
             }
