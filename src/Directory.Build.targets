@@ -1,32 +1,17 @@
 <Project>
-    <!-- AssemblyInfo -->
-    <PropertyGroup>
-        <Company>https://github.com/ControlzEx/ControlzEx</Company>
-        <Product>ControlzEx</Product>
-        <Copyright>Copyright © 2015 - $([System.DateTime]::Today.ToString(yyyy)) Jan Karger, Bastian Schmidt, James Willock</Copyright>
-
-        <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
-        <Version>6.0.0.0</Version>
-        <AssemblyVersion>6.0.0.0</AssemblyVersion>
-        <FileVersion>6.0.0.0</FileVersion>
-        <InformationalVersion>6.0.0.0</InformationalVersion>
-    </PropertyGroup>
-
-    <PropertyGroup>
-        <TargetFrameworkMonikerAssemblyAttributesPath>$([System.IO.Path]::Combine('$(IntermediateOutputPath)','$(TargetFrameworkMoniker).AssemblyAttributes$(DefaultLanguageSourceExtension)'))</TargetFrameworkMonikerAssemblyAttributesPath>
-    </PropertyGroup>
 
     <ItemGroup>
         <Page Update="@(Page)" SubType="Designer" Generator="MSBuild:Compile" />
     </ItemGroup>
 
     <Target Name="RemoveDuplicateAnalyzers" BeforeTargets="CoreCompile">
-      <!-- Work around https://github.com/dotnet/wpf/issues/6792 -->
-  
-      <ItemGroup>
-        <FilteredAnalyzer Include="@(Analyzer->Distinct())" />
-        <Analyzer Remove="@(Analyzer)" />
-        <Analyzer Include="@(FilteredAnalyzer)" />
-      </ItemGroup>
+        <!-- Work around https://github.com/dotnet/wpf/issues/6792 -->
+
+        <ItemGroup>
+            <FilteredAnalyzer Include="@(Analyzer->Distinct())" />
+            <Analyzer Remove="@(Analyzer)" />
+            <Analyzer Include="@(FilteredAnalyzer)" />
+        </ItemGroup>
     </Target>
+
 </Project>

@@ -1,11 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+
 <Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
     <!-- Project properties -->
     <PropertyGroup>
-        <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
         <IsPackable>false</IsPackable>
         <ApplicationIcon>..\..\logo.ico</ApplicationIcon>
-
         <OutputType>WinExe</OutputType>
         <NoWarn>SA1652;WPF0041</NoWarn>
         <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -14,18 +13,19 @@
     <ItemGroup>
         <ProjectReference Include="..\ControlzEx\ControlzEx.csproj" />
     </ItemGroup>
+
     <ItemGroup>
         <None Include="app.manifest" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="XAMLTools.MSBuild" PrivateAssets="All" IncludeAssets="build" />
+        <PackageReference Include="XAMLTools.MSBuild" PrivateAssets="All" IncludeAssets="build" />
     </ItemGroup>
 
     <ItemGroup>
-      <XAMLColorSchemeGeneratorItems Include="Themes\Themes\Theme.Template.xaml">
-        <ParametersFile>Themes\Themes\GeneratorParameters.json</ParametersFile>
-        <OutputPath>Themes\Themes</OutputPath>
-      </XAMLColorSchemeGeneratorItems>
+        <XAMLColorSchemeGeneratorItems Include="Themes\Themes\Theme.Template.xaml">
+            <ParametersFile>Themes\Themes\GeneratorParameters.json</ParametersFile>
+            <OutputPath>Themes\Themes</OutputPath>
+        </XAMLColorSchemeGeneratorItems>
     </ItemGroup>
 </Project>

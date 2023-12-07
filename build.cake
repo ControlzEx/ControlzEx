@@ -5,7 +5,7 @@
 #tool dotnet:?package=NuGetKeyVaultSignTool&version=1.2.28
 #tool dotnet:?package=AzureSignTool&version=3.0.0
 #tool dotnet:?package=GitReleaseManager.Tool&version=0.12.1
-#tool dotnet:?package=GitVersion.Tool&version=5.6.3
+#tool dotnet:?package=GitVersion.Tool&version=5.12.0
 
 #addin nuget:?package=Cake.Figlet&version=2.0.1
 
@@ -77,7 +77,12 @@ Task("Clean")
     .ContinueOnError()
     .Does(() =>
 {
-    var directoriesToDelete = GetDirectories("src/**/obj").Concat(GetDirectories("src/**/bin"));
+    var filesToDelete = GetFiles("**/*_wpftmp.csproj");
+    DeleteFiles(filesToDelete);
+
+    var directoriesToDelete = GetDirectories("src/**/obj")
+        .Concat(GetDirectories("src/**/bin"))
+        ;
     DeleteDirectories(directoriesToDelete, new DeleteDirectorySettings { Recursive = true, Force = true });
 });
 
