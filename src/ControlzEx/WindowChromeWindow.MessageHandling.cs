@@ -28,8 +28,6 @@ namespace ControlzEx
 
         private void InitializeMessageHandling()
         {
-            this.windowHandle = new HWND(new WindowInteropHelper(this).Handle);
-            this.hwndSource = HwndSource.FromHwnd(this.windowHandle);
             this.hwndSource?.AddHook(this.WindowProc);
 
             this.handleERASEBKGND = this.MitigateWhiteFlashDuringShow;

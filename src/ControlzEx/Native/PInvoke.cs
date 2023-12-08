@@ -363,6 +363,21 @@ namespace Windows.Win32
 
             return default;
         }
+
+        public enum PreferredAppMode
+        {
+            Default = 0,
+            AllowDark = 1,
+            ForceDark = 2,
+            ForceLight = 3,
+            Max = 4
+        }
+
+        [DllImport("uxtheme.dll", EntryPoint = "#135", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern int SetPreferredAppMode(PreferredAppMode preferredAppMode);
+
+        [DllImport("uxtheme.dll", EntryPoint = "#136", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern void FlushMenuThemes();
     }
 
     internal struct COLORREF

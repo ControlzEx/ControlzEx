@@ -21,7 +21,7 @@ namespace ControlzEx.Theming
 
         public static void UpdateWindowEffect(IntPtr windowHandle, bool isWindowActive = false)
         {
-            var isDarkTheme = WindowsThemeHelper.AppsUseLightTheme() == false;
+            var isDarkTheme = WindowsThemeHelper.AppsUseLightTheme() is false;
 
             // {
             //     var wtaOptions = new WTA_OPTIONS
@@ -61,7 +61,10 @@ namespace ControlzEx.Theming
             }
 
             //MICA_EFFECT = 1029,                   // [set] BOOL, Enables or disables the Mica window effect
-            DwmHelper.SetWindowAttributeValue(windowHandle, (DWMWINDOWATTRIBUTE)1029, trueValue);
+            //DwmHelper.SetWindowAttributeValue(windowHandle, (DWMWINDOWATTRIBUTE)1029, trueValue);
+            //DWMWA_SYSTEMBACKDROP_TYPE = 38,
+            //Mica = 2,
+            DwmHelper.SetWindowAttributeValue(windowHandle, (DWMWINDOWATTRIBUTE)38, 2);
         }
 
         private static void SetAccentPolicy(IntPtr windowHandle, bool isWindowActive, bool isDarkTheme)

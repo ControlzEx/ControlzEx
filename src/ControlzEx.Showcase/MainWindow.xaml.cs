@@ -13,6 +13,7 @@ namespace ControlzEx.Showcase
     using System.Windows.Interop;
     using System.Windows.Media;
     using System.Windows.Media.Animation;
+    using ControlzEx.Theming;
     using global::Windows.Win32;
     using global::Windows.Win32.Foundation;
     using global::Windows.Win32.UI.WindowsAndMessaging;
@@ -32,7 +33,7 @@ namespace ControlzEx.Showcase
             this.Colors = GetColors().ToList();
             this.Brushes = GetBrushes().ToList();
 
-            //WindowEffectManager.UpdateWindowEffect(this, this.IsActive);
+            WindowEffectManager.UpdateWindowEffect(this, this.IsActive);
         }
 
         public List<Color> Colors
@@ -53,14 +54,14 @@ namespace ControlzEx.Showcase
         {
             base.OnActivated(e);
 
-            //WindowEffectManager.UpdateWindowEffect(this, this.IsActive);
+            WindowEffectManager.UpdateWindowEffect(this, this.IsActive);
         }
 
         protected override void OnDeactivated(EventArgs e)
         {
             base.OnDeactivated(e);
 
-            //WindowEffectManager.UpdateWindowEffect(this, this.IsActive);
+            WindowEffectManager.UpdateWindowEffect(this, this.IsActive);
         }
 
         public static IEnumerable<Color> GetColors()

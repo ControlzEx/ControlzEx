@@ -14,7 +14,7 @@
                                Height="600"
                                MinWidth="80"
                                MinHeight="60"
-                               Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
+                               Background="Transparent"
                                FlowDirection="LeftToRight"
                                GlowColor="Navy"
                                NonActiveGlowColor="Crimson"
