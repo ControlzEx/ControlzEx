@@ -45,8 +45,7 @@ after_build:
   - ps: gci -Filter *.trx -Path .\TestResults\ | % { (New-Object 'System.Net.WebClient').UploadFile("https://ci.appveyor.com/api/testresults/mstest/$($env:APPVEYOR_JOB_ID)", (Resolve-Path $_.FullName)) }
 
 artifacts:
-  - path: src/bin/ControlzEx*.nupkg
-  - path: src/bin/ControlzEx*.zip
+  - path: \Publish\*.*
 
 nuget:
   disable_publish_on_pr: true

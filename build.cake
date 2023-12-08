@@ -2,10 +2,11 @@
 // TOOLS / ADDINS
 ///////////////////////////////////////////////////////////////////////////////
 
-#tool dotnet:?package=NuGetKeyVaultSignTool&version=1.2.28
-#tool dotnet:?package=AzureSignTool&version=3.0.0
-#tool dotnet:?package=GitReleaseManager.Tool&version=0.12.1
-#tool dotnet:?package=GitVersion.Tool&version=5.12.0
+#tool dotnet:?package=NuGetKeyVaultSignTool&version=3.2.3
+#tool dotnet:?package=AzureSignTool&version=4.0.1
+#tool dotnet:?package=GitReleaseManager.Tool&version=0.15.0
+
+#tool nuget:?package=GitVersion.CommandLine&version=5.12.0
 
 #addin nuget:?package=Cake.Figlet&version=2.0.1
 
@@ -14,39 +15,56 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 var target = Argument("target", "Default");
-var configuration = Argument("configuration", "Release");
-var verbosity = Argument("verbosity", Verbosity.Minimal);
 
 ///////////////////////////////////////////////////////////////////////////////
 // PREPARATION
 ///////////////////////////////////////////////////////////////////////////////
 
 var repoName = "ControlzEx";
-var isLocal = BuildSystem.IsLocalBuild;
+var baseDir = MakeAbsolute(Directory(".")).ToString();
+var srcDir = baseDir + "/src";
+var solution = srcDir + "/ControlzEx.sln";
+var publishDir = baseDir + "/Publish";
+var testResultsDir = Directory(baseDir + "/TestResults");
 
-// Set build version
-if (isLocal == false || verbosity == Verbosity.Verbose)
+var gitVersionPath = Context.Tools.Resolve("gitversion.exe");
+
+public class BuildData
 {
-    GitVersion(new GitVersionSettings { OutputType = GitVersionOutput.BuildServer, NoFetch = true });
+    public string Configuration { get; }
+    public Verbosity Verbosity { get; }
+    public DotNetVerbosity DotNetVerbosity { get; }
+    public bool IsLocalBuild { get; set; }
+    public bool IsPullRequest { get; set; }
+    public bool IsDevelopBranch { get; set; }
+    public bool IsReleaseBranch { get; set; }
+    public GitVersion GitVersion { get; set; }
+
+    public BuildData(
+        string configuration,
+        Verbosity verbosity,
+        DotNetVerbosity dotNetVerbosity
+    )
+    {
+        Configuration = configuration;
+        Verbosity = verbosity;
+        DotNetVerbosity = dotNetVerbosity;
+    }
+
+    public void SetGitVersion(GitVersion gitVersion)
+    {
+        GitVersion = gitVersion;
+        
+        IsDevelopBranch = StringComparer.OrdinalIgnoreCase.Equals("develop", GitVersion.BranchName);
+        IsReleaseBranch = StringComparer.OrdinalIgnoreCase.Equals("main", GitVersion.BranchName);
+    }
 }
-GitVersion gitVersion = GitVersion(new GitVersionSettings { OutputType = GitVersionOutput.Json, NoFetch = true });
-
-var isPullRequest = AppVeyor.Environment.PullRequest.IsPullRequest;
-var branchName = gitVersion.BranchName;
-var isDevelopBranch = StringComparer.OrdinalIgnoreCase.Equals("develop", branchName);
-var isReleaseBranch = StringComparer.OrdinalIgnoreCase.Equals("main", branchName);
-var isTagged = AppVeyor.Environment.Repository.Tag.IsTag;
-
-// Directories and Paths
-var solution = "src/ControlzEx.sln";
-var publishDir = "./src/bin";
-var testResultsDir = Directory("./TestResults");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP / TEARDOWN
 ///////////////////////////////////////////////////////////////////////////////
 
-Setup(ctx =>
+Setup<BuildData>(ctx =>
 {
     if (!IsRunningOnWindows())
     {
@@ -55,14 +73,38 @@ Setup(ctx =>
 
     Information(Figlet(repoName));
 
-    Information("Informational   Version: {0}", gitVersion.InformationalVersion);
-    Information("SemVer          Version: {0}", gitVersion.SemVer);
-    Information("AssemblySemVer  Version: {0}", gitVersion.AssemblySemVer);
-    Information("MajorMinorPatch Version: {0}", gitVersion.MajorMinorPatch);
-    Information("NuGet           Version: {0}", gitVersion.NuGetVersion);
-    Information("IsLocalBuild           : {0}", isLocal);
-    Information("Branch                 : {0}", branchName);
-    Information("Configuration          : {0}", configuration);
+    var buildData = new BuildData(
+        configuration: Argument("configuration", "Release"),
+        verbosity: Argument("verbosity", Verbosity.Minimal),
+        dotNetVerbosity: Argument("dotNetVerbosity", DotNetVerbosity.Minimal)
+    )
+    {
+        IsLocalBuild = BuildSystem.IsLocalBuild,
+        IsPullRequest =
+            (BuildSystem.GitHubActions.IsRunningOnGitHubActions && BuildSystem.GitHubActions.Environment.PullRequest.IsPullRequest)
+            || (BuildSystem.AppVeyor.IsRunningOnAppVeyor && BuildSystem.AppVeyor.Environment.PullRequest.IsPullRequest)
+    };
+
+    // Set build version for CI
+    if (buildData.IsLocalBuild == false || buildData.Verbosity == Verbosity.Verbose)
+    {
+        GitVersion(new GitVersionSettings { ToolPath = gitVersionPath, OutputType = GitVersionOutput.BuildServer });
+    }
+    buildData.SetGitVersion(GitVersion(new GitVersionSettings { ToolPath = gitVersionPath, OutputType = GitVersionOutput.Json }));
+
+    Information("GitVersion             : {0}", gitVersionPath);
+    Information("Branch                 : {0}", buildData.GitVersion.BranchName);
+    Information("Configuration          : {0}", buildData.Configuration);
+    Information("IsLocalBuild           : {0}", buildData.IsLocalBuild);
+    Information("Informational   Version: {0}", buildData.GitVersion.InformationalVersion);
+    Information("SemVer          Version: {0}", buildData.GitVersion.SemVer);
+    Information("AssemblySemVer  Version: {0}", buildData.GitVersion.AssemblySemVer);
+    Information("MajorMinorPatch Version: {0}", buildData.GitVersion.MajorMinorPatch);
+    Information("NuGet           Version: {0}", buildData.GitVersion.NuGetVersion);
+    Information("Verbosity              : {0}", buildData.Verbosity);
+    Information("Publish folder         : {0}", publishDir);
+
+    return buildData;
 });
 
 Teardown(ctx =>
@@ -82,57 +124,217 @@ Task("Clean")
 
     var directoriesToDelete = GetDirectories("src/**/obj")
         .Concat(GetDirectories("src/**/bin"))
+        .Concat(GetDirectories("./**/Publish"))
         ;
     DeleteDirectories(directoriesToDelete, new DeleteDirectorySettings { Recursive = true, Force = true });
 });
 
 Task("Restore")
-    .Does(() =>
+    .Does<BuildData>(data =>
 {
-    DotNetCoreRestore(solution);
+    DotNetRestore(solution);
 });
 
 Task("Build")
     .IsDependentOn("Restore")
-    .Does(() =>
+    .Does<BuildData>(data =>
 {
-    var msBuildSettings = new DotNetCoreMSBuildSettings {
-        //Verbosity = (DotNetCoreVerbosity)verbosity
+    var msbuildSettings = new DotNetMSBuildSettings
+    {
+      MaxCpuCount = 0,
+      Version = data.IsReleaseBranch ? data.GitVersion.MajorMinorPatch : data.GitVersion.NuGetVersion,
+      AssemblyVersion = data.GitVersion.AssemblySemVer,
+      FileVersion = data.GitVersion.AssemblySemFileVer,
+      InformationalVersion = data.GitVersion.InformationalVersion,
+      ContinuousIntegrationBuild = data.IsReleaseBranch,
+      ArgumentCustomization = args => args.Append("/m").Append("/nr:false") // The /nr switch tells msbuild to quite once it's done
     };
-    DotNetCoreMSBuild(solution, msBuildSettings
-            .SetMaxCpuCount(0)
-            .SetConfiguration(configuration)
-            .WithProperty("Version", isReleaseBranch ? gitVersion.MajorMinorPatch : gitVersion.NuGetVersion)
-            .WithProperty("AssemblyVersion", gitVersion.AssemblySemVer)
-            .WithProperty("FileVersion", gitVersion.AssemblySemFileVer)
-            .WithProperty("InformationalVersion", gitVersion.InformationalVersion)
-            .WithProperty("ContinuousIntegrationBuild", isReleaseBranch ? "true" : "false")
-            );
+    // msbuildSettings.FileLoggers.Add(
+    //     new MSBuildFileLoggerSettings
+    //     {
+    //       LogFile = buildLogFile,
+    //       AppendToLogFile = true,
+    //       Verbosity = data.DotNetVerbosity
+    //     }
+    // );
+
+    var settings = new DotNetBuildSettings
+    {
+      MSBuildSettings = msbuildSettings,
+      Configuration = data.Configuration,
+      Verbosity = data.DotNetVerbosity,
+      NoRestore = true
+    };
+
+    DotNetBuild(solution, settings);
 });
 
 Task("Pack")
     .IsDependentOn("Build")
+    .Does<BuildData>(data =>
+{
+    EnsureDirectoryExists(Directory(publishDir));
+
+    var msbuildSettings = new DotNetMSBuildSettings
+    {
+      MaxCpuCount = 0,
+      Version = data.IsReleaseBranch ? data.GitVersion.MajorMinorPatch : data.GitVersion.NuGetVersion,
+      AssemblyVersion = data.GitVersion.AssemblySemVer,
+      FileVersion = data.GitVersion.AssemblySemFileVer,
+      InformationalVersion = data.GitVersion.InformationalVersion
+    }
+    .WithProperty("IncludeBuildOutput", "true")
+    .WithProperty("RepositoryBranch", data.GitVersion.BranchName)
+    .WithProperty("RepositoryCommit", data.GitVersion.Sha)
+    ;
+    // msbuildSettings.FileLoggers.Add(
+    //     new MSBuildFileLoggerSettings
+    //     {
+    //       LogFile = buildLogFile,
+    //       AppendToLogFile = true,
+    //       Verbosity = DotNetVerbosity.Minimal
+    //     }
+    // );
+
+    var settings = new DotNetPackSettings
+    {
+      Configuration = data.Configuration,
+      OutputDirectory = MakeAbsolute(Directory(publishDir)).FullPath,
+      MSBuildSettings = msbuildSettings,
+      NoBuild = true,
+      NoRestore = true
+    };
+
+    var project = "./src/ControlzEx/ControlzEx.csproj";
+    DotNetPack(project, settings);
+});
+
+Task("Sign")
+    .WithCriteria<BuildData>((context, data) => !data.IsPullRequest)
+    .ContinueOnError()
     .Does(() =>
 {
-    var msBuildSettings = new DotNetCoreMSBuildSettings {
-        //Verbosity = (DotNetCoreVerbosity)verbosity
-    };
-    var project = "./src/ControlzEx/ControlzEx.csproj";
-    DotNetCoreMSBuild(project, msBuildSettings
-      .WithTarget("pack")
-      .SetConfiguration(configuration)
-      .WithProperty("NoBuild", "true")
-      .WithProperty("IncludeBuildOutput", "true")
-      .WithProperty("PackageOutputPath", "../bin")
-      .WithProperty("RepositoryBranch", branchName)
-      .WithProperty("RepositoryCommit", gitVersion.Sha)
-      .WithProperty("Description", "ControlzEx is a library with some shared Controls for WPF.")
-      .WithProperty("Version", isReleaseBranch ? gitVersion.MajorMinorPatch : gitVersion.NuGetVersion)
-      .WithProperty("AssemblyVersion", gitVersion.AssemblySemVer)
-      .WithProperty("FileVersion", gitVersion.AssemblySemFileVer)
-      .WithProperty("InformationalVersion", gitVersion.InformationalVersion)
-    );
+    var files = GetFiles(srcDir + "/**/ControlzEx.dll");
+    SignFiles(files, "ControlzEx is a library with some shared Controls for WPF.");
+
+    files = GetFiles(srcDir + "/**/ControlzEx.Showcase.exe");
+    SignFiles(files, "Demo application of ControlzEx, a library with some shared Controls for WPF.");
 });
+
+Task("SignNuGet")
+    .WithCriteria<BuildData>((context, data) => !data.IsPullRequest)
+    .WithCriteria<BuildData>((context, data) => DirectoryExists(Directory(publishDir)))
+    .ContinueOnError()
+    .Does(() =>
+{
+    var vurl = EnvironmentVariable("azure-key-vault-url");
+    if(string.IsNullOrWhiteSpace(vurl)) {
+        Error("Could not resolve signing url.");
+        return;
+    }
+
+    var vcid = EnvironmentVariable("azure-key-vault-client-id");
+    if(string.IsNullOrWhiteSpace(vcid)) {
+        Error("Could not resolve signing client id.");
+        return;
+    }
+
+    var vctid = EnvironmentVariable("azure-key-vault-tenant-id");
+    if(string.IsNullOrWhiteSpace(vctid)) {
+        Error("Could not resolve signing client tenant id.");
+        return;
+    }
+
+    var vcs = EnvironmentVariable("azure-key-vault-client-secret");
+    if(string.IsNullOrWhiteSpace(vcs)) {
+        Error("Could not resolve signing client secret.");
+        return;
+    }
+
+    var vc = EnvironmentVariable("azure-key-vault-certificate");
+    if(string.IsNullOrWhiteSpace(vc)) {
+        Error("Could not resolve signing certificate.");
+        return;
+    }
+
+    var nugetFiles = GetFiles(publishDir + "/*.nupkg");
+    var signTool = Context.Tools.Resolve("NuGetKeyVaultSignTool.exe");
+
+    foreach(var file in nugetFiles)
+    {
+        Information($"Sign file: {file}");
+
+        ExecuteProcess(signTool,
+                        new ProcessArgumentBuilder()
+                            .Append("sign")
+                            .Append(MakeAbsolute(file).FullPath)
+                            .Append("--force")
+                            .AppendSwitchQuoted("--file-digest", "sha256")
+                            .AppendSwitchQuoted("--timestamp-rfc3161", "http://timestamp.digicert.com")
+                            .AppendSwitchQuoted("--timestamp-digest", "sha256")
+                            .AppendSwitchQuoted("--azure-key-vault-url", vurl)
+                            .AppendSwitchQuotedSecret("--azure-key-vault-client-id", vcid)
+                            .AppendSwitchQuotedSecret("--azure-key-vault-tenant-id", vctid)
+                            .AppendSwitchQuotedSecret("--azure-key-vault-client-secret", vcs)
+                            .AppendSwitchQuotedSecret("--azure-key-vault-certificate", vc)
+                        );
+    }
+});
+
+Task("Zip")
+    .Does<BuildData>(data =>
+{
+    var zipDir = srcDir + $"/bin/{data.Configuration}/ControlzEx.Showcase";
+    if (!DirectoryExists(zipDir))
+    {
+        Information("Could not zip any artifact! Folder doesn't exist: " + zipDir);
+    }
+    else
+    {
+        Zip(zipDir, publishDir + "/ControlzEx.Showcase.v" + data.GitVersion.NuGetVersion + ".zip");
+    }
+});
+
+Task("Test")
+    .Does<BuildData>(data =>
+{
+    CleanDirectory(testResultsDir);
+
+    var settings = new DotNetTestSettings
+        {
+            Configuration = data.Configuration,
+            NoBuild = true,
+            NoRestore = true,
+            Loggers = new[] { "trx" },
+            ResultsDirectory = testResultsDir,
+            Verbosity = data.DotNetVerbosity
+        };
+
+    DotNetTest(solution, settings);
+});
+
+Task("CreateRelease")
+    .WithCriteria<BuildData>((context, data) => !data.IsPullRequest)
+    .Does<BuildData>(data =>
+{
+    var token = EnvironmentVariable("GITHUB_TOKEN");
+    if (string.IsNullOrEmpty(token))
+    {
+        throw new Exception("The GITHUB_TOKEN environment variable is not defined.");
+    }
+
+    GitReleaseManagerCreate(token, repoName, repoName, new GitReleaseManagerCreateSettings {
+        Milestone         = data.GitVersion.MajorMinorPatch,
+        Name              = data.GitVersion.AssemblySemFileVer,
+        Prerelease        = data.IsDevelopBranch,
+        TargetCommitish   = data.GitVersion.BranchName,
+        WorkingDirectory  = "."
+    });
+});
+
+///////////////////////////////////////////////////////////////////////////////
+// HELPER
+///////////////////////////////////////////////////////////////////////////////
 
 void SignFiles(IEnumerable<FilePath> files, string description)
 {
@@ -167,182 +369,72 @@ void SignFiles(IEnumerable<FilePath> files, string description)
     }
 
     var filesToSign = string.Join(" ", files.Select(f => MakeAbsolute(f).FullPath));
+    var azureSignTool = Context.Tools.Resolve("azuresigntool.exe");
 
-    var processSettings = new ProcessSettings {
-        RedirectStandardOutput = true,
-        RedirectStandardError = true,
-        Arguments = new ProcessArgumentBuilder()
-            .Append("sign")
-            .Append(filesToSign)
-            .AppendSwitchQuoted("--file-digest", "sha256")
-            .AppendSwitchQuoted("--description", description)
-            .AppendSwitchQuoted("--description-url", "https://github.com/ControlzEx/ControlzEx")
-            .Append("--no-page-hashing")
-            .AppendSwitchQuoted("--timestamp-rfc3161", "http://timestamp.digicert.com")
-            .AppendSwitchQuoted("--timestamp-digest", "sha256")
-            .AppendSwitchQuoted("--azure-key-vault-url", vurl)
-            .AppendSwitchQuotedSecret("--azure-key-vault-client-id", vcid)
-            .AppendSwitchQuotedSecret("--azure-key-vault-tenant-id", vctid)
-            .AppendSwitchQuotedSecret("--azure-key-vault-client-secret", vcs)
-            .AppendSwitchQuotedSecret("--azure-key-vault-certificate", vc)
-    };
-
-    using(var process = StartAndReturnProcess("tools/AzureSignTool", processSettings))
-    {
-        process.WaitForExit();
-
-        if (process.GetStandardOutput().Any())
-        {
-            Information($"Output:{Environment.NewLine}{string.Join(Environment.NewLine, process.GetStandardOutput())}");
-        }
-
-        if (process.GetStandardError().Any())
-        {
-            Information($"Errors occurred:{Environment.NewLine}{string.Join(Environment.NewLine, process.GetStandardError())}");
-        }
-
-        // This should output 0 as valid arguments supplied
-        Information("Exit code: {0}", process.GetExitCode());
-    }
+    ExecuteProcess(azureSignTool,
+                    new ProcessArgumentBuilder()
+                        .Append("sign")
+                        .Append(filesToSign)
+                        .AppendSwitchQuoted("--file-digest", "sha256")
+                        .AppendSwitchQuoted("--description", description)
+                        .AppendSwitchQuoted("--description-url", "https://github.com/ControlzEx/ControlzEx")
+                        .Append("--no-page-hashing")
+                        .AppendSwitchQuoted("--timestamp-rfc3161", "http://timestamp.digicert.com")
+                        .AppendSwitchQuoted("--timestamp-digest", "sha256")
+                        .AppendSwitchQuoted("--azure-key-vault-url", vurl)
+                        .AppendSwitchQuotedSecret("--azure-key-vault-client-id", vcid)
+                        .AppendSwitchQuotedSecret("--azure-key-vault-tenant-id", vctid)
+                        .AppendSwitchQuotedSecret("--azure-key-vault-client-secret", vcs)
+                        .AppendSwitchQuotedSecret("--azure-key-vault-certificate", vc)
+                    );
 }
 
-Task("Sign")
-    .WithCriteria(() => !isPullRequest)
-    .ContinueOnError()
-    .Does(() =>
+void ExecuteProcess(FilePath fileName, ProcessArgumentBuilder arguments, string workingDirectory = null)
 {
-    var files = GetFiles(publishDir + "/**/ControlzEx.dll");
-    SignFiles(files, "ControlzEx is a library with some shared Controls for WPF.");
+  if (!FileExists(fileName))
+  {
+    throw new Exception($"File not found: {fileName}");
+  }
 
-    files = GetFiles(publishDir + "/**/ControlzEx.Showcase.exe");
-    SignFiles(files, "Demo application of ControlzEx, a library with some shared Controls for WPF.");
-});
+  var processSettings = new ProcessSettings
+  {
+    RedirectStandardOutput = true,
+    RedirectStandardError = true,
+    Arguments = arguments
+  };
 
-Task("SignNuGet")
-    .WithCriteria(() => !isPullRequest)
-    .ContinueOnError()
-    .Does(() =>
-{
-    if (!DirectoryExists(Directory(publishDir)))
+  if (!string.IsNullOrEmpty(workingDirectory))
+  {
+    processSettings.WorkingDirectory = workingDirectory;
+  }
+
+  Information($"Arguments: {arguments.RenderSafe()}");
+
+  using(var process = StartAndReturnProcess(fileName, processSettings))
+  {
+    process.WaitForExit();
+
+    if (process.GetStandardOutput().Any())
     {
-        return;
+      Information($"Output:{Environment.NewLine} {string.Join(Environment.NewLine, process.GetStandardOutput())}");
     }
 
-    var vurl = EnvironmentVariable("azure-key-vault-url");
-    if(string.IsNullOrWhiteSpace(vurl)) {
-        Error("Could not resolve signing url.");
-        return;
-    }
-
-    var vcid = EnvironmentVariable("azure-key-vault-client-id");
-    if(string.IsNullOrWhiteSpace(vcid)) {
-        Error("Could not resolve signing client id.");
-        return;
-    }
-
-    var vcs = EnvironmentVariable("azure-key-vault-client-secret");
-    if(string.IsNullOrWhiteSpace(vcs)) {
-        Error("Could not resolve signing client secret.");
-        return;
-    }
-
-    var vc = EnvironmentVariable("azure-key-vault-certificate");
-    if(string.IsNullOrWhiteSpace(vc)) {
-        Error("Could not resolve signing certificate.");
-        return;
-    }
-
-    var nugetFiles = GetFiles(publishDir + "/*.nupkg");
-    foreach(var file in nugetFiles)
+    if (process.GetStandardError().Any())
     {
-        Information($"Sign file: {file}");
-        var processSettings = new ProcessSettings {
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            Arguments = new ProcessArgumentBuilder()
-                .Append("sign")
-                .Append(MakeAbsolute(file).FullPath)
-                .Append("--force")
-                .AppendSwitchQuoted("--file-digest", "sha256")
-                .AppendSwitchQuoted("--timestamp-rfc3161", "http://timestamp.digicert.com")
-                .AppendSwitchQuoted("--timestamp-digest", "sha256")
-                .AppendSwitchQuoted("--azure-key-vault-url", vurl)
-                .AppendSwitchQuotedSecret("--azure-key-vault-client-id", vcid)
-                .AppendSwitchQuotedSecret("--azure-key-vault-client-secret", vcs)
-                .AppendSwitchQuotedSecret("--azure-key-vault-certificate", vc)
-        };
-
-        using(var process = StartAndReturnProcess("tools/NuGetKeyVaultSignTool", processSettings))
-        {
-            process.WaitForExit();
-
-            if (process.GetStandardOutput().Any())
-            {
-                Information($"Output:{Environment.NewLine}{string.Join(Environment.NewLine, process.GetStandardOutput())}");
-            }
-
-            if (process.GetStandardError().Any())
-            {
-                Information($"Errors occurred:{Environment.NewLine}{string.Join(Environment.NewLine, process.GetStandardError())}");
-            }
-
-            // This should output 0 as valid arguments supplied
-            Information("Exit code: {0}", process.GetExitCode());
-        }
+      // Information($"Errors occurred:{Environment.NewLine} {string.Join(Environment.NewLine, process.GetStandardError())}");
+      throw new Exception($"Errors occurred:{Environment.NewLine} {string.Join(Environment.NewLine, process.GetStandardError())}");
     }
-});
 
-Task("Test")    
-    .Does(() =>
-{
-    CleanDirectory(testResultsDir);
+    // This should output 0 as valid arguments supplied
+    var exitCode = process.GetExitCode();
+    Information($"Exit code: {exitCode}");
 
-    var settings = new DotNetCoreTestSettings
-        {
-            Configuration = configuration,
-            NoBuild = true,
-            NoRestore = true,
-            Loggers = new[] { "trx" },
-            ResultsDirectory = testResultsDir,
-            Verbosity = DotNetCoreVerbosity.Normal
-        };
-
-    DotNetCoreTest("./src/ControlzEx.sln", settings);
-});
-
-Task("Zip")
-    .Does(() =>
-{
-    var zipDir = publishDir + $"/{configuration}/ControlzEx.Showcase";
-    if (!DirectoryExists(zipDir))
+    if (exitCode > 0)
     {
-        Information("Could not zip any artifact! Folder doesn't exist: " + zipDir);
+      throw new Exception($"Exit code: {exitCode}");
     }
-    else
-    {
-        Zip(zipDir, publishDir + "/ControlzEx.Showcase.v" + gitVersion.NuGetVersion + ".zip");
-    }
-});
-
-Task("CreateRelease")
-    .WithCriteria(() => !isTagged)
-    .WithCriteria(() => !isPullRequest)
-    .Does(() =>
-{
-    var token = EnvironmentVariable("GITHUB_TOKEN");
-    if (string.IsNullOrEmpty(token))
-    {
-        throw new Exception("The GITHUB_TOKEN environment variable is not defined.");
-    }
-
-    GitReleaseManagerCreate(token, repoName, repoName, new GitReleaseManagerCreateSettings {
-        Milestone         = gitVersion.MajorMinorPatch,
-        Name              = gitVersion.AssemblySemFileVer,
-        Prerelease        = isDevelopBranch,
-        TargetCommitish   = branchName,
-        WorkingDirectory  = "."
-    });
-});
+  }
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // TASK TARGETS
@@ -350,11 +442,12 @@ Task("CreateRelease")
 
 Task("Default")
     .IsDependentOn("Clean")
-    .IsDependentOn("Build");
+    .IsDependentOn("Build")
+    .IsDependentOn("Test")
+    ;
 
 Task("CI")
     .IsDependentOn("Default")
-    .IsDependentOn("Test")
     .IsDependentOn("Sign")
     .IsDependentOn("Pack")
     .IsDependentOn("SignNuGet")
