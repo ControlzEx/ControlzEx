@@ -443,11 +443,11 @@ void ExecuteProcess(FilePath fileName, ProcessArgumentBuilder arguments, string 
 Task("Default")
     .IsDependentOn("Clean")
     .IsDependentOn("Build")
-    .IsDependentOn("Test")
     ;
 
 Task("CI")
     .IsDependentOn("Default")
+    .IsDependentOn("Test")
     .IsDependentOn("Sign")
     .IsDependentOn("Pack")
     .IsDependentOn("SignNuGet")
