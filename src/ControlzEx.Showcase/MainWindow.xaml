@@ -139,7 +139,8 @@
                                       Header="Actions"
                                       IsExpanded="True">
                                 <WrapPanel Orientation="Horizontal">
-                                    <Button MinWidth="100"
+                                    <Button x:Name="MinimizeButton"
+                                            MinWidth="100"
                                             Margin="4"
                                             Padding="4"
                                             Click="ButtonMinimizeOnClick"
@@ -156,7 +157,8 @@
                                             </Style>
                                         </Button.Style>
                                     </Button>
-                                    <Button MinWidth="100"
+                                    <Button x:Name="MaximizeButton"
+                                            MinWidth="100"
                                             Margin="4"
                                             Padding="4"
                                             Click="ButtonMaximizeOnClick"
