@@ -449,7 +449,7 @@ namespace ControlzEx.Behaviors
         private HT GetHitTestResult(nint lParam)
         {           
             if (NonClientControlManager.GetControlUnderMouse(this.AssociatedObject, lParam, out var htFromNcControlManager) is not null
-                && htFromNcControlManager != HT.CAPTION)
+                && htFromNcControlManager is not HT.CAPTION)
             {
                 return htFromNcControlManager;
             }
@@ -460,41 +460,45 @@ namespace ControlzEx.Behaviors
             var mousePosScreen = Utility.GetPoint(lParam);
             var windowRect = this._GetWindowRect();
 
-            var preventResize = this._GetHwndState() == WindowState.Maximized || this.AssociatedObject.ResizeMode is ResizeMode.NoResize;
+            var preventResize = this._GetHwndState() is WindowState.Maximized || this.AssociatedObject.ResizeMode is ResizeMode.NoResize;
             var htFromTestNca = preventResize
                 ? HT.CLIENT
                 : this._HitTestNca(DpiHelper.DeviceRectToLogical(windowRect, dpi.DpiScaleX, dpi.DpiScaleY),
                                    DpiHelper.DevicePixelsToLogical(mousePosScreen, dpi.DpiScaleX, dpi.DpiScaleY));
 
-            if (htFromTestNca != HT.CLIENT
-                || this.AssociatedObject.ResizeMode == ResizeMode.CanResizeWithGrip)
+            if (htFromTestNca is not HT.CLIENT
+                || this.AssociatedObject.ResizeMode is ResizeMode.CanResizeWithGrip)
             {
-                var mousePosWindow = this.AssociatedObject.PointFromScreen(mousePosScreen);
-
-                // If the app is asking for content to be treated as client then that takes precedence over _everything_, even DWM caption buttons.
-                // This allows apps to set the glass frame to be non-empty, still cover it with WPF content to hide all the glass,
-                // yet still get DWM to draw a drop shadow.
-                var inputElement = this.AssociatedObject.InputHitTest(mousePosWindow);
-                if (inputElement is not null)
+                // Prevent race conditions during window closing. The associated PresentationSource is cleared by WPF before the window is really closed.
+                if (PresentationSource.FromVisual(this.AssociatedObject) is not null)
                 {
-                    if (WindowChrome.GetIsHitTestVisibleInChrome(inputElement))
-                    {
-                        return HT.CLIENT;
-                    }
+                    var mousePosWindow = this.AssociatedObject.PointFromScreen(mousePosScreen);
 
-                    if (this.AssociatedObject.ResizeMode == ResizeMode.CanResizeWithGrip)
+                    // If the app is asking for content to be treated as client then that takes precedence over _everything_, even DWM caption buttons.
+                    // This allows apps to set the glass frame to be non-empty, still cover it with WPF content to hide all the glass,
+                    // yet still get DWM to draw a drop shadow.
+                    var inputElement = this.AssociatedObject.InputHitTest(mousePosWindow);
+                    if (inputElement is not null)
                     {
-                        var direction = WindowChrome.GetResizeGripDirection(inputElement);
-                        if (direction != ResizeGripDirection.None)
+                        if (WindowChrome.GetIsHitTestVisibleInChrome(inputElement))
                         {
-                            return this._GetHTFromResizeGripDirection(direction);
+                            return HT.CLIENT;
+                        }
+
+                        if (this.AssociatedObject.ResizeMode == ResizeMode.CanResizeWithGrip)
+                        {
+                            var direction = WindowChrome.GetResizeGripDirection(inputElement);
+                            if (direction != ResizeGripDirection.None)
+                            {
+                                return this._GetHTFromResizeGripDirection(direction);
+                            }
                         }
                     }
                 }
             }
 
-            if (htFromNcControlManager != HT.NOWHERE
-                && htFromTestNca == HT.CLIENT)
+            if (htFromNcControlManager is not HT.NOWHERE
+                && htFromTestNca is HT.CLIENT)
             {
                 return htFromNcControlManager;
             }
