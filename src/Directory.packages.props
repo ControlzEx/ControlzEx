@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageVersion Include="XAMLTools.MSBuild" Version="1.0.0-alpha0143" />
+        <PackageVersion Include="XAMLTools.MSBuild" Version="1.0.0-alpha0167" />
         <PackageVersion Include="System.Text.Json" Version="8.0.0" />
         <PackageVersion Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.77" />
     </ItemGroup>
