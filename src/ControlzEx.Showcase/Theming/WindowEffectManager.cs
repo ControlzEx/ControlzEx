@@ -8,6 +8,7 @@ namespace ControlzEx.Theming
     using System.Windows.Interop;
     using ControlzEx.Helpers;
     using ControlzEx.Internal;
+    using ControlzEx.Native;
     using global::Windows.Win32;
     using global::Windows.Win32.Graphics.Dwm;
     using global::Windows.Win32.UI.Controls;
@@ -60,11 +61,7 @@ namespace ControlzEx.Theming
                 DwmHelper.SetWindowAttributeValue(windowHandle, DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE, falseValue);
             }
 
-            //MICA_EFFECT = 1029,                   // [set] BOOL, Enables or disables the Mica window effect
-            //DwmHelper.SetWindowAttributeValue(windowHandle, (DWMWINDOWATTRIBUTE)1029, trueValue);
-            //DWMWA_SYSTEMBACKDROP_TYPE = 38,
-            //Mica = 2,
-            DwmHelper.SetWindowAttributeValue(windowHandle, (DWMWINDOWATTRIBUTE)38, 2);
+            DwmHelper.SetBackdropType(windowHandle, DWMSBT.DWMSBT_MAINWINDOW);
         }
 
         private static void SetAccentPolicy(IntPtr windowHandle, bool isWindowActive, bool isDarkTheme)

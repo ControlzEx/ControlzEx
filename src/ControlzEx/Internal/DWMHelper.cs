@@ -3,6 +3,7 @@
 namespace ControlzEx.Internal
 {
     using System;
+    using ControlzEx.Native;
     using global::Windows.Win32;
     using global::Windows.Win32.Foundation;
     using global::Windows.Win32.Graphics.Dwm;
@@ -36,6 +37,12 @@ namespace ControlzEx.Internal
             // Extend frame on the bottom of client area
             var result = PInvoke.DwmExtendFrameIntoClientArea(new HWND(hWnd), &margins);
             return result == 0;
+        }
+
+        public static bool SetBackdropType(IntPtr hWnd, DWMSBT backdropType)
+        {
+            const DWMWINDOWATTRIBUTE DWMWA_SYSTEMBACKDROP_TYPE = (DWMWINDOWATTRIBUTE)38;
+            return DwmHelper.SetWindowAttributeValue(hWnd, DWMWA_SYSTEMBACKDROP_TYPE, (int)backdropType);
         }
     }
 }

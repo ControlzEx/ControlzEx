@@ -17,6 +17,7 @@
                                Background="Transparent"
                                FlowDirection="LeftToRight"
                                GlowColor="Navy"
+                               NCActiveBrush="{DynamicResource ControlzEx.Brushes.AccentBaseColorBrush}"
                                NonActiveGlowColor="Crimson"
                                Style="{StaticResource {x:Type controlzEx:WindowChromeWindow}}"
                                WindowStartupLocation="CenterScreen"
