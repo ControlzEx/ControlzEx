@@ -351,8 +351,8 @@ namespace ControlzEx.Behaviors
                 }
 
                 Marshal.StructureToPtr(rc, lParam, true);
-            }
-            else if (OSVersionHelper.IsWindows10_OrGreater
+            } // Only do this for Win 11 or greater where we might want to keep the native window border
+            else if (OSVersionHelper.IsWindows11_OrGreater
                      && PInvoke.GetWindowStyle(this.windowHandle).HasFlag(WINDOW_STYLE.WS_CAPTION))
             {
                 var rcBefore = Marshal.PtrToStructure<RECT>(lParam);
