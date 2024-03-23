@@ -1,4 +1,4 @@
-﻿<Application x:Class="ControlzEx.Showcase.App"
+<Application x:Class="ControlzEx.Showcase.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:ControlzEx.Showcase"
@@ -80,19 +80,19 @@
                     <Trigger Property="IsNCActive" Value="False">
                         <Setter Property="NCCurrentBrush" Value="{Binding NCNonActiveBrush, RelativeSource={RelativeSource Self}}" />
                     </Trigger>
-                    <Trigger Property="theming1:WindowEffectManager.CurrentBackdropType" Value="Acrylic">
+                    <Trigger Property="theming1:WindowBackgroundManager.CurrentBackdropType" Value="Acrylic">
                         <Setter Property="Background"
                                 Value="Transparent" />
                     </Trigger>
-                    <Trigger Property="theming1:WindowEffectManager.CurrentBackdropType" Value="Auto">
+                    <Trigger Property="theming1:WindowBackgroundManager.CurrentBackdropType" Value="Auto">
                         <Setter Property="Background"
                                 Value="Transparent" />
                     </Trigger>
-                    <Trigger Property="theming1:WindowEffectManager.CurrentBackdropType" Value="Mica">
+                    <Trigger Property="theming1:WindowBackgroundManager.CurrentBackdropType" Value="Mica">
                         <Setter Property="Background"
                                 Value="Transparent" />
                     </Trigger>
-                    <Trigger Property="theming1:WindowEffectManager.CurrentBackdropType" Value="Tabbed">
+                    <Trigger Property="theming1:WindowBackgroundManager.CurrentBackdropType" Value="Tabbed">
                         <Setter Property="Background"
                                 Value="Transparent" />
                     </Trigger>
