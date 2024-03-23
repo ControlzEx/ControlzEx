@@ -47,25 +47,28 @@ namespace ControlzEx.Theming
 
         public static bool UpdateWindowEffect(Window window)
         {
-            return UpdateWindowEffect(window, GetBackdropType(window));
+            return UpdateWindowEffect(window, GetBackdropType(window), WindowsThemeHelper.AppsUseLightTheme() is false);
         }
 
-        public static bool UpdateWindowEffect(Window window, WindowBackdropType backdropType)
+        public static bool UpdateWindowEffect(Window window, bool isDarkTheme)
         {
-            var result = UpdateWindowEffect(new WindowInteropHelper(window).EnsureHandle(), backdropType);
+            return UpdateWindowEffect(window, GetBackdropType(window), isDarkTheme);
+        }
+
+        public static bool UpdateWindowEffect(Window window, WindowBackdropType backdropType, bool isDarkTheme)
+        {
+            var result = UpdateWindowEffect(new WindowInteropHelper(window).EnsureHandle(), backdropType, isDarkTheme);
 
             SetCurrentBackdropType(window, result ? backdropType : WindowBackdropType.None);
             return result;
         }
 
-        public static bool UpdateWindowEffect(IntPtr handle, WindowBackdropType backdropType)
+        public static bool UpdateWindowEffect(IntPtr handle, WindowBackdropType backdropType, bool isDarkTheme)
         {
             if (OSVersionHelper.IsWindows11_OrGreater is false)
             {
                 return false;
             }
-
-            var isDarkTheme = WindowsThemeHelper.AppsUseLightTheme() is false;
 
             // {
             //     var wtaOptions = new WTA_OPTIONS
