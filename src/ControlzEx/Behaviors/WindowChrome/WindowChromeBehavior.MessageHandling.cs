@@ -96,7 +96,7 @@ namespace ControlzEx.Behaviors
 
             // Mitigation for https://github.com/dotnet/wpf/issues/5853
             // This forces WPF to render a bit earlier, which reduces the time we see a blank white window on show
-            PInvoke.SetWindowPos(this.windowHandle, HWND.Null, 0, 0, 0, 0, SET_WINDOW_POS_FLAGS.SWP_DRAWFRAME | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOOWNERZORDER | SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOZORDER);
+            this.ForceNativeWindowRedraw();
 
             if (this.hwndSource.IsDisposed)
             {
@@ -447,7 +447,7 @@ namespace ControlzEx.Behaviors
         }
 
         private HT GetHitTestResult(nint lParam)
-        {           
+        {
             if (NonClientControlManager.GetControlUnderMouse(this.AssociatedObject, lParam, out var htFromNcControlManager) is not null
                 && htFromNcControlManager is not HT.CAPTION)
             {
@@ -958,11 +958,6 @@ namespace ControlzEx.Behaviors
                 && this._GetHwndState() == WindowState.Maximized)
             {
                 this._ModifyStyle(WINDOW_STYLE.WS_CAPTION, 0);
-            }
-            else
-            {
-                //this._ModifyStyle(WINDOW_STYLE.WS_SYSMENU, WINDOW_STYLE.WS_CAPTION);
-                //this._ModifyStyle(0, WINDOW_STYLE.WS_CAPTION); // todo: mica
             }
         }
 
