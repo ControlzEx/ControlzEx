@@ -16,6 +16,7 @@ namespace ControlzEx
     using Windows.Win32;
     using Windows.Win32.Foundation;
     using Windows.Win32.Graphics.Dwm;
+    using COLORREF = Windows.Win32.COLORREF;
 
     [PublicAPI]
     public partial class WindowChromeWindow : Window
@@ -240,6 +241,29 @@ namespace ControlzEx
         {
             get => (Color?)this.GetValue(NonActiveGlowColorProperty);
             set => this.SetValue(NonActiveGlowColorProperty, value);
+        }
+
+        public static readonly DependencyProperty CaptionColorProperty = DependencyProperty.Register(nameof(CaptionColor), typeof(Color?), typeof(WindowChromeWindow), new PropertyMetadata(null, OnCaptionColorChanged));
+
+        public Color? CaptionColor
+        {
+            get => (Color?)this.GetValue(CaptionColorProperty);
+            set => this.SetValue(CaptionColorProperty, value);
+        }
+
+        private static void OnCaptionColorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((WindowChromeWindow)d).UpdateCaptionColor();
+        }
+
+        private void UpdateCaptionColor()
+        {
+            var color = this.CaptionColor.HasValue
+                ? this.CaptionColor.Value == Colors.Transparent
+                    ? DWMAttributeValues.DWMWA_COLOR_NONE
+                    : new COLORREF(this.CaptionColor.Value).dwColor
+                : DWMAttributeValues.DWMWA_COLOR_DEFAULT;
+            DwmHelper.SetWindowAttributeValue(this.windowHandle, DWMWINDOWATTRIBUTE.DWMWA_CAPTION_COLOR, color);
         }
 
         /// <summary>Identifies the <see cref="IsNCActive"/> dependency property.</summary>

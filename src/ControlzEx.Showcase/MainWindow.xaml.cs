@@ -13,7 +13,6 @@ namespace ControlzEx.Showcase
     using System.Windows.Interop;
     using System.Windows.Media;
     using System.Windows.Media.Animation;
-    using ControlzEx.Theming;
     using global::Windows.Win32;
     using global::Windows.Win32.Foundation;
     using global::Windows.Win32.UI.WindowsAndMessaging;
@@ -304,6 +303,11 @@ namespace ControlzEx.Showcase
             {
                 this.ButtonOpenChildWindowOnClick(this, null);
             }
+        }
+
+        private void HandleClearCaptionColorClick(object sender, RoutedEventArgs e)
+        {
+            this.captionColorComboBox.Text = null;
         }
 
         private void HandleClearGlowColorClick(object sender, RoutedEventArgs e)

@@ -439,6 +439,53 @@
                                               IsChecked="{Binding ElementName=Window, Path=Topmost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                                     <Label>
+                                        Caption color
+                                    </Label>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Border Margin="4"
+                                                Width="16" 
+                                                Height="16"
+                                                BorderThickness="1"
+                                                BorderBrush="{DynamicResource BlackBrush}">
+                                            <Border.Background>
+                                                <SolidColorBrush Color="{Binding ElementName=Window, Path=CaptionColor}" />
+                                            </Border.Background>
+                                        </Border>
+                                        <ComboBox x:Name="captionColorComboBox"
+                                                  Margin="4"
+                                                  MinWidth="100"
+                                                  VerticalAlignment="Center"
+                                                  HorizontalContentAlignment="Stretch"
+                                                  IsEditable="True"
+                                                  ItemsSource="{Binding Colors, ElementName=Window}"
+                                                  Text="{Binding ElementName=Window, Path=CaptionColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="Auto" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Grid.Column="0"
+                                                                   Margin="4 0"
+                                                                   Text="{Binding}" />
+                                                        <Grid Grid.Column="1"
+                                                              Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}"
+                                                              Margin="4 0"
+                                                              VerticalAlignment="Stretch">
+                                                            <Grid.Background>
+                                                                <SolidColorBrush Color="{Binding}" />
+                                                            </Grid.Background>
+                                                        </Grid>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+
+                                        <Button Click="HandleClearCaptionColorClick">Set NULL</Button>
+                                    </StackPanel>
+
+                                    <Label>
                                         WindowBackDropType
                                     </Label>
                                     <ComboBox Margin="4"
