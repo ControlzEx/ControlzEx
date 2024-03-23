@@ -31,21 +31,7 @@ namespace ControlzEx.Showcase
 
             this.windowHandle = new WindowInteropHelper(this).EnsureHandle();
 
-            WindowEffectManager.UpdateWindowEffect(this, this.IsActive);
-        }
-
-        protected override void OnActivated(EventArgs e)
-        {
-            base.OnActivated(e);
-
-            WindowEffectManager.UpdateWindowEffect(this, this.IsActive);
-        }
-
-        protected override void OnDeactivated(EventArgs e)
-        {
-            base.OnDeactivated(e);
-
-            WindowEffectManager.UpdateWindowEffect(this, this.IsActive);
+            WindowBackgroundManager.UpdateWindowEffect(this);
         }
     }
 }

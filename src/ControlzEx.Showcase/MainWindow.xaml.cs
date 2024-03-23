@@ -32,8 +32,13 @@ namespace ControlzEx.Showcase
 
             this.Colors = GetColors().ToList();
             this.Brushes = GetBrushes().ToList();
+        }
 
-            WindowEffectManager.UpdateWindowEffect(this, this.IsActive);
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            base.OnSourceInitialized(e);
+
+            WindowBackgroundManager.UpdateWindowEffect(this);
         }
 
         public List<Color> Colors
@@ -49,20 +54,6 @@ namespace ControlzEx.Showcase
         }
 
         public int LoadedCount { get; set; }
-
-        protected override void OnActivated(EventArgs e)
-        {
-            base.OnActivated(e);
-
-            WindowEffectManager.UpdateWindowEffect(this, this.IsActive);
-        }
-
-        protected override void OnDeactivated(EventArgs e)
-        {
-            base.OnDeactivated(e);
-
-            WindowEffectManager.UpdateWindowEffect(this, this.IsActive);
-        }
 
         public static IEnumerable<Color> GetColors()
         {

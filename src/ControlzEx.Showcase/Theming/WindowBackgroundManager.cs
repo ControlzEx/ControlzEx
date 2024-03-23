@@ -45,20 +45,20 @@ namespace ControlzEx.Theming
             return (WindowBackdropType)element.GetValue(CurrentBackdropTypeProperty);
         }
 
-        public static bool UpdateWindowEffect(Window window, bool isWindowActive = true)
+        public static bool UpdateWindowEffect(Window window)
         {
-            return UpdateWindowEffect(window, GetBackdropType(window), isWindowActive);
+            return UpdateWindowEffect(window, GetBackdropType(window));
         }
 
-        public static bool UpdateWindowEffect(Window window, WindowBackdropType backdropType, bool isWindowActive = true)
+        public static bool UpdateWindowEffect(Window window, WindowBackdropType backdropType)
         {
-            var result = UpdateWindowEffect(new WindowInteropHelper(window).EnsureHandle(), backdropType, isWindowActive);
+            var result = UpdateWindowEffect(new WindowInteropHelper(window).EnsureHandle(), backdropType);
 
             SetCurrentBackdropType(window, result ? backdropType : WindowBackdropType.None);
             return result;
         }
 
-        public static bool UpdateWindowEffect(IntPtr handle, WindowBackdropType backdropType, bool isWindowActive = true)
+        public static bool UpdateWindowEffect(IntPtr handle, WindowBackdropType backdropType)
         {
             if (OSVersionHelper.IsWindows11_OrGreater is false)
             {
