@@ -3,7 +3,6 @@
 namespace ControlzEx.Theming
 {
     using System;
-    using System.Runtime.InteropServices;
     using System.Windows;
     using System.Windows.Interop;
     using ControlzEx.Helpers;
@@ -16,10 +15,10 @@ namespace ControlzEx.Theming
     using global::Windows.Win32.UI.Controls;
     using global::Windows.Win32.UI.WindowsAndMessaging;
 
-    internal static class WindowEffectManager
+    internal static class WindowBackgroundManager
     {
         public static readonly DependencyProperty BackdropTypeProperty = DependencyProperty.RegisterAttached(
-            "BackdropType", typeof(WindowBackdropType), typeof(WindowEffectManager), new PropertyMetadata(WindowBackdropType.Mica));
+            "BackdropType", typeof(WindowBackdropType), typeof(WindowBackgroundManager), new PropertyMetadata(WindowBackdropType.Mica));
 
         public static void SetBackdropType(Window element, WindowBackdropType value)
         {
@@ -33,7 +32,7 @@ namespace ControlzEx.Theming
         }
 
         public static readonly DependencyProperty CurrentBackdropTypeProperty = DependencyProperty.RegisterAttached(
-            "CurrentBackdropType", typeof(WindowBackdropType), typeof(WindowEffectManager), new PropertyMetadata(WindowBackdropType.None));
+            "CurrentBackdropType", typeof(WindowBackdropType), typeof(WindowBackgroundManager), new PropertyMetadata(WindowBackdropType.None));
 
         public static void SetCurrentBackdropType(Window element, WindowBackdropType value)
         {
