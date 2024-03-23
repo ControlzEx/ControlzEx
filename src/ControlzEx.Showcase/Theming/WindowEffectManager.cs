@@ -10,8 +10,11 @@ namespace ControlzEx.Theming
     using ControlzEx.Internal;
     using ControlzEx.Native;
     using ControlzEx.Showcase.Theming;
+    using global::Windows.Win32;
+    using global::Windows.Win32.Foundation;
     using global::Windows.Win32.Graphics.Dwm;
     using global::Windows.Win32.UI.Controls;
+    using global::Windows.Win32.UI.WindowsAndMessaging;
 
     internal static class WindowEffectManager
     {
@@ -58,6 +61,11 @@ namespace ControlzEx.Theming
 
         public static bool UpdateWindowEffect(IntPtr handle, WindowBackdropType backdropType, bool isWindowActive = true)
         {
+            if (OSVersionHelper.IsWindows11_OrGreater is false)
+            {
+                return false;
+            }
+
             var isDarkTheme = WindowsThemeHelper.AppsUseLightTheme() is false;
 
             // {
@@ -68,10 +76,7 @@ namespace ControlzEx.Theming
             //     wtaOptions.dwMask = wtaOptions.dwFlags;
             //     NativeMethods.SetWindowThemeAttribute(windowHandle, WINDOWTHEMEATTRIBUTETYPE.WTA_NONCLIENT, ref wtaOptions, (uint)Marshal.SizeOf(typeof(WTA_OPTIONS)));
             // }
-            return OSVersionHelper.IsWindows11_OrGreater
-                ? SetBackdropType(handle, backdropType, isDarkTheme)
-                : false;
-            //: SetAccentPolicy(windowHandle, isWindowActive, isDarkTheme);
+            return SetBackdropType(handle, backdropType, isDarkTheme);
         }
 
         private static bool SetBackdropType(IntPtr handle, WindowBackdropType backdropType, bool isDarkTheme)
@@ -91,96 +96,17 @@ namespace ControlzEx.Theming
                 return false;
             }
 
-            return DwmHelper.SetBackdropType(handle, (DWMSBT)backdropType);
-        }
+            var result = DwmHelper.SetBackdropType(handle, (DWMSBT)backdropType);
 
-        private static bool SetAccentPolicy(IntPtr windowHandle, bool isWindowActive, bool isDarkTheme)
-        {
-            if (DwmHelper.WindowExtendIntoClientArea(windowHandle, new MARGINS { cxLeftWidth = -1, cyTopHeight = -1, cxRightWidth = -1, cyBottomHeight = -1 }) is false)
+            // We need to disable SYSMENU. Otherwise the snap menu on the maximize button won't work.
+            if (result)
             {
-                return false;
+                var style = PInvoke.GetWindowStyle((HWND)handle);
+                style &= ~WINDOW_STYLE.WS_SYSMENU;
+                PInvoke.SetWindowStyle((HWND)handle, style);
             }
 
-            var accentPolicy = default(AccentPolicy);
-            var accentPolicySize = Marshal.SizeOf(accentPolicy);
-
-            accentPolicy.AccentFlags = 2;
-
-            accentPolicy.AccentState = isWindowActive switch
-            {
-                true when OSVersionHelper.IsWindows10_1803_OrGreater => AccentState.ACCENT_ENABLE_ACRYLICBLURBEHIND,
-                true when OSVersionHelper.IsWindows10_OrGreater => AccentState.ACCENT_ENABLE_BLURBEHIND,
-                true => AccentState.ACCENT_ENABLE_TRANSPARENTGRADIENT,
-                false => AccentState.ACCENT_ENABLE_HOSTBACKDROP
-            };
-
-            if (HwndSource.FromHwnd(windowHandle)?.RootVisual is Window window)
-            {
-                window.Title = accentPolicy.AccentState.ToString();
-            }
-
-            accentPolicy.GradientColor = isDarkTheme ? 0x99000000 : 0x99FFFFFF; //ResourceHelper.GetResource<uint>(ResourceToken.BlurGradientValue);
-
-            var accentPtr = Marshal.AllocHGlobal(accentPolicySize);
-            try
-            {
-                Marshal.StructureToPtr(accentPolicy, accentPtr, false);
-
-                var data = new WindowCompositionAttributeData
-                {
-                    Attribute = WindowCompositionAttribute.WCA_ACCENT_POLICY,
-                    SizeOfData = accentPolicySize,
-                    Data = accentPtr
-                };
-
-                return SetWindowCompositionAttribute(windowHandle, ref data);
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(accentPtr);
-            }
+            return result;
         }
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct AccentPolicy
-        {
-            public AccentState AccentState;
-            public int AccentFlags;
-            public uint GradientColor;
-            public int AnimationId;
-        }
-
-#pragma warning disable SA1602
-        public enum AccentState
-        {
-            ACCENT_DISABLED = 0,
-            ACCENT_ENABLE_GRADIENT = 1,
-            ACCENT_ENABLE_TRANSPARENTGRADIENT = 2,
-            ACCENT_ENABLE_BLURBEHIND = 3,
-            ACCENT_ENABLE_ACRYLICBLURBEHIND = 4, // RS4 1803
-            ACCENT_ENABLE_HOSTBACKDROP = 5, // RS5 1809
-            ACCENT_INVALID_STATE = 6
-        }
-#pragma warning restore SA1602
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct WindowCompositionAttributeData
-        {
-            public WindowCompositionAttribute Attribute;
-            public IntPtr Data;
-            public int SizeOfData;
-        }
-
-#pragma warning disable SA1602
-        public enum WindowCompositionAttribute
-        {
-            // ...
-            WCA_ACCENT_POLICY = 19
-            // ...
-        }
-#pragma warning restore SA1602
-
-        [DllImport("user32.dll")]
-        public static extern bool SetWindowCompositionAttribute(IntPtr hwnd, ref WindowCompositionAttributeData data);
     }
 }
