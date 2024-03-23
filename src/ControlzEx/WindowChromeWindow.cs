@@ -9,13 +9,13 @@ namespace ControlzEx
     using ControlzEx.Behaviors;
     using ControlzEx.Internal;
     using ControlzEx.Internal.KnownBoxes;
+    using ControlzEx.Native;
     using ControlzEx.Theming;
     using JetBrains.Annotations;
     using Microsoft.Xaml.Behaviors;
     using Windows.Win32;
     using Windows.Win32.Foundation;
     using Windows.Win32.Graphics.Dwm;
-    using Windows.Win32.UI.WindowsAndMessaging;
 
     [PublicAPI]
     public partial class WindowChromeWindow : Window
@@ -39,27 +39,18 @@ namespace ControlzEx
             this.windowHandle = new HWND(new WindowInteropHelper(this).Handle);
             this.hwndSource = HwndSource.FromHwnd(this.windowHandle);
 
-            var dwStyle = PInvoke.GetWindowStyle(this.windowHandle);
-            var dwNewStyle = dwStyle & ~WINDOW_STYLE.WS_SYSMENU;
-            //PInvoke.SetWindowStyle(this.windowHandle, dwNewStyle);
-
-            this.hwndSource.CompositionTarget.BackgroundColor = Colors.Transparent;
+            if (this.hwndSource?.CompositionTarget is { } compositionTarget)
+            {
+                compositionTarget.BackgroundColor = Colors.Transparent;
+            }
 
             if (this.MitigateWhiteFlashDuringShow
                 && this.AllowsTransparency is false)
             {
-                const int TRUE_VALUE = 0x01;
-                const int FALSE_VALUE = 0x00;
-
                 var isDarkTheme = WindowsThemeHelper.AppsUseLightTheme() is false;
-                if (isDarkTheme)
-                {
-                    DwmHelper.SetWindowAttributeValue(this.windowHandle, DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE, TRUE_VALUE);
-                }
-                else
-                {
-                    DwmHelper.SetWindowAttributeValue(this.windowHandle, DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE, FALSE_VALUE);
-                }
+                DwmHelper.SetWindowAttributeValue(this.windowHandle, DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE, isDarkTheme
+                                                      ? DWMAttributeValues.True
+                                                      : DWMAttributeValues.False);
             }
 
             this.InitializeMessageHandling();

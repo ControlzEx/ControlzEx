@@ -789,17 +789,6 @@ namespace ControlzEx.Behaviors
                     && this._GetHwndState() == WindowState.Maximized)
                 {
                     structure.styleNew |= (uint)WINDOW_STYLE.WS_OVERLAPPED;
-                    //structure.styleNew &= (uint)~WINDOW_STYLE.WS_CAPTION;
-                    structure.styleNew &= (uint)~WINDOW_STYLE.WS_SYSMENU; // todo: must be removed for mica effect
-                    // structure.styleNew &= (uint)~WINDOW_STYLE.WS_SIZEBOX; // todo: must be removed for mica effect
-                    // structure.styleNew |= (uint)WINDOW_STYLE.WS_THICKFRAME;
-                }
-                else
-                {
-                    //structure.styleNew |= (uint)(WINDOW_STYLE.WS_OVERLAPPED | WINDOW_STYLE.WS_CAPTION);
-                    //structure.styleNew &= (uint)~WINDOW_STYLE.WS_SYSMENU; // todo: must be removed for mica effect
-                    // structure.styleNew &= (uint)~WINDOW_STYLE.WS_SIZEBOX; // todo: must be removed for mica effect
-                    // structure.styleNew |= (uint)WINDOW_STYLE.WS_THICKFRAME;
                 }
 
                 Marshal.StructureToPtr(structure, lParam, fDeleteOld: true);

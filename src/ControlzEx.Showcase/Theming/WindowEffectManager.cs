@@ -9,18 +9,54 @@ namespace ControlzEx.Theming
     using ControlzEx.Helpers;
     using ControlzEx.Internal;
     using ControlzEx.Native;
-    using global::Windows.Win32;
+    using ControlzEx.Showcase.Theming;
     using global::Windows.Win32.Graphics.Dwm;
     using global::Windows.Win32.UI.Controls;
 
     internal static class WindowEffectManager
     {
-        public static void UpdateWindowEffect(Window window, bool isWindowActive = true)
+        public static readonly DependencyProperty BackdropTypeProperty = DependencyProperty.RegisterAttached(
+            "BackdropType", typeof(WindowBackdropType), typeof(WindowEffectManager), new PropertyMetadata(WindowBackdropType.Mica));
+
+        public static void SetBackdropType(Window element, WindowBackdropType value)
         {
-            UpdateWindowEffect(new WindowInteropHelper(window).EnsureHandle(), isWindowActive);
+            element.SetValue(BackdropTypeProperty, value);
         }
 
-        public static void UpdateWindowEffect(IntPtr windowHandle, bool isWindowActive = false)
+        [AttachedPropertyBrowsableForType(typeof(Window))]
+        public static WindowBackdropType GetBackdropType(Window element)
+        {
+            return (WindowBackdropType)element.GetValue(BackdropTypeProperty);
+        }
+
+        public static readonly DependencyProperty CurrentBackdropTypeProperty = DependencyProperty.RegisterAttached(
+            "CurrentBackdropType", typeof(WindowBackdropType), typeof(WindowEffectManager), new PropertyMetadata(WindowBackdropType.None));
+
+        public static void SetCurrentBackdropType(Window element, WindowBackdropType value)
+        {
+            element.SetValue(CurrentBackdropTypeProperty, value);
+        }
+
+        [AttachedPropertyBrowsableForType(typeof(Window))]
+        public static WindowBackdropType GetCurrentBackdropType(Window element)
+        {
+            return (WindowBackdropType)element.GetValue(CurrentBackdropTypeProperty);
+        }
+
+        public static bool UpdateWindowEffect(Window window, bool isWindowActive = true)
+        {
+            return UpdateWindowEffect(window, GetBackdropType(window), isWindowActive);
+        }
+
+        public static bool UpdateWindowEffect(Window window, WindowBackdropType backdropType, bool isWindowActive = true)
+        {
+            var result = UpdateWindowEffect(new WindowInteropHelper(window).EnsureHandle(), backdropType, isWindowActive);
+
+            SetCurrentBackdropType(window, result ? backdropType : WindowBackdropType.None);
+            return result;
+        }
+
+        public static bool UpdateWindowEffect(IntPtr handle, WindowBackdropType backdropType, bool isWindowActive = true)
         {
             var isDarkTheme = WindowsThemeHelper.AppsUseLightTheme() is false;
 
@@ -32,43 +68,38 @@ namespace ControlzEx.Theming
             //     wtaOptions.dwMask = wtaOptions.dwFlags;
             //     NativeMethods.SetWindowThemeAttribute(windowHandle, WINDOWTHEMEATTRIBUTETYPE.WTA_NONCLIENT, ref wtaOptions, (uint)Marshal.SizeOf(typeof(WTA_OPTIONS)));
             // }
-
-            if (OSVersionHelper.IsWindows11_OrGreater)
-            {
-                EnableMicaEffect(windowHandle, isDarkTheme);
-            }
-            else
-            {
-                SetAccentPolicy(windowHandle, isWindowActive, isDarkTheme);
-            }
+            return OSVersionHelper.IsWindows11_OrGreater
+                ? SetBackdropType(handle, backdropType, isDarkTheme)
+                : false;
+            //: SetAccentPolicy(windowHandle, isWindowActive, isDarkTheme);
         }
 
-        private static void EnableMicaEffect(IntPtr windowHandle, bool isDarkTheme)
+        private static bool SetBackdropType(IntPtr handle, WindowBackdropType backdropType, bool isDarkTheme)
         {
-            DwmHelper.WindowExtendIntoClientArea(windowHandle, new MARGINS { cxLeftWidth = -1, cyTopHeight = -1, cxRightWidth = -1, cyBottomHeight = -1 });
+            if (DwmHelper.WindowExtendIntoClientArea(handle, new MARGINS { cxLeftWidth = -1, cyTopHeight = -1, cxRightWidth = -1, cyBottomHeight = -1 }) is false)
+            {
+                return false;
+            }
+
             //var value = NativeMethods.DwmGetWindowAttribute(windowHandle, DWMWINDOWATTRIBUTE.CAPTION_BUTTON_BOUNDS, out RECT rect, Marshal.SizeOf<RECT>());
 
-            var trueValue = 0x01;
-            var falseValue = 0x00;
-
             // Set dark mode before applying the material, otherwise you'll get an ugly flash when displaying the window.
-            if (isDarkTheme)
+            if (DwmHelper.SetWindowAttributeValue(handle, DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE, isDarkTheme
+                                                      ? DWMAttributeValues.True
+                                                      : DWMAttributeValues.False) is false)
             {
-                DwmHelper.SetWindowAttributeValue(windowHandle, DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE, trueValue);
-            }
-            else
-            {
-                DwmHelper.SetWindowAttributeValue(windowHandle, DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE, falseValue);
+                return false;
             }
 
-            DwmHelper.SetBackdropType(windowHandle, DWMSBT.DWMSBT_MAINWINDOW);
+            return DwmHelper.SetBackdropType(handle, (DWMSBT)backdropType);
         }
 
-        private static void SetAccentPolicy(IntPtr windowHandle, bool isWindowActive, bool isDarkTheme)
+        private static bool SetAccentPolicy(IntPtr windowHandle, bool isWindowActive, bool isDarkTheme)
         {
-            //DwmHelper.WindowExtendIntoClientArea(windowHandle, new MARGINS(-1, -1, -1, -1));
-            DwmHelper.WindowExtendIntoClientArea(windowHandle, new MARGINS { cyBottomHeight = 1 });
-            //DwmHelper.SetWindowAttributeValue(windowHandle, DWMWINDOWATTRIBUTE.VISIBLE_FRAME_BORDER_THICKNESS, 0);
+            if (DwmHelper.WindowExtendIntoClientArea(windowHandle, new MARGINS { cxLeftWidth = -1, cyTopHeight = -1, cxRightWidth = -1, cyBottomHeight = -1 }) is false)
+            {
+                return false;
+            }
 
             var accentPolicy = default(AccentPolicy);
             var accentPolicySize = Marshal.SizeOf(accentPolicy);
@@ -83,19 +114,31 @@ namespace ControlzEx.Theming
                 false => AccentState.ACCENT_ENABLE_HOSTBACKDROP
             };
 
+            if (HwndSource.FromHwnd(windowHandle)?.RootVisual is Window window)
+            {
+                window.Title = accentPolicy.AccentState.ToString();
+            }
+
             accentPolicy.GradientColor = isDarkTheme ? 0x99000000 : 0x99FFFFFF; //ResourceHelper.GetResource<uint>(ResourceToken.BlurGradientValue);
 
             var accentPtr = Marshal.AllocHGlobal(accentPolicySize);
-            Marshal.StructureToPtr(accentPolicy, accentPtr, false);
-
-            var data = new WindowCompositionAttributeData
+            try
             {
-                Attribute = WindowCompositionAttribute.WCA_ACCENT_POLICY,
-                SizeOfData = accentPolicySize,
-                Data = accentPtr
-            };
-            SetWindowCompositionAttribute(windowHandle, ref data);
-            Marshal.FreeHGlobal(accentPtr);
+                Marshal.StructureToPtr(accentPolicy, accentPtr, false);
+
+                var data = new WindowCompositionAttributeData
+                {
+                    Attribute = WindowCompositionAttribute.WCA_ACCENT_POLICY,
+                    SizeOfData = accentPolicySize,
+                    Data = accentPtr
+                };
+
+                return SetWindowCompositionAttribute(windowHandle, ref data);
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(accentPtr);
+            }
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -138,6 +181,6 @@ namespace ControlzEx.Theming
 #pragma warning restore SA1602
 
         [DllImport("user32.dll")]
-        public static extern int SetWindowCompositionAttribute(IntPtr hwnd, ref WindowCompositionAttributeData data);
+        public static extern bool SetWindowCompositionAttribute(IntPtr hwnd, ref WindowCompositionAttributeData data);
     }
 }

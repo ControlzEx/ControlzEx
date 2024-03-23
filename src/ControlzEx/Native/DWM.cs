@@ -27,3 +27,9 @@ internal enum DWMSBT : uint
     /// </summary>
     DWMSBT_TABBEDWINDOW = 4
 }
+
+public static class DWMAttributeValues
+{
+    public const int False = 0x00;
+    public const int True = 0x01;
+}

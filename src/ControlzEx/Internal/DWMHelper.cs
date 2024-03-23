@@ -11,13 +11,6 @@ namespace ControlzEx.Internal
 
     internal static class DwmHelper
     {
-        public static unsafe bool IsCompositionEnabled()
-        {
-            BOOL pfEnabled;
-            var result = PInvoke.DwmIsCompositionEnabled(&pfEnabled);
-            return pfEnabled == true;
-        }
-
         public static bool SetWindowAttributeValue(IntPtr hWnd, DWMWINDOWATTRIBUTE attribute, int attributeValue)
         {
             return SetWindowAttribute(hWnd, attribute, ref attributeValue);
@@ -42,7 +35,7 @@ namespace ControlzEx.Internal
         public static bool SetBackdropType(IntPtr hWnd, DWMSBT backdropType)
         {
             const DWMWINDOWATTRIBUTE DWMWA_SYSTEMBACKDROP_TYPE = (DWMWINDOWATTRIBUTE)38;
-            return DwmHelper.SetWindowAttributeValue(hWnd, DWMWA_SYSTEMBACKDROP_TYPE, (int)backdropType);
+            return SetWindowAttributeValue(hWnd, DWMWA_SYSTEMBACKDROP_TYPE, (int)backdropType);
         }
     }
 }

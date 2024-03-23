@@ -4,6 +4,7 @@
              xmlns:local="clr-namespace:ControlzEx.Showcase"
              xmlns:theming="clr-namespace:ControlzEx.Showcase.Theming"
              xmlns:controlzEx="urn:controlzex"
+             xmlns:theming1="clr-namespace:ControlzEx.Theming"
              StartupUri="MainWindow.xaml"
              ShutdownMode="OnMainWindowClose">
     <Application.Resources>
@@ -22,6 +23,7 @@
             <SolidColorBrush x:Key="Button.Disabled.Foreground" Color="#FF838383" />
             
             <Style x:Key="{x:Type controlzEx:WindowChromeWindow}" TargetType="{x:Type controlzEx:WindowChromeWindow}">
+                <Setter Property="Background" Value="{Binding Source={x:Static SystemColors.WindowBrush}}" />
                 <Setter Property="BorderThickness" Value="1" />
                 <Setter Property="BorderBrush" Value="{x:Null}" />
                 <Setter Property="NCActiveBrush" Value="{Binding Background, RelativeSource={RelativeSource Self}}" />
@@ -77,6 +79,22 @@
                     </Trigger>
                     <Trigger Property="IsNCActive" Value="False">
                         <Setter Property="NCCurrentBrush" Value="{Binding NCNonActiveBrush, RelativeSource={RelativeSource Self}}" />
+                    </Trigger>
+                    <Trigger Property="theming1:WindowEffectManager.CurrentBackdropType" Value="Acrylic">
+                        <Setter Property="Background"
+                                Value="Transparent" />
+                    </Trigger>
+                    <Trigger Property="theming1:WindowEffectManager.CurrentBackdropType" Value="Auto">
+                        <Setter Property="Background"
+                                Value="Transparent" />
+                    </Trigger>
+                    <Trigger Property="theming1:WindowEffectManager.CurrentBackdropType" Value="Mica">
+                        <Setter Property="Background"
+                                Value="Transparent" />
+                    </Trigger>
+                    <Trigger Property="theming1:WindowEffectManager.CurrentBackdropType" Value="Tabbed">
+                        <Setter Property="Background"
+                                Value="Transparent" />
                     </Trigger>
                 </Style.Triggers>
             </Style>
