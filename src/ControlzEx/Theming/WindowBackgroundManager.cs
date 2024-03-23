@@ -8,17 +8,20 @@ namespace ControlzEx.Theming
     using ControlzEx.Helpers;
     using ControlzEx.Internal;
     using ControlzEx.Native;
-    using ControlzEx.Showcase.Theming;
     using global::Windows.Win32;
     using global::Windows.Win32.Foundation;
     using global::Windows.Win32.Graphics.Dwm;
     using global::Windows.Win32.UI.Controls;
     using global::Windows.Win32.UI.WindowsAndMessaging;
 
-    internal static class WindowBackgroundManager
+    public class WindowBackgroundManager : DependencyObject
     {
+        private WindowBackgroundManager()
+        {
+        }
+
         public static readonly DependencyProperty BackdropTypeProperty = DependencyProperty.RegisterAttached(
-            "BackdropType", typeof(WindowBackdropType), typeof(WindowBackgroundManager), new PropertyMetadata(WindowBackdropType.Mica));
+            "BackdropType", typeof(WindowBackdropType), typeof(WindowBackgroundManager), new PropertyMetadata(WindowBackdropType.Mica, OnBackdropTypeChanged));
 
         public static void SetBackdropType(Window element, WindowBackdropType value)
         {
@@ -31,12 +34,20 @@ namespace ControlzEx.Theming
             return (WindowBackdropType)element.GetValue(BackdropTypeProperty);
         }
 
-        public static readonly DependencyProperty CurrentBackdropTypeProperty = DependencyProperty.RegisterAttached(
+        private static void OnBackdropTypeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            UpdateWindowEffect((Window)d);
+        }
+
+        // ReSharper disable once InconsistentNaming
+        private static readonly DependencyPropertyKey CurrentBackdropTypePropertyKey = DependencyProperty.RegisterAttachedReadOnly(
             "CurrentBackdropType", typeof(WindowBackdropType), typeof(WindowBackgroundManager), new PropertyMetadata(WindowBackdropType.None));
 
-        public static void SetCurrentBackdropType(Window element, WindowBackdropType value)
+        public static readonly DependencyProperty CurrentBackdropTypeProperty = CurrentBackdropTypePropertyKey.DependencyProperty;
+
+        private static void SetCurrentBackdropType(Window element, WindowBackdropType value)
         {
-            element.SetValue(CurrentBackdropTypeProperty, value);
+            element.SetValue(CurrentBackdropTypePropertyKey, value);
         }
 
         [AttachedPropertyBrowsableForType(typeof(Window))]
@@ -47,7 +58,17 @@ namespace ControlzEx.Theming
 
         public static bool UpdateWindowEffect(Window window)
         {
-            return UpdateWindowEffect(window, GetBackdropType(window), WindowsThemeHelper.AppsUseLightTheme() is false);
+            bool isDarkTheme;
+            if (ThemeManager.Current.DetectTheme(window) is { } theme)
+            {
+                isDarkTheme = theme.BaseColorScheme is ThemeManager.BaseColorDarkConst;
+            }
+            else
+            {
+                isDarkTheme = WindowsThemeHelper.AppsUseLightTheme() is false;
+            }
+
+            return UpdateWindowEffect(window, GetBackdropType(window), isDarkTheme);
         }
 
         public static bool UpdateWindowEffect(Window window, bool isDarkTheme)
@@ -57,6 +78,12 @@ namespace ControlzEx.Theming
 
         public static bool UpdateWindowEffect(Window window, WindowBackdropType backdropType, bool isDarkTheme)
         {
+            if (window.AllowsTransparency)
+            {
+                SetCurrentBackdropType(window, WindowBackdropType.None);
+                return false;
+            }
+
             var result = UpdateWindowEffect(new WindowInteropHelper(window).EnsureHandle(), backdropType, isDarkTheme);
 
             SetCurrentBackdropType(window, result ? backdropType : WindowBackdropType.None);

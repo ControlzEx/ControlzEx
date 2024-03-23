@@ -34,13 +34,6 @@ namespace ControlzEx.Showcase
             this.Brushes = GetBrushes().ToList();
         }
 
-        protected override void OnSourceInitialized(EventArgs e)
-        {
-            base.OnSourceInitialized(e);
-
-            WindowBackgroundManager.UpdateWindowEffect(this);
-        }
-
         public List<Color> Colors
         {
             get => (List<Color>)this.GetValue(ColorsProperty);

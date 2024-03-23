@@ -1,4 +1,4 @@
-namespace ControlzEx.Showcase.Theming;
+namespace ControlzEx.Theming;
 
 using ControlzEx.Native;
 

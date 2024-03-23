@@ -31,6 +31,11 @@ namespace ControlzEx
             PInvoke.FlushMenuThemes();
         }
 
+        public WindowChromeWindow()
+        {
+            WeakEventManager<ThemeManager, ThemeChangedEventArgs>.AddHandler(ThemeManager.Current, nameof(ThemeManager.Current.ThemeChanged), this.OnThemeChanged);
+        }
+
         /// <inheritdoc />
         protected override void OnSourceInitialized(EventArgs e)
         {
@@ -43,6 +48,8 @@ namespace ControlzEx
             {
                 compositionTarget.BackgroundColor = Colors.Transparent;
             }
+
+            WindowBackgroundManager.UpdateWindowEffect(this);
 
             if (this.MitigateWhiteFlashDuringShow
                 && this.AllowsTransparency is false)
@@ -102,6 +109,14 @@ namespace ControlzEx
             this.SetBinding(DWMSupportsBorderColorProperty, new Binding { Path = new PropertyPath(GlowWindowBehavior.DWMSupportsBorderColorProperty), Source = behavior });
 
             Interaction.GetBehaviors(this).Add(behavior);
+        }
+
+        protected virtual void OnThemeChanged(object? sender, ThemeChangedEventArgs e)
+        {
+            if (e.OldTheme?.BaseColorScheme != e.NewTheme.BaseColorScheme)
+            {
+                WindowBackgroundManager.UpdateWindowEffect(this);
+            }
         }
 
         /// <inheritdoc cref="WindowChromeBehavior.ResizeBorderThickness"/>
@@ -228,7 +243,7 @@ namespace ControlzEx
         }
 
         /// <summary>Identifies the <see cref="IsNCActive"/> dependency property.</summary>
-        public static readonly DependencyProperty IsNCActiveProperty = DependencyProperty.Register(nameof(IsNCActive), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(BooleanBoxes.FalseBox));
+        public static readonly DependencyProperty IsNCActiveProperty = DependencyProperty.Register(nameof(IsNCActive), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(BooleanBoxes.FalseBox, OnIsNCActiveChanged));
 
         /// <summary>
         /// Gets whether the non-client area is active or not.
@@ -237,6 +252,14 @@ namespace ControlzEx
         {
             get => (bool)this.GetValue(IsNCActiveProperty);
             private set => this.SetValue(IsNCActiveProperty, BooleanBoxes.Box(value));
+        }
+
+        private static void OnIsNCActiveChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var windowChromeWindow = (WindowChromeWindow)d;
+            windowChromeWindow.NCCurrentBrush = windowChromeWindow.IsNCActive
+                ? windowChromeWindow.NCActiveBrush
+                : windowChromeWindow.NCNonActiveBrush;
         }
 
         /// <summary>Identifies the <see cref="NCActiveBrush"/> dependency property.</summary>
@@ -263,8 +286,10 @@ namespace ControlzEx
             set => this.SetValue(NCNonActiveBrushProperty, value);
         }
 
+        public static readonly DependencyPropertyKey NCCurrentBrushPropertyKey = DependencyProperty.RegisterReadOnly(nameof(NCCurrentBrush), typeof(Brush), typeof(WindowChromeWindow), new PropertyMetadata(default(Brush)));
+
         /// <summary>Identifies the <see cref="NCCurrentBrush"/> dependency property.</summary>
-        public static readonly DependencyProperty NCCurrentBrushProperty = DependencyProperty.Register(nameof(NCCurrentBrush), typeof(Brush), typeof(WindowChromeWindow), new PropertyMetadata(default(Brush)));
+        public static readonly DependencyProperty NCCurrentBrushProperty = NCCurrentBrushPropertyKey.DependencyProperty;
 
         /// <summary>
         /// Defines the current non-client area brush (active or inactive).
@@ -275,7 +300,7 @@ namespace ControlzEx
         public Brush? NCCurrentBrush
         {
             get => (Brush?)this.GetValue(NCCurrentBrushProperty);
-            set => this.SetValue(NCCurrentBrushProperty, value);
+            private set => this.SetValue(NCCurrentBrushPropertyKey, value);
         }
 
         /// <summary>Identifies the <see cref="PreferDWMBorderColor"/> dependency property.</summary>
@@ -309,6 +334,20 @@ namespace ControlzEx
             get => (WindowCornerPreference)this.GetValue(CornerPreferenceProperty);
             set => this.SetValue(CornerPreferenceProperty, value);
         }
+
+        // public static readonly DependencyProperty HasDarkThemeProperty = DependencyProperty.Register(
+        //     nameof(HasDarkTheme), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(BooleanBoxes.FalseBox, OnHasDarkThemeChanged));
+        //
+        // public bool HasDarkTheme
+        // {
+        //     get => (bool)this.GetValue(HasDarkThemeProperty);
+        //     set => this.SetValue(HasDarkThemeProperty, value);
+        // }
+        //
+        // private static void OnHasDarkThemeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        // {
+        //     WindowBackgroundManager.UpdateWindowEffect((WindowChromeWindow)d);
+        // }
 
         /// <inheritdoc />
         protected override void OnActivated(EventArgs e)
