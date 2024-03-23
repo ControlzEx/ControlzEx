@@ -34,7 +34,7 @@ namespace ControlzEx
 
         public WindowChromeWindow()
         {
-            WeakEventManager<ThemeManager, ThemeChangedEventArgs>.AddHandler(ThemeManager.Current, nameof(ThemeManager.Current.ThemeChanged), this.OnThemeChanged);
+            WeakEventManager<ThemeManager, ThemeChangedEventArgs>.AddHandler(ThemeManager.Current, nameof(ThemeManager.Current.ThemeChanged), this.OnThemeManagerThemeChanged);
         }
 
         /// <inheritdoc />
@@ -112,7 +112,7 @@ namespace ControlzEx
             Interaction.GetBehaviors(this).Add(behavior);
         }
 
-        protected virtual void OnThemeChanged(object? sender, ThemeChangedEventArgs e)
+        protected virtual void OnThemeManagerThemeChanged(object? sender, ThemeChangedEventArgs e)
         {
             if (e.OldTheme?.BaseColorScheme != e.NewTheme.BaseColorScheme)
             {
@@ -245,6 +245,12 @@ namespace ControlzEx
 
         public static readonly DependencyProperty CaptionColorProperty = DependencyProperty.Register(nameof(CaptionColor), typeof(Color?), typeof(WindowChromeWindow), new PropertyMetadata(null, OnCaptionColorChanged));
 
+        /// <summary>
+        /// Gets or sets the native window caption color.
+        /// </summary>
+        /// <remarks>
+        /// Only works on Windows 11 and later.
+        /// </remarks>
         public Color? CaptionColor
         {
             get => (Color?)this.GetValue(CaptionColorProperty);
