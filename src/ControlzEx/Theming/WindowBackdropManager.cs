@@ -1,5 +1,3 @@
-#pragma warning disable CS0618, CA1060, CA1815, CA1008, CA1045, CA1401
-
 namespace ControlzEx.Theming
 {
     using System;
@@ -97,14 +95,6 @@ namespace ControlzEx.Theming
                 return false;
             }
 
-            // {
-            //     var wtaOptions = new WTA_OPTIONS
-            //     {
-            //         dwFlags = WTNCA.NODRAWCAPTION | WTNCA.NODRAWICON | WTNCA.NOSYSMENU | WTNCA.NOMIRRORHELP
-            //     };
-            //     wtaOptions.dwMask = wtaOptions.dwFlags;
-            //     NativeMethods.SetWindowThemeAttribute(windowHandle, WINDOWTHEMEATTRIBUTETYPE.WTA_NONCLIENT, ref wtaOptions, (uint)Marshal.SizeOf(typeof(WTA_OPTIONS)));
-            // }
             return SetBackdropType(handle, backdropType, isDarkTheme);
         }
 
