@@ -14,14 +14,14 @@ namespace ControlzEx.Theming
     using global::Windows.Win32.UI.Controls;
     using global::Windows.Win32.UI.WindowsAndMessaging;
 
-    public class WindowBackgroundManager : DependencyObject
+    public class WindowBackdropManager : DependencyObject
     {
-        private WindowBackgroundManager()
+        private WindowBackdropManager()
         {
         }
 
         public static readonly DependencyProperty BackdropTypeProperty = DependencyProperty.RegisterAttached(
-            "BackdropType", typeof(WindowBackdropType), typeof(WindowBackgroundManager), new PropertyMetadata(WindowBackdropType.Mica, OnBackdropTypeChanged));
+            "BackdropType", typeof(WindowBackdropType), typeof(WindowBackdropManager), new PropertyMetadata(WindowBackdropType.Mica, OnBackdropTypeChanged));
 
         public static void SetBackdropType(Window element, WindowBackdropType value)
         {
@@ -41,7 +41,7 @@ namespace ControlzEx.Theming
 
         // ReSharper disable once InconsistentNaming
         private static readonly DependencyPropertyKey CurrentBackdropTypePropertyKey = DependencyProperty.RegisterAttachedReadOnly(
-            "CurrentBackdropType", typeof(WindowBackdropType), typeof(WindowBackgroundManager), new PropertyMetadata(WindowBackdropType.None));
+            "CurrentBackdropType", typeof(WindowBackdropType), typeof(WindowBackdropManager), new PropertyMetadata(WindowBackdropType.None));
 
         public static readonly DependencyProperty CurrentBackdropTypeProperty = CurrentBackdropTypePropertyKey.DependencyProperty;
 
@@ -92,7 +92,7 @@ namespace ControlzEx.Theming
 
         public static bool UpdateWindowEffect(IntPtr handle, WindowBackdropType backdropType, bool isDarkTheme)
         {
-            if (OSVersionHelper.IsWindows11_OrGreater is false)
+            if (OSVersionHelper.IsWindows11_22H2_OrGreater is false)
             {
                 return false;
             }

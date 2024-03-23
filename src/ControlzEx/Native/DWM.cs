@@ -1,5 +1,7 @@
 namespace ControlzEx.Native;
 
+using System;
+
 internal enum DWMSBT : uint
 {
     /// <summary>
@@ -28,8 +30,14 @@ internal enum DWMSBT : uint
     DWMSBT_TABBEDWINDOW = 4
 }
 
+[CLSCompliant(false)]
 public static class DWMAttributeValues
 {
     public const int False = 0x00;
     public const int True = 0x01;
+
+#pragma warning disable SA1310
+    public const uint DWMWA_COLOR_DEFAULT = 0xFFFFFFFF;
+    public const uint DWMWA_COLOR_NONE = 0xFFFFFFFE;
+#pragma warning restore SA1310
 }

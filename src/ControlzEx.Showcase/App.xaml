@@ -75,19 +75,19 @@
                     <Trigger Property="ResizeMode" Value="NoResize">
                         <Setter Property="Margin" Value="0" />
                     </Trigger>
-                    <Trigger Property="controlzEx:WindowBackgroundManager.CurrentBackdropType" Value="Acrylic">
+                    <Trigger Property="controlzEx:WindowBackdropManager.CurrentBackdropType" Value="Acrylic">
                         <Setter Property="Background"
                                 Value="Transparent" />
                     </Trigger>
-                    <Trigger Property="controlzEx:WindowBackgroundManager.CurrentBackdropType" Value="Auto">
+                    <Trigger Property="controlzEx:WindowBackdropManager.CurrentBackdropType" Value="Auto">
                         <Setter Property="Background"
                                 Value="Transparent" />
                     </Trigger>
-                    <Trigger Property="controlzEx:WindowBackgroundManager.CurrentBackdropType" Value="Mica">
+                    <Trigger Property="controlzEx:WindowBackdropManager.CurrentBackdropType" Value="Mica">
                         <Setter Property="Background"
                                 Value="Transparent" />
                     </Trigger>
-                    <Trigger Property="controlzEx:WindowBackgroundManager.CurrentBackdropType" Value="Tabbed">
+                    <Trigger Property="controlzEx:WindowBackdropManager.CurrentBackdropType" Value="Tabbed">
                         <Setter Property="Background"
                                 Value="Transparent" />
                     </Trigger>

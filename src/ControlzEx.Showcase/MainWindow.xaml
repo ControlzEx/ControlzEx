@@ -47,6 +47,14 @@
                 <x:Type TypeName="controlzEx:WindowCornerPreference" />
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
+
+        <ObjectDataProvider x:Key="WindowBackdropTypeEnumValues"
+                            MethodName="GetValues"
+                            ObjectType="{x:Type controlzEx:WindowBackdropType}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="controlzEx:WindowBackdropType" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
         
         <ObjectDataProvider x:Key="DockEnumValues"
                             MethodName="GetValues"
@@ -429,9 +437,17 @@
                                     <CheckBox Margin="4"
                                               VerticalAlignment="Center"
                                               IsChecked="{Binding ElementName=Window, Path=Topmost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <Label>
+                                        WindowBackDropType
+                                    </Label>
+                                    <ComboBox Margin="4"
+                                              VerticalAlignment="Center"
+                                              ItemsSource="{Binding Source={StaticResource WindowBackdropTypeEnumValues}}"
+                                              SelectedItem="{Binding ElementName=Window, Path=(controlzEx:WindowBackdropManager.BackdropType), Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 </local:UniformGridEx>
                             </Expander>
-                            
+
                             <Expander Grid.Row="4"
                                       Margin="5"
                                       BorderThickness="0 1 0 0"

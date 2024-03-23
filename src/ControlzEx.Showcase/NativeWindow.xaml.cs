@@ -31,7 +31,7 @@ namespace ControlzEx.Showcase
 
             this.windowHandle = new WindowInteropHelper(this).EnsureHandle();
 
-            WindowBackgroundManager.UpdateWindowEffect(this);
+            WindowBackdropManager.UpdateWindowEffect(this);
         }
     }
 }

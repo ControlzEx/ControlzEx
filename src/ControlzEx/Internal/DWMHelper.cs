@@ -24,6 +24,20 @@ namespace ControlzEx.Internal
                 return result == 0;
             }
         }
+        
+        public static bool SetWindowAttributeValue(IntPtr hWnd, DWMWINDOWATTRIBUTE attribute, uint attributeValue)
+        {
+            return SetWindowAttribute(hWnd, attribute, ref attributeValue);
+        }
+
+        public static unsafe bool SetWindowAttribute(IntPtr hWnd, DWMWINDOWATTRIBUTE attribute, ref uint attributeValue)
+        {
+            fixed (void* value = &attributeValue)
+            {
+                var result = PInvoke.DwmSetWindowAttribute(new HWND(hWnd), attribute, value, sizeof(uint));
+                return result == 0;
+            }
+        }
 
         public static unsafe bool WindowExtendIntoClientArea(IntPtr hWnd, MARGINS margins)
         {

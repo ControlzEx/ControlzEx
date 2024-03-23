@@ -49,7 +49,7 @@ namespace ControlzEx
                 compositionTarget.BackgroundColor = Colors.Transparent;
             }
 
-            WindowBackgroundManager.UpdateWindowEffect(this);
+            WindowBackdropManager.UpdateWindowEffect(this);
 
             if (this.MitigateWhiteFlashDuringShow
                 && this.AllowsTransparency is false)
@@ -115,7 +115,7 @@ namespace ControlzEx
         {
             if (e.OldTheme?.BaseColorScheme != e.NewTheme.BaseColorScheme)
             {
-                WindowBackgroundManager.UpdateWindowEffect(this);
+                WindowBackdropManager.UpdateWindowEffect(this);
             }
         }
 
