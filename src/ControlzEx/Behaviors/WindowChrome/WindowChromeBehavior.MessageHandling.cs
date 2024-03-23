@@ -14,6 +14,7 @@ namespace ControlzEx.Behaviors
     using global::Windows.Win32;
     using global::Windows.Win32.Foundation;
     using global::Windows.Win32.Graphics.Gdi;
+    using global::Windows.Win32.UI.Controls;
     using global::Windows.Win32.UI.Input.KeyboardAndMouse;
     using global::Windows.Win32.UI.WindowsAndMessaging;
     using Point = System.Windows.Point;
@@ -93,6 +94,7 @@ namespace ControlzEx.Behaviors
             this.UpdateMinimizeSystemMenu(this.EnableMinimize);
             this.UpdateMaxRestoreSystemMenu(this.EnableMaxRestore);
             this.UpdateWindowStyle();
+            //DwmHelper.WindowExtendIntoClientArea(this.windowHandle, new MARGINS { cxLeftWidth = -1, cyTopHeight = -1, cxRightWidth = -1, cyBottomHeight = -1 });
 
             // Mitigation for https://github.com/dotnet/wpf/issues/5853
             // This forces WPF to render a bit earlier, which reduces the time we see a blank white window on show
