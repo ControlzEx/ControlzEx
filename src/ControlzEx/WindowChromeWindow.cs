@@ -27,10 +27,6 @@ namespace ControlzEx
         static WindowChromeWindow()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(WindowChromeWindow), new FrameworkPropertyMetadata(typeof(WindowChromeWindow)));
-
-            // todo: Move to dedicated class and never call it automatically. That way consumers are in full control.
-            PInvoke.SetPreferredAppMode(PInvoke.PreferredAppMode.AllowDark);
-            PInvoke.FlushMenuThemes();
         }
 
         public WindowChromeWindow()
@@ -117,7 +113,9 @@ namespace ControlzEx
         {
             if (e.OldTheme?.BaseColorScheme != e.NewTheme.BaseColorScheme)
             {
-                WindowBackdropManager.UpdateWindowEffect(this);
+                var isDarkTheme = e.NewTheme.BaseColorScheme is ThemeManager.BaseColorDarkConst;
+                DwmHelper.SetImmersiveDarkMode(this.windowHandle, isDarkTheme);
+                WindowBackdropManager.UpdateWindowEffect(this, isDarkTheme);
             }
         }
 
