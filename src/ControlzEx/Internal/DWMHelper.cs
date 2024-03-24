@@ -4,6 +4,7 @@ namespace ControlzEx.Internal
 {
     using System;
     using System.Windows;
+    using ControlzEx.Native;
     using ControlzEx.Theming;
     using global::Windows.Win32;
     using global::Windows.Win32.Foundation;
@@ -46,6 +47,22 @@ namespace ControlzEx.Internal
             // Extend frame on the bottom of client area
             var result = PInvoke.DwmExtendFrameIntoClientArea(new HWND(hWnd), &nativeMargins);
             return result.Succeeded;
+        }
+
+        public static bool HasDarkTheme(Window window)
+        {
+            if (ThemeManager.Current.DetectTheme(window) is { } theme)
+            {
+                return theme.BaseColorScheme is ThemeManager.BaseColorDarkConst;
+            }
+
+            return WindowsThemeHelper.AppsUseLightTheme() is false;
+        }
+
+        public static bool SetImmersiveDarkMode(IntPtr hWnd, bool isDarkTheme)
+        {
+            var immersiveDarkModeAttributeValue = isDarkTheme ? DWMAttributeValues.True : DWMAttributeValues.False;
+            return SetWindowAttributeValue(hWnd, DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE, immersiveDarkModeAttributeValue);
         }
 
         public static bool SetBackdropType(IntPtr hWnd, WindowBackdropType backdropType)

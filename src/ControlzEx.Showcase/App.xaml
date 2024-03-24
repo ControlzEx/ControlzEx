@@ -68,21 +68,26 @@
                     <Trigger Property="ResizeMode" Value="NoResize">
                         <Setter Property="Margin" Value="0" />
                     </Trigger>
+                    <Trigger Property="UseNativeCaptionButtons" Value="True">
+                        <Setter Property="CaptionColor" Value="Transparent" />
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="GlassFrameThickness" Value="-1" />
+                    </Trigger>
                     <Trigger Property="controlzEx:WindowBackdropManager.CurrentBackdropType" Value="Acrylic">
-                        <Setter Property="Background"
-                                Value="Transparent" />
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="GlassFrameThickness" Value="-1" />
                     </Trigger>
                     <Trigger Property="controlzEx:WindowBackdropManager.CurrentBackdropType" Value="Auto">
-                        <Setter Property="Background"
-                                Value="Transparent" />
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="GlassFrameThickness" Value="-1" />
                     </Trigger>
                     <Trigger Property="controlzEx:WindowBackdropManager.CurrentBackdropType" Value="Mica">
-                        <Setter Property="Background"
-                                Value="Transparent" />
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="GlassFrameThickness" Value="-1" />
                     </Trigger>
                     <Trigger Property="controlzEx:WindowBackdropManager.CurrentBackdropType" Value="Tabbed">
-                        <Setter Property="Background"
-                                Value="Transparent" />
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="GlassFrameThickness" Value="-1" />
                     </Trigger>
                 </Style.Triggers>
             </Style>

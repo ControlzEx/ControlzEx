@@ -56,10 +56,7 @@ namespace ControlzEx
             if (this.MitigateWhiteFlashDuringShow
                 && this.AllowsTransparency is false)
             {
-                var isDarkTheme = WindowsThemeHelper.AppsUseLightTheme() is false;
-                DwmHelper.SetWindowAttributeValue(this.windowHandle, DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE, isDarkTheme
-                                                      ? DWMAttributeValues.True
-                                                      : DWMAttributeValues.False);
+                DwmHelper.SetImmersiveDarkMode(this.windowHandle, DwmHelper.HasDarkTheme(this));
             }
 
             this.InitializeMessageHandling();
@@ -91,6 +88,7 @@ namespace ControlzEx
             BindingOperations.SetBinding(behavior, WindowChromeBehavior.CornerPreferenceProperty, new Binding { Path = new PropertyPath(CornerPreferenceProperty), Source = this });
             BindingOperations.SetBinding(behavior, WindowChromeBehavior.UseNativeCaptionButtonsProperty, new Binding { Path = new PropertyPath(UseNativeCaptionButtonsProperty), Source = this });
             BindingOperations.SetBinding(behavior, WindowChromeBehavior.CaptionButtonsSizeProperty, new Binding { Path = new PropertyPath(CaptionButtonsSizeProperty), Source = this, Mode = BindingMode.TwoWay });
+            BindingOperations.SetBinding(behavior, WindowChromeBehavior.GlassFrameThicknessProperty, new Binding { Path = new PropertyPath(GlassFrameThicknessProperty), Source = this });
 
             this.SetBinding(IsNCActiveProperty, new Binding { Path = new PropertyPath(WindowChromeBehavior.IsNCActiveProperty), Source = behavior });
 
@@ -283,8 +281,15 @@ namespace ControlzEx
             set => this.SetValue(UseNativeCaptionButtonsProperty, value);
         }
 
-        public static readonly DependencyProperty CaptionButtonsSizeProperty = DependencyProperty.Register(
-            nameof(CaptionButtonsSize), typeof(Size), typeof(WindowChromeWindow), new PropertyMetadata(default(Size)));
+        public static readonly DependencyProperty GlassFrameThicknessProperty = DependencyProperty.Register(nameof(GlassFrameThickness), typeof(Thickness), typeof(WindowChromeWindow), new PropertyMetadata(default(Thickness)));
+
+        public Thickness GlassFrameThickness
+        {
+            get => (Thickness)this.GetValue(GlassFrameThicknessProperty);
+            set => this.SetValue(GlassFrameThicknessProperty, value);
+        }
+
+        public static readonly DependencyProperty CaptionButtonsSizeProperty = DependencyProperty.Register(nameof(CaptionButtonsSize), typeof(Size), typeof(WindowChromeWindow), new PropertyMetadata(default(Size)));
 
         public Size CaptionButtonsSize
         {

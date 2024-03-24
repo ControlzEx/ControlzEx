@@ -97,14 +97,6 @@ namespace ControlzEx.Behaviors
             behavior._OnChromePropertyChangedThatRequiresRepaint();
         }
 
-        public static readonly DependencyProperty CaptionButtonsSizeProperty = DependencyProperty.Register(nameof(CaptionButtonsSize), typeof(Size), typeof(WindowChromeBehavior), new PropertyMetadata(default(Size)));
-
-        public Size CaptionButtonsSize
-        {
-            get => (Size)this.GetValue(CaptionButtonsSizeProperty);
-            set => this.SetValue(CaptionButtonsSizeProperty, value);
-        }
-
         /// <summary>
         /// Defines if the Taskbar should be ignored when maximizing a Window.
         /// This only works with WindowStyle = None.
@@ -242,8 +234,7 @@ namespace ControlzEx.Behaviors
             set => this.SetValue(EnableMaxRestoreProperty, BooleanBoxes.Box(value));
         }
 
-        public static readonly DependencyProperty CornerPreferenceProperty = 
-            DependencyProperty.Register(nameof(CornerPreference), typeof(WindowCornerPreference), typeof(WindowChromeBehavior), new PropertyMetadata(WindowCornerPreference.Default, OnCornerPreferenceChanged));
+        public static readonly DependencyProperty CornerPreferenceProperty = DependencyProperty.Register(nameof(CornerPreference), typeof(WindowCornerPreference), typeof(WindowChromeBehavior), new PropertyMetadata(WindowCornerPreference.Default, OnCornerPreferenceChanged));
 
         public WindowCornerPreference CornerPreference
         {
@@ -275,6 +266,38 @@ namespace ControlzEx.Behaviors
         {
             get => (bool)this.GetValue(UseNativeCaptionButtonsProperty);
             set => this.SetValue(UseNativeCaptionButtonsProperty, value);
+        }
+
+        public static readonly DependencyProperty CaptionButtonsSizeProperty = DependencyProperty.Register(nameof(CaptionButtonsSize), typeof(Size), typeof(WindowChromeBehavior), new PropertyMetadata(default(Size)));
+
+        public Size CaptionButtonsSize
+        {
+            get => (Size)this.GetValue(CaptionButtonsSizeProperty);
+            set => this.SetValue(CaptionButtonsSizeProperty, value);
+        }
+
+        public static readonly DependencyProperty GlassFrameThicknessProperty = DependencyProperty.Register(nameof(GlassFrameThickness), typeof(Thickness), typeof(WindowChromeBehavior), new PropertyMetadata(default(Thickness), OnGlassFrameThicknessChanged));
+
+        public Thickness GlassFrameThickness
+        {
+            get => (Thickness)this.GetValue(GlassFrameThicknessProperty);
+            set => this.SetValue(GlassFrameThicknessProperty, value);
+        }
+
+        private static void OnGlassFrameThicknessChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var behavior = (WindowChromeBehavior)d;
+            behavior.UpdateGlassFrameThickness();
+        }
+
+        private void UpdateGlassFrameThickness()
+        {
+            if (this.windowHandle == IntPtr.Zero)
+            {
+                return;
+            }
+
+            DwmHelper.ExtendFrameIntoClientArea(this.windowHandle, this.GlassFrameThickness);
         }
 
         /// <inheritdoc />

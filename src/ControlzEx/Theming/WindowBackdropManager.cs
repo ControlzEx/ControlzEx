@@ -56,17 +56,7 @@ namespace ControlzEx.Theming
 
         public static bool UpdateWindowEffect(Window window)
         {
-            bool isDarkTheme;
-            if (ThemeManager.Current.DetectTheme(window) is { } theme)
-            {
-                isDarkTheme = theme.BaseColorScheme is ThemeManager.BaseColorDarkConst;
-            }
-            else
-            {
-                isDarkTheme = WindowsThemeHelper.AppsUseLightTheme() is false;
-            }
-
-            return UpdateWindowEffect(window, GetBackdropType(window), isDarkTheme);
+            return UpdateWindowEffect(window, GetBackdropType(window), DwmHelper.HasDarkTheme(window));
         }
 
         public static bool UpdateWindowEffect(Window window, bool isDarkTheme)
@@ -102,20 +92,11 @@ namespace ControlzEx.Theming
         {
             if (backdropType is WindowBackdropType.None)
             {
-                return true;
+                return DwmHelper.SetBackdropType(handle, backdropType);
             }
-
-            if (DwmHelper.ExtendFrameIntoClientArea(handle, new(-1)) is false)
-            {
-                return false;
-            }
-
-            //var value = NativeMethods.DwmGetWindowAttribute(windowHandle, DWMWINDOWATTRIBUTE.CAPTION_BUTTON_BOUNDS, out RECT rect, Marshal.SizeOf<RECT>());
 
             // Set dark mode before applying the material, otherwise you'll get an ugly flash when displaying the window.
-            if (DwmHelper.SetWindowAttributeValue(handle, DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE, isDarkTheme
-                                                      ? DWMAttributeValues.True
-                                                      : DWMAttributeValues.False) is false)
+            if (DwmHelper.SetImmersiveDarkMode(handle, isDarkTheme) is false)
             {
                 return false;
             }
