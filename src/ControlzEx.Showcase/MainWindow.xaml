@@ -377,6 +377,8 @@
                                                 </DataTemplate>
                                             </ComboBox.ItemTemplate>
                                         </ComboBox>
+
+                                        <Button Click="HandleClearBackgroundClick">Set NULL</Button>
                                     </StackPanel>
 
                                     <Label>

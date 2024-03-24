@@ -305,6 +305,11 @@ namespace ControlzEx.Showcase
             }
         }
 
+        private void HandleClearBackgroundClick(object sender, RoutedEventArgs e)
+        {
+            this.backgroundComboBox.Text = null;
+        }
+
         private void HandleClearCaptionColorClick(object sender, RoutedEventArgs e)
         {
             this.captionColorComboBox.Text = null;
