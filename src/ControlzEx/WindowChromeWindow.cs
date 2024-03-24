@@ -292,7 +292,7 @@ namespace ControlzEx
         }
 
         /// <summary>Identifies the <see cref="IsNCActive"/> dependency property.</summary>
-        public static readonly DependencyProperty IsNCActiveProperty = DependencyProperty.Register(nameof(IsNCActive), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(BooleanBoxes.FalseBox, OnIsNCActiveChanged));
+        public static readonly DependencyProperty IsNCActiveProperty = DependencyProperty.Register(nameof(IsNCActive), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(BooleanBoxes.FalseBox, OnPropertyChangedThatAffectsNCCurrentBrush));
 
         /// <summary>
         /// Gets whether the non-client area is active or not.
@@ -303,7 +303,7 @@ namespace ControlzEx
             private set => this.SetValue(IsNCActiveProperty, BooleanBoxes.Box(value));
         }
 
-        private static void OnIsNCActiveChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnPropertyChangedThatAffectsNCCurrentBrush(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var windowChromeWindow = (WindowChromeWindow)d;
             windowChromeWindow.NCCurrentBrush = windowChromeWindow.IsNCActive
@@ -312,7 +312,7 @@ namespace ControlzEx
         }
 
         /// <summary>Identifies the <see cref="NCActiveBrush"/> dependency property.</summary>
-        public static readonly DependencyProperty NCActiveBrushProperty = DependencyProperty.Register(nameof(NCActiveBrush), typeof(Brush), typeof(WindowChromeWindow), new PropertyMetadata(default(Brush)));
+        public static readonly DependencyProperty NCActiveBrushProperty = DependencyProperty.Register(nameof(NCActiveBrush), typeof(Brush), typeof(WindowChromeWindow), new PropertyMetadata(default(Brush), OnPropertyChangedThatAffectsNCCurrentBrush));
 
         /// <summary>
         /// Defines the brush to use when the non-client area is active.
@@ -324,7 +324,7 @@ namespace ControlzEx
         }
 
         /// <summary>Identifies the <see cref="NCNonActiveBrush"/> dependency property.</summary>
-        public static readonly DependencyProperty NCNonActiveBrushProperty = DependencyProperty.Register(nameof(NCNonActiveBrush), typeof(Brush), typeof(WindowChromeWindow), new PropertyMetadata(default(Brush)));
+        public static readonly DependencyProperty NCNonActiveBrushProperty = DependencyProperty.Register(nameof(NCNonActiveBrush), typeof(Brush), typeof(WindowChromeWindow), new PropertyMetadata(default(Brush), OnPropertyChangedThatAffectsNCCurrentBrush));
 
         /// <summary>
         /// Defines the brush to use when the non-client area is not active.
