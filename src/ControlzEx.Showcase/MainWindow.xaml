@@ -155,7 +155,6 @@
 
                             <Expander Grid.Row="0"
                                       Margin="5"
-                                      BorderThickness="0 1 0 0"
                                       Header="Actions"
                                       IsExpanded="True">
                                 <WrapPanel Orientation="Horizontal">
@@ -228,7 +227,6 @@
 
                             <Expander Grid.Row="1"
                                       Margin="5"
-                                      BorderThickness="0 1 0 0"
                                       Header="Window tests (primarily for glows)"
                                       IsExpanded="True">
                                 <StackPanel Orientation="Vertical">
@@ -270,7 +268,6 @@
 
                             <Expander Grid.Row="2"
                                       Margin="5"
-                                      BorderThickness="0 1 0 0"
                                       Header="Misc"
                                       IsExpanded="True">
                                 <WrapPanel Orientation="Horizontal">
@@ -325,7 +322,6 @@
 
                             <Expander Grid.Row="3"
                                       Margin="5"
-                                      BorderThickness="0 1 0 0"
                                       Header="Options (Window)"
                                       IsExpanded="True">
                                 <local:UniformGridEx Columns="2"
@@ -517,12 +513,18 @@
                                               VerticalAlignment="Center"
                                               ItemsSource="{Binding Source={StaticResource WindowBackdropTypeEnumValues}}"
                                               SelectedItem="{Binding ElementName=Window, Path=(controlzEx:WindowBackdropManager.BackdropType), Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <Label>
+                                        CurrentWindowBackDropType
+                                    </Label>
+                                    <TextBlock Margin="4"
+                                              VerticalAlignment="Center"
+                                              Text="{Binding ElementName=Window, Path=(controlzEx:WindowBackdropManager.CurrentBackdropType)}" />
                                 </local:UniformGridEx>
                             </Expander>
 
                             <Expander Grid.Row="4"
                                       Margin="5"
-                                      BorderThickness="0 1 0 0"
                                       Header="Options (WindowChromeBehavior)"
                                       IsExpanded="True">
                                 <local:UniformGridEx Columns="2"
@@ -576,7 +578,6 @@
 
                             <Expander Grid.Row="5"
                                       Margin="5"
-                                      BorderThickness="0 1 0 0"
                                       Header="Options (GlowWindowBehavior)"
                                       IsExpanded="True">
                                 <local:UniformGridEx Columns="2"
@@ -730,7 +731,6 @@
 
                             <Expander Grid.Row="6"
                                       Margin="5"
-                                      BorderThickness="0 1 0 0"
                                       Header="Current values"
                                       IsExpanded="True">
                                 <local:UniformGridEx Columns="2"
