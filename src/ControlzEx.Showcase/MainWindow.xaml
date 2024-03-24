@@ -12,7 +12,7 @@
                                x:Name="Window"
                                Title="ControlzEx.Showcase"
                                Width="800"
-                               Height="600"
+                               Height="800"
                                MinWidth="80"
                                MinHeight="60"
                                FlowDirection="LeftToRight"
