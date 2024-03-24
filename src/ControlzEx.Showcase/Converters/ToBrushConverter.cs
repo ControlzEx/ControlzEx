@@ -2,16 +2,26 @@ namespace ControlzEx.Showcase.Converters;
 
 using System;
 using System.Globalization;
-using System.Windows;
 using System.Windows.Data;
+using System.Windows.Media;
 
-public class InverseBoolToVisibilityConverter : IValueConverter
+public class ToBrushConverter : IValueConverter
 {
-    public static readonly InverseBoolToVisibilityConverter Instance = new();
+    public static readonly ToBrushConverter Instance = new();
 
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        return (bool)value ? Visibility.Collapsed : Visibility.Visible;
+        if (value is Brush)
+        {
+            return value;
+        }
+
+        if (value is Color colorValue)
+        {
+            return new SolidColorBrush(colorValue);
+        }
+
+        return null;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

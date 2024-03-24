@@ -16,8 +16,6 @@
                                MinWidth="80"
                                MinHeight="60"
                                FlowDirection="LeftToRight"
-                               NCActiveBrush="{DynamicResource ControlzEx.Brushes.AccentBaseColorBrush}"
-                               NonActiveGlowColor="{Binding Source={x:Static SystemColors.WindowFrameBrush}, Path=Color}"
                                Style="{StaticResource {x:Type controlzEx:WindowChromeWindow}}"
                                WindowStartupLocation="CenterScreen"
                                WindowState="Normal"
@@ -69,31 +67,33 @@
     <Grid SnapsToDevicePixels="True">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
+                <RowDefinition Height="30" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-
-            <Border BorderBrush="Red" BorderThickness="1" Grid.RowSpan="3" HorizontalAlignment="Right"
-                    VerticalAlignment="Top" Width="{Binding ElementName=Window, Path=CaptionButtonsSize.Width}"
-                    Height="{Binding ElementName=Window, Path=CaptionButtonsSize.Height}" />
 
             <Grid Grid.Row="0"
                   controlzEx:WindowChrome.IsHitTestVisibleInChrome="False"
                   controlzEx:NonClientControlProperties.HitTestResult="CAPTION"
                   MouseLeftButtonDown="TitleBarGrid_OnMouseLeftButtonDown"
-                  MouseRightButtonUp="TitleBarGrid_OnMouseRightButtonUp"
-                  Visibility="{Binding ElementName=Window, Path=UseNativeCaptionButtons, Converter={x:Static converters:InverseBoolToVisibilityConverter.Instance}}">
+                  MouseRightButtonUp="TitleBarGrid_OnMouseRightButtonUp">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <Border Grid.ColumnSpan="10" Background="{Binding ElementName=Window, Path=NCCurrentBrush}" />
+
+                <DockPanel Grid.ColumnSpan="10"
+                           LastChildFill="True">
+                    <Border BorderBrush="Transparent" BorderThickness="0"
+                            DockPanel.Dock="Right"
+                            Width="{Binding ElementName=Window, Path=CaptionButtonsSize.Width}"
+                            Height="{Binding ElementName=Window, Path=CaptionButtonsSize.Height}"
+                            Visibility="{Binding ElementName=Window, Path=UseNativeCaptionButtons, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}" />
+                    <Border Background="{Binding ElementName=Window, Path=NCCurrentBrush}" />
+                </DockPanel>
 
                 <ProgressBar Grid.Column="0" Width="20" IsIndeterminate="True" />
-
-                <!-- <ProgressBar IsIndeterminate="True" /> -->
 
                 <TextBlock Grid.Column="1"
                            Margin="4 0 0 0"
@@ -101,7 +101,14 @@
                            Text="Use GridSplitter below to move content above titlebar"
                            TextTrimming="CharacterEllipsis" />
 
-                <UniformGrid Grid.Column="2" Columns="3">
+                <Border Grid.Column="2" 
+                        BorderBrush="Transparent" BorderThickness="0"
+                        Width="{Binding ElementName=Window, Path=CaptionButtonsSize.Width}"
+                        Height="{Binding ElementName=Window, Path=CaptionButtonsSize.Height}"
+                        Visibility="{Binding ElementName=Window, Path=UseNativeCaptionButtons, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}" />
+
+                <UniformGrid Grid.Column="2" Columns="3"
+                             Visibility="{Binding ElementName=Window, Path=UseNativeCaptionButtons, Converter={x:Static converters:BoolToVisibilityConverter.Instance}, ConverterParameter=True}">
                     <Button Style="{StaticResource WindowTitleBarButton}"
                             IsEnabled="{Binding IsEnabled, ElementName=MinimizeButton}"
                             Width="20"
@@ -128,8 +135,7 @@
                           HorizontalAlignment="Stretch"
                           controlzEx:WindowChrome.IsHitTestVisibleInChrome="False"
                           controlzEx:NonClientControlProperties.HitTestResult="CLIENT"
-                          Background="{DynamicResource ControlzEx.Brushes.AccentBaseColorBrush}"
-                          Visibility="{Binding ElementName=Window, Path=UseNativeCaptionButtons, Converter={x:Static converters:InverseBoolToVisibilityConverter.Instance}}" />
+                          Background="{DynamicResource ControlzEx.Brushes.AccentBaseColorBrush}" />
 
             <controlzEx:TabControlEx Grid.Row="2"
                                      x:Name="tabControlEx">
@@ -386,6 +392,7 @@
                                         </ComboBox>
 
                                         <Button Click="HandleClearBackgroundClick">Set NULL</Button>
+                                        <Button Click="HandleTransparentBackgroundClick" Margin="4 0 0 0">Set transparent</Button>
                                     </StackPanel>
 
                                     <Label>
@@ -493,6 +500,7 @@
                                         </ComboBox>
 
                                         <Button Click="HandleClearCaptionColorClick">Set NULL</Button>
+                                        <Button Click="HandleTransparentCaptionColorClick" Margin="4 0 0 0">Set transparent</Button>
                                     </StackPanel>
 
                                     <Label>

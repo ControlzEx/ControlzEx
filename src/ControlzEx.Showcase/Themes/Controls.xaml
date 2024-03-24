@@ -48,13 +48,13 @@
     </Style>
 
     <Style TargetType="Expander">
-        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Background" Value="{DynamicResource WhiteBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource BlackBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource BlackBrush}" />
     </Style>
 
     <Style TargetType="CheckBox">
-        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Background" Value="White" />
         <Setter Property="Foreground" Value="{DynamicResource BlackBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource BlackBrush}" />
     </Style>

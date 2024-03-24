@@ -310,9 +310,19 @@ namespace ControlzEx.Showcase
             this.backgroundComboBox.Text = null;
         }
 
+        private void HandleTransparentBackgroundClick(object sender, RoutedEventArgs e)
+        {
+            this.backgroundComboBox.Text = "Transparent";
+        }
+
         private void HandleClearCaptionColorClick(object sender, RoutedEventArgs e)
         {
             this.captionColorComboBox.Text = null;
+        }
+
+        private void HandleTransparentCaptionColorClick(object sender, RoutedEventArgs e)
+        {
+            this.captionColorComboBox.Text = "Transparent";
         }
 
         private void HandleClearGlowColorClick(object sender, RoutedEventArgs e)
