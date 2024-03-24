@@ -89,6 +89,7 @@ namespace ControlzEx
             BindingOperations.SetBinding(behavior, WindowChromeBehavior.EnableMaxRestoreProperty, new Binding { Path = new PropertyPath(ShowMaxRestoreButtonProperty), Source = this });
             BindingOperations.SetBinding(behavior, WindowChromeBehavior.CornerPreferenceProperty, new Binding { Path = new PropertyPath(CornerPreferenceProperty), Source = this });
             BindingOperations.SetBinding(behavior, WindowChromeBehavior.UseNativeCaptionButtonsProperty, new Binding { Path = new PropertyPath(UseNativeCaptionButtonsProperty), Source = this });
+            BindingOperations.SetBinding(behavior, WindowChromeBehavior.CaptionButtonsSizeProperty, new Binding { Path = new PropertyPath(CaptionButtonsSizeProperty), Source = this, Mode = BindingMode.TwoWay });
 
             this.SetBinding(IsNCActiveProperty, new Binding { Path = new PropertyPath(WindowChromeBehavior.IsNCActiveProperty), Source = behavior });
 
@@ -258,14 +259,6 @@ namespace ControlzEx
             set => this.SetValue(CaptionColorProperty, value);
         }
 
-        public static readonly DependencyProperty UseNativeCaptionButtonsProperty = DependencyProperty.Register(nameof(UseNativeCaptionButtons), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(BooleanBoxes.FalseBox));
-
-        public bool UseNativeCaptionButtons
-        {
-            get => (bool)this.GetValue(UseNativeCaptionButtonsProperty);
-            set => this.SetValue(UseNativeCaptionButtonsProperty, value);
-        }
-
         private static void OnCaptionColorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             ((WindowChromeWindow)d).UpdateCaptionColor();
@@ -279,6 +272,23 @@ namespace ControlzEx
                     : new COLORREF(this.CaptionColor.Value).dwColor
                 : DWMAttributeValues.DWMWA_COLOR_DEFAULT;
             DwmHelper.SetWindowAttributeValue(this.windowHandle, DWMWINDOWATTRIBUTE.DWMWA_CAPTION_COLOR, color);
+        }
+
+        public static readonly DependencyProperty UseNativeCaptionButtonsProperty = DependencyProperty.Register(nameof(UseNativeCaptionButtons), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(BooleanBoxes.FalseBox));
+
+        public bool UseNativeCaptionButtons
+        {
+            get => (bool)this.GetValue(UseNativeCaptionButtonsProperty);
+            set => this.SetValue(UseNativeCaptionButtonsProperty, value);
+        }
+
+        public static readonly DependencyProperty CaptionButtonsSizeProperty = DependencyProperty.Register(
+            nameof(CaptionButtonsSize), typeof(Size), typeof(WindowChromeWindow), new PropertyMetadata(default(Size)));
+
+        public Size CaptionButtonsSize
+        {
+            get => (Size)this.GetValue(CaptionButtonsSizeProperty);
+            set => this.SetValue(CaptionButtonsSizeProperty, value);
         }
 
         /// <summary>Identifies the <see cref="IsNCActive"/> dependency property.</summary>

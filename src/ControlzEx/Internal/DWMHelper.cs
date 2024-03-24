@@ -3,6 +3,7 @@
 namespace ControlzEx.Internal
 {
     using System;
+    using System.Runtime.InteropServices;
     using ControlzEx.Native;
     using global::Windows.Win32;
     using global::Windows.Win32.Foundation;
@@ -21,10 +22,10 @@ namespace ControlzEx.Internal
             fixed (void* value = &attributeValue)
             {
                 var result = PInvoke.DwmSetWindowAttribute(new HWND(hWnd), attribute, value, sizeof(int));
-                return result == 0;
+                return result.Succeeded;
             }
         }
-        
+
         public static bool SetWindowAttributeValue(IntPtr hWnd, DWMWINDOWATTRIBUTE attribute, uint attributeValue)
         {
             return SetWindowAttribute(hWnd, attribute, ref attributeValue);
@@ -35,7 +36,7 @@ namespace ControlzEx.Internal
             fixed (void* value = &attributeValue)
             {
                 var result = PInvoke.DwmSetWindowAttribute(new HWND(hWnd), attribute, value, sizeof(uint));
-                return result == 0;
+                return result.Succeeded;
             }
         }
 
@@ -43,7 +44,7 @@ namespace ControlzEx.Internal
         {
             // Extend frame on the bottom of client area
             var result = PInvoke.DwmExtendFrameIntoClientArea(new HWND(hWnd), &margins);
-            return result == 0;
+            return result.Succeeded;
         }
 
         public static bool SetBackdropType(IntPtr hWnd, DWMSBT backdropType)

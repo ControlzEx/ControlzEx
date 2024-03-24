@@ -74,6 +74,10 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
+            <Border BorderBrush="Red" BorderThickness="1" Grid.RowSpan="3" HorizontalAlignment="Right"
+                    VerticalAlignment="Top" Width="{Binding ElementName=Window, Path=CaptionButtonsSize.Width}"
+                    Height="{Binding ElementName=Window, Path=CaptionButtonsSize.Height}" />
+
             <Grid Grid.Row="0"
                   controlzEx:WindowChrome.IsHitTestVisibleInChrome="False"
                   controlzEx:NonClientControlProperties.HitTestResult="CAPTION"

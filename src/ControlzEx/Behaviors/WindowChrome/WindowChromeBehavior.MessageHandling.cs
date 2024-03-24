@@ -13,6 +13,7 @@ namespace ControlzEx.Behaviors
     using ControlzEx.Native;
     using global::Windows.Win32;
     using global::Windows.Win32.Foundation;
+    using global::Windows.Win32.Graphics.Dwm;
     using global::Windows.Win32.Graphics.Gdi;
     using global::Windows.Win32.UI.Controls;
     using global::Windows.Win32.UI.Input.KeyboardAndMouse;
@@ -1007,7 +1008,7 @@ namespace ControlzEx.Behaviors
             onTopResizeBorder = mousePosition.Y <= (windowRect.Top + this.ResizeBorderThickness.Top);
 
             // Determine if the point is at the top or bottom of the window.
-            uRow = GetHTRow(windowRect, mousePosition, resizeBorderThickness, this.UseNativeCaptionButtons);
+            uRow = GetHTRow(windowRect, mousePosition, resizeBorderThickness, this.UseNativeCaptionButtons, this.CaptionButtonsSize.Height);
 
             // Determine if the point is at the left or right of the window.
             uCol = GetHTColumn(windowRect, mousePosition, resizeBorderThickness);
@@ -1029,7 +1030,7 @@ namespace ControlzEx.Behaviors
             else if (uCol != 1
                      && uRow == 1)
             {
-                uRow = GetHTRow(windowRect, mousePosition, this.cornerGripThickness, this.UseNativeCaptionButtons);
+                uRow = GetHTRow(windowRect, mousePosition, this.cornerGripThickness, this.UseNativeCaptionButtons, this.CaptionButtonsSize.Height);
             }
 
             var ht = hitTestBorders[uRow, uCol];
@@ -1042,7 +1043,7 @@ namespace ControlzEx.Behaviors
 
             return ht;
 
-            static int GetHTRow(Rect windowRect, Point mousePosition, Thickness resizeBorderThickness, bool useNativeCaptionButtons)
+            static int GetHTRow(Rect windowRect, Point mousePosition, Thickness resizeBorderThickness, bool useNativeCaptionButtons, double captionHeight)
             {
                 if (mousePosition.Y >= windowRect.Top
                     && mousePosition.Y < windowRect.Top + resizeBorderThickness.Top)
@@ -1050,10 +1051,9 @@ namespace ControlzEx.Behaviors
                     return 0; // top (caption or resize border)
                 }
 
-                // todo: determine caption height during runtime instead of using hard coded 30
                 if (useNativeCaptionButtons
                     && mousePosition.Y >= windowRect.Top
-                    && mousePosition.Y < windowRect.Top + resizeBorderThickness.Top + 30)
+                    && mousePosition.Y < windowRect.Top + resizeBorderThickness.Top + captionHeight)
                 {
                     return 0; // top (caption or resize border)
                 }

@@ -5,6 +5,7 @@ namespace ControlzEx.Behaviors
 {
     using System;
     using System.Collections.Generic;
+    using System.Runtime.InteropServices;
     using System.Security;
     using System.Windows;
     using System.Windows.Controls;
@@ -94,6 +95,14 @@ namespace ControlzEx.Behaviors
         {
             var behavior = (WindowChromeBehavior)d;
             behavior._OnChromePropertyChangedThatRequiresRepaint();
+        }
+
+        public static readonly DependencyProperty CaptionButtonsSizeProperty = DependencyProperty.Register(nameof(CaptionButtonsSize), typeof(Size), typeof(WindowChromeBehavior), new PropertyMetadata(default(Size)));
+
+        public Size CaptionButtonsSize
+        {
+            get => (Size)this.GetValue(CaptionButtonsSizeProperty);
+            set => this.SetValue(CaptionButtonsSizeProperty, value);
         }
 
         /// <summary>
@@ -258,6 +267,8 @@ namespace ControlzEx.Behaviors
             {
                 behavior._ModifyStyle(0, WINDOW_STYLE.WS_SYSMENU);
             }
+
+            behavior.UpdateCaptionButtonsSize();
         }
 
         public bool UseNativeCaptionButtons
@@ -386,6 +397,8 @@ namespace ControlzEx.Behaviors
                 throw new Exception("Uups, at this point we really need the Handle from the associated object!");
             }
 
+            this.UpdateCaptionButtonsSize();
+
             if (this.AssociatedObject.SizeToContent != SizeToContent.Manual
                 && this.AssociatedObject.WindowState == WindowState.Normal)
             {
@@ -408,6 +421,22 @@ namespace ControlzEx.Behaviors
 
                 // handle the maximized state here too (to handle the border in a correct way)
                 this.HandleStateChanged();
+            }
+        }
+
+        private unsafe void UpdateCaptionButtonsSize()
+        {
+            if (PInvoke.IsIconic(this.windowHandle)
+                || (bool)PInvoke.IsWindowVisible(this.windowHandle) is false)
+            {
+                return;
+            }
+
+            RECT value = default;
+            var result = PInvoke.DwmGetWindowAttribute(this.windowHandle, DWMWINDOWATTRIBUTE.DWMWA_CAPTION_BUTTON_BOUNDS, &value, (uint)Marshal.SizeOf<RECT>());
+            if (result.Succeeded)
+            {
+                this.CaptionButtonsSize = new Size(value.Width, value.Height);
             }
         }
 
@@ -561,7 +590,7 @@ namespace ControlzEx.Behaviors
 
         private static readonly List<SystemParameterBoundProperty> boundProperties = new()
         {
-            new SystemParameterBoundProperty { DependencyProperty = ResizeBorderThicknessProperty, SystemParameterPropertyName = nameof(SystemParameters.WindowResizeBorderThickness) },
+            new SystemParameterBoundProperty { DependencyProperty = ResizeBorderThicknessProperty, SystemParameterPropertyName = nameof(SystemParameters.WindowResizeBorderThickness) }
         };
     }
 }

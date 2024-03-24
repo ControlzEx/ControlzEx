@@ -9,6 +9,7 @@ DeferWindowPos
 DestroyWindow
 DwmDefWindowProc
 DwmExtendFrameIntoClientArea
+DwmGetWindowAttribute
 DwmSetWindowAttribute
 EnableMenuItem
 EndDeferWindowPos
