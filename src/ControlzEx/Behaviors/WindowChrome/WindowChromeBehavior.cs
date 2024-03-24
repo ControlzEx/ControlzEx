@@ -65,6 +65,7 @@ namespace ControlzEx.Behaviors
         private HwndSource? hwndSource;
 
         private PropertyChangeNotifier? borderThicknessChangeNotifier;
+        private PropertyChangeNotifier? windowStyleChangeNotifier;
         private Thickness? savedBorderThickness;
 
         private bool isCleanedUp;
@@ -305,8 +306,12 @@ namespace ControlzEx.Behaviors
             base.OnAttached();
 
             this.savedBorderThickness = this.AssociatedObject.BorderThickness;
+
             this.borderThicknessChangeNotifier = new PropertyChangeNotifier(this.AssociatedObject, Control.BorderThicknessProperty);
             this.borderThicknessChangeNotifier.ValueChanged += this.BorderThicknessChangeNotifierOnValueChanged;
+
+            this.windowStyleChangeNotifier = new PropertyChangeNotifier(this.AssociatedObject, Window.WindowStyleProperty);
+            this.windowStyleChangeNotifier.ValueChanged += this.WindowStyleChangeNotifierOnValueChanged;
 
             this.Initialize();
 
@@ -341,6 +346,11 @@ namespace ControlzEx.Behaviors
             {
                 this.savedBorderThickness = window.BorderThickness;
             }
+        }
+
+        private void WindowStyleChangeNotifierOnValueChanged(object? sender, EventArgs e)
+        {
+            this.UpdateCaptionButtonsSize();
         }
 
         private static void OnIgnoreTaskbarOnMaximizeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -382,6 +392,18 @@ namespace ControlzEx.Behaviors
             this.isCleanedUp = true;
 
             this.OnCleanup();
+
+            if (this.borderThicknessChangeNotifier is not null)
+            {
+                this.borderThicknessChangeNotifier.ValueChanged -= this.BorderThicknessChangeNotifierOnValueChanged;
+                this.borderThicknessChangeNotifier.Dispose();
+            }
+
+            if (this.windowStyleChangeNotifier is not null)
+            {
+                this.windowStyleChangeNotifier.ValueChanged -= this.WindowStyleChangeNotifierOnValueChanged;
+                this.windowStyleChangeNotifier.Dispose();
+            }
 
             // clean up events
             if (this.AssociatedObject is not null)
@@ -448,7 +470,8 @@ namespace ControlzEx.Behaviors
 
         private unsafe void UpdateCaptionButtonsSize()
         {
-            if (PInvoke.IsIconic(this.windowHandle)
+            if (this.AssociatedObject is null
+                || PInvoke.IsIconic(this.windowHandle)
                 || (bool)PInvoke.IsWindowVisible(this.windowHandle) is false)
             {
                 return;
@@ -458,7 +481,7 @@ namespace ControlzEx.Behaviors
             var result = PInvoke.DwmGetWindowAttribute(this.windowHandle, DWMWINDOWATTRIBUTE.DWMWA_CAPTION_BUTTON_BOUNDS, &value, (uint)Marshal.SizeOf<RECT>());
             if (result.Succeeded)
             {
-                this.CaptionButtonsSize = new Size(value.Width, value.Height);
+                this.SetCurrentValue(CaptionButtonsSizeProperty, new Size(value.Width, value.Height));
             }
         }
 
