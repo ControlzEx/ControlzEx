@@ -1,4 +1,4 @@
-<Application x:Class="ControlzEx.Showcase.App"
+﻿<Application x:Class="ControlzEx.Showcase.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:theming="clr-namespace:ControlzEx.Showcase.Theming"
@@ -10,18 +10,9 @@
             <theming:ShowcaseLibraryThemeProvider x:Key="{x:Static theming:ShowcaseLibraryThemeProvider.DefaultInstance}" />
             <theming:SecondShowcaseLibraryThemeProvider x:Key="{x:Static theming:SecondShowcaseLibraryThemeProvider.DefaultInstance}" />
 
-            <SolidColorBrush x:Key="Button.Static.Background" Color="#FFDDDDDD" />
-            <SolidColorBrush x:Key="Button.Static.Border" Color="#FF707070" />
-            <SolidColorBrush x:Key="Button.MouseOver.Background" Color="#FFBEE6FD" />
-            <SolidColorBrush x:Key="Button.MouseOver.Border" Color="#FF3C7FB1" />
-            <SolidColorBrush x:Key="Button.Pressed.Background" Color="#FFC4E5F6" />
-            <SolidColorBrush x:Key="Button.Pressed.Border" Color="#FF2C628B" />
-            <SolidColorBrush x:Key="Button.Disabled.Background" Color="#FFF4F4F4" />
-            <SolidColorBrush x:Key="Button.Disabled.Border" Color="#FFADB2B5" />
-            <SolidColorBrush x:Key="Button.Disabled.Foreground" Color="#FF838383" />
-            
             <Style x:Key="{x:Type controlzEx:WindowChromeWindow}" TargetType="{x:Type controlzEx:WindowChromeWindow}">
-                <Setter Property="Background" Value="{Binding Source={x:Static SystemColors.WindowBrush}}" />
+                <Setter Property="Background" Value="{DynamicResource WhiteBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource BlackBrush}" />
                 <Setter Property="BorderThickness" Value="1" />
                 <Setter Property="BorderBrush" Value="{x:Null}" />
                 <Setter Property="NCActiveBrush" Value="{Binding Background, RelativeSource={RelativeSource Self}}" />
@@ -47,7 +38,7 @@
                                 <ResizeGrip x:Name="WindowResizeGrip"
                                             HorizontalAlignment="Right"
                                             VerticalAlignment="Bottom"
-                                            IsTabStop="false"
+                                            IsTabStop="False"
                                             Visibility="Collapsed"
                                             controlzEx:WindowChrome.ResizeGripDirection="BottomRight" />
                             </Grid>
@@ -98,15 +89,19 @@
                    TargetType="Button">
                 <Style.Triggers>
                     <Trigger Property="controlzEx:NonClientControlProperties.IsNCMouseOver" Value="true">
-                        <Setter Property="Background" Value="{StaticResource Button.MouseOver.Background}" />
-                        <Setter Property="BorderBrush" Value="{StaticResource Button.MouseOver.Border}" />
+                        <Setter Property="Background" Value="{DynamicResource Control.MouseOver.Background}" />
+                        <Setter Property="BorderBrush" Value="{DynamicResource Control.MouseOver.Border}" />
                     </Trigger>
                     <Trigger Property="controlzEx:NonClientControlProperties.IsNCPressed" Value="true">
-                        <Setter Property="Background" Value="{StaticResource Button.Pressed.Background}" />
-                        <Setter Property="BorderBrush" Value="{StaticResource Button.Pressed.Border}" />
+                        <Setter Property="Background" Value="{DynamicResource Control.Pressed.Background}" />
+                        <Setter Property="BorderBrush" Value="{DynamicResource Control.Pressed.Border}" />
                     </Trigger>
                 </Style.Triggers>
             </Style>
+
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/Controls.xaml" />
+            </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

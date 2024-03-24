@@ -16,7 +16,7 @@
                                MinHeight="60"
                                FlowDirection="LeftToRight"
                                NCActiveBrush="{DynamicResource ControlzEx.Brushes.AccentBaseColorBrush}"
-                               NonActiveGlowColor="Crimson"
+                               NonActiveGlowColor="{Binding Source={x:Static SystemColors.WindowFrameBrush}, Path=Color}"
                                Style="{StaticResource {x:Type controlzEx:WindowChromeWindow}}"
                                WindowStartupLocation="CenterScreen"
                                WindowState="Normal"
@@ -271,7 +271,7 @@
                                                     <ControlTemplate>
                                                         <Grid>
                                                             <Border Background="Gray"
-                                                                    BorderBrush="Black"
+                                                                    BorderBrush="{DynamicResource BlackBrush}"
                                                                     BorderThickness="1"
                                                                     Opacity="0.9"
                                                                     SnapsToDevicePixels="True" />
@@ -348,9 +348,10 @@
                                                 Width="16"
                                                 Height="16"
                                                 BorderThickness="1"
-                                                BorderBrush="Black"
+                                                BorderBrush="{DynamicResource BlackBrush}"
                                                 Background="{Binding ElementName=Window, Path=Background}" />
-                                        <ComboBox Margin="4"
+                                        <ComboBox x:Name="backgroundComboBox"
+                                                  Margin="4"
                                                   MinWidth="100"
                                                   VerticalAlignment="Center"
                                                   HorizontalContentAlignment="Stretch"
@@ -394,7 +395,7 @@
                                                 Width="16" 
                                                 Height="16"
                                                 BorderThickness="1"
-                                                BorderBrush="Black"
+                                                BorderBrush="{DynamicResource BlackBrush}"
                                                 Background="{Binding ElementName=Window, Path=BorderBrush}" />
                                         <ComboBox Margin="4"
                                                   MinWidth="100"
@@ -423,7 +424,7 @@
                                             </ComboBox.ItemTemplate>
                                         </ComboBox>
                                     </StackPanel>
-                                    
+
                                     <Label>
                                         ShowInTaskbar
                                     </Label>
@@ -564,7 +565,7 @@
                                                 Width="16" 
                                                 Height="16"
                                                 BorderThickness="1"
-                                                BorderBrush="Black">
+                                                BorderBrush="{DynamicResource BlackBrush}">
                                             <Border.Background>
                                                 <SolidColorBrush Color="{Binding ElementName=Window, Path=GlowColor}" />
                                             </Border.Background>
@@ -611,7 +612,7 @@
                                                 Width="16" 
                                                 Height="16"
                                                 BorderThickness="1"
-                                                BorderBrush="Black">
+                                                BorderBrush="{DynamicResource BlackBrush}">
                                             <Border.Background>
                                                 <SolidColorBrush Color="{Binding ElementName=Window, Path=NonActiveGlowColor}" />
                                             </Border.Background>

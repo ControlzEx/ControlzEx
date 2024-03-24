@@ -7,6 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <DataGrid ItemsSource="{Binding Path=ThemeResources, RelativeSource={RelativeSource AncestorType=local:ResourcesView}}"
+              Foreground="Black"
               AutoGenerateColumns="False"
               VerticalScrollBarVisibility="Visible"
               HorizontalScrollBarVisibility="Disabled"
@@ -43,7 +44,7 @@
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="{x:Type GroupItem}">
-                                    <Expander IsExpanded="True">
+                                    <Expander IsExpanded="True" Foreground="Black">
                                         <Expander.Header>
                                             <Border Background="#FF959595" BorderBrush="#FF727272" BorderThickness="0,0,0,1" Margin="5,0,0,0">                                            
                                                 <StackPanel Height="23" Orientation="Horizontal" Margin="3,0,0,0" Background="#FFE6E6E6">
@@ -66,7 +67,7 @@
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="{x:Type GroupItem}">
-                                    <Expander IsExpanded="True">
+                                    <Expander IsExpanded="True" Foreground="Black">
                                         <Expander.Header>
                                             <Border Background="#FF959595" BorderBrush="#FF727272" BorderThickness="0,0,0,1" Margin="5,0,0,0">                                            
                                                 <StackPanel Height="23" Orientation="Horizontal" Margin="3,0,0,0" Background="#FFE6E6E6">
