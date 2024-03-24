@@ -28,6 +28,7 @@ namespace ControlzEx
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(WindowChromeWindow), new FrameworkPropertyMetadata(typeof(WindowChromeWindow)));
 
+            // todo: Move to dedicated class and never call it automatically. That way consumers are in full control.
             PInvoke.SetPreferredAppMode(PInvoke.PreferredAppMode.AllowDark);
             PInvoke.FlushMenuThemes();
         }
