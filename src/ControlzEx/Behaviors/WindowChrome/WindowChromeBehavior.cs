@@ -82,8 +82,8 @@ namespace ControlzEx.Behaviors
         /// </summary>
         public Thickness ResizeBorderThickness
         {
-            get { return (Thickness)this.GetValue(ResizeBorderThicknessProperty); }
-            set { this.SetValue(ResizeBorderThicknessProperty, value); }
+            get => (Thickness)this.GetValue(ResizeBorderThicknessProperty);
+            set => this.SetValue(ResizeBorderThicknessProperty, value);
         }
 
         /// <summary>Identifies the <see cref="ResizeBorderThickness"/> dependency property.</summary>
@@ -102,8 +102,8 @@ namespace ControlzEx.Behaviors
         /// </summary>
         public bool IgnoreTaskbarOnMaximize
         {
-            get { return (bool)this.GetValue(IgnoreTaskbarOnMaximizeProperty); }
-            set { this.SetValue(IgnoreTaskbarOnMaximizeProperty, BooleanBoxes.Box(value)); }
+            get => (bool)this.GetValue(IgnoreTaskbarOnMaximizeProperty);
+            set => this.SetValue(IgnoreTaskbarOnMaximizeProperty, BooleanBoxes.Box(value));
         }
 
         /// <summary>
@@ -118,8 +118,8 @@ namespace ControlzEx.Behaviors
         /// </summary>
         public bool KeepBorderOnMaximize
         {
-            get { return (bool)this.GetValue(KeepBorderOnMaximizeProperty); }
-            set { this.SetValue(KeepBorderOnMaximizeProperty, BooleanBoxes.Box(value)); }
+            get => (bool)this.GetValue(KeepBorderOnMaximizeProperty);
+            set => this.SetValue(KeepBorderOnMaximizeProperty, BooleanBoxes.Box(value));
         }
 
         /// <summary>
@@ -139,8 +139,8 @@ namespace ControlzEx.Behaviors
         /// </summary>
         public bool IsNCActive
         {
-            get { return (bool)this.GetValue(IsNCActiveProperty); }
-            private set { this.SetValue(IsNCActivePropertyKey, BooleanBoxes.Box(value)); }
+            get => (bool)this.GetValue(IsNCActiveProperty);
+            private set => this.SetValue(IsNCActivePropertyKey, BooleanBoxes.Box(value));
         }
 
         public static readonly DependencyProperty EnableMinimizeProperty = DependencyProperty.Register(nameof(EnableMinimize), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(BooleanBoxes.TrueBox, OnEnableMinimizeChanged));
@@ -184,8 +184,8 @@ namespace ControlzEx.Behaviors
         /// </summary>
         public bool EnableMinimize
         {
-            get { return (bool)this.GetValue(EnableMinimizeProperty); }
-            set { this.SetValue(EnableMinimizeProperty, BooleanBoxes.Box(value)); }
+            get => (bool)this.GetValue(EnableMinimizeProperty);
+            set => this.SetValue(EnableMinimizeProperty, BooleanBoxes.Box(value));
         }
 
         public static readonly DependencyProperty EnableMaxRestoreProperty = DependencyProperty.Register(nameof(EnableMaxRestore), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(BooleanBoxes.TrueBox, OnEnableMaxRestoreChanged));
@@ -229,8 +229,8 @@ namespace ControlzEx.Behaviors
         /// </summary>
         public bool EnableMaxRestore
         {
-            get { return (bool)this.GetValue(EnableMaxRestoreProperty); }
-            set { this.SetValue(EnableMaxRestoreProperty, BooleanBoxes.Box(value)); }
+            get => (bool)this.GetValue(EnableMaxRestoreProperty);
+            set => this.SetValue(EnableMaxRestoreProperty, BooleanBoxes.Box(value));
         }
 
         public static readonly DependencyProperty CornerPreferenceProperty = 
