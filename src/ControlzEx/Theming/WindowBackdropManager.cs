@@ -100,6 +100,11 @@ namespace ControlzEx.Theming
 
         private static bool SetBackdropType(IntPtr handle, WindowBackdropType backdropType, bool isDarkTheme)
         {
+            if (backdropType is WindowBackdropType.None)
+            {
+                return true;
+            }
+
             if (DwmHelper.WindowExtendIntoClientArea(handle, new MARGINS { cxLeftWidth = -1, cyTopHeight = -1, cxRightWidth = -1, cyBottomHeight = -1 }) is false)
             {
                 return false;
