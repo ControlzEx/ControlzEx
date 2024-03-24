@@ -341,10 +341,6 @@
         <Setter Property="Background" Value="{DynamicResource Control.Background}" />
         <Setter Property="BorderBrush" Value="{DynamicResource Control.Border}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="ScrollViewer.CanContentScroll" Value="False" />
-        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden" />
-        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden" />
-        <Setter Property="ScrollViewer.IsDeferredScrollingEnabled" Value="False" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
@@ -443,15 +439,12 @@
                                         <Grid>
                                             <ScrollViewer MaxHeight="{TemplateBinding MaxDropDownHeight}"
                                                           Margin="0"
-                                                          HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
                                                           SnapsToDevicePixels="True"
                                                           TextElement.FontSize="{TemplateBinding FontSize}"
                                                           TextElement.FontWeight="{TemplateBinding FontWeight}"
-                                                          TextElement.Foreground="{TemplateBinding Foreground}"
-                                                          VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}">
-                                                <StackPanel IsItemsHost="True"
-                                                            KeyboardNavigation.DirectionalNavigation="Contained"
-                                                            TextElement.FontSize="{TemplateBinding FontSize}" />
+                                                          TextElement.Foreground="{TemplateBinding Foreground}">
+                                                <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained"
+                                                                TextElement.FontSize="{TemplateBinding FontSize}" />
                                             </ScrollViewer>
                                         </Grid>
                                     </Border>
@@ -499,9 +492,6 @@
                         <Trigger SourceName="Popup" Property="Popup.AllowsTransparency" Value="False">
                             <Setter TargetName="DropDownBorder" Property="CornerRadius" Value="0" />
                         </Trigger>
-                        <Trigger Property="IsGrouping" Value="True">
-                            <Setter Property="ScrollViewer.CanContentScroll" Value="False" />
-                        </Trigger>
                         <Trigger Property="IsEditable" Value="True">
                             <Setter Property="IsTabStop" Value="False" />
                             <Setter TargetName="PART_EditableTextBox" Property="Visibility" Value="Visible" />
@@ -525,6 +515,13 @@
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ItemsPanel">
+            <Setter.Value>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel />
+                </ItemsPanelTemplate>
             </Setter.Value>
         </Setter>
     </Style>
