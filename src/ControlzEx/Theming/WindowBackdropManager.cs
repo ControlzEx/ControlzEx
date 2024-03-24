@@ -105,7 +105,7 @@ namespace ControlzEx.Theming
                 return true;
             }
 
-            if (DwmHelper.WindowExtendIntoClientArea(handle, new MARGINS { cxLeftWidth = -1, cyTopHeight = -1, cxRightWidth = -1, cyBottomHeight = -1 }) is false)
+            if (DwmHelper.ExtendFrameIntoClientArea(handle, new(-1)) is false)
             {
                 return false;
             }
@@ -120,7 +120,7 @@ namespace ControlzEx.Theming
                 return false;
             }
 
-            var result = DwmHelper.SetBackdropType(handle, (DWMSBT)backdropType);
+            var result = DwmHelper.SetBackdropType(handle, backdropType);
 
             // We need to disable SYSMENU. Otherwise the snap menu on the maximize button won't work.
             if (result)

@@ -96,7 +96,7 @@ namespace ControlzEx.Behaviors
             this.UpdateMaxRestoreSystemMenu(this.EnableMaxRestore);
             this.UpdateWindowStyle();
             // todo: Should we make the margins settable?
-            DwmHelper.WindowExtendIntoClientArea(this.windowHandle, new MARGINS { cxLeftWidth = -1, cyTopHeight = -1, cxRightWidth = -1, cyBottomHeight = -1 });
+            DwmHelper.ExtendFrameIntoClientArea(this.windowHandle, new(-1));
 
             // Mitigation for https://github.com/dotnet/wpf/issues/5853
             // This forces WPF to render a bit earlier, which reduces the time we see a blank white window on show

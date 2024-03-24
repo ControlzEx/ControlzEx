@@ -3,8 +3,8 @@
 namespace ControlzEx.Internal
 {
     using System;
-    using System.Runtime.InteropServices;
-    using ControlzEx.Native;
+    using System.Windows;
+    using ControlzEx.Theming;
     using global::Windows.Win32;
     using global::Windows.Win32.Foundation;
     using global::Windows.Win32.Graphics.Dwm;
@@ -40,14 +40,15 @@ namespace ControlzEx.Internal
             }
         }
 
-        public static unsafe bool WindowExtendIntoClientArea(IntPtr hWnd, MARGINS margins)
+        public static unsafe bool ExtendFrameIntoClientArea(IntPtr hWnd, Thickness margins)
         {
+            var nativeMargins = new MARGINS { cxLeftWidth = (int)margins.Left, cyTopHeight = (int)margins.Top, cxRightWidth = (int)margins.Right, cyBottomHeight = (int)margins.Bottom };
             // Extend frame on the bottom of client area
-            var result = PInvoke.DwmExtendFrameIntoClientArea(new HWND(hWnd), &margins);
+            var result = PInvoke.DwmExtendFrameIntoClientArea(new HWND(hWnd), &nativeMargins);
             return result.Succeeded;
         }
 
-        public static bool SetBackdropType(IntPtr hWnd, DWMSBT backdropType)
+        public static bool SetBackdropType(IntPtr hWnd, WindowBackdropType backdropType)
         {
             const DWMWINDOWATTRIBUTE DWMWA_SYSTEMBACKDROP_TYPE = (DWMWINDOWATTRIBUTE)38;
             return SetWindowAttributeValue(hWnd, DWMWA_SYSTEMBACKDROP_TYPE, (int)backdropType);
