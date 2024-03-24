@@ -249,6 +249,23 @@ namespace ControlzEx.Behaviors
             behavior.UpdateDWMCornerPreference((WindowCornerPreference)e.NewValue);
         }
 
+        public static readonly DependencyProperty UseNativeCaptionButtonsProperty = DependencyProperty.Register(nameof(UseNativeCaptionButtons), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(BooleanBoxes.FalseBox, OnUseNativeCaptionButtonsChanged));
+
+        private static void OnUseNativeCaptionButtonsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var behavior = (WindowChromeBehavior)d;
+            if ((bool)e.NewValue)
+            {
+                behavior._ModifyStyle(0, WINDOW_STYLE.WS_SYSMENU);
+            }
+        }
+
+        public bool UseNativeCaptionButtons
+        {
+            get => (bool)this.GetValue(UseNativeCaptionButtonsProperty);
+            set => this.SetValue(UseNativeCaptionButtonsProperty, value);
+        }
+
         /// <inheritdoc />
         protected override void OnAttached()
         {

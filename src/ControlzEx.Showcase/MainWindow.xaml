@@ -8,6 +8,7 @@
                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                xmlns:system="clr-namespace:System;assembly=mscorlib"
                                xmlns:views="clr-namespace:ControlzEx.Showcase.Views"
+                               xmlns:converters="clr-namespace:ControlzEx.Showcase.Converters"
                                x:Name="Window"
                                Title="ControlzEx.Showcase"
                                Width="800"
@@ -77,7 +78,8 @@
                   controlzEx:WindowChrome.IsHitTestVisibleInChrome="False"
                   controlzEx:NonClientControlProperties.HitTestResult="CAPTION"
                   MouseLeftButtonDown="TitleBarGrid_OnMouseLeftButtonDown"
-                  MouseRightButtonUp="TitleBarGrid_OnMouseRightButtonUp">
+                  MouseRightButtonUp="TitleBarGrid_OnMouseRightButtonUp"
+                  Visibility="{Binding ElementName=Window, Path=UseNativeCaptionButtons, Converter={x:Static converters:InverseBoolToVisibilityConverter.Instance}}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
@@ -122,7 +124,8 @@
                           HorizontalAlignment="Stretch"
                           controlzEx:WindowChrome.IsHitTestVisibleInChrome="False"
                           controlzEx:NonClientControlProperties.HitTestResult="CLIENT"
-                          Background="{DynamicResource ControlzEx.Brushes.AccentBaseColorBrush}" />
+                          Background="{DynamicResource ControlzEx.Brushes.AccentBaseColorBrush}"
+                          Visibility="{Binding ElementName=Window, Path=UseNativeCaptionButtons, Converter={x:Static converters:InverseBoolToVisibilityConverter.Instance}}" />
 
             <controlzEx:TabControlEx Grid.Row="2"
                                      x:Name="tabControlEx">
@@ -487,6 +490,13 @@
 
                                         <Button Click="HandleClearCaptionColorClick">Set NULL</Button>
                                     </StackPanel>
+
+                                    <Label>
+                                        UseNativeCaptionButtons
+                                    </Label>
+                                    <CheckBox Margin="4"
+                                              VerticalAlignment="Center"
+                                              IsChecked="{Binding ElementName=Window, Path=UseNativeCaptionButtons, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                                     <Label>
                                         WindowBackDropType

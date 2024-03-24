@@ -88,6 +88,7 @@ namespace ControlzEx
             BindingOperations.SetBinding(behavior, WindowChromeBehavior.EnableMinimizeProperty, new Binding { Path = new PropertyPath(ShowMinButtonProperty), Source = this });
             BindingOperations.SetBinding(behavior, WindowChromeBehavior.EnableMaxRestoreProperty, new Binding { Path = new PropertyPath(ShowMaxRestoreButtonProperty), Source = this });
             BindingOperations.SetBinding(behavior, WindowChromeBehavior.CornerPreferenceProperty, new Binding { Path = new PropertyPath(CornerPreferenceProperty), Source = this });
+            BindingOperations.SetBinding(behavior, WindowChromeBehavior.UseNativeCaptionButtonsProperty, new Binding { Path = new PropertyPath(UseNativeCaptionButtonsProperty), Source = this });
 
             this.SetBinding(IsNCActiveProperty, new Binding { Path = new PropertyPath(WindowChromeBehavior.IsNCActiveProperty), Source = behavior });
 
@@ -255,6 +256,14 @@ namespace ControlzEx
         {
             get => (Color?)this.GetValue(CaptionColorProperty);
             set => this.SetValue(CaptionColorProperty, value);
+        }
+
+        public static readonly DependencyProperty UseNativeCaptionButtonsProperty = DependencyProperty.Register(nameof(UseNativeCaptionButtons), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(BooleanBoxes.FalseBox));
+
+        public bool UseNativeCaptionButtons
+        {
+            get => (bool)this.GetValue(UseNativeCaptionButtonsProperty);
+            set => this.SetValue(UseNativeCaptionButtonsProperty, value);
         }
 
         private static void OnCaptionColorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

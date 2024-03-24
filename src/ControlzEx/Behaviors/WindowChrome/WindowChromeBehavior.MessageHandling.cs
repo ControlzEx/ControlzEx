@@ -94,7 +94,7 @@ namespace ControlzEx.Behaviors
             this.UpdateMinimizeSystemMenu(this.EnableMinimize);
             this.UpdateMaxRestoreSystemMenu(this.EnableMaxRestore);
             this.UpdateWindowStyle();
-            //DwmHelper.WindowExtendIntoClientArea(this.windowHandle, new MARGINS { cxLeftWidth = -1, cyTopHeight = -1, cxRightWidth = -1, cyBottomHeight = -1 });
+            DwmHelper.WindowExtendIntoClientArea(this.windowHandle, new MARGINS { cxLeftWidth = -1, cyTopHeight = -1, cxRightWidth = -1, cyBottomHeight = -1 });
 
             // Mitigation for https://github.com/dotnet/wpf/issues/5853
             // This forces WPF to render a bit earlier, which reduces the time we see a blank white window on show
@@ -443,12 +443,12 @@ namespace ControlzEx.Behaviors
             // We always want to handle hit-testing
             handled = true;
 
-            var hitTestResult = this.GetHitTestResult(lParam);
+            var hitTestResult = this.GetHitTestResult(uMsg, wParam, lParam);
 
             return new IntPtr((int)hitTestResult);
         }
 
-        private HT GetHitTestResult(nint lParam)
+        private unsafe HT GetHitTestResult(WM uMsg, nuint wParam, nint lParam)
         {
             if (NonClientControlManager.GetControlUnderMouse(this.AssociatedObject, lParam, out var htFromNcControlManager) is not null
                 && htFromNcControlManager is not HT.CAPTION)
@@ -462,10 +462,7 @@ namespace ControlzEx.Behaviors
             var mousePosScreen = Utility.GetPoint(lParam);
             var windowRect = this._GetWindowRect();
 
-            var preventResize = this._GetHwndState() is WindowState.Maximized || this.AssociatedObject.ResizeMode is ResizeMode.NoResize;
-            var htFromTestNca = preventResize
-                ? HT.CLIENT
-                : this._HitTestNca(DpiHelper.DeviceRectToLogical(windowRect, dpi.DpiScaleX, dpi.DpiScaleY),
+            var htFromTestNca = this._HitTestNca(DpiHelper.DeviceRectToLogical(windowRect, dpi.DpiScaleX, dpi.DpiScaleY),
                                    DpiHelper.DevicePixelsToLogical(mousePosScreen, dpi.DpiScaleX, dpi.DpiScaleY));
 
             if (htFromTestNca is not HT.CLIENT
@@ -487,10 +484,10 @@ namespace ControlzEx.Behaviors
                             return HT.CLIENT;
                         }
 
-                        if (this.AssociatedObject.ResizeMode == ResizeMode.CanResizeWithGrip)
+                        if (this.AssociatedObject.ResizeMode is ResizeMode.CanResizeWithGrip)
                         {
                             var direction = WindowChrome.GetResizeGripDirection(inputElement);
-                            if (direction != ResizeGripDirection.None)
+                            if (direction is not ResizeGripDirection.None)
                             {
                                 return this._GetHTFromResizeGripDirection(direction);
                             }
@@ -503,6 +500,24 @@ namespace ControlzEx.Behaviors
                 && htFromTestNca is HT.CLIENT)
             {
                 return htFromNcControlManager;
+            }
+
+            // It's not opted out, so offer up the hittest to DWM, then to our custom non-client area logic.
+            if (this.UseNativeCaptionButtons
+                && htFromTestNca is HT.CLIENT or HT.CAPTION)
+            {
+                #if NETCOREAPP
+                PInvoke.DwmDefWindowProc(this.windowHandle, (uint)uMsg, wParam, lParam, out var lRet);
+                #else
+                LRESULT lRet;
+                PInvoke.DwmDefWindowProc(this.windowHandle, (uint)uMsg, wParam, lParam, &lRet);
+                #endif
+
+                if (lRet.Value != IntPtr.Zero)
+                {
+                    // If DWM claims to have handled this, then respect their call.
+                    return (HT)lRet.Value;
+                }
             }
 
             return htFromTestNca;
@@ -793,6 +808,11 @@ namespace ControlzEx.Behaviors
                     structure.styleNew |= (uint)WINDOW_STYLE.WS_OVERLAPPED;
                 }
 
+                if (this.UseNativeCaptionButtons)
+                {
+                    structure.styleNew |= (uint)WINDOW_STYLE.WS_SYSMENU;
+                }
+
                 Marshal.StructureToPtr(structure, lParam, fDeleteOld: true);
             }
 
@@ -987,7 +1007,7 @@ namespace ControlzEx.Behaviors
             onTopResizeBorder = mousePosition.Y <= (windowRect.Top + this.ResizeBorderThickness.Top);
 
             // Determine if the point is at the top or bottom of the window.
-            uRow = GetHTRow(windowRect, mousePosition, resizeBorderThickness);
+            uRow = GetHTRow(windowRect, mousePosition, resizeBorderThickness, this.UseNativeCaptionButtons);
 
             // Determine if the point is at the left or right of the window.
             uCol = GetHTColumn(windowRect, mousePosition, resizeBorderThickness);
@@ -1009,7 +1029,7 @@ namespace ControlzEx.Behaviors
             else if (uCol != 1
                      && uRow == 1)
             {
-                uRow = GetHTRow(windowRect, mousePosition, this.cornerGripThickness);
+                uRow = GetHTRow(windowRect, mousePosition, this.cornerGripThickness, this.UseNativeCaptionButtons);
             }
 
             var ht = hitTestBorders[uRow, uCol];
@@ -1022,10 +1042,18 @@ namespace ControlzEx.Behaviors
 
             return ht;
 
-            static int GetHTRow(Rect windowRect, Point mousePosition, Thickness resizeBorderThickness)
+            static int GetHTRow(Rect windowRect, Point mousePosition, Thickness resizeBorderThickness, bool useNativeCaptionButtons)
             {
                 if (mousePosition.Y >= windowRect.Top
                     && mousePosition.Y < windowRect.Top + resizeBorderThickness.Top)
+                {
+                    return 0; // top (caption or resize border)
+                }
+
+                // todo: determine caption height during runtime instead of using hard coded 30
+                if (useNativeCaptionButtons
+                    && mousePosition.Y >= windowRect.Top
+                    && mousePosition.Y < windowRect.Top + resizeBorderThickness.Top + 30)
                 {
                     return 0; // top (caption or resize border)
                 }
