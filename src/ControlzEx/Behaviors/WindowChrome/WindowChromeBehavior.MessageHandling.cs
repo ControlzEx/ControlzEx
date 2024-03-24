@@ -197,10 +197,10 @@ namespace ControlzEx.Behaviors
         [SecurityCritical]
         private IntPtr _HandleNCUAHDRAWCAPTION(WM uMsg, nuint wParam, nint lParam, out bool handled)
         {
-            if (this.AssociatedObject.ShowInTaskbar == false
+            if (this.AssociatedObject.ShowInTaskbar is false
                 && this._GetHwndState() == WindowState.Minimized)
             {
-                // Minimize the window with ShowInTaskbar == false might cause Windows to redraw the caption.
+                // Minimize the window with ShowInTaskbar is false might cause Windows to redraw the caption.
                 using (new SuppressRedrawScope(this.windowHandle))
                 {
                     handled = true;
@@ -250,7 +250,7 @@ namespace ControlzEx.Behaviors
 
             this.IsNCActive = wParam != 0;
 
-            if (this.IsNCActive == false)
+            if (this.IsNCActive is false)
             {
                 this.nonClientControlManager?.ClearTrackedControl();
             }
@@ -280,7 +280,7 @@ namespace ControlzEx.Behaviors
             PInvoke.SHAppBarMessage((int)PInvoke.ABMsg.ABM_GETTASKBARPOS, ref abd);
             var autoHide = Convert.ToBoolean(PInvoke.SHAppBarMessage((int)PInvoke.ABMsg.ABM_GETSTATE, ref abd));
 
-            if (autoHide == false)
+            if (autoHide is false)
             {
                 return area;
             }
@@ -345,7 +345,7 @@ namespace ControlzEx.Behaviors
                 rc.bottom = monitorRect.bottom;
 
                 // monitor and work area will be equal if taskbar is hidden
-                if (this.IgnoreTaskbarOnMaximize == false
+                if (this.IgnoreTaskbarOnMaximize is false
                     && monitorInfo.rcMonitor.GetHeight() == monitorInfo.rcWork.GetHeight()
                     && monitorInfo.rcMonitor.GetWidth() == monitorInfo.rcWork.GetWidth())
                 {
@@ -363,7 +363,7 @@ namespace ControlzEx.Behaviors
                 rc.top = rcBefore.top; // Remove titlebar
                 Marshal.StructureToPtr(rc, lParam, true);
             }
-            else if (this.AssociatedObject.AllowsTransparency == false
+            else if (this.AssociatedObject.AllowsTransparency is false
                      && this._GetHwndState() == WindowState.Normal
                      && wParam != 0)
             {
@@ -740,7 +740,7 @@ namespace ControlzEx.Behaviors
 
         private unsafe IntPtr _HandleNCMOUSEMOVE(WM uMsg, nuint wParam, nint lParam, out bool handled)
         {
-            if (this.isTrackingMouseEvents == false)
+            if (this.isTrackingMouseEvents is false)
             {
                 var settings = new TRACKMOUSEEVENT
                 {
@@ -996,7 +996,7 @@ namespace ControlzEx.Behaviors
             // then resize left-right rather than diagonally.
             if (uRow == 0
                 && uCol != 1
-                && onTopResizeBorder == false)
+                && onTopResizeBorder is false)
             {
                 uRow = 1;
             }
@@ -1015,7 +1015,7 @@ namespace ControlzEx.Behaviors
             var ht = hitTestBorders[uRow, uCol];
 
             if ((ht is HT.TOPLEFT or HT.TOP or HT.TOPRIGHT)
-                && onTopResizeBorder == false)
+                && onTopResizeBorder is false)
             {
                 ht = HT.CAPTION;
             }
