@@ -19,7 +19,7 @@ namespace ControlzEx.Theming
         }
 
         public static readonly DependencyProperty BackdropTypeProperty = DependencyProperty.RegisterAttached(
-            "BackdropType", typeof(WindowBackdropType), typeof(WindowBackdropManager), new PropertyMetadata(WindowBackdropType.Mica, OnBackdropTypeChanged));
+            "BackdropType", typeof(WindowBackdropType), typeof(WindowBackdropManager), new PropertyMetadata(WindowBackdropType.None, OnBackdropTypeChanged));
 
         public static void SetBackdropType(Window element, WindowBackdropType value)
         {
