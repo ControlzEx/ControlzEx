@@ -95,6 +95,7 @@ namespace ControlzEx.Behaviors
             this.UpdateMinimizeSystemMenu(this.EnableMinimize);
             this.UpdateMaxRestoreSystemMenu(this.EnableMaxRestore);
             this.UpdateWindowStyle();
+            // todo: Should we make the margins settable?
             DwmHelper.WindowExtendIntoClientArea(this.windowHandle, new MARGINS { cxLeftWidth = -1, cyTopHeight = -1, cxRightWidth = -1, cyBottomHeight = -1 });
 
             // Mitigation for https://github.com/dotnet/wpf/issues/5853
