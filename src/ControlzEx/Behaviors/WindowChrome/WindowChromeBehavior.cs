@@ -88,8 +88,7 @@ namespace ControlzEx.Behaviors
         }
 
         /// <summary>Identifies the <see cref="ResizeBorderThickness"/> dependency property.</summary>
-        public static readonly DependencyProperty ResizeBorderThicknessProperty =
-            DependencyProperty.Register(nameof(ResizeBorderThickness), typeof(Thickness), typeof(WindowChromeBehavior), new PropertyMetadata(GetDefaultResizeBorderThickness(), OnResizeBorderThicknessChanged), (value) => ((Thickness)value).IsNonNegative());
+        public static readonly DependencyProperty ResizeBorderThicknessProperty = DependencyProperty.Register(nameof(ResizeBorderThickness), typeof(Thickness), typeof(WindowChromeBehavior), new PropertyMetadata(GetDefaultResizeBorderThickness(), OnResizeBorderThicknessChanged), (value) => ((Thickness)value).IsNonNegative());
 
         private static void OnResizeBorderThicknessChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -110,8 +109,7 @@ namespace ControlzEx.Behaviors
         /// <summary>
         /// <see cref="DependencyProperty"/> for <see cref="IgnoreTaskbarOnMaximize"/>.
         /// </summary>
-        public static readonly DependencyProperty IgnoreTaskbarOnMaximizeProperty =
-            DependencyProperty.Register(nameof(IgnoreTaskbarOnMaximize), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(BooleanBoxes.FalseBox, OnIgnoreTaskbarOnMaximizeChanged));
+        public static readonly DependencyProperty IgnoreTaskbarOnMaximizeProperty = DependencyProperty.Register(nameof(IgnoreTaskbarOnMaximize), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(BooleanBoxes.FalseBox, OnIgnoreTaskbarOnMaximizeChanged));
 
         /// <summary>
         /// Gets/sets if the border thickness value should be kept on maximize
@@ -128,6 +126,7 @@ namespace ControlzEx.Behaviors
         /// </summary>
         public static readonly DependencyProperty KeepBorderOnMaximizeProperty = DependencyProperty.Register(nameof(KeepBorderOnMaximize), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(BooleanBoxes.TrueBox, OnKeepBorderOnMaximizeChanged));
 
+        // ReSharper disable once InconsistentNaming
         private static readonly DependencyPropertyKey IsNCActivePropertyKey = DependencyProperty.RegisterReadOnly(nameof(IsNCActive), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(BooleanBoxes.FalseBox));
 
         /// <summary>
@@ -251,6 +250,12 @@ namespace ControlzEx.Behaviors
 
         public static readonly DependencyProperty UseNativeCaptionButtonsProperty = DependencyProperty.Register(nameof(UseNativeCaptionButtons), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(BooleanBoxes.FalseBox, OnUseNativeCaptionButtonsChanged));
 
+        public bool UseNativeCaptionButtons
+        {
+            get => (bool)this.GetValue(UseNativeCaptionButtonsProperty);
+            set => this.SetValue(UseNativeCaptionButtonsProperty, BooleanBoxes.Box(value));
+        }
+
         private static void OnUseNativeCaptionButtonsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var behavior = (WindowChromeBehavior)d;
@@ -260,12 +265,6 @@ namespace ControlzEx.Behaviors
             }
 
             behavior.UpdateCaptionButtonsSize();
-        }
-
-        public bool UseNativeCaptionButtons
-        {
-            get => (bool)this.GetValue(UseNativeCaptionButtonsProperty);
-            set => this.SetValue(UseNativeCaptionButtonsProperty, value);
         }
 
         public static readonly DependencyProperty CaptionButtonsSizeProperty = DependencyProperty.Register(nameof(CaptionButtonsSize), typeof(Size), typeof(WindowChromeBehavior), new PropertyMetadata(default(Size)));

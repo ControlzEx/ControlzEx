@@ -145,8 +145,7 @@ namespace ControlzEx
             DependencyProperty.Register(nameof(GlowDepth), typeof(int), typeof(WindowChromeWindow), new PropertyMetadata(GlowWindowBehavior.GlowDepthProperty.DefaultMetadata.DefaultValue));
 
         /// <summary>Identifies the <see cref="UseRadialGradientForCorners"/> dependency property.</summary>
-        public static readonly DependencyProperty UseRadialGradientForCornersProperty = DependencyProperty.Register(
-            nameof(UseRadialGradientForCorners), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(GlowWindowBehavior.UseRadialGradientForCornersProperty.DefaultMetadata.DefaultValue));
+        public static readonly DependencyProperty UseRadialGradientForCornersProperty = DependencyProperty.Register(nameof(UseRadialGradientForCorners), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(GlowWindowBehavior.UseRadialGradientForCornersProperty.DefaultMetadata.DefaultValue));
 
         /// <inheritdoc cref="GlowWindowBehavior.UseRadialGradientForCorners"/>
         /// <remarks>
@@ -159,8 +158,7 @@ namespace ControlzEx
         }
 
         /// <summary>Identifies the <see cref="IsGlowTransitionEnabled"/> dependency property.</summary>
-        public static readonly DependencyProperty IsGlowTransitionEnabledProperty = DependencyProperty.Register(
-            nameof(IsGlowTransitionEnabled), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(GlowWindowBehavior.IsGlowTransitionEnabledProperty.DefaultMetadata.DefaultValue));
+        public static readonly DependencyProperty IsGlowTransitionEnabledProperty = DependencyProperty.Register(nameof(IsGlowTransitionEnabled), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(GlowWindowBehavior.IsGlowTransitionEnabledProperty.DefaultMetadata.DefaultValue));
 
         /// <inheritdoc cref="GlowWindowBehavior.IsGlowTransitionEnabled"/>
         /// <remarks>
@@ -276,7 +274,7 @@ namespace ControlzEx
         public bool UseNativeCaptionButtons
         {
             get => (bool)this.GetValue(UseNativeCaptionButtonsProperty);
-            set => this.SetValue(UseNativeCaptionButtonsProperty, value);
+            set => this.SetValue(UseNativeCaptionButtonsProperty, BooleanBoxes.Box(value));
         }
 
         public static readonly DependencyProperty GlassFrameThicknessProperty = DependencyProperty.Register(nameof(GlassFrameThickness), typeof(Thickness), typeof(WindowChromeWindow), new PropertyMetadata(default(Thickness)));
@@ -357,8 +355,7 @@ namespace ControlzEx
         }
 
         /// <summary>Identifies the <see cref="PreferDWMBorderColor"/> dependency property.</summary>
-        public static readonly DependencyProperty PreferDWMBorderColorProperty =
-            DependencyProperty.Register(nameof(PreferDWMBorderColor), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(BooleanBoxes.TrueBox));
+        public static readonly DependencyProperty PreferDWMBorderColorProperty = DependencyProperty.Register(nameof(PreferDWMBorderColor), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(BooleanBoxes.TrueBox));
 
         /// <inheritdoc cref="GlowWindowBehavior.PreferDWMBorderColor"/>
         public bool PreferDWMBorderColor
