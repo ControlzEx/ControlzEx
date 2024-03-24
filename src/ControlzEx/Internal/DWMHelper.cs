@@ -49,9 +49,9 @@ namespace ControlzEx.Internal
             return result.Succeeded;
         }
 
-        public static bool HasDarkTheme(Window window)
+        public static bool HasDarkTheme(FrameworkElement target)
         {
-            if (ThemeManager.Current.DetectTheme(window) is { } theme)
+            if (ThemeManager.Current.DetectTheme(target) is { } theme)
             {
                 return theme.BaseColorScheme is ThemeManager.BaseColorDarkConst;
             }
@@ -65,7 +65,7 @@ namespace ControlzEx.Internal
             return SetWindowAttributeValue(hWnd, DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE, immersiveDarkModeAttributeValue);
         }
 
-        public static bool SetBackdropType(IntPtr hWnd, WindowBackdropType backdropType)
+        public static bool SetBackdropType(IntPtr hWnd, BackdropType backdropType)
         {
             const DWMWINDOWATTRIBUTE DWMWA_SYSTEMBACKDROP_TYPE = (DWMWINDOWATTRIBUTE)38;
             return SetWindowAttributeValue(hWnd, DWMWA_SYSTEMBACKDROP_TYPE, (int)backdropType);

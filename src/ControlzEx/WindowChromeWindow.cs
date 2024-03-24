@@ -47,7 +47,7 @@ namespace ControlzEx
                 compositionTarget.BackgroundColor = Colors.Transparent;
             }
 
-            WindowBackdropManager.UpdateWindowEffect(this);
+            WindowBackdropManager.UpdateBackdrop(this);
 
             if (this.MitigateWhiteFlashDuringShow
                 && this.AllowsTransparency is false)
@@ -115,7 +115,7 @@ namespace ControlzEx
             {
                 var isDarkTheme = e.NewTheme.BaseColorScheme is ThemeManager.BaseColorDarkConst;
                 DwmHelper.SetImmersiveDarkMode(this.windowHandle, isDarkTheme);
-                WindowBackdropManager.UpdateWindowEffect(this, isDarkTheme);
+                WindowBackdropManager.UpdateBackdrop(this, isDarkTheme);
             }
         }
 

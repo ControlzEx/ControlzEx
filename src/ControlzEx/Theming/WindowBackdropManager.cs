@@ -2,14 +2,13 @@ namespace ControlzEx.Theming
 {
     using System;
     using System.Windows;
+    using System.Windows.Controls.Primitives;
     using System.Windows.Interop;
+    using System.Windows.Media;
     using ControlzEx.Helpers;
     using ControlzEx.Internal;
-    using ControlzEx.Native;
     using global::Windows.Win32;
     using global::Windows.Win32.Foundation;
-    using global::Windows.Win32.Graphics.Dwm;
-    using global::Windows.Win32.UI.Controls;
     using global::Windows.Win32.UI.WindowsAndMessaging;
 
     public class WindowBackdropManager : DependencyObject
@@ -18,67 +17,111 @@ namespace ControlzEx.Theming
         {
         }
 
-        public static readonly DependencyProperty BackdropTypeProperty = DependencyProperty.RegisterAttached(
-            "BackdropType", typeof(WindowBackdropType), typeof(WindowBackdropManager), new PropertyMetadata(WindowBackdropType.None, OnBackdropTypeChanged));
+        public static readonly DependencyProperty BackdropTypeProperty = DependencyProperty.RegisterAttached("BackdropType", typeof(BackdropType), typeof(WindowBackdropManager), new PropertyMetadata(BackdropType.None, OnBackdropTypeChanged));
 
-        public static void SetBackdropType(Window element, WindowBackdropType value)
+        public static void SetBackdropType(FrameworkElement element, BackdropType value)
         {
             element.SetValue(BackdropTypeProperty, value);
         }
 
         [AttachedPropertyBrowsableForType(typeof(Window))]
-        public static WindowBackdropType GetBackdropType(Window element)
+        [AttachedPropertyBrowsableForType(typeof(Popup))]
+        public static BackdropType GetBackdropType(FrameworkElement element)
         {
-            return (WindowBackdropType)element.GetValue(BackdropTypeProperty);
+            return (BackdropType)element.GetValue(BackdropTypeProperty);
         }
 
         private static void OnBackdropTypeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            UpdateWindowEffect((Window)d);
+            UpdateBackdrop((FrameworkElement)d);
         }
 
         // ReSharper disable once InconsistentNaming
-        private static readonly DependencyPropertyKey CurrentBackdropTypePropertyKey = DependencyProperty.RegisterAttachedReadOnly(
-            "CurrentBackdropType", typeof(WindowBackdropType), typeof(WindowBackdropManager), new PropertyMetadata(WindowBackdropType.None));
+        private static readonly DependencyPropertyKey CurrentBackdropTypePropertyKey = DependencyProperty.RegisterAttachedReadOnly("CurrentBackdropType", typeof(BackdropType), typeof(WindowBackdropManager), new PropertyMetadata(BackdropType.None));
 
         public static readonly DependencyProperty CurrentBackdropTypeProperty = CurrentBackdropTypePropertyKey.DependencyProperty;
 
-        private static void SetCurrentBackdropType(Window element, WindowBackdropType value)
+        private static void SetCurrentBackdropType(FrameworkElement element, BackdropType value)
         {
             element.SetValue(CurrentBackdropTypePropertyKey, value);
         }
 
         [AttachedPropertyBrowsableForType(typeof(Window))]
-        public static WindowBackdropType GetCurrentBackdropType(Window element)
+        [AttachedPropertyBrowsableForType(typeof(Popup))]
+        public static BackdropType GetCurrentBackdropType(FrameworkElement element)
         {
-            return (WindowBackdropType)element.GetValue(CurrentBackdropTypeProperty);
+            return (BackdropType)element.GetValue(CurrentBackdropTypeProperty);
         }
 
-        public static bool UpdateWindowEffect(Window window)
+        public static bool UpdateBackdrop(FrameworkElement target)
         {
-            return UpdateWindowEffect(window, GetBackdropType(window), DwmHelper.HasDarkTheme(window));
+            return UpdateBackdrop(target, GetBackdropType(target), DwmHelper.HasDarkTheme(target));
         }
 
-        public static bool UpdateWindowEffect(Window window, bool isDarkTheme)
+        public static bool UpdateBackdrop(FrameworkElement target, bool isDarkTheme)
         {
-            return UpdateWindowEffect(window, GetBackdropType(window), isDarkTheme);
+            return UpdateBackdrop(target, GetBackdropType(target), isDarkTheme);
         }
 
-        public static bool UpdateWindowEffect(Window window, WindowBackdropType backdropType, bool isDarkTheme)
+        public static bool UpdateBackdrop(FrameworkElement target, BackdropType backdropType, bool isDarkTheme)
         {
-            if (window.AllowsTransparency)
+            if (backdropType == GetCurrentBackdropType(target))
             {
-                SetCurrentBackdropType(window, WindowBackdropType.None);
+                return true;
+            }
+
+            if (backdropType is BackdropType.None)
+            {
+                SetCurrentBackdropType(target, BackdropType.None);
                 return false;
             }
 
-            var result = UpdateWindowEffect(new WindowInteropHelper(window).EnsureHandle(), backdropType, isDarkTheme);
+            if (target is Window { AllowsTransparency: true })
+            {
+                SetCurrentBackdropType(target, BackdropType.None);
+                return false;
+            }
 
-            SetCurrentBackdropType(window, result ? backdropType : WindowBackdropType.None);
-            return result;
+            if (target is Popup popup)
+            {
+                if (popup.AllowsTransparency)
+                {
+                    SetCurrentBackdropType(target, BackdropType.None);
+                    return false;
+                }
+
+                if (popup.IsOpen is false)
+                {
+                    popup.Opened += PopupOnOpened;
+
+                    return false;
+
+                    void PopupOnOpened(object? sender, EventArgs e)
+                    {
+                        UpdateBackdrop(popup);
+                    }
+                }
+            }
+
+            if (PresentationSource.FromVisual(target) is HwndSource hwndSource)
+            {
+                var result = UpdateBackdrop(hwndSource.Handle, backdropType, isDarkTheme);
+
+                SetCurrentBackdropType(target, result ? backdropType : BackdropType.None);
+
+                if (result
+                    && target is Popup)
+                {
+                    DwmHelper.ExtendFrameIntoClientArea(hwndSource.Handle, new(-1));
+                }
+
+                return result;
+            }
+
+            return false;
         }
 
-        public static bool UpdateWindowEffect(IntPtr handle, WindowBackdropType backdropType, bool isDarkTheme)
+        public static bool UpdateBackdrop(IntPtr handle, BackdropType backdropType, bool isDarkTheme)
         {
             if (OSVersionHelper.IsWindows11_22H2_OrGreater is false)
             {
@@ -88,9 +131,9 @@ namespace ControlzEx.Theming
             return SetBackdropType(handle, backdropType, isDarkTheme);
         }
 
-        private static bool SetBackdropType(IntPtr handle, WindowBackdropType backdropType, bool isDarkTheme)
+        private static bool SetBackdropType(IntPtr handle, BackdropType backdropType, bool isDarkTheme)
         {
-            if (backdropType is WindowBackdropType.None)
+            if (backdropType is BackdropType.None)
             {
                 return DwmHelper.SetBackdropType(handle, backdropType);
             }
@@ -99,6 +142,11 @@ namespace ControlzEx.Theming
             if (DwmHelper.SetImmersiveDarkMode(handle, isDarkTheme) is false)
             {
                 return false;
+            }
+
+            if (HwndSource.FromHwnd(handle) is { CompositionTarget: not null } hwndSource)
+            {
+                hwndSource.CompositionTarget.BackgroundColor = Colors.Transparent;
             }
 
             var result = DwmHelper.SetBackdropType(handle, backdropType);
