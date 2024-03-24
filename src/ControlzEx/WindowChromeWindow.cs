@@ -384,20 +384,6 @@ namespace ControlzEx
             set => this.SetValue(CornerPreferenceProperty, value);
         }
 
-        // public static readonly DependencyProperty HasDarkThemeProperty = DependencyProperty.Register(
-        //     nameof(HasDarkTheme), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(BooleanBoxes.FalseBox, OnHasDarkThemeChanged));
-        //
-        // public bool HasDarkTheme
-        // {
-        //     get => (bool)this.GetValue(HasDarkThemeProperty);
-        //     set => this.SetValue(HasDarkThemeProperty, value);
-        // }
-        //
-        // private static void OnHasDarkThemeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        // {
-        //     WindowBackgroundManager.UpdateWindowEffect((WindowChromeWindow)d);
-        // }
-
         /// <inheritdoc />
         protected override void OnActivated(EventArgs e)
         {
