@@ -347,7 +347,7 @@
         <Setter Property="VerticalContentAlignment" Value="Top" />
         <Setter Property="Popup.PopupAnimation" Value="None" />
         <Setter Property="Popup.Placement" Value="Bottom" />
-        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
         <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="Template">
             <Setter.Value>
