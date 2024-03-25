@@ -117,7 +117,7 @@
                                     Value="{DynamicResource ControlzEx.Brushes.AccentBaseColorBrush}" />
                             <Setter TargetName="Border" Property="BorderBrush"
                                     Value="{DynamicResource ControlzEx.Brushes.HighlightBrush}" />
-                            <Setter Property="Foreground"
+                            <Setter TargetName="Border" Property="TextElement.Foreground"
                                     Value="{DynamicResource ControlzEx.Brushes.IdealForegroundColorBrush}" />
                         </Trigger>
 
@@ -126,7 +126,8 @@
                                     Value="{DynamicResource Control.MouseOver.Background}" />
                             <Setter TargetName="Border" Property="BorderBrush"
                                     Value="{DynamicResource Control.MouseOver.Border}" />
-                            <Setter Property="Foreground" Value="{DynamicResource Control.MouseOver.Foreground}" />
+                            <Setter TargetName="Border" Property="TextElement.Foreground"
+                                    Value="{DynamicResource Control.MouseOver.Foreground}" />
                         </Trigger>
 
                         <MultiDataTrigger>
