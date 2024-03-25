@@ -72,7 +72,8 @@ namespace ControlzEx.Theming
                 return true;
             }
 
-            if (popupBackdropType is PopupBackdropType.None)
+            if (popupBackdropType is PopupBackdropType.None
+                || OSVersionHelper.IsWindows11_22H2_OrGreater is false)
             {
                 SetCurrentBackdropType(target, PopupBackdropType.None);
                 return false;
