@@ -5,6 +5,7 @@ namespace ControlzEx.Theming
     using System;
     using System.Runtime.InteropServices;
     using System.Windows;
+    using System.Windows.Controls;
     using System.Windows.Controls.Primitives;
     using System.Windows.Interop;
     using System.Windows.Media;
@@ -79,8 +80,14 @@ namespace ControlzEx.Theming
 
             if (target is { AllowsTransparency: true })
             {
-                SetCurrentBackdropType(target, PopupBackdropType.None);
-                return false;
+                if (target.IsOpen)
+                {
+                    SetCurrentBackdropType(target, PopupBackdropType.None);
+                    return false;
+                }
+
+                // todo: Do we really want to hard change this?
+                target.AllowsTransparency = false;
             }
 
             if (target.IsOpen is false)
@@ -99,6 +106,9 @@ namespace ControlzEx.Theming
                 {
                     hwndSource.CompositionTarget.BackgroundColor = Colors.Transparent;
                 }
+
+                // todo: Do we really want to hard change this?
+                target.Child.SetValue(Panel.BackgroundProperty, Brushes.Transparent);
 
                 DwmHelper.ExtendFrameIntoClientArea(handle, new(-1));
 
