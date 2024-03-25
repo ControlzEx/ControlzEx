@@ -267,7 +267,7 @@ namespace Windows.Win32
             {
                 return HiWord(value.ToInt64());
             }
-            
+
             return HiWord(value.ToInt32());
         }
 
@@ -293,22 +293,22 @@ namespace Windows.Win32
 
         public static WINDOW_STYLE GetWindowStyle(HWND hWnd)
         {
-            return (WINDOW_STYLE)GetWindowLongPtr(hWnd, WINDOW_LONG_PTR_INDEX.GWL_STYLE);
+            return (WINDOW_STYLE)(long)GetWindowLongPtr(hWnd, WINDOW_LONG_PTR_INDEX.GWL_STYLE);
         }
 
         public static WINDOW_EX_STYLE GetWindowStyleEx(HWND hWnd)
         {
-            return (WINDOW_EX_STYLE)GetWindowLongPtr(hWnd, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE);
+            return (WINDOW_EX_STYLE)(long)GetWindowLongPtr(hWnd, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE);
         }
 
         public static WINDOW_STYLE SetWindowStyle(HWND hWnd, WINDOW_STYLE dwNewLong)
         {
-            return (WINDOW_STYLE)SetWindowLongPtr(hWnd, WINDOW_LONG_PTR_INDEX.GWL_STYLE, new IntPtr((int)dwNewLong));
+            return (WINDOW_STYLE)SetWindowLongPtr(hWnd, WINDOW_LONG_PTR_INDEX.GWL_STYLE, new IntPtr((long)dwNewLong));
         }
 
         public static WINDOW_EX_STYLE SetWindowStyleEx(HWND hWnd, WINDOW_EX_STYLE dwNewLong)
         {
-            return (WINDOW_EX_STYLE)SetWindowLongPtr(hWnd, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, new IntPtr((int)dwNewLong));
+            return (WINDOW_EX_STYLE)SetWindowLongPtr(hWnd, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, new IntPtr((long)dwNewLong));
         }
 
         [DllImport("user32.dll", EntryPoint = "GetWindowLongW", SetLastError = true)]
