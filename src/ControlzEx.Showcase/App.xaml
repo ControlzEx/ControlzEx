@@ -20,6 +20,7 @@
                 <Setter Property="NCActiveBrush" Value="{Binding CaptionColor, RelativeSource={RelativeSource Self}, Converter={x:Static converters:ToBrushConverter.Instance}}" />
                 <Setter Property="NCNonActiveBrush" Value="{Binding Source={x:Static SystemColors.WindowFrameBrush}}" />
                 <Setter Property="GlowColor" Value="{DynamicResource ControlzEx.Colors.AccentBaseColor}" />
+                <Setter Property="NonActiveGlowColor" Value="LightGray" />
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type controlzEx:WindowChromeWindow}">
