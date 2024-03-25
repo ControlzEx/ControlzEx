@@ -115,15 +115,13 @@ namespace ControlzEx.Theming
                 return false;
             }
 
-            var style = PInvoke.GetWindowStyle((HWND)handle);
-
             var result = DwmHelper.SetBackdropType(handle, windowBackdropType);
 
             // We need to disable SYSMENU. Otherwise the snap menu on a potential custom maximize button won't work.
             if (result)
             {
+                var style = PInvoke.GetWindowStyle((HWND)handle);
                 style &= ~WINDOW_STYLE.WS_SYSMENU;
-
                 PInvoke.SetWindowStyle((HWND)handle, style);
             }
 
