@@ -65,10 +65,10 @@ namespace ControlzEx.Internal
             return SetWindowAttributeValue(hWnd, DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE, immersiveDarkModeAttributeValue);
         }
 
-        public static bool SetBackdropType(IntPtr hWnd, BackdropType backdropType)
+        public static bool SetBackdropType(IntPtr hWnd, WindowBackdropType windowBackdropType)
         {
             const DWMWINDOWATTRIBUTE DWMWA_SYSTEMBACKDROP_TYPE = (DWMWINDOWATTRIBUTE)38;
-            return SetWindowAttributeValue(hWnd, DWMWA_SYSTEMBACKDROP_TYPE, (int)backdropType);
+            return SetWindowAttributeValue(hWnd, DWMWA_SYSTEMBACKDROP_TYPE, (int)windowBackdropType);
         }
     }
 }

@@ -8,7 +8,7 @@ using ControlzEx.Native;
 /// <remarks>
 /// https://learn.microsoft.com/en-us/windows/win32/api/dwmapi/ne-dwmapi-dwm_systembackdrop_type
 /// </remarks>
-public enum BackdropType
+public enum WindowBackdropType
 {
     /// <summary>
     /// No backdrop effect.

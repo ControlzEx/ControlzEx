@@ -49,9 +49,9 @@
 
         <ObjectDataProvider x:Key="WindowBackdropTypeEnumValues"
                             MethodName="GetValues"
-                            ObjectType="{x:Type controlzEx:BackdropType}">
+                            ObjectType="{x:Type controlzEx:WindowBackdropType}">
             <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="controlzEx:BackdropType" />
+                <x:Type TypeName="controlzEx:WindowBackdropType" />
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
         
