@@ -388,8 +388,7 @@
                                                    VerticalAlignment="Center"
                                                    FontSize="11"
                                                    RenderTransformOrigin="0.5, 0.5"
-                                                   FontFamily="Segoe Fluent Icons"
-                                                   Text="&#xE70D;">
+                                                   Text="&#x25BC;">
                                             <TextBlock.RenderTransform>
                                                 <RotateTransform Angle="0" />
                                             </TextBlock.RenderTransform>
@@ -428,7 +427,6 @@
                                        VerticalOffset="1">
                                     <Border x:Name="DropDownBorder"
                                             Margin="0"
-                                            Padding="0,4,0,6"
                                             Background="{DynamicResource Control.Background}"
                                             BorderBrush="{DynamicResource Control.Border}"
                                             BorderThickness="1"
@@ -488,9 +486,6 @@
                                     </Storyboard>
                                 </BeginStoryboard>
                             </Trigger.ExitActions>
-                        </Trigger>
-                        <Trigger SourceName="Popup" Property="Popup.AllowsTransparency" Value="False">
-                            <Setter TargetName="DropDownBorder" Property="CornerRadius" Value="0" />
                         </Trigger>
                         <Trigger Property="IsEditable" Value="True">
                             <Setter Property="IsTabStop" Value="False" />
