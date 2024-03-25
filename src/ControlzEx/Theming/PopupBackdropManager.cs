@@ -218,7 +218,7 @@ namespace ControlzEx.Theming
             var accentStructSize = Marshal.SizeOf(accent);
             accent.AccentState = (AccentState)popupBackdropType;
             accent.AccentFlags = AccentFlags.DrawAllBorders;
-            accent.GradientColor = 0x00FFFFFF;  // Tint Color
+            accent.GradientColor = (uint)(isDarkTheme ? 0x99000000 : 0x99FFFFFF);  // Tint Color
 
             var accentPtr = Marshal.AllocHGlobal(accentStructSize);
             Marshal.StructureToPtr(accent, accentPtr, false);
