@@ -266,6 +266,7 @@ namespace ControlzEx.Behaviors
             }
 
             behavior.UpdateCaptionButtonsSize();
+            behavior.ForceNativeWindowRedraw();
         }
 
         public static readonly DependencyProperty CaptionButtonsSizeProperty = DependencyProperty.Register(nameof(CaptionButtonsSize), typeof(Size), typeof(WindowChromeBehavior), new PropertyMetadata(default(Size)));
