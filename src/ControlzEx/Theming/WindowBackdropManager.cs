@@ -109,12 +109,6 @@ namespace ControlzEx.Theming
                 return DwmHelper.SetBackdropType(handle, windowBackdropType);
             }
 
-            // Set dark mode before applying the material, otherwise you'll get an ugly flash when displaying the window.
-            if (DwmHelper.SetImmersiveDarkMode(handle, isDarkTheme) is false)
-            {
-                return false;
-            }
-
             var result = DwmHelper.SetBackdropType(handle, windowBackdropType);
 
             // We need to disable SYSMENU. Otherwise the snap menu on a potential custom maximize button won't work.
