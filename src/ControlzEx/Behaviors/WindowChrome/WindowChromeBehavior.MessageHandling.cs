@@ -331,11 +331,6 @@ namespace ControlzEx.Behaviors
                 && this.UseNativeCaptionButtons)
             {
                 // todo: window content shifts up by the resize border thickness... if we change the nc-area the caption buttons stop responding...
-                var rcBefore = Marshal.PtrToStructure<RECT>(lParam);
-                TraceRect(rcBefore);
-                //PInvoke.DefWindowProc(this.windowHandle, (uint)uMsg, wParam, lParam);
-                // var rcDef = Marshal.PtrToStructure<RECT>(lParam);
-                // TraceRect(rcDef);
             }
             else if (hwndState is WindowState.Maximized)
             {
