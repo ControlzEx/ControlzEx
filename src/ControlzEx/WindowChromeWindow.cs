@@ -47,13 +47,12 @@ namespace ControlzEx
                 compositionTarget.BackgroundColor = Colors.Transparent;
             }
 
-            WindowBackdropManager.UpdateBackdrop(this);
-
-            if (this.MitigateWhiteFlashDuringShow
-                && this.AllowsTransparency is false)
+            if (this.AllowsTransparency is false)
             {
                 DwmHelper.SetImmersiveDarkMode(this.windowHandle, DwmHelper.HasDarkTheme(this));
             }
+
+            WindowBackdropManager.UpdateBackdrop(this);
 
             this.InitializeMessageHandling();
 
