@@ -66,12 +66,6 @@ namespace ControlzEx.Theming
                 return true;
             }
 
-            if (windowBackdropType is WindowBackdropType.None)
-            {
-                SetCurrentBackdropType(target, WindowBackdropType.None);
-                return false;
-            }
-
             if (target is { AllowsTransparency: true })
             {
                 SetCurrentBackdropType(target, WindowBackdropType.None);
