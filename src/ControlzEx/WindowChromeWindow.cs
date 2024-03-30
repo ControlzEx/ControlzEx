@@ -16,6 +16,7 @@ namespace ControlzEx
     using Windows.Win32;
     using Windows.Win32.Foundation;
     using Windows.Win32.Graphics.Dwm;
+    using Windows.Win32.UI.WindowsAndMessaging;
     using COLORREF = Windows.Win32.COLORREF;
 
     [PublicAPI]
@@ -268,7 +269,12 @@ namespace ControlzEx
             DwmHelper.SetWindowAttributeValue(this.windowHandle, DWMWINDOWATTRIBUTE.DWMWA_CAPTION_COLOR, color);
         }
 
-        public static readonly DependencyProperty UseNativeCaptionButtonsProperty = DependencyProperty.Register(nameof(UseNativeCaptionButtons), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(BooleanBoxes.FalseBox));
+        public static readonly DependencyProperty UseNativeCaptionButtonsProperty = DependencyProperty.Register(nameof(UseNativeCaptionButtons), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(BooleanBoxes.FalseBox, OnUseNativeCaptionButtonsChanged));
+
+        private static void OnUseNativeCaptionButtonsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((WindowChromeWindow)d).UpdatePadding();
+        }
 
         public bool UseNativeCaptionButtons
         {
@@ -408,9 +414,22 @@ namespace ControlzEx
         /// <summary>
         /// Updates the padding used for the window content.
         /// </summary>
-        protected virtual void UpdatePadding()
+        protected virtual unsafe void UpdatePadding()
         {
-            if (this.WindowState == WindowState.Maximized)
+            if (this.WindowState is WindowState.Maximized
+                && this.UseNativeCaptionButtons)
+            {
+                var hWnd = (HWND)new WindowInteropHelper(this).Handle;
+                RECT rcClient;
+                RECT rcWind;
+                PInvoke.GetClientRect(hWnd, &rcClient);
+                PInvoke.GetWindowRect(hWnd, &rcWind);
+                var borderThickness = Math.Abs(rcWind.X - rcClient.X);
+                this.SetCurrentValue(PaddingProperty, new Thickness(borderThickness));
+                return;
+            }
+
+            if (this.WindowState is WindowState.Maximized)
             {
                 this.SetCurrentValue(PaddingProperty, emptyContentPadding);
                 return;
