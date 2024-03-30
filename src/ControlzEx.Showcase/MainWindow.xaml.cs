@@ -325,6 +325,16 @@ namespace ControlzEx.Showcase
             this.captionColorComboBox.Text = "Transparent";
         }
 
+        private void HandleClearNCNonActiveBrushClick(object sender, RoutedEventArgs e)
+        {
+            this.NCNonActiveBrushComboBox.Text = null;
+        }
+
+        private void HandleTransparentNCNonActiveBrushClick(object sender, RoutedEventArgs e)
+        {
+            this.NCNonActiveBrushComboBox.Text = "Transparent";
+        }
+
         private void HandleClearGlowColorClick(object sender, RoutedEventArgs e)
         {
             this.glowColorComboBox.Text = null;
