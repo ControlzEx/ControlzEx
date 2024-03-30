@@ -451,6 +451,12 @@ namespace ControlzEx.Behaviors
 
             var hitTestResult = this.GetHitTestResult(uMsg, wParam, lParam);
 
+            if (hitTestResult is HT.TOP
+                && this.AssociatedObject.WindowState is WindowState.Maximized)
+            {
+                hitTestResult = HT.CAPTION;
+            }
+
             return new IntPtr((int)hitTestResult);
         }
 
@@ -510,7 +516,7 @@ namespace ControlzEx.Behaviors
 
             // It's not opted out, so offer up the hittest to DWM, then to our custom non-client area logic.
             if (this.UseNativeCaptionButtons
-                && htFromTestNca is HT.CLIENT or HT.CAPTION)
+                && htFromTestNca is HT.CLIENT or HT.CAPTION or HT.TOP)
             {
                 #if NETCOREAPP
                 PInvoke.DwmDefWindowProc(this.windowHandle, (uint)uMsg, wParam, lParam, out var lRet);
