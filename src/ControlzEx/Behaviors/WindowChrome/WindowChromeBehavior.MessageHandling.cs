@@ -993,6 +993,10 @@ namespace ControlzEx.Behaviors
             {
                 this._ModifyStyle(WINDOW_STYLE.WS_CAPTION, 0);
             }
+            else if (this.AssociatedObject.WindowStyle is not WindowStyle.None)
+            {
+                this._ModifyStyle(0, WINDOW_STYLE.WS_CAPTION);
+            }
         }
 
         /// <summary>
