@@ -327,7 +327,17 @@ namespace ControlzEx.Behaviors
 
             var hwndState = this._GetHwndState();
 
-            if (hwndState == WindowState.Maximized)
+            if (hwndState is WindowState.Maximized
+                && this.UseNativeCaptionButtons)
+            {
+                // todo: window content shifts up by the resize border thickness... if we change the nc-area the caption buttons stop responding...
+                var rcBefore = Marshal.PtrToStructure<RECT>(lParam);
+                TraceRect(rcBefore);
+                //PInvoke.DefWindowProc(this.windowHandle, (uint)uMsg, wParam, lParam);
+                // var rcDef = Marshal.PtrToStructure<RECT>(lParam);
+                // TraceRect(rcDef);
+            }
+            else if (hwndState is WindowState.Maximized)
             {
                 // We have to get the monitor preferably from the window position as the info for the window handle might not yet be updated.
                 // As we update lastWindowpos in WINDOWPOSCHANGING we have the right "future" position and thus can get the correct monitor from that.
