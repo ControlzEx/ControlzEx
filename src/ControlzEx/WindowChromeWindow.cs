@@ -115,7 +115,6 @@ namespace ControlzEx
             {
                 var isDarkTheme = e.NewTheme.BaseColorScheme is ThemeManager.BaseColorDarkConst;
                 DwmHelper.SetImmersiveDarkMode(this.windowHandle, isDarkTheme);
-                WindowBackdropManager.UpdateBackdrop(this, isDarkTheme);
             }
         }
 

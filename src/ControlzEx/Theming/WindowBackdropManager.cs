@@ -51,15 +51,10 @@ namespace ControlzEx.Theming
 
         public static bool UpdateBackdrop(Window target)
         {
-            return UpdateBackdrop(target, GetBackdropType(target), DwmHelper.HasDarkTheme(target));
+            return UpdateBackdrop(target, GetBackdropType(target));
         }
 
-        public static bool UpdateBackdrop(Window target, bool isDarkTheme)
-        {
-            return UpdateBackdrop(target, GetBackdropType(target), isDarkTheme);
-        }
-
-        public static bool UpdateBackdrop(Window target, WindowBackdropType windowBackdropType, bool isDarkTheme)
+        public static bool UpdateBackdrop(Window target, WindowBackdropType windowBackdropType)
         {
             if (windowBackdropType == GetCurrentBackdropType(target))
             {
@@ -76,7 +71,7 @@ namespace ControlzEx.Theming
             {
                 var handle = hwndSource.Handle;
 
-                var result = UpdateBackdrop(handle, windowBackdropType, isDarkTheme);
+                var result = UpdateBackdrop(handle, windowBackdropType);
 
                 SetCurrentBackdropType(target, result ? windowBackdropType : WindowBackdropType.None);
 
@@ -86,17 +81,17 @@ namespace ControlzEx.Theming
             return false;
         }
 
-        public static bool UpdateBackdrop(IntPtr handle, WindowBackdropType windowBackdropType, bool isDarkTheme)
+        public static bool UpdateBackdrop(IntPtr handle, WindowBackdropType windowBackdropType)
         {
             if (OSVersionHelper.IsWindows11_22H2_OrGreater is false)
             {
                 return false;
             }
 
-            return SetBackdropType(handle, windowBackdropType, isDarkTheme);
+            return SetBackdropType(handle, windowBackdropType);
         }
 
-        private static bool SetBackdropType(IntPtr handle, WindowBackdropType windowBackdropType, bool isDarkTheme)
+        private static bool SetBackdropType(IntPtr handle, WindowBackdropType windowBackdropType)
         {
             if (windowBackdropType is WindowBackdropType.None)
             {
