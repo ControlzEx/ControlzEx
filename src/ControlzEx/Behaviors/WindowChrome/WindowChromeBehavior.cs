@@ -475,9 +475,7 @@ namespace ControlzEx.Behaviors
 
         private unsafe void UpdateCaptionButtonsSize()
         {
-            if (this.AssociatedObject is null
-                || PInvoke.IsIconic(this.windowHandle)
-                || (bool)PInvoke.IsWindowVisible(this.windowHandle) is false)
+            if (this.windowHandle == IntPtr.Zero)
             {
                 return;
             }
@@ -486,7 +484,8 @@ namespace ControlzEx.Behaviors
             var result = PInvoke.DwmGetWindowAttribute(this.windowHandle, DWMWINDOWATTRIBUTE.DWMWA_CAPTION_BUTTON_BOUNDS, &value, (uint)Marshal.SizeOf<RECT>());
             if (result.Succeeded)
             {
-                this.SetCurrentValue(CaptionButtonsSizeProperty, new Size(value.Width, value.Height));
+                var dpiScale = this.AssociatedObject.GetDpi();
+                this.SetCurrentValue(CaptionButtonsSizeProperty, new Size(value.Width / dpiScale.DpiScaleX, value.Height / dpiScale.DpiScaleY));
             }
         }
 
