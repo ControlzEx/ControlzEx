@@ -64,7 +64,7 @@ namespace ControlzEx.Theming
                 return false;
             }
 
-            if (OSVersionHelper.IsWindows11_22H2_OrGreater is false)
+            if (FeatureSupport.IsWindowBackdropSupported is false)
             {
                 SetCurrentBackdropType(target, WindowBackdropType.None);
                 return false;
@@ -86,7 +86,7 @@ namespace ControlzEx.Theming
 
         public static bool UpdateBackdrop(IntPtr handle, WindowBackdropType windowBackdropType)
         {
-            if (OSVersionHelper.IsWindows11_22H2_OrGreater is false)
+            if (FeatureSupport.IsWindowBackdropSupported is false)
             {
                 return false;
             }
