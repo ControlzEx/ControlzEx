@@ -824,6 +824,10 @@ namespace ControlzEx.Behaviors
                 {
                     structure.styleNew |= (uint)WINDOW_STYLE.WS_SYSMENU;
                 }
+                else
+                {
+                    structure.styleNew &= (uint)~WINDOW_STYLE.WS_SYSMENU;
+                }
 
                 Marshal.StructureToPtr(structure, lParam, fDeleteOld: true);
             }

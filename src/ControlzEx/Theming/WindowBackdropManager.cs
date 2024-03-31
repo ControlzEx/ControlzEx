@@ -5,9 +5,6 @@ namespace ControlzEx.Theming
     using System.Windows.Interop;
     using ControlzEx.Helpers;
     using ControlzEx.Internal;
-    using global::Windows.Win32;
-    using global::Windows.Win32.Foundation;
-    using global::Windows.Win32.UI.WindowsAndMessaging;
 
     public class WindowBackdropManager : DependencyObject
     {
@@ -67,6 +64,12 @@ namespace ControlzEx.Theming
                 return false;
             }
 
+            if (OSVersionHelper.IsWindows11_22H2_OrGreater is false)
+            {
+                SetCurrentBackdropType(target, WindowBackdropType.None);
+                return false;
+            }
+
             if (PresentationSource.FromVisual(target) is HwndSource hwndSource)
             {
                 var handle = hwndSource.Handle;
@@ -88,27 +91,7 @@ namespace ControlzEx.Theming
                 return false;
             }
 
-            return SetBackdropType(handle, windowBackdropType);
-        }
-
-        private static bool SetBackdropType(IntPtr handle, WindowBackdropType windowBackdropType)
-        {
-            if (windowBackdropType is WindowBackdropType.None)
-            {
-                return DwmHelper.SetBackdropType(handle, windowBackdropType);
-            }
-
-            var result = DwmHelper.SetBackdropType(handle, windowBackdropType);
-
-            // We need to disable SYSMENU. Otherwise the snap menu on a potential custom maximize button won't work.
-            if (result)
-            {
-                var style = PInvoke.GetWindowStyle((HWND)handle);
-                style &= ~WINDOW_STYLE.WS_SYSMENU;
-                PInvoke.SetWindowStyle((HWND)handle, style);
-            }
-
-            return result;
+            return DwmHelper.SetBackdropType(handle, windowBackdropType);
         }
     }
 }

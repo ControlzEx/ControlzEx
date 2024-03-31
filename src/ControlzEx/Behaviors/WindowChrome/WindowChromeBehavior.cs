@@ -264,6 +264,10 @@ namespace ControlzEx.Behaviors
             {
                 behavior._ModifyStyle(0, WINDOW_STYLE.WS_SYSMENU);
             }
+            else
+            {
+                behavior._ModifyStyle(WINDOW_STYLE.WS_SYSMENU, 0);
+            }
 
             behavior.UpdateCaptionButtonsSize();
             behavior.ForceNativeWindowRedraw();
