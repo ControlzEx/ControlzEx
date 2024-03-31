@@ -1018,14 +1018,12 @@ namespace ControlzEx.Behaviors
 
             // Only get these properties once to improve performance
             var resizeBorderThickness = this.ResizeBorderThickness;
-            var useNativeCaptionButtons = this.UseNativeCaptionButtons;
-            var captionHeight = this.CaptionButtonsSize.Height;
 
             // Allow resize of up to some pixels inside the window itself
             onTopResizeBorder = mousePosition.Y <= (windowRect.Top + resizeBorderThickness.Top);
 
             // Determine if the point is at the top or bottom of the window.
-            uRow = GetHTRow(windowRect, mousePosition, resizeBorderThickness, useNativeCaptionButtons, captionHeight);
+            uRow = GetHTRow(windowRect, mousePosition, resizeBorderThickness);
 
             // Determine if the point is at the left or right of the window.
             uCol = GetHTColumn(windowRect, mousePosition, resizeBorderThickness);
@@ -1047,24 +1045,17 @@ namespace ControlzEx.Behaviors
             else if (uCol != 1
                      && uRow == 1)
             {
-                uRow = GetHTRow(windowRect, mousePosition, this.cornerGripThickness, useNativeCaptionButtons, captionHeight);
+                uRow = GetHTRow(windowRect, mousePosition, this.cornerGripThickness);
             }
 
             var ht = hitTestBorders[uRow, uCol];
 
             return ht;
 
-            static int GetHTRow(Rect windowRect, Point mousePosition, Thickness resizeBorderThickness, bool useNativeCaptionButtons, double captionHeight)
+            static int GetHTRow(Rect windowRect, Point mousePosition, Thickness resizeBorderThickness)
             {
                 if (mousePosition.Y >= windowRect.Top
                     && mousePosition.Y < windowRect.Top + resizeBorderThickness.Top)
-                {
-                    return 0; // top (caption or resize border)
-                }
-
-                if (useNativeCaptionButtons
-                    && mousePosition.Y >= windowRect.Top
-                    && mousePosition.Y < windowRect.Top + resizeBorderThickness.Top + captionHeight)
                 {
                     return 0; // top (caption or resize border)
                 }
