@@ -325,6 +325,8 @@ namespace ControlzEx.Behaviors
 
             handled = true;
 
+            var wParamIsTrue = wParam != 0;
+
             var hwndState = this._GetHwndState();
 
             if (hwndState is WindowState.Maximized
@@ -371,7 +373,7 @@ namespace ControlzEx.Behaviors
             }
             else if (this.AssociatedObject.AllowsTransparency is false
                      && this._GetHwndState() == WindowState.Normal
-                     && wParam != 0)
+                     && wParamIsTrue)
             {
                 var rc = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT))!;
 
@@ -390,7 +392,7 @@ namespace ControlzEx.Behaviors
             // client area. So we simply ask for a redraw (WVR_REDRAW)
 
             var retVal = IntPtr.Zero;
-            if (wParam != 0) // wParam == TRUE
+            if (wParamIsTrue) // wParam == TRUE
             {
                 // Using the combination of WVR.VALIDRECTS and WVR.REDRAW gives the smoothest
                 // resize behavior we can achieve here.
