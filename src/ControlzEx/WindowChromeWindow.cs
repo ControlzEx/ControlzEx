@@ -416,14 +416,13 @@ namespace ControlzEx
         protected virtual unsafe void UpdatePadding()
         {
             if (this.WindowState is WindowState.Maximized
-                && this.UseNativeCaptionButtons)
+                && this.UseNativeCaptionButtons
+                && this.IgnoreTaskbarOnMaximize is false)
             {
                 var hWnd = (HWND)new WindowInteropHelper(this).Handle;
-                RECT rcClient;
-                RECT rcWind;
-                PInvoke.GetClientRect(hWnd, &rcClient);
-                PInvoke.GetWindowRect(hWnd, &rcWind);
-                var borderThickness = Math.Abs(rcWind.X - rcClient.X);
+                RECT rc = default;
+                PInvoke.AdjustWindowRect(&rc, PInvoke.GetWindowStyle(hWnd), false);
+                var borderThickness = Math.Abs(rc.X);
                 this.SetCurrentValue(PaddingProperty, new Thickness(borderThickness));
                 return;
             }
