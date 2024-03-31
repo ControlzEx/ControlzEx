@@ -1016,14 +1016,16 @@ namespace ControlzEx.Behaviors
             var uCol = 1;
             var onTopResizeBorder = false;
 
-            // Only get this once from the property to improve performance
+            // Only get these properties once to improve performance
             var resizeBorderThickness = this.ResizeBorderThickness;
+            var useNativeCaptionButtons = this.UseNativeCaptionButtons;
+            var captionHeight = this.CaptionButtonsSize.Height;
 
             // Allow resize of up to some pixels inside the window itself
-            onTopResizeBorder = mousePosition.Y <= (windowRect.Top + this.ResizeBorderThickness.Top);
+            onTopResizeBorder = mousePosition.Y <= (windowRect.Top + resizeBorderThickness.Top);
 
             // Determine if the point is at the top or bottom of the window.
-            uRow = GetHTRow(windowRect, mousePosition, resizeBorderThickness, this.UseNativeCaptionButtons, this.CaptionButtonsSize.Height);
+            uRow = GetHTRow(windowRect, mousePosition, resizeBorderThickness, useNativeCaptionButtons, captionHeight);
 
             // Determine if the point is at the left or right of the window.
             uCol = GetHTColumn(windowRect, mousePosition, resizeBorderThickness);
@@ -1045,16 +1047,10 @@ namespace ControlzEx.Behaviors
             else if (uCol != 1
                      && uRow == 1)
             {
-                uRow = GetHTRow(windowRect, mousePosition, this.cornerGripThickness, this.UseNativeCaptionButtons, this.CaptionButtonsSize.Height);
+                uRow = GetHTRow(windowRect, mousePosition, this.cornerGripThickness, useNativeCaptionButtons, captionHeight);
             }
 
             var ht = hitTestBorders[uRow, uCol];
-
-            if ((ht is HT.TOPLEFT or HT.TOP or HT.TOPRIGHT)
-                && onTopResizeBorder is false)
-            {
-                ht = HT.CAPTION;
-            }
 
             return ht;
 
