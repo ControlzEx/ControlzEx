@@ -9,7 +9,6 @@ namespace ControlzEx.Theming
     using System.Windows.Controls.Primitives;
     using System.Windows.Interop;
     using System.Windows.Media;
-    using ControlzEx.Helpers;
     using ControlzEx.Internal;
     using global::Windows.Win32.Foundation;
 
@@ -55,9 +54,46 @@ namespace ControlzEx.Theming
             return (PopupBackdropType)element.GetValue(CurrentBackdropTypeProperty);
         }
 
+        public static readonly DependencyProperty LightTintColorProperty = DependencyProperty.RegisterAttached(
+            "LightTintColor", typeof(Color), typeof(PopupBackdropManager), new PropertyMetadata(ToColor(0x99FFFFFF)));
+
+        public static void SetLightTintColor(DependencyObject element, Color value)
+        {
+            element.SetValue(LightTintColorProperty, value);
+        }
+
+        public static Color GetLightTintColor(DependencyObject element)
+        {
+            return (Color)element.GetValue(LightTintColorProperty);
+        }
+
+        public static readonly DependencyProperty DarkTintColorProperty = DependencyProperty.RegisterAttached(
+            "DarkTintColor", typeof(Color), typeof(PopupBackdropManager), new PropertyMetadata(ToColor(0x99000000)));
+
+        public static void SetDarkTintColor(DependencyObject element, Color value)
+        {
+            element.SetValue(DarkTintColorProperty, value);
+        }
+
+        public static Color GetDarkTintColor(DependencyObject element)
+        {
+            return (Color)element.GetValue(DarkTintColorProperty);
+        }
+
+        private static Color ToColor(uint value)
+        {
+            var color = System.Drawing.Color.FromArgb((int)value);
+            return Color.FromArgb(color.A, color.R, color.G, color.B);
+        }
+
+        private static uint FromColor(Color value)
+        {
+            return (uint)System.Drawing.Color.FromArgb(value.A, value.R, value.G, value.B).ToArgb();
+        }
+
         public static bool UpdateBackdrop(Popup target)
         {
-            return UpdateBackdrop(target, GetBackdropType(target), DwmHelper.HasDarkTheme(target));
+            return UpdateBackdrop(target, DwmHelper.HasDarkTheme(target));
         }
 
         public static bool UpdateBackdrop(Popup target, bool isDarkTheme)
@@ -73,7 +109,7 @@ namespace ControlzEx.Theming
             }
 
             if (popupBackdropType is PopupBackdropType.None
-                || OSVersionHelper.IsWindows11_22H2_OrGreater is false)
+                || FeatureSupport.IsPopupBackdropSupported is false)
             {
                 SetCurrentBackdropType(target, PopupBackdropType.None);
                 return false;
@@ -113,7 +149,7 @@ namespace ControlzEx.Theming
 
                 DwmHelper.ExtendFrameIntoClientArea(handle, new(-1));
 
-                var result = UpdateBackdrop(handle, popupBackdropType, isDarkTheme);
+                var result = UpdateBackdrop(handle, target, popupBackdropType, isDarkTheme);
 
                 SetCurrentBackdropType(target, result ? popupBackdropType : PopupBackdropType.None);
 
@@ -139,21 +175,21 @@ namespace ControlzEx.Theming
             SetCurrentBackdropType(popup, PopupBackdropType.None);
         }
 
-        public static bool UpdateBackdrop(IntPtr handle, PopupBackdropType popupBackdropType, bool isDarkTheme)
+        public static bool UpdateBackdrop(IntPtr handle, Popup target, PopupBackdropType popupBackdropType, bool isDarkTheme)
         {
-            if (OSVersionHelper.IsWindows11_22H2_OrGreater is false)
+            if (FeatureSupport.IsPopupBackdropSupported is false)
             {
                 return false;
             }
 
-            return SetBackdropType(handle, popupBackdropType, isDarkTheme);
+            return SetBackdropType(handle, target, popupBackdropType, isDarkTheme);
         }
 
-        private static bool SetBackdropType(IntPtr handle, PopupBackdropType popupBackdropType, bool isDarkTheme)
+        private static bool SetBackdropType(IntPtr handle, Popup target, PopupBackdropType popupBackdropType, bool isDarkTheme)
         {
             if (popupBackdropType is PopupBackdropType.None)
             {
-                return SetAccentPolicy(handle, popupBackdropType, isDarkTheme);
+                return SetAccentPolicy(handle, popupBackdropType, 0);
             }
 
             // Set dark mode before applying the material, otherwise you'll get an ugly flash when displaying the window.
@@ -162,7 +198,7 @@ namespace ControlzEx.Theming
                 return false;
             }
 
-            return SetAccentPolicy(handle, popupBackdropType, isDarkTheme);
+            return SetAccentPolicy(handle, popupBackdropType, FromColor(isDarkTheme ? GetDarkTintColor(target) : GetLightTintColor(target)));
         }
 
         internal enum AccentState
@@ -212,13 +248,13 @@ namespace ControlzEx.Theming
         [DllImport("user32.dll")]
         private static extern HRESULT SetWindowCompositionAttribute(IntPtr hwnd, ref WindowCompositionAttributeData data);
 
-        private static unsafe bool SetAccentPolicy(IntPtr handle, PopupBackdropType popupBackdropType, bool isDarkTheme)
+        private static bool SetAccentPolicy(IntPtr handle, PopupBackdropType popupBackdropType, uint gradienColor)
         {
             var accent = default(AccentPolicy);
             var accentStructSize = Marshal.SizeOf(accent);
             accent.AccentState = (AccentState)popupBackdropType;
             accent.AccentFlags = AccentFlags.DrawAllBorders;
-            accent.GradientColor = (uint)(isDarkTheme ? 0x99000000 : 0x99FFFFFF);  // Tint Color
+            accent.GradientColor = gradienColor;  // Tint Color
 
             var accentPtr = Marshal.AllocHGlobal(accentStructSize);
             Marshal.StructureToPtr(accent, accentPtr, false);
