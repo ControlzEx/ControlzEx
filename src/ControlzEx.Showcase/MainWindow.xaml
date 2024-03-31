@@ -25,6 +25,7 @@
                                WindowState="Normal"
                                SizeToContent="Manual"
                                Topmost="False"
+                               controlzEx:WindowBackdropManager.BackdropType="Mica"
                                mc:Ignorable="d">
     <controlzEx:WindowChromeWindow.Resources>
         <ObjectDataProvider x:Key="ResizeModeEnumValues"
