@@ -90,11 +90,13 @@
 
                 <DockPanel Grid.ColumnSpan="10"
                            LastChildFill="True">
-                    <Border BorderBrush="Transparent" BorderThickness="0"
+                    <Border BorderBrush="Transparent" 
+                            BorderThickness="0"
                             DockPanel.Dock="Right"
                             Width="{Binding ElementName=Window, Path=CaptionButtonsSize.Width}"
                             Height="{Binding ElementName=Window, Path=CaptionButtonsSize.Height}"
-                            Visibility="{Binding ElementName=Window, Path=UseNativeCaptionButtons, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}" />
+                            Visibility="{Binding ElementName=Window, Path=UseNativeCaptionButtons, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
+                            VerticalAlignment="Top" />
                     <Border Background="{Binding ElementName=Window, Path=NCCurrentBrush}" />
                 </DockPanel>
 
