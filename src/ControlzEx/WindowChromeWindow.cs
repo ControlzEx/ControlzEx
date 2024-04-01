@@ -48,6 +48,8 @@ namespace ControlzEx
                 compositionTarget.BackgroundColor = Colors.Transparent;
             }
 
+            this.UpdateCaptionColor();
+
             if (this.AllowsTransparency is false)
             {
                 DwmHelper.SetImmersiveDarkMode(this.windowHandle, DwmHelper.HasDarkTheme(this));
