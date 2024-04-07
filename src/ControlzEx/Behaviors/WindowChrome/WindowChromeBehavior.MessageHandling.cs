@@ -476,7 +476,10 @@ namespace ControlzEx.Behaviors
             var mousePosScreen = Utility.GetPoint(lParam);
             var windowRect = this._GetWindowRect();
 
-            var htFromTestNca = this._HitTestNca(DpiHelper.DeviceRectToLogical(windowRect, dpi.DpiScaleX, dpi.DpiScaleY),
+            var preventResize = this._GetHwndState() is WindowState.Maximized || this.AssociatedObject.ResizeMode is ResizeMode.NoResize or ResizeMode.CanMinimize;
+            var htFromTestNca = preventResize
+                ? HT.CLIENT
+                : this._HitTestNca(DpiHelper.DeviceRectToLogical(windowRect, dpi.DpiScaleX, dpi.DpiScaleY),
                                    DpiHelper.DevicePixelsToLogical(mousePosScreen, dpi.DpiScaleX, dpi.DpiScaleY));
 
             if (htFromTestNca is not HT.CLIENT
