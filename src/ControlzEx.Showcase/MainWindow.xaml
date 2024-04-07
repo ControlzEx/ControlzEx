@@ -90,7 +90,8 @@
 
                 <DockPanel Grid.ColumnSpan="10"
                            LastChildFill="True">
-                    <Border BorderBrush="Transparent" 
+                    <Border Background="Transparent"
+                            BorderBrush="Transparent"
                             BorderThickness="0"
                             DockPanel.Dock="Right"
                             Width="{Binding ElementName=Window, Path=CaptionButtonsSize.Width}"
@@ -108,8 +109,10 @@
                            Text="Use GridSplitter below to move content above titlebar"
                            TextTrimming="CharacterEllipsis" />
 
-                <Border Grid.Column="2" 
-                        BorderBrush="Transparent" BorderThickness="0"
+                <Border Grid.Column="2"
+                        Background="Transparent"
+                        BorderBrush="Transparent" 
+                        BorderThickness="0"
                         Width="{Binding ElementName=Window, Path=CaptionButtonsSize.Width}"
                         Height="{Binding ElementName=Window, Path=CaptionButtonsSize.Height}"
                         Visibility="{Binding ElementName=Window, Path=UseNativeCaptionButtons, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}" />

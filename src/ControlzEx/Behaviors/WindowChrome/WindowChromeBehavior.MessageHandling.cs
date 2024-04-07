@@ -513,28 +513,29 @@ namespace ControlzEx.Behaviors
                 }
             }
 
-            if (htFromNcControlManager is not HT.NOWHERE
-                && htFromTestNca is HT.CLIENT)
-            {
-                return htFromNcControlManager;
-            }
-
             // It's not opted out, so offer up the hittest to DWM, then to our custom non-client area logic.
             if (this.UseNativeCaptionButtons
-                && htFromTestNca is HT.CLIENT or HT.CAPTION or HT.TOP)
+                && htFromTestNca is HT.CLIENT or HT.CAPTION or HT.TOP
+                && htFromNcControlManager is HT.NOWHERE or HT.CAPTION)
             {
-                #if NETCOREAPP
+#if NETCOREAPP
                 PInvoke.DwmDefWindowProc(this.windowHandle, (uint)uMsg, wParam, lParam, out var lRet);
-                #else
+#else
                 LRESULT lRet;
                 PInvoke.DwmDefWindowProc(this.windowHandle, (uint)uMsg, wParam, lParam, &lRet);
-                #endif
+#endif
 
                 if (lRet.Value != IntPtr.Zero)
                 {
                     // If DWM claims to have handled this, then respect their call.
                     return (HT)lRet.Value;
                 }
+            }
+
+            if (htFromNcControlManager is not HT.NOWHERE
+                && htFromTestNca is HT.CLIENT)
+            {
+                return htFromNcControlManager;
             }
 
             return htFromTestNca;
