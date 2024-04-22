@@ -64,7 +64,7 @@
         [MustUseReturnValue]
         public static string GetWindowsBaseColor()
         {
-            if (IsHighContrastEnabled() == false)
+            if (IsHighContrastEnabled() is false)
             {
                 return AppsUseLightTheme()
                     ? ThemeManager.BaseColorLight

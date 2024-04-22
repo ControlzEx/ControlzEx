@@ -8,21 +8,24 @@
                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                xmlns:system="clr-namespace:System;assembly=mscorlib"
                                xmlns:views="clr-namespace:ControlzEx.Showcase.Views"
+                               xmlns:converters="clr-namespace:ControlzEx.Showcase.Converters"
                                x:Name="Window"
                                Title="ControlzEx.Showcase"
                                Width="800"
-                               Height="600"
+                               Height="800"
                                MinWidth="80"
                                MinHeight="60"
-                               Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
                                FlowDirection="LeftToRight"
-                               GlowColor="Navy"
-                               NonActiveGlowColor="Crimson"
-                               Style="{StaticResource {x:Type controlzEx:WindowChromeWindow}}"
+                               GlowColor="{DynamicResource ControlzEx.Colors.AccentBaseColor}"
+                               CaptionColor="{DynamicResource ControlzEx.Colors.AccentBaseColor}"
+                               NCActiveBrush="{Binding CaptionColor, RelativeSource={RelativeSource Self}, Converter={x:Static converters:ToBrushConverter.Instance}}"
+                               NCNonActiveBrush="{Binding Source={x:Static SystemColors.WindowFrameBrush}}"
+                               NonActiveGlowColor="LightGray"
                                WindowStartupLocation="CenterScreen"
                                WindowState="Normal"
                                SizeToContent="Manual"
                                Topmost="False"
+                               controlzEx:WindowBackdropManager.BackdropType="Mica"
                                mc:Ignorable="d">
     <controlzEx:WindowChromeWindow.Resources>
         <ObjectDataProvider x:Key="ResizeModeEnumValues"
@@ -48,6 +51,14 @@
                 <x:Type TypeName="controlzEx:WindowCornerPreference" />
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
+
+        <ObjectDataProvider x:Key="WindowBackdropTypeEnumValues"
+                            MethodName="GetValues"
+                            ObjectType="{x:Type controlzEx:WindowBackdropType}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="controlzEx:WindowBackdropType" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
         
         <ObjectDataProvider x:Key="DockEnumValues"
                             MethodName="GetValues"
@@ -61,7 +72,7 @@
     <Grid SnapsToDevicePixels="True">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
+                <RowDefinition Height="30" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
@@ -76,11 +87,21 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <Border Grid.ColumnSpan="10" Background="{Binding ElementName=Window, Path=NCCurrentBrush}" />
+
+                <DockPanel Grid.ColumnSpan="10"
+                           LastChildFill="True">
+                    <Border Background="Transparent"
+                            BorderBrush="Transparent"
+                            BorderThickness="0"
+                            DockPanel.Dock="Right"
+                            Width="{Binding ElementName=Window, Path=CaptionButtonsSize.Width}"
+                            Height="{Binding ElementName=Window, Path=CaptionButtonsSize.Height}"
+                            Visibility="{Binding ElementName=Window, Path=UseNativeCaptionButtons, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
+                            VerticalAlignment="Top" />
+                    <Border Background="{Binding ElementName=Window, Path=NCCurrentBrush}" />
+                </DockPanel>
 
                 <ProgressBar Grid.Column="0" Width="20" IsIndeterminate="True" />
-
-                <!-- <ProgressBar IsIndeterminate="True" /> -->
 
                 <TextBlock Grid.Column="1"
                            Margin="4 0 0 0"
@@ -88,7 +109,16 @@
                            Text="Use GridSplitter below to move content above titlebar"
                            TextTrimming="CharacterEllipsis" />
 
-                <UniformGrid Grid.Column="2" Columns="3">
+                <Border Grid.Column="2"
+                        Background="Transparent"
+                        BorderBrush="Transparent" 
+                        BorderThickness="0"
+                        Width="{Binding ElementName=Window, Path=CaptionButtonsSize.Width}"
+                        Height="{Binding ElementName=Window, Path=CaptionButtonsSize.Height}"
+                        Visibility="{Binding ElementName=Window, Path=UseNativeCaptionButtons, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}" />
+
+                <UniformGrid Grid.Column="2" Columns="3"
+                             Visibility="{Binding ElementName=Window, Path=UseNativeCaptionButtons, Converter={x:Static converters:BoolToVisibilityConverter.Instance}, ConverterParameter=True}">
                     <Button Style="{StaticResource WindowTitleBarButton}"
                             IsEnabled="{Binding IsEnabled, ElementName=MinimizeButton}"
                             Width="20"
@@ -135,7 +165,6 @@
 
                             <Expander Grid.Row="0"
                                       Margin="5"
-                                      BorderThickness="0 1 0 0"
                                       Header="Actions"
                                       IsExpanded="True">
                                 <WrapPanel Orientation="Horizontal">
@@ -208,7 +237,6 @@
 
                             <Expander Grid.Row="1"
                                       Margin="5"
-                                      BorderThickness="0 1 0 0"
                                       Header="Window tests (primarily for glows)"
                                       IsExpanded="True">
                                 <StackPanel Orientation="Vertical">
@@ -250,7 +278,6 @@
 
                             <Expander Grid.Row="2"
                                       Margin="5"
-                                      BorderThickness="0 1 0 0"
                                       Header="Misc"
                                       IsExpanded="True">
                                 <WrapPanel Orientation="Horizontal">
@@ -264,7 +291,7 @@
                                                     <ControlTemplate>
                                                         <Grid>
                                                             <Border Background="Gray"
-                                                                    BorderBrush="Black"
+                                                                    BorderBrush="{DynamicResource BlackBrush}"
                                                                     BorderThickness="1"
                                                                     Opacity="0.9"
                                                                     SnapsToDevicePixels="True" />
@@ -305,7 +332,6 @@
 
                             <Expander Grid.Row="3"
                                       Margin="5"
-                                      BorderThickness="0 1 0 0"
                                       Header="Options (Window)"
                                       IsExpanded="True">
                                 <local:UniformGridEx Columns="2"
@@ -341,9 +367,10 @@
                                                 Width="16"
                                                 Height="16"
                                                 BorderThickness="1"
-                                                BorderBrush="Black"
+                                                BorderBrush="{DynamicResource BlackBrush}"
                                                 Background="{Binding ElementName=Window, Path=Background}" />
-                                        <ComboBox Margin="4"
+                                        <ComboBox x:Name="backgroundComboBox"
+                                                  Margin="4"
                                                   MinWidth="100"
                                                   VerticalAlignment="Center"
                                                   HorizontalContentAlignment="Stretch"
@@ -369,6 +396,9 @@
                                                 </DataTemplate>
                                             </ComboBox.ItemTemplate>
                                         </ComboBox>
+
+                                        <Button Click="HandleClearBackgroundClick">Set NULL</Button>
+                                        <Button Click="HandleTransparentBackgroundClick" Margin="4 0 0 0">Set transparent</Button>
                                     </StackPanel>
 
                                     <Label>
@@ -387,7 +417,7 @@
                                                 Width="16" 
                                                 Height="16"
                                                 BorderThickness="1"
-                                                BorderBrush="Black"
+                                                BorderBrush="{DynamicResource BlackBrush}"
                                                 Background="{Binding ElementName=Window, Path=BorderBrush}" />
                                         <ComboBox Margin="4"
                                                   MinWidth="100"
@@ -416,7 +446,7 @@
                                             </ComboBox.ItemTemplate>
                                         </ComboBox>
                                     </StackPanel>
-                                    
+
                                     <Label>
                                         ShowInTaskbar
                                     </Label>
@@ -430,12 +460,123 @@
                                     <CheckBox Margin="4"
                                               VerticalAlignment="Center"
                                               IsChecked="{Binding ElementName=Window, Path=Topmost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <Label>
+                                        Caption color
+                                    </Label>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Border Margin="4"
+                                                Width="16" 
+                                                Height="16"
+                                                BorderThickness="1"
+                                                BorderBrush="{DynamicResource BlackBrush}">
+                                            <Border.Background>
+                                                <SolidColorBrush Color="{Binding ElementName=Window, Path=CaptionColor}" />
+                                            </Border.Background>
+                                        </Border>
+                                        <ComboBox x:Name="captionColorComboBox"
+                                                  Margin="4"
+                                                  MinWidth="100"
+                                                  VerticalAlignment="Center"
+                                                  HorizontalContentAlignment="Stretch"
+                                                  IsEditable="True"
+                                                  ItemsSource="{Binding Colors, ElementName=Window}"
+                                                  Text="{Binding ElementName=Window, Path=CaptionColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="Auto" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Grid.Column="0"
+                                                                   Margin="4 0"
+                                                                   Text="{Binding}" />
+                                                        <Grid Grid.Column="1"
+                                                              Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}"
+                                                              Margin="4 0"
+                                                              VerticalAlignment="Stretch">
+                                                            <Grid.Background>
+                                                                <SolidColorBrush Color="{Binding}" />
+                                                            </Grid.Background>
+                                                        </Grid>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+
+                                        <Button Click="HandleClearCaptionColorClick">Set NULL</Button>
+                                        <Button Click="HandleTransparentCaptionColorClick" Margin="4 0 0 0">Set transparent</Button>
+                                    </StackPanel>
+
+                                    <Label>
+                                        NCNonActiveBrush
+                                    </Label>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Border Margin="4"
+                                                Width="16" 
+                                                Height="16"
+                                                BorderThickness="1"
+                                                BorderBrush="{DynamicResource BlackBrush}"
+                                                Background="{Binding ElementName=Window, Path=NCNonActiveBrush}" />
+                                        <ComboBox x:Name="NCNonActiveBrushComboBox"
+                                                  Margin="4"
+                                                  MinWidth="100"
+                                                  VerticalAlignment="Center"
+                                                  HorizontalContentAlignment="Stretch"
+                                                  IsEditable="True"
+                                                  ItemsSource="{Binding Brushes, ElementName=Window}"
+                                                  Text="{Binding ElementName=Window, Path=NCNonActiveBrush, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="Auto" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Grid.Column="0"
+                                                                   Margin="4 0"
+                                                                   Text="{Binding}" />
+                                                        <Grid Grid.Column="1"
+                                                              Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}"
+                                                              Margin="4 0"
+                                                              VerticalAlignment="Stretch"
+                                                              Background="{Binding}" />
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+
+                                        <Button Click="HandleClearNCNonActiveBrushClick">Set NULL</Button>
+                                        <Button Click="HandleTransparentNCNonActiveBrushClick" Margin="4 0 0 0">Set transparent</Button>
+                                    </StackPanel>
+
+                                    <Label>
+                                        UseNativeCaptionButtons
+                                    </Label>
+                                    <CheckBox Margin="4"
+                                              VerticalAlignment="Center"
+                                              IsChecked="{Binding ElementName=Window, Path=UseNativeCaptionButtons, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <Label>
+                                        WindowBackDropType
+                                    </Label>
+                                    <ComboBox Margin="4"
+                                              VerticalAlignment="Center"
+                                              ItemsSource="{Binding Source={StaticResource WindowBackdropTypeEnumValues}}"
+                                              SelectedItem="{Binding ElementName=Window, Path=(controlzEx:WindowBackdropManager.BackdropType), Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <Label>
+                                        CurrentWindowBackDropType
+                                    </Label>
+                                    <TextBlock Margin="4"
+                                              VerticalAlignment="Center"
+                                              Text="{Binding ElementName=Window, Path=(controlzEx:WindowBackdropManager.CurrentBackdropType)}" />
                                 </local:UniformGridEx>
                             </Expander>
-                            
+
                             <Expander Grid.Row="4"
                                       Margin="5"
-                                      BorderThickness="0 1 0 0"
                                       Header="Options (WindowChromeBehavior)"
                                       IsExpanded="True">
                                 <local:UniformGridEx Columns="2"
@@ -464,6 +605,14 @@
                                              Text="{Binding ElementName=Window, Path=ResizeBorderThickness, Mode=TwoWay}" />
 
                                     <Label>
+                                        GlassFrameThickness
+                                    </Label>
+                                    <TextBox Margin="4"
+                                             Padding="2"
+                                             VerticalAlignment="Center"
+                                             Text="{Binding ElementName=Window, Path=GlassFrameThickness, Mode=TwoWay}" />
+
+                                    <Label>
                                         CornerPreference
                                     </Label>
                                     <ComboBox Margin="4"
@@ -489,7 +638,6 @@
 
                             <Expander Grid.Row="5"
                                       Margin="5"
-                                      BorderThickness="0 1 0 0"
                                       Header="Options (GlowWindowBehavior)"
                                       IsExpanded="True">
                                 <local:UniformGridEx Columns="2"
@@ -502,7 +650,7 @@
                                                 Width="16" 
                                                 Height="16"
                                                 BorderThickness="1"
-                                                BorderBrush="Black">
+                                                BorderBrush="{DynamicResource BlackBrush}">
                                             <Border.Background>
                                                 <SolidColorBrush Color="{Binding ElementName=Window, Path=GlowColor}" />
                                             </Border.Background>
@@ -549,7 +697,7 @@
                                                 Width="16" 
                                                 Height="16"
                                                 BorderThickness="1"
-                                                BorderBrush="Black">
+                                                BorderBrush="{DynamicResource BlackBrush}">
                                             <Border.Background>
                                                 <SolidColorBrush Color="{Binding ElementName=Window, Path=NonActiveGlowColor}" />
                                             </Border.Background>
@@ -643,7 +791,6 @@
 
                             <Expander Grid.Row="6"
                                       Margin="5"
-                                      BorderThickness="0 1 0 0"
                                       Header="Current values"
                                       IsExpanded="True">
                                 <local:UniformGridEx Columns="2"

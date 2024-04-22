@@ -5,6 +5,7 @@ namespace ControlzEx.Behaviors
 {
     using System;
     using System.Collections.Generic;
+    using System.Runtime.InteropServices;
     using System.Security;
     using System.Windows;
     using System.Windows.Controls;
@@ -64,6 +65,7 @@ namespace ControlzEx.Behaviors
         private HwndSource? hwndSource;
 
         private PropertyChangeNotifier? borderThicknessChangeNotifier;
+        private PropertyChangeNotifier? windowStyleChangeNotifier;
         private Thickness? savedBorderThickness;
 
         private bool isCleanedUp;
@@ -82,13 +84,12 @@ namespace ControlzEx.Behaviors
         /// </summary>
         public Thickness ResizeBorderThickness
         {
-            get { return (Thickness)this.GetValue(ResizeBorderThicknessProperty); }
-            set { this.SetValue(ResizeBorderThicknessProperty, value); }
+            get => (Thickness)this.GetValue(ResizeBorderThicknessProperty);
+            set => this.SetValue(ResizeBorderThicknessProperty, value);
         }
 
         /// <summary>Identifies the <see cref="ResizeBorderThickness"/> dependency property.</summary>
-        public static readonly DependencyProperty ResizeBorderThicknessProperty =
-            DependencyProperty.Register(nameof(ResizeBorderThickness), typeof(Thickness), typeof(WindowChromeBehavior), new PropertyMetadata(GetDefaultResizeBorderThickness(), OnResizeBorderThicknessChanged), (value) => ((Thickness)value).IsNonNegative());
+        public static readonly DependencyProperty ResizeBorderThicknessProperty = DependencyProperty.Register(nameof(ResizeBorderThickness), typeof(Thickness), typeof(WindowChromeBehavior), new PropertyMetadata(GetDefaultResizeBorderThickness(), OnResizeBorderThicknessChanged), (value) => ((Thickness)value).IsNonNegative());
 
         private static void OnResizeBorderThicknessChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -102,15 +103,14 @@ namespace ControlzEx.Behaviors
         /// </summary>
         public bool IgnoreTaskbarOnMaximize
         {
-            get { return (bool)this.GetValue(IgnoreTaskbarOnMaximizeProperty); }
-            set { this.SetValue(IgnoreTaskbarOnMaximizeProperty, BooleanBoxes.Box(value)); }
+            get => (bool)this.GetValue(IgnoreTaskbarOnMaximizeProperty);
+            set => this.SetValue(IgnoreTaskbarOnMaximizeProperty, BooleanBoxes.Box(value));
         }
 
         /// <summary>
         /// <see cref="DependencyProperty"/> for <see cref="IgnoreTaskbarOnMaximize"/>.
         /// </summary>
-        public static readonly DependencyProperty IgnoreTaskbarOnMaximizeProperty =
-            DependencyProperty.Register(nameof(IgnoreTaskbarOnMaximize), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(BooleanBoxes.FalseBox, OnIgnoreTaskbarOnMaximizeChanged));
+        public static readonly DependencyProperty IgnoreTaskbarOnMaximizeProperty = DependencyProperty.Register(nameof(IgnoreTaskbarOnMaximize), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(BooleanBoxes.FalseBox, OnIgnoreTaskbarOnMaximizeChanged));
 
         /// <summary>
         /// Gets/sets if the border thickness value should be kept on maximize
@@ -118,8 +118,8 @@ namespace ControlzEx.Behaviors
         /// </summary>
         public bool KeepBorderOnMaximize
         {
-            get { return (bool)this.GetValue(KeepBorderOnMaximizeProperty); }
-            set { this.SetValue(KeepBorderOnMaximizeProperty, BooleanBoxes.Box(value)); }
+            get => (bool)this.GetValue(KeepBorderOnMaximizeProperty);
+            set => this.SetValue(KeepBorderOnMaximizeProperty, BooleanBoxes.Box(value));
         }
 
         /// <summary>
@@ -127,6 +127,7 @@ namespace ControlzEx.Behaviors
         /// </summary>
         public static readonly DependencyProperty KeepBorderOnMaximizeProperty = DependencyProperty.Register(nameof(KeepBorderOnMaximize), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(BooleanBoxes.TrueBox, OnKeepBorderOnMaximizeChanged));
 
+        // ReSharper disable once InconsistentNaming
         private static readonly DependencyPropertyKey IsNCActivePropertyKey = DependencyProperty.RegisterReadOnly(nameof(IsNCActive), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(BooleanBoxes.FalseBox));
 
         /// <summary>
@@ -139,8 +140,8 @@ namespace ControlzEx.Behaviors
         /// </summary>
         public bool IsNCActive
         {
-            get { return (bool)this.GetValue(IsNCActiveProperty); }
-            private set { this.SetValue(IsNCActivePropertyKey, BooleanBoxes.Box(value)); }
+            get => (bool)this.GetValue(IsNCActiveProperty);
+            private set => this.SetValue(IsNCActivePropertyKey, BooleanBoxes.Box(value));
         }
 
         public static readonly DependencyProperty EnableMinimizeProperty = DependencyProperty.Register(nameof(EnableMinimize), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(BooleanBoxes.TrueBox, OnEnableMinimizeChanged));
@@ -184,8 +185,8 @@ namespace ControlzEx.Behaviors
         /// </summary>
         public bool EnableMinimize
         {
-            get { return (bool)this.GetValue(EnableMinimizeProperty); }
-            set { this.SetValue(EnableMinimizeProperty, BooleanBoxes.Box(value)); }
+            get => (bool)this.GetValue(EnableMinimizeProperty);
+            set => this.SetValue(EnableMinimizeProperty, BooleanBoxes.Box(value));
         }
 
         public static readonly DependencyProperty EnableMaxRestoreProperty = DependencyProperty.Register(nameof(EnableMaxRestore), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(BooleanBoxes.TrueBox, OnEnableMaxRestoreChanged));
@@ -229,12 +230,11 @@ namespace ControlzEx.Behaviors
         /// </summary>
         public bool EnableMaxRestore
         {
-            get { return (bool)this.GetValue(EnableMaxRestoreProperty); }
-            set { this.SetValue(EnableMaxRestoreProperty, BooleanBoxes.Box(value)); }
+            get => (bool)this.GetValue(EnableMaxRestoreProperty);
+            set => this.SetValue(EnableMaxRestoreProperty, BooleanBoxes.Box(value));
         }
 
-        public static readonly DependencyProperty CornerPreferenceProperty = 
-            DependencyProperty.Register(nameof(CornerPreference), typeof(WindowCornerPreference), typeof(WindowChromeBehavior), new PropertyMetadata(WindowCornerPreference.Default, OnCornerPreferenceChanged));
+        public static readonly DependencyProperty CornerPreferenceProperty = DependencyProperty.Register(nameof(CornerPreference), typeof(WindowCornerPreference), typeof(WindowChromeBehavior), new PropertyMetadata(WindowCornerPreference.Default, OnCornerPreferenceChanged));
 
         public WindowCornerPreference CornerPreference
         {
@@ -249,14 +249,74 @@ namespace ControlzEx.Behaviors
             behavior.UpdateDWMCornerPreference((WindowCornerPreference)e.NewValue);
         }
 
+        public static readonly DependencyProperty UseNativeCaptionButtonsProperty = DependencyProperty.Register(nameof(UseNativeCaptionButtons), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(BooleanBoxes.FalseBox, OnUseNativeCaptionButtonsChanged));
+
+        public bool UseNativeCaptionButtons
+        {
+            get => (bool)this.GetValue(UseNativeCaptionButtonsProperty);
+            set => this.SetValue(UseNativeCaptionButtonsProperty, BooleanBoxes.Box(value));
+        }
+
+        private static void OnUseNativeCaptionButtonsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var behavior = (WindowChromeBehavior)d;
+            if ((bool)e.NewValue)
+            {
+                behavior._ModifyStyle(0, WINDOW_STYLE.WS_SYSMENU);
+            }
+            else
+            {
+                behavior._ModifyStyle(WINDOW_STYLE.WS_SYSMENU, 0);
+            }
+
+            behavior.UpdateCaptionButtonsSize();
+            behavior.ForceNativeWindowRedraw();
+        }
+
+        public static readonly DependencyProperty CaptionButtonsSizeProperty = DependencyProperty.Register(nameof(CaptionButtonsSize), typeof(Size), typeof(WindowChromeBehavior), new PropertyMetadata(default(Size)));
+
+        public Size CaptionButtonsSize
+        {
+            get => (Size)this.GetValue(CaptionButtonsSizeProperty);
+            set => this.SetValue(CaptionButtonsSizeProperty, value);
+        }
+
+        public static readonly DependencyProperty GlassFrameThicknessProperty = DependencyProperty.Register(nameof(GlassFrameThickness), typeof(Thickness), typeof(WindowChromeBehavior), new PropertyMetadata(default(Thickness), OnGlassFrameThicknessChanged));
+
+        public Thickness GlassFrameThickness
+        {
+            get => (Thickness)this.GetValue(GlassFrameThicknessProperty);
+            set => this.SetValue(GlassFrameThicknessProperty, value);
+        }
+
+        private static void OnGlassFrameThicknessChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var behavior = (WindowChromeBehavior)d;
+            behavior.UpdateGlassFrameThickness();
+        }
+
+        private void UpdateGlassFrameThickness()
+        {
+            if (this.windowHandle == IntPtr.Zero)
+            {
+                return;
+            }
+
+            DwmHelper.ExtendFrameIntoClientArea(this.windowHandle, this.GlassFrameThickness);
+        }
+
         /// <inheritdoc />
         protected override void OnAttached()
         {
             base.OnAttached();
 
             this.savedBorderThickness = this.AssociatedObject.BorderThickness;
+
             this.borderThicknessChangeNotifier = new PropertyChangeNotifier(this.AssociatedObject, Control.BorderThicknessProperty);
             this.borderThicknessChangeNotifier.ValueChanged += this.BorderThicknessChangeNotifierOnValueChanged;
+
+            this.windowStyleChangeNotifier = new PropertyChangeNotifier(this.AssociatedObject, Window.WindowStyleProperty);
+            this.windowStyleChangeNotifier.ValueChanged += this.WindowStyleChangeNotifierOnValueChanged;
 
             this.Initialize();
 
@@ -291,6 +351,11 @@ namespace ControlzEx.Behaviors
             {
                 this.savedBorderThickness = window.BorderThickness;
             }
+        }
+
+        private void WindowStyleChangeNotifierOnValueChanged(object? sender, EventArgs e)
+        {
+            this.UpdateCaptionButtonsSize();
         }
 
         private static void OnIgnoreTaskbarOnMaximizeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -333,6 +398,18 @@ namespace ControlzEx.Behaviors
 
             this.OnCleanup();
 
+            if (this.borderThicknessChangeNotifier is not null)
+            {
+                this.borderThicknessChangeNotifier.ValueChanged -= this.BorderThicknessChangeNotifierOnValueChanged;
+                this.borderThicknessChangeNotifier.Dispose();
+            }
+
+            if (this.windowStyleChangeNotifier is not null)
+            {
+                this.windowStyleChangeNotifier.ValueChanged -= this.WindowStyleChangeNotifierOnValueChanged;
+                this.windowStyleChangeNotifier.Dispose();
+            }
+
             // clean up events
             if (this.AssociatedObject is not null)
             {
@@ -369,6 +446,8 @@ namespace ControlzEx.Behaviors
                 throw new Exception("Uups, at this point we really need the Handle from the associated object!");
             }
 
+            this.UpdateCaptionButtonsSize();
+
             if (this.AssociatedObject.SizeToContent != SizeToContent.Manual
                 && this.AssociatedObject.WindowState == WindowState.Normal)
             {
@@ -391,6 +470,22 @@ namespace ControlzEx.Behaviors
 
                 // handle the maximized state here too (to handle the border in a correct way)
                 this.HandleStateChanged();
+            }
+        }
+
+        private unsafe void UpdateCaptionButtonsSize()
+        {
+            if (this.windowHandle == IntPtr.Zero)
+            {
+                return;
+            }
+
+            RECT value = default;
+            var result = PInvoke.DwmGetWindowAttribute(this.windowHandle, DWMWINDOWATTRIBUTE.DWMWA_CAPTION_BUTTON_BOUNDS, &value, (uint)Marshal.SizeOf<RECT>());
+            if (result.Succeeded)
+            {
+                var dpiScale = this.AssociatedObject.GetDpi();
+                this.SetCurrentValue(CaptionButtonsSizeProperty, new Size(value.Width / dpiScale.DpiScaleX, value.Height / dpiScale.DpiScaleY));
             }
         }
 
@@ -544,7 +639,7 @@ namespace ControlzEx.Behaviors
 
         private static readonly List<SystemParameterBoundProperty> boundProperties = new()
         {
-            new SystemParameterBoundProperty { DependencyProperty = ResizeBorderThicknessProperty, SystemParameterPropertyName = nameof(SystemParameters.WindowResizeBorderThickness) },
+            new SystemParameterBoundProperty { DependencyProperty = ResizeBorderThicknessProperty, SystemParameterPropertyName = nameof(SystemParameters.WindowResizeBorderThickness) }
         };
     }
 }

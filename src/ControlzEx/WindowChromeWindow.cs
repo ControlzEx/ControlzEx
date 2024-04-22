@@ -4,11 +4,20 @@ namespace ControlzEx
     using System;
     using System.Windows;
     using System.Windows.Data;
+    using System.Windows.Interop;
     using System.Windows.Media;
     using ControlzEx.Behaviors;
+    using ControlzEx.Internal;
     using ControlzEx.Internal.KnownBoxes;
+    using ControlzEx.Native;
+    using ControlzEx.Theming;
     using JetBrains.Annotations;
     using Microsoft.Xaml.Behaviors;
+    using Windows.Win32;
+    using Windows.Win32.Foundation;
+    using Windows.Win32.Graphics.Dwm;
+    using Windows.Win32.UI.WindowsAndMessaging;
+    using COLORREF = Windows.Win32.COLORREF;
 
     [PublicAPI]
     public partial class WindowChromeWindow : Window
@@ -21,10 +30,32 @@ namespace ControlzEx
             DefaultStyleKeyProperty.OverrideMetadata(typeof(WindowChromeWindow), new FrameworkPropertyMetadata(typeof(WindowChromeWindow)));
         }
 
+        public WindowChromeWindow()
+        {
+            WeakEventManager<ThemeManager, ThemeChangedEventArgs>.AddHandler(ThemeManager.Current, nameof(ThemeManager.Current.ThemeChanged), this.OnThemeManagerThemeChanged);
+        }
+
         /// <inheritdoc />
         protected override void OnSourceInitialized(EventArgs e)
         {
             base.OnSourceInitialized(e);
+
+            this.windowHandle = new HWND(new WindowInteropHelper(this).Handle);
+            this.hwndSource = HwndSource.FromHwnd(this.windowHandle);
+
+            if (this.hwndSource?.CompositionTarget is { } compositionTarget)
+            {
+                compositionTarget.BackgroundColor = Colors.Transparent;
+            }
+
+            this.UpdateCaptionColor();
+
+            if (this.AllowsTransparency is false)
+            {
+                DwmHelper.SetImmersiveDarkMode(this.windowHandle, DwmHelper.HasDarkTheme(this));
+            }
+
+            WindowBackdropManager.UpdateBackdrop(this);
 
             this.InitializeMessageHandling();
 
@@ -53,6 +84,9 @@ namespace ControlzEx
             BindingOperations.SetBinding(behavior, WindowChromeBehavior.EnableMinimizeProperty, new Binding { Path = new PropertyPath(ShowMinButtonProperty), Source = this });
             BindingOperations.SetBinding(behavior, WindowChromeBehavior.EnableMaxRestoreProperty, new Binding { Path = new PropertyPath(ShowMaxRestoreButtonProperty), Source = this });
             BindingOperations.SetBinding(behavior, WindowChromeBehavior.CornerPreferenceProperty, new Binding { Path = new PropertyPath(CornerPreferenceProperty), Source = this });
+            BindingOperations.SetBinding(behavior, WindowChromeBehavior.UseNativeCaptionButtonsProperty, new Binding { Path = new PropertyPath(UseNativeCaptionButtonsProperty), Source = this });
+            BindingOperations.SetBinding(behavior, WindowChromeBehavior.CaptionButtonsSizeProperty, new Binding { Path = new PropertyPath(CaptionButtonsSizeProperty), Source = this, Mode = BindingMode.TwoWay });
+            BindingOperations.SetBinding(behavior, WindowChromeBehavior.GlassFrameThicknessProperty, new Binding { Path = new PropertyPath(GlassFrameThicknessProperty), Source = this });
 
             this.SetBinding(IsNCActiveProperty, new Binding { Path = new PropertyPath(WindowChromeBehavior.IsNCActiveProperty), Source = behavior });
 
@@ -75,6 +109,15 @@ namespace ControlzEx
             this.SetBinding(DWMSupportsBorderColorProperty, new Binding { Path = new PropertyPath(GlowWindowBehavior.DWMSupportsBorderColorProperty), Source = behavior });
 
             Interaction.GetBehaviors(this).Add(behavior);
+        }
+
+        protected virtual void OnThemeManagerThemeChanged(object? sender, ThemeChangedEventArgs e)
+        {
+            if (e.OldTheme?.BaseColorScheme != e.NewTheme.BaseColorScheme)
+            {
+                var isDarkTheme = e.NewTheme.BaseColorScheme is ThemeManager.BaseColorDarkConst;
+                DwmHelper.SetImmersiveDarkMode(this.windowHandle, isDarkTheme);
+            }
         }
 
         /// <inheritdoc cref="WindowChromeBehavior.ResizeBorderThickness"/>
@@ -103,8 +146,7 @@ namespace ControlzEx
             DependencyProperty.Register(nameof(GlowDepth), typeof(int), typeof(WindowChromeWindow), new PropertyMetadata(GlowWindowBehavior.GlowDepthProperty.DefaultMetadata.DefaultValue));
 
         /// <summary>Identifies the <see cref="UseRadialGradientForCorners"/> dependency property.</summary>
-        public static readonly DependencyProperty UseRadialGradientForCornersProperty = DependencyProperty.Register(
-            nameof(UseRadialGradientForCorners), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(GlowWindowBehavior.UseRadialGradientForCornersProperty.DefaultMetadata.DefaultValue));
+        public static readonly DependencyProperty UseRadialGradientForCornersProperty = DependencyProperty.Register(nameof(UseRadialGradientForCorners), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(GlowWindowBehavior.UseRadialGradientForCornersProperty.DefaultMetadata.DefaultValue));
 
         /// <inheritdoc cref="GlowWindowBehavior.UseRadialGradientForCorners"/>
         /// <remarks>
@@ -117,8 +159,7 @@ namespace ControlzEx
         }
 
         /// <summary>Identifies the <see cref="IsGlowTransitionEnabled"/> dependency property.</summary>
-        public static readonly DependencyProperty IsGlowTransitionEnabledProperty = DependencyProperty.Register(
-            nameof(IsGlowTransitionEnabled), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(GlowWindowBehavior.IsGlowTransitionEnabledProperty.DefaultMetadata.DefaultValue));
+        public static readonly DependencyProperty IsGlowTransitionEnabledProperty = DependencyProperty.Register(nameof(IsGlowTransitionEnabled), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(GlowWindowBehavior.IsGlowTransitionEnabledProperty.DefaultMetadata.DefaultValue));
 
         /// <inheritdoc cref="GlowWindowBehavior.IsGlowTransitionEnabled"/>
         /// <remarks>
@@ -200,8 +241,66 @@ namespace ControlzEx
             set => this.SetValue(NonActiveGlowColorProperty, value);
         }
 
+        public static readonly DependencyProperty CaptionColorProperty = DependencyProperty.Register(nameof(CaptionColor), typeof(Color?), typeof(WindowChromeWindow), new PropertyMetadata(null, OnCaptionColorChanged));
+
+        /// <summary>
+        /// Gets or sets the native window caption color.
+        /// </summary>
+        /// <remarks>
+        /// Only works on Windows 11 and later.
+        /// </remarks>
+        public Color? CaptionColor
+        {
+            get => (Color?)this.GetValue(CaptionColorProperty);
+            set => this.SetValue(CaptionColorProperty, value);
+        }
+
+        private static void OnCaptionColorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((WindowChromeWindow)d).UpdateCaptionColor();
+        }
+
+        private void UpdateCaptionColor()
+        {
+            var color = this.CaptionColor.HasValue
+                ? this.CaptionColor.Value == Colors.Transparent
+                    ? DWMAttributeValues.DWMWA_COLOR_NONE
+                    : new COLORREF(this.CaptionColor.Value).dwColor
+                : DWMAttributeValues.DWMWA_COLOR_DEFAULT;
+            DwmHelper.SetWindowAttributeValue(this.windowHandle, DWMWINDOWATTRIBUTE.DWMWA_CAPTION_COLOR, color);
+        }
+
+        public static readonly DependencyProperty UseNativeCaptionButtonsProperty = DependencyProperty.Register(nameof(UseNativeCaptionButtons), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(BooleanBoxes.FalseBox, OnUseNativeCaptionButtonsChanged));
+
+        private static void OnUseNativeCaptionButtonsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((WindowChromeWindow)d).UpdatePadding();
+        }
+
+        public bool UseNativeCaptionButtons
+        {
+            get => (bool)this.GetValue(UseNativeCaptionButtonsProperty);
+            set => this.SetValue(UseNativeCaptionButtonsProperty, BooleanBoxes.Box(value));
+        }
+
+        public static readonly DependencyProperty GlassFrameThicknessProperty = DependencyProperty.Register(nameof(GlassFrameThickness), typeof(Thickness), typeof(WindowChromeWindow), new PropertyMetadata(default(Thickness)));
+
+        public Thickness GlassFrameThickness
+        {
+            get => (Thickness)this.GetValue(GlassFrameThicknessProperty);
+            set => this.SetValue(GlassFrameThicknessProperty, value);
+        }
+
+        public static readonly DependencyProperty CaptionButtonsSizeProperty = DependencyProperty.Register(nameof(CaptionButtonsSize), typeof(Size), typeof(WindowChromeWindow), new PropertyMetadata(default(Size)));
+
+        public Size CaptionButtonsSize
+        {
+            get => (Size)this.GetValue(CaptionButtonsSizeProperty);
+            set => this.SetValue(CaptionButtonsSizeProperty, value);
+        }
+
         /// <summary>Identifies the <see cref="IsNCActive"/> dependency property.</summary>
-        public static readonly DependencyProperty IsNCActiveProperty = DependencyProperty.Register(nameof(IsNCActive), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(BooleanBoxes.FalseBox));
+        public static readonly DependencyProperty IsNCActiveProperty = DependencyProperty.Register(nameof(IsNCActive), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(BooleanBoxes.FalseBox, OnPropertyChangedThatAffectsNCCurrentBrush));
 
         /// <summary>
         /// Gets whether the non-client area is active or not.
@@ -212,8 +311,16 @@ namespace ControlzEx
             private set => this.SetValue(IsNCActiveProperty, BooleanBoxes.Box(value));
         }
 
+        private static void OnPropertyChangedThatAffectsNCCurrentBrush(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var windowChromeWindow = (WindowChromeWindow)d;
+            windowChromeWindow.NCCurrentBrush = windowChromeWindow.IsNCActive
+                ? windowChromeWindow.NCActiveBrush
+                : windowChromeWindow.NCNonActiveBrush;
+        }
+
         /// <summary>Identifies the <see cref="NCActiveBrush"/> dependency property.</summary>
-        public static readonly DependencyProperty NCActiveBrushProperty = DependencyProperty.Register(nameof(NCActiveBrush), typeof(Brush), typeof(WindowChromeWindow), new PropertyMetadata(default(Brush)));
+        public static readonly DependencyProperty NCActiveBrushProperty = DependencyProperty.Register(nameof(NCActiveBrush), typeof(Brush), typeof(WindowChromeWindow), new PropertyMetadata(default(Brush), OnPropertyChangedThatAffectsNCCurrentBrush));
 
         /// <summary>
         /// Defines the brush to use when the non-client area is active.
@@ -225,7 +332,7 @@ namespace ControlzEx
         }
 
         /// <summary>Identifies the <see cref="NCNonActiveBrush"/> dependency property.</summary>
-        public static readonly DependencyProperty NCNonActiveBrushProperty = DependencyProperty.Register(nameof(NCNonActiveBrush), typeof(Brush), typeof(WindowChromeWindow), new PropertyMetadata(default(Brush)));
+        public static readonly DependencyProperty NCNonActiveBrushProperty = DependencyProperty.Register(nameof(NCNonActiveBrush), typeof(Brush), typeof(WindowChromeWindow), new PropertyMetadata(default(Brush), OnPropertyChangedThatAffectsNCCurrentBrush));
 
         /// <summary>
         /// Defines the brush to use when the non-client area is not active.
@@ -236,8 +343,10 @@ namespace ControlzEx
             set => this.SetValue(NCNonActiveBrushProperty, value);
         }
 
+        public static readonly DependencyPropertyKey NCCurrentBrushPropertyKey = DependencyProperty.RegisterReadOnly(nameof(NCCurrentBrush), typeof(Brush), typeof(WindowChromeWindow), new PropertyMetadata(default(Brush)));
+
         /// <summary>Identifies the <see cref="NCCurrentBrush"/> dependency property.</summary>
-        public static readonly DependencyProperty NCCurrentBrushProperty = DependencyProperty.Register(nameof(NCCurrentBrush), typeof(Brush), typeof(WindowChromeWindow), new PropertyMetadata(default(Brush)));
+        public static readonly DependencyProperty NCCurrentBrushProperty = NCCurrentBrushPropertyKey.DependencyProperty;
 
         /// <summary>
         /// Defines the current non-client area brush (active or inactive).
@@ -248,12 +357,11 @@ namespace ControlzEx
         public Brush? NCCurrentBrush
         {
             get => (Brush?)this.GetValue(NCCurrentBrushProperty);
-            set => this.SetValue(NCCurrentBrushProperty, value);
+            private set => this.SetValue(NCCurrentBrushPropertyKey, value);
         }
 
         /// <summary>Identifies the <see cref="PreferDWMBorderColor"/> dependency property.</summary>
-        public static readonly DependencyProperty PreferDWMBorderColorProperty =
-            DependencyProperty.Register(nameof(PreferDWMBorderColor), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(BooleanBoxes.TrueBox));
+        public static readonly DependencyProperty PreferDWMBorderColorProperty = DependencyProperty.Register(nameof(PreferDWMBorderColor), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(BooleanBoxes.TrueBox));
 
         /// <inheritdoc cref="GlowWindowBehavior.PreferDWMBorderColor"/>
         public bool PreferDWMBorderColor
@@ -307,9 +415,21 @@ namespace ControlzEx
         /// <summary>
         /// Updates the padding used for the window content.
         /// </summary>
-        protected virtual void UpdatePadding()
+        protected virtual unsafe void UpdatePadding()
         {
-            if (this.WindowState == WindowState.Maximized)
+            if (this.WindowState is WindowState.Maximized
+                && this.UseNativeCaptionButtons
+                && this.IgnoreTaskbarOnMaximize is false)
+            {
+                var hWnd = (HWND)new WindowInteropHelper(this).Handle;
+                RECT rc = default;
+                PInvoke.AdjustWindowRect(&rc, PInvoke.GetWindowStyle(hWnd), false);
+                var borderThickness = Math.Abs(rc.X);
+                this.SetCurrentValue(PaddingProperty, new Thickness(borderThickness));
+                return;
+            }
+
+            if (this.WindowState is WindowState.Maximized)
             {
                 this.SetCurrentValue(PaddingProperty, emptyContentPadding);
                 return;

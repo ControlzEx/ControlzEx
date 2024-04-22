@@ -1,4 +1,5 @@
 AlphaBlend
+AdjustWindowRect
 BeginDeferWindowPos
 CreateCompatibleDC
 CreateDIBSection
@@ -7,8 +8,9 @@ DWM_WINDOW_CORNER_PREFERENCE
 DefWindowProc
 DeferWindowPos
 DestroyWindow
+DwmDefWindowProc
 DwmExtendFrameIntoClientArea
-DwmIsCompositionEnabled
+DwmGetWindowAttribute
 DwmSetWindowAttribute
 EnableMenuItem
 EndDeferWindowPos

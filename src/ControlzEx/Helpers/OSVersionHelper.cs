@@ -175,6 +175,8 @@ namespace ControlzEx.Helpers
         /// </summary>
         public static bool IsWindows11_OrGreater { get; } = IsWindowsNT && OSVersion >= new Version(10, 0, 22000);
 
+        public static bool IsWindows11_22H2_OrGreater { get; } = IsWindowsNT && OSVersion >= new Version(10, 0, 22621);
+
         public static Version GetOSVersion()
         {
             var osv = default(PInvoke.RTL_OSVERSIONINFOEX);
