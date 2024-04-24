@@ -11,8 +11,6 @@ namespace Windows.Win32
     using System.Windows;
     using System.Windows.Media;
 
-    using ControlzEx;
-
     using Windows.Win32.Foundation;
     using Windows.Win32.Graphics.Gdi;
     using Windows.Win32.UI.WindowsAndMessaging;

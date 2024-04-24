@@ -361,27 +361,14 @@ namespace ControlzEx.Behaviors
                 }
 
                 Marshal.StructureToPtr(rc, lParam, true);
-            } // Only do this for Win 11 or greater where we might want to keep the native window border
-            else if (OSVersionHelper.IsWindows11_OrGreater
+            } // Only do this for Win 11 or greater, or when the native caption buttons should be used, where we might want to keep the native window border
+            else if ((OSVersionHelper.IsWindows11_OrGreater || this.UseNativeCaptionButtons)
                      && PInvoke.GetWindowStyle(this.windowHandle).HasFlag(WINDOW_STYLE.WS_CAPTION))
             {
                 var rcBefore = Marshal.PtrToStructure<RECT>(lParam);
                 PInvoke.DefWindowProc(this.windowHandle, (uint)uMsg, wParam, lParam);
                 var rc = Marshal.PtrToStructure<RECT>(lParam);
                 rc.top = rcBefore.top; // Remove titlebar
-                Marshal.StructureToPtr(rc, lParam, true);
-            }
-            else if (this.AssociatedObject.AllowsTransparency is false
-                     && this._GetHwndState() == WindowState.Normal
-                     && wParamIsTrue)
-            {
-                var rc = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT))!;
-
-                // We have to add or remove one pixel on any side of the window to force a flicker free resize.
-                // Removing pixels would result in a smaller client area.
-                // Adding pixels does not seem to really increase the client area.
-                rc.bottom += 1;
-
                 Marshal.StructureToPtr(rc, lParam, true);
             }
 
