@@ -581,7 +581,11 @@ namespace ControlzEx.Behaviors
             else
             {
                 this.StopTimer();
-                this.IsGlowVisible = shouldShowGlow;
+
+                using (this.DeferGlowChanges())
+                {
+                    this.IsGlowVisible = shouldShowGlow;
+                }
             }
         }
 
