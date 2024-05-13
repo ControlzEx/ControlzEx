@@ -369,6 +369,15 @@ namespace ControlzEx.Behaviors
                 PInvoke.DefWindowProc(this.windowHandle, (uint)uMsg, wParam, lParam);
                 var rc = Marshal.PtrToStructure<RECT>(lParam);
                 rc.top = rcBefore.top; // Remove titlebar
+
+                // Workaround for a bug in Windows.
+                // If we are using the DWM border (Win 11 and above), the window is inactive and there is a child window the top border is not drawn at all or only partially drawn.
+                // Removing 1 px from the top solves that issue.
+                rc.left += (int)this.NCPadding.Left;
+                rc.top += (int)this.NCPadding.Top;
+                rc.right -= (int)this.NCPadding.Right;
+                rc.bottom -= (int)this.NCPadding.Bottom;
+
                 Marshal.StructureToPtr(rc, lParam, true);
             }
 
