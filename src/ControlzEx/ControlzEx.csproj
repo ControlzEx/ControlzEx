@@ -47,6 +47,8 @@
     <ItemGroup>
         <Reference Include="System.Web" Condition="'$(IsBuildingForLegacyFramework)' == 'true'" />
         <Reference Include="System.Web.Extensions" Condition="'$(IsBuildingForLegacyFramework)' == 'true'" />
+
+        <PackageReference Include="System.Memory" />
         <PackageReference Include="System.Text.Json" Condition="'$(IsBuildingForLegacyFramework)' == 'false'" />
     </ItemGroup>
 

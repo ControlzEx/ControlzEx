@@ -26,7 +26,7 @@ namespace ControlzEx.Tests.Theming
                         for (byte b = 0; b < byte.MaxValue; b++)
                         {
                             color = Color.FromArgb((byte)a, r, g, b);
-                            Assert.AreEqual(color, new HSLColor(color).ToColor());
+                            Assert.That(new HSLColor(color).ToColor(), Is.EqualTo(color));
                         }
                     }
                 }
@@ -42,35 +42,35 @@ namespace ControlzEx.Tests.Theming
             for (byte i = 0; i < byte.MaxValue; i++)
             {
                 color = Color.FromArgb(255, i, i, i);
-                Assert.AreEqual(color, new HSLColor(color).ToColor());
+                Assert.That(new HSLColor(color).ToColor(), Is.EqualTo(color));
             }
 
             // A
             for (byte i = 0; i < byte.MaxValue; i++)
             {
                 color = Color.FromArgb(i, 255, 255, 255);
-                Assert.AreEqual(color, new HSLColor(color).ToColor());
+                Assert.That(new HSLColor(color).ToColor(), Is.EqualTo(color));
             }
             
             // R
             for (byte i = 0; i < byte.MaxValue; i++)
             {
                 color = Color.FromArgb(255, i, 255, 255);
-                Assert.AreEqual(color, new HSLColor(color).ToColor());
+                Assert.That(new HSLColor(color).ToColor(), Is.EqualTo(color));
             }
 
             // G
             for (byte i = 0; i < byte.MaxValue; i++)
             {
                 color = Color.FromArgb(255, 255, i, 255);
-                Assert.AreEqual(color, new HSLColor(color).ToColor());
+                Assert.That(new HSLColor(color).ToColor(), Is.EqualTo(color));
             }
 
             // B
             for (byte i = 0; i < byte.MaxValue; i++)
             {
                 color = Color.FromArgb(255, 255, 255, i);
-                Assert.AreEqual(color, new HSLColor(color).ToColor());
+                Assert.That(new HSLColor(color).ToColor(), Is.EqualTo(color));
             }
         }
 
@@ -79,7 +79,7 @@ namespace ControlzEx.Tests.Theming
         {
             foreach (var color in typeof(Colors).GetProperties().Where(x => x.PropertyType == typeof(Color)).Select(x => (Color)x.GetValue(null)))
             {
-                Assert.AreEqual(color, new HSLColor(color).ToColor());
+                Assert.That(new HSLColor(color).ToColor(), Is.EqualTo(color));
             }
         }
 
@@ -87,34 +87,34 @@ namespace ControlzEx.Tests.Theming
         public void TestHslFromInput()
         {
             // Transparent
-            Assert.AreEqual(Colors.Transparent, new HSLColor(0, 0, 0, 1).ToColor());
+            Assert.That(new HSLColor(0, 0, 0, 1).ToColor(), Is.EqualTo(Colors.Transparent));
             
             // Black
-            Assert.AreEqual(Colors.Black, new HSLColor(1, 0, 0, 0).ToColor());
+            Assert.That(new HSLColor(1, 0, 0, 0).ToColor(), Is.EqualTo(Colors.Black));
 
             // White
-            Assert.AreEqual(Colors.White, new HSLColor(1, 0, 0, 1).ToColor());
+            Assert.That(new HSLColor(1, 0, 0, 1).ToColor(), Is.EqualTo(Colors.White));
             
             // Gray
-            Assert.AreEqual(Colors.Gray, new HSLColor(1, 0, 0, 0.5).ToColor());
+            Assert.That(new HSLColor(1, 0, 0, 0.5).ToColor(), Is.EqualTo(Colors.Gray));
 
             // Red
-            Assert.AreEqual(Colors.Red, new HSLColor(1, 0, 1, 0.5).ToColor());
+            Assert.That(new HSLColor(1, 0, 1, 0.5).ToColor(), Is.EqualTo(Colors.Red));
 
             // Yellow
-            Assert.AreEqual(Colors.Yellow, new HSLColor(1, 60, 1, 0.5).ToColor());
+            Assert.That(new HSLColor(1, 60, 1, 0.5).ToColor(), Is.EqualTo(Colors.Yellow));
 
             // Lime (Green)
-            Assert.AreEqual(Colors.Lime, new HSLColor(1, 120, 1, 0.5).ToColor());
+            Assert.That(new HSLColor(1, 120, 1, 0.5).ToColor(), Is.EqualTo(Colors.Lime));
 
             // Aqua
-            Assert.AreEqual(Colors.Aqua, new HSLColor(1, 180, 1, 0.5).ToColor());
+            Assert.That(new HSLColor(1, 180, 1, 0.5).ToColor(), Is.EqualTo(Colors.Aqua));
 
             // Blue
-            Assert.AreEqual(Colors.Blue, new HSLColor(1, 240, 1, 0.5).ToColor());
+            Assert.That(new HSLColor(1, 240, 1, 0.5).ToColor(), Is.EqualTo(Colors.Blue));
 
             // Magenta
-            Assert.AreEqual(Colors.Magenta, new HSLColor(1, 300, 1, 0.5).ToColor());
+            Assert.That(new HSLColor(1, 300, 1, 0.5).ToColor(), Is.EqualTo(Colors.Magenta));
         }
     }
 }

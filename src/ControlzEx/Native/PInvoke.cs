@@ -36,9 +36,9 @@ namespace Windows.Win32
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         private static extern unsafe int MapWindowPoints(HWND hWndFrom, HWND hWndTo, RECT* lpPoints, uint cPoints);
 
-        public static void SelectObject(SafeHandle hdc, SafeHandle handle)
+        public static SafeHandle CreateCompatibleDC(SafeHandle handle)
         {
-            SelectObject(hdc, new HGDIOBJ(handle.DangerousGetHandle()));
+            return new DeleteDCSafeHandle(PInvoke.CreateCompatibleDC((HDC)handle.DangerousGetHandle()));
         }
 
         public static void SendMessage(IntPtr hWnd, WM msg, nuint wParam, IntPtr lParam)
@@ -409,5 +409,27 @@ namespace Windows.Win32
         VREDRAW = 0x0200,
         VALIDRECTS = 0x0400,
         REDRAW = HREDRAW | VREDRAW,
+    }
+
+    internal class DeleteDCSafeHandle : SafeHandle
+    {
+#pragma warning disable SA1310
+        private static readonly IntPtr INVALID_HANDLE_VALUE = new IntPtr(-1L);
+#pragma warning restore SA1310
+
+        internal DeleteDCSafeHandle()
+            : base(INVALID_HANDLE_VALUE, true)
+        {
+        }
+
+        internal DeleteDCSafeHandle(IntPtr preexistingHandle, bool ownsHandle = true)
+            : base(INVALID_HANDLE_VALUE, ownsHandle)
+        {
+            this.SetHandle(preexistingHandle);
+        }
+
+        public override bool IsInvalid => this.handle.ToInt64() == -1L || this.handle.ToInt64() == 0L;
+
+        protected override bool ReleaseHandle() => PInvoke.DeleteDC((HDC)this.handle);
     }
 }
