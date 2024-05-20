@@ -1,7 +1,6 @@
 <Project>
     <PropertyGroup>
-        <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-        <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+
         <!--    <RestoreAdditionalProjectSources>$(RestoreAdditionalProjectSources);$(MSBuildThisFileDirectory)/../../XAMLTools/artifacts</RestoreAdditionalProjectSources>-->
     </PropertyGroup>
 

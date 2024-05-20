@@ -5,7 +5,6 @@
     <PropertyGroup>
         <IsTestProject>true</IsTestProject>
         <IsPackable>false</IsPackable>
-        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
         <NoWarn>$(NoWarn);SA0001</NoWarn>
     </PropertyGroup>
 
