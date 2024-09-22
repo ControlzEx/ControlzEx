@@ -13,9 +13,7 @@ namespace ControlzEx.Behaviors
     using ControlzEx.Native;
     using global::Windows.Win32;
     using global::Windows.Win32.Foundation;
-    using global::Windows.Win32.Graphics.Dwm;
     using global::Windows.Win32.Graphics.Gdi;
-    using global::Windows.Win32.UI.Controls;
     using global::Windows.Win32.UI.Input.KeyboardAndMouse;
     using global::Windows.Win32.UI.WindowsAndMessaging;
     using Point = System.Windows.Point;
@@ -26,7 +24,8 @@ namespace ControlzEx.Behaviors
 
         private const SET_WINDOW_POS_FLAGS SwpFlags = SET_WINDOW_POS_FLAGS.SWP_FRAMECHANGED | SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOZORDER | SET_WINDOW_POS_FLAGS.SWP_NOOWNERZORDER | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE;
 
-        private WindowState lastMenuState;
+        private WindowState lastWindowStateForSystemMenu;
+        private ResizeMode lastResizeModeForSystemMenu;
         private WINDOWPOS lastWindowpos;
 
 #pragma warning disable 414
@@ -949,9 +948,11 @@ namespace ControlzEx.Behaviors
             var state = assumeState ?? this._GetHwndState();
 
             if (assumeState is not null
-                || this.lastMenuState != state)
+                || this.lastWindowStateForSystemMenu != state
+                || this.lastResizeModeForSystemMenu != this.AssociatedObject.ResizeMode)
             {
-                this.lastMenuState = state;
+                this.lastWindowStateForSystemMenu = state;
+                this.lastResizeModeForSystemMenu = this.AssociatedObject.ResizeMode;
 
                 var menuHandle = PInvoke.GetSystemMenu(this.windowHandle, false);
                 if (menuHandle != IntPtr.Zero)
