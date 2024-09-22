@@ -8,7 +8,7 @@
         <PackageVersion Include="System.Memory" Version="4.5.5" />
 
         <PackageVersion Include="System.Text.Json" Version="6.0.0" Condition="'$(TargetFramework)' == 'net6.0-windows'" />
-        <PackageVersion Include="System.Text.Json" Version="8.0.0" Condition="'$(TargetFramework)' == 'net8.0-windows'" />
+        <PackageVersion Include="System.Text.Json" Version="8.0.4" Condition="'$(TargetFramework)' == 'net8.0-windows'" />
         <PackageVersion Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.77" />
     </ItemGroup>
 
