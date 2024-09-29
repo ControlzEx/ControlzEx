@@ -260,6 +260,17 @@ namespace ControlzEx.Behaviors
         private static void OnUseNativeCaptionButtonsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var behavior = (WindowChromeBehavior)d;
+
+            if (behavior.windowHandle == IntPtr.Zero)
+            {
+                return;
+            }
+
+            if (behavior.hwndSource?.IsDisposed == true)
+            {
+                return;
+            }
+
             if ((bool)e.NewValue)
             {
                 behavior._ModifyStyle(0, WINDOW_STYLE.WS_SYSMENU);
