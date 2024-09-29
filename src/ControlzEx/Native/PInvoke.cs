@@ -36,9 +36,110 @@ namespace Windows.Win32
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         private static extern unsafe int MapWindowPoints(HWND hWndFrom, HWND hWndTo, RECT* lpPoints, uint cPoints);
 
-        public static SafeHandle CreateCompatibleDC(SafeHandle handle)
+        internal static DeleteDCSafeHandle CreateCompatibleDC(SafeHandle hdc)
         {
-            return new DeleteDCSafeHandle(PInvoke.CreateCompatibleDC((HDC)handle.DangerousGetHandle()));
+            var hdcAddRef = false;
+            try
+            {
+                HDC hdcLocal;
+                if (hdc is object)
+                {
+                    hdc.DangerousAddRef(ref hdcAddRef);
+                    hdcLocal = (HDC)hdc.DangerousGetHandle();
+                }
+                else
+                {
+                    hdcLocal = default;
+                }
+
+                var result = CreateCompatibleDC(hdcLocal);
+                return new(result, true);
+            }
+            finally
+            {
+                if (hdcAddRef)
+                {
+                    hdc!.DangerousRelease();
+                }
+            }
+        }
+
+        public static void SelectObject(SafeHandle hdc, SafeHandle handle)
+        {
+            SelectObject(hdc, new HGDIOBJ(handle.DangerousGetHandle()));
+        }
+
+        internal static HGDIOBJ SelectObject(SafeHandle hdc, HGDIOBJ h)
+        {
+            var hdcAddRef = false;
+            try
+            {
+                HDC hdcLocal;
+                if (hdc is object)
+                {
+                    hdc.DangerousAddRef(ref hdcAddRef);
+                    hdcLocal = (HDC)hdc.DangerousGetHandle();
+                }
+                else
+                {
+                    hdcLocal = default;
+                }
+
+                var result = SelectObject(hdcLocal, h);
+                return result;
+            }
+            finally
+            {
+                if (hdcAddRef)
+                {
+                    hdc!.DangerousRelease();
+                }
+            }
+        }
+
+        internal static BOOL AlphaBlend(SafeHandle hdcDest, int xoriginDest, int yoriginDest, int wDest, int hDest, SafeHandle hdcSrc, int xoriginSrc, int yoriginSrc, int wSrc, int hSrc, BLENDFUNCTION ftn)
+        {
+            var hdcDestAddRef = false;
+            var hdcSrcAddRef = false;
+            try
+            {
+                HDC hdcDestLocal;
+                if (hdcDest is object)
+                {
+                    hdcDest.DangerousAddRef(ref hdcDestAddRef);
+                    hdcDestLocal = (HDC)hdcDest.DangerousGetHandle();
+                }
+                else
+                {
+                    hdcDestLocal = default;
+                }
+
+                HDC hdcSrcLocal;
+                if (hdcSrc is object)
+                {
+                    hdcSrc.DangerousAddRef(ref hdcSrcAddRef);
+                    hdcSrcLocal = (HDC)hdcSrc.DangerousGetHandle();
+                }
+                else
+                {
+                    hdcSrcLocal = default;
+                }
+
+                var result = AlphaBlend(hdcDestLocal, xoriginDest, yoriginDest, wDest, hDest, hdcSrcLocal, xoriginSrc, yoriginSrc, wSrc, hSrc, ftn);
+                return result;
+            }
+            finally
+            {
+                if (hdcDestAddRef)
+                {
+                    hdcDest!.DangerousRelease();
+                }
+
+                if (hdcSrcAddRef)
+                {
+                    hdcSrc!.DangerousRelease();
+                }
+            }
         }
 
         public static void SendMessage(IntPtr hWnd, WM msg, nuint wParam, IntPtr lParam)
