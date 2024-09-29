@@ -1,4 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+
 <Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
     <!-- Project properties -->
     <PropertyGroup>
@@ -21,15 +22,16 @@
         <RepositoryType>git</RepositoryType>
         <GenerateLibraryLayout>true</GenerateLibraryLayout>
     </PropertyGroup>
+
     <ItemGroup>
-      <EmbeddedResource Remove="Resources\*.png" />
+        <EmbeddedResource Remove="Resources\*.png" />
     </ItemGroup>
 
     <ItemGroup>
-      <None Include="..\..\logo-mini.png">
-        <Pack>True</Pack>
-        <PackagePath></PackagePath>
-      </None>
+        <None Include="..\..\logo-mini.png">
+            <Pack>True</Pack>
+            <PackagePath></PackagePath>
+        </None>
     </ItemGroup>
 
     <ItemGroup>
@@ -37,22 +39,19 @@
         <Compile DependentUpon="%(Filename)" SubType="Designer" Update="**\*.xaml$(DefaultLanguageSourceExtension)" />
     </ItemGroup>
 
-    <PropertyGroup>
-      <IsBuildingForLegacyFramework>false</IsBuildingForLegacyFramework>
-      <IsBuildingForLegacyFramework Condition="'$(TargetFramework)' == 'net452' or '$(TargetFramework)' == 'net462'">true</IsBuildingForLegacyFramework>
-    </PropertyGroup>
-  
     <ItemGroup>
-      <Reference Include="System.Web" Condition="'$(IsBuildingForLegacyFramework)' == 'true'" />
-      <Reference Include="System.Web.Extensions" Condition="'$(IsBuildingForLegacyFramework)' == 'true'" />
-      <PackageReference Include="System.Text.Json" Condition="'$(IsBuildingForLegacyFramework)' == 'false'" />
+        <Reference Include="System.Web" Condition="'$(IsBuildingForLegacyFramework)' == 'true'" />
+        <Reference Include="System.Web.Extensions" Condition="'$(IsBuildingForLegacyFramework)' == 'true'" />
+        <PackageReference Include="System.Memory" Condition="'$(IsBuildingForLegacyFramework)' == 'true'" />
+
+        <PackageReference Include="System.Text.Json" Condition="'$(IsBuildingForLegacyFramework)' == 'false'" />
     </ItemGroup>
 
     <!-- reference includes -->
     <ItemGroup>
         <PackageReference Include="Microsoft.Windows.CsWin32">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
         </PackageReference>
     </ItemGroup>
 </Project>

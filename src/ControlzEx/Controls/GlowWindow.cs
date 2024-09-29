@@ -1,6 +1,4 @@
 // ReSharper disable IdentifierTypo
-#nullable enable
-
 // ReSharper disable once CheckNamespace
 namespace ControlzEx.Controls.Internal
 {
@@ -284,7 +282,7 @@ namespace ControlzEx.Controls.Internal
 
             fixed (BITMAPINFO* pbitmapinfo = &this.bitmapInfo)
             {
-                this.Handle = new DeleteObjectSafeHandle(PInvoke.CreateDIBSection(new HDC(hdcScreen.DangerousGetHandle()), pbitmapinfo, DIB_USAGE.DIB_RGB_COLORS, out var bits, default, 0));
+                this.Handle = new DeleteObjectSafeHandle(PInvoke.CreateDIBSection(new HDC(hdcScreen.DangerousGetHandle()), pbitmapinfo, DIB_USAGE.DIB_RGB_COLORS, out IntPtr bits, default, 0));
                 this.pbits = bits;
             }
         }
@@ -497,7 +495,7 @@ namespace ControlzEx.Controls.Internal
             this.Blend.SourceConstantAlpha = byte.MaxValue;
             this.Blend.AlphaFormat = 0x01; // AC_SRC_ALPHA;
             this.windowBitmap = new GlowBitmap(this.ScreenDc, width, height);
-            PInvoke.SelectObject(this.WindowDc, this.windowBitmap.Handle);
+            PInvoke.SelectObject((HDC)this.WindowDc.DangerousGetHandle(), this.windowBitmap.Handle);
         }
 
         private void SetupDesktopDC()
@@ -961,7 +959,7 @@ namespace ControlzEx.Controls.Internal
                 }
                 else
                 {
-                    PInvoke.DeferWindowPos(windowPosInfo, this.Hwnd, default, this.Left, this.Top, this.Width, this.Height, flags);
+                    PInvoke.DeferWindowPos(new HDWP(windowPosInfo), this.Hwnd, default, this.Left, this.Top, this.Width, this.Height, flags);
                 }
             }
         }
@@ -1127,21 +1125,21 @@ namespace ControlzEx.Controls.Internal
             var num3 = num2 - leftBottomBitmap.Height;
             var num4 = num3 - num;
 
-            PInvoke.SelectObject(drawingContext.BackgroundDc, cornerTopLeftBitmap.Handle);
-            PInvoke.AlphaBlend(drawingContext.WindowDc, 0, 0, cornerTopLeftBitmap.Width, cornerTopLeftBitmap.Height, drawingContext.BackgroundDc, 0, 0, cornerTopLeftBitmap.Width, cornerTopLeftBitmap.Height, drawingContext.Blend);
-            PInvoke.SelectObject(drawingContext.BackgroundDc, leftTopBitmap.Handle);
-            PInvoke.AlphaBlend(drawingContext.WindowDc, 0, bitmapHeight, leftTopBitmap.Width, leftTopBitmap.Height, drawingContext.BackgroundDc, 0, 0, leftTopBitmap.Width, leftTopBitmap.Height, drawingContext.Blend);
+            PInvoke.SelectObject((HDC)drawingContext.BackgroundDc.DangerousGetHandle(), cornerTopLeftBitmap.Handle);
+            PInvoke.AlphaBlend((HDC)drawingContext.WindowDc.DangerousGetHandle(), 0, 0, cornerTopLeftBitmap.Width, cornerTopLeftBitmap.Height, (HDC)drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, cornerTopLeftBitmap.Width, cornerTopLeftBitmap.Height, drawingContext.Blend);
+            PInvoke.SelectObject((HDC)drawingContext.BackgroundDc.DangerousGetHandle(), leftTopBitmap.Handle);
+            PInvoke.AlphaBlend((HDC)drawingContext.WindowDc.DangerousGetHandle(), 0, bitmapHeight, leftTopBitmap.Width, leftTopBitmap.Height, (HDC)drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, leftTopBitmap.Width, leftTopBitmap.Height, drawingContext.Blend);
 
             if (num4 > 0)
             {
-                PInvoke.SelectObject(drawingContext.BackgroundDc, leftBitmap.Handle);
-                PInvoke.AlphaBlend(drawingContext.WindowDc, 0, num, leftBitmap.Width, num4, drawingContext.BackgroundDc, 0, 0, leftBitmap.Width, leftBitmap.Height, drawingContext.Blend);
+                PInvoke.SelectObject((HDC)drawingContext.BackgroundDc.DangerousGetHandle(), leftBitmap.Handle);
+                PInvoke.AlphaBlend((HDC)drawingContext.WindowDc.DangerousGetHandle(), 0, num, leftBitmap.Width, num4, (HDC)drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, leftBitmap.Width, leftBitmap.Height, drawingContext.Blend);
             }
 
-            PInvoke.SelectObject(drawingContext.BackgroundDc, leftBottomBitmap.Handle);
-            PInvoke.AlphaBlend(drawingContext.WindowDc, 0, num3, leftBottomBitmap.Width, leftBottomBitmap.Height, drawingContext.BackgroundDc, 0, 0, leftBottomBitmap.Width, leftBottomBitmap.Height, drawingContext.Blend);
-            PInvoke.SelectObject(drawingContext.BackgroundDc, cornerBottomLeftBitmap.Handle);
-            PInvoke.AlphaBlend(drawingContext.WindowDc, 0, num2, cornerBottomLeftBitmap.Width, cornerBottomLeftBitmap.Height, drawingContext.BackgroundDc, 0, 0, cornerBottomLeftBitmap.Width, cornerBottomLeftBitmap.Height, drawingContext.Blend);
+            PInvoke.SelectObject((HDC)drawingContext.BackgroundDc.DangerousGetHandle(), leftBottomBitmap.Handle);
+            PInvoke.AlphaBlend((HDC)drawingContext.WindowDc.DangerousGetHandle(), 0, num3, leftBottomBitmap.Width, leftBottomBitmap.Height, (HDC)drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, leftBottomBitmap.Width, leftBottomBitmap.Height, drawingContext.Blend);
+            PInvoke.SelectObject((HDC)drawingContext.BackgroundDc.DangerousGetHandle(), cornerBottomLeftBitmap.Handle);
+            PInvoke.AlphaBlend((HDC)drawingContext.WindowDc.DangerousGetHandle(), 0, num2, cornerBottomLeftBitmap.Width, cornerBottomLeftBitmap.Height, (HDC)drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, cornerBottomLeftBitmap.Width, cornerBottomLeftBitmap.Height, drawingContext.Blend);
         }
 
         private void DrawRight(GlowDrawingContext drawingContext)
@@ -1165,21 +1163,21 @@ namespace ControlzEx.Controls.Internal
             var num3 = num2 - rightBottomBitmap.Height;
             var num4 = num3 - num;
 
-            PInvoke.SelectObject(drawingContext.BackgroundDc, cornerTopRightBitmap.Handle);
-            PInvoke.AlphaBlend(drawingContext.WindowDc, 0, 0, cornerTopRightBitmap.Width, cornerTopRightBitmap.Height, drawingContext.BackgroundDc, 0, 0, cornerTopRightBitmap.Width, cornerTopRightBitmap.Height, drawingContext.Blend);
-            PInvoke.SelectObject(drawingContext.BackgroundDc, rightTopBitmap.Handle);
-            PInvoke.AlphaBlend(drawingContext.WindowDc, 0, bitmapHeight, rightTopBitmap.Width, rightTopBitmap.Height, drawingContext.BackgroundDc, 0, 0, rightTopBitmap.Width, rightTopBitmap.Height, drawingContext.Blend);
+            PInvoke.SelectObject((HDC)drawingContext.BackgroundDc.DangerousGetHandle(), cornerTopRightBitmap.Handle);
+            PInvoke.AlphaBlend((HDC)drawingContext.WindowDc.DangerousGetHandle(), 0, 0, cornerTopRightBitmap.Width, cornerTopRightBitmap.Height, (HDC)drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, cornerTopRightBitmap.Width, cornerTopRightBitmap.Height, drawingContext.Blend);
+            PInvoke.SelectObject((HDC)drawingContext.BackgroundDc.DangerousGetHandle(), rightTopBitmap.Handle);
+            PInvoke.AlphaBlend((HDC)drawingContext.WindowDc.DangerousGetHandle(), 0, bitmapHeight, rightTopBitmap.Width, rightTopBitmap.Height, (HDC)drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, rightTopBitmap.Width, rightTopBitmap.Height, drawingContext.Blend);
 
             if (num4 > 0)
             {
-                PInvoke.SelectObject(drawingContext.BackgroundDc, rightBitmap.Handle);
-                PInvoke.AlphaBlend(drawingContext.WindowDc, 0, num, rightBitmap.Width, num4, drawingContext.BackgroundDc, 0, 0, rightBitmap.Width, rightBitmap.Height, drawingContext.Blend);
+                PInvoke.SelectObject((HDC)drawingContext.BackgroundDc.DangerousGetHandle(), rightBitmap.Handle);
+                PInvoke.AlphaBlend((HDC)drawingContext.WindowDc.DangerousGetHandle(), 0, num, rightBitmap.Width, num4, (HDC)drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, rightBitmap.Width, rightBitmap.Height, drawingContext.Blend);
             }
 
-            PInvoke.SelectObject(drawingContext.BackgroundDc, rightBottomBitmap.Handle);
-            PInvoke.AlphaBlend(drawingContext.WindowDc, 0, num3, rightBottomBitmap.Width, rightBottomBitmap.Height, drawingContext.BackgroundDc, 0, 0, rightBottomBitmap.Width, rightBottomBitmap.Height, drawingContext.Blend);
-            PInvoke.SelectObject(drawingContext.BackgroundDc, cornerBottomRightBitmap.Handle);
-            PInvoke.AlphaBlend(drawingContext.WindowDc, 0, num2, cornerBottomRightBitmap.Width, cornerBottomRightBitmap.Height, drawingContext.BackgroundDc, 0, 0, cornerBottomRightBitmap.Width, cornerBottomRightBitmap.Height, drawingContext.Blend);
+            PInvoke.SelectObject((HDC)drawingContext.BackgroundDc.DangerousGetHandle(), rightBottomBitmap.Handle);
+            PInvoke.AlphaBlend((HDC)drawingContext.WindowDc.DangerousGetHandle(), 0, num3, rightBottomBitmap.Width, rightBottomBitmap.Height, (HDC)drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, rightBottomBitmap.Width, rightBottomBitmap.Height, drawingContext.Blend);
+            PInvoke.SelectObject((HDC)drawingContext.BackgroundDc.DangerousGetHandle(), cornerBottomRightBitmap.Handle);
+            PInvoke.AlphaBlend((HDC)drawingContext.WindowDc.DangerousGetHandle(), 0, num2, cornerBottomRightBitmap.Width, cornerBottomRightBitmap.Height, (HDC)drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, cornerBottomRightBitmap.Width, cornerBottomRightBitmap.Height, drawingContext.Blend);
         }
 
         private void DrawTop(GlowDrawingContext drawingContext)
@@ -1200,17 +1198,17 @@ namespace ControlzEx.Controls.Internal
             var num3 = drawingContext.Width - this.GlowDepth - topRightBitmap.Width;
             var num4 = num3 - num2;
 
-            PInvoke.SelectObject(drawingContext.BackgroundDc, topLeftBitmap.Handle);
-            PInvoke.AlphaBlend(drawingContext.WindowDc, num, 0, topLeftBitmap.Width, topLeftBitmap.Height, drawingContext.BackgroundDc, 0, 0, topLeftBitmap.Width, topLeftBitmap.Height, drawingContext.Blend);
+            PInvoke.SelectObject((HDC)drawingContext.BackgroundDc.DangerousGetHandle(), topLeftBitmap.Handle);
+            PInvoke.AlphaBlend((HDC)drawingContext.WindowDc.DangerousGetHandle(), num, 0, topLeftBitmap.Width, topLeftBitmap.Height, (HDC)drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, topLeftBitmap.Width, topLeftBitmap.Height, drawingContext.Blend);
 
             if (num4 > 0)
             {
-                PInvoke.SelectObject(drawingContext.BackgroundDc, topBitmap.Handle);
-                PInvoke.AlphaBlend(drawingContext.WindowDc, num2, 0, num4, topBitmap.Height, drawingContext.BackgroundDc, 0, 0, topBitmap.Width, topBitmap.Height, drawingContext.Blend);
+                PInvoke.SelectObject((HDC)drawingContext.BackgroundDc.DangerousGetHandle(), topBitmap.Handle);
+                PInvoke.AlphaBlend((HDC)drawingContext.WindowDc.DangerousGetHandle(), num2, 0, num4, topBitmap.Height, (HDC)drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, topBitmap.Width, topBitmap.Height, drawingContext.Blend);
             }
 
-            PInvoke.SelectObject(drawingContext.BackgroundDc, topRightBitmap.Handle);
-            PInvoke.AlphaBlend(drawingContext.WindowDc, num3, 0, topRightBitmap.Width, topRightBitmap.Height, drawingContext.BackgroundDc, 0, 0, topRightBitmap.Width, topRightBitmap.Height, drawingContext.Blend);
+            PInvoke.SelectObject((HDC)drawingContext.BackgroundDc.DangerousGetHandle(), topRightBitmap.Handle);
+            PInvoke.AlphaBlend((HDC)drawingContext.WindowDc.DangerousGetHandle(), num3, 0, topRightBitmap.Width, topRightBitmap.Height, (HDC)drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, topRightBitmap.Width, topRightBitmap.Height, drawingContext.Blend);
         }
 
         private void DrawBottom(GlowDrawingContext drawingContext)
@@ -1231,17 +1229,17 @@ namespace ControlzEx.Controls.Internal
             var num3 = drawingContext.Width - this.GlowDepth - bottomRightBitmap.Width;
             var num4 = num3 - num2;
 
-            PInvoke.SelectObject(drawingContext.BackgroundDc, bottomLeftBitmap.Handle);
-            PInvoke.AlphaBlend(drawingContext.WindowDc, num, 0, bottomLeftBitmap.Width, bottomLeftBitmap.Height, drawingContext.BackgroundDc, 0, 0, bottomLeftBitmap.Width, bottomLeftBitmap.Height, drawingContext.Blend);
+            PInvoke.SelectObject((HDC)drawingContext.BackgroundDc.DangerousGetHandle(), bottomLeftBitmap.Handle);
+            PInvoke.AlphaBlend((HDC)drawingContext.WindowDc.DangerousGetHandle(), num, 0, bottomLeftBitmap.Width, bottomLeftBitmap.Height, (HDC)drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, bottomLeftBitmap.Width, bottomLeftBitmap.Height, drawingContext.Blend);
 
             if (num4 > 0)
             {
-                PInvoke.SelectObject(drawingContext.BackgroundDc, bottomBitmap.Handle);
-                PInvoke.AlphaBlend(drawingContext.WindowDc, num2, 0, num4, bottomBitmap.Height, drawingContext.BackgroundDc, 0, 0, bottomBitmap.Width, bottomBitmap.Height, drawingContext.Blend);
+                PInvoke.SelectObject((HDC)drawingContext.BackgroundDc.DangerousGetHandle(), bottomBitmap.Handle);
+                PInvoke.AlphaBlend((HDC)drawingContext.WindowDc.DangerousGetHandle(), num2, 0, num4, bottomBitmap.Height, (HDC)drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, bottomBitmap.Width, bottomBitmap.Height, drawingContext.Blend);
             }
 
-            PInvoke.SelectObject(drawingContext.BackgroundDc, bottomRightBitmap.Handle);
-            PInvoke.AlphaBlend(drawingContext.WindowDc, num3, 0, bottomRightBitmap.Width, bottomRightBitmap.Height, drawingContext.BackgroundDc, 0, 0, bottomRightBitmap.Width, bottomRightBitmap.Height, drawingContext.Blend);
+            PInvoke.SelectObject((HDC)drawingContext.BackgroundDc.DangerousGetHandle(), bottomRightBitmap.Handle);
+            PInvoke.AlphaBlend((HDC)drawingContext.WindowDc.DangerousGetHandle(), num3, 0, bottomRightBitmap.Width, bottomRightBitmap.Height, (HDC)drawingContext.BackgroundDc.DangerousGetHandle(), 0, 0, bottomRightBitmap.Width, bottomRightBitmap.Height, drawingContext.Blend);
         }
 
         public void UpdateWindowPos()

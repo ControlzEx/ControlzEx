@@ -1,5 +1,4 @@
-﻿#nullable enable
-namespace ControlzEx.Theming
+﻿namespace ControlzEx.Theming
 {
     using System;
     using System.Collections;

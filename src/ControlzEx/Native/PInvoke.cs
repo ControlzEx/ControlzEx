@@ -11,8 +11,6 @@ namespace Windows.Win32
     using System.Windows;
     using System.Windows.Media;
 
-    using ControlzEx;
-
     using Windows.Win32.Foundation;
     using Windows.Win32.Graphics.Gdi;
     using Windows.Win32.UI.WindowsAndMessaging;
@@ -38,9 +36,9 @@ namespace Windows.Win32
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         private static extern unsafe int MapWindowPoints(HWND hWndFrom, HWND hWndTo, RECT* lpPoints, uint cPoints);
 
-        public static void SelectObject(SafeHandle hdc, SafeHandle handle)
+        public static SafeHandle CreateCompatibleDC(SafeHandle handle)
         {
-            SelectObject(hdc, new HGDIOBJ(handle.DangerousGetHandle()));
+            return new DeleteDCSafeHandle(PInvoke.CreateCompatibleDC((HDC)handle.DangerousGetHandle()));
         }
 
         public static void SendMessage(IntPtr hWnd, WM msg, nuint wParam, IntPtr lParam)
@@ -267,7 +265,7 @@ namespace Windows.Win32
             {
                 return HiWord(value.ToInt64());
             }
-            
+
             return HiWord(value.ToInt32());
         }
 
@@ -293,22 +291,22 @@ namespace Windows.Win32
 
         public static WINDOW_STYLE GetWindowStyle(HWND hWnd)
         {
-            return (WINDOW_STYLE)GetWindowLongPtr(hWnd, WINDOW_LONG_PTR_INDEX.GWL_STYLE);
+            return (WINDOW_STYLE)(long)GetWindowLongPtr(hWnd, WINDOW_LONG_PTR_INDEX.GWL_STYLE);
         }
 
         public static WINDOW_EX_STYLE GetWindowStyleEx(HWND hWnd)
         {
-            return (WINDOW_EX_STYLE)GetWindowLongPtr(hWnd, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE);
+            return (WINDOW_EX_STYLE)(long)GetWindowLongPtr(hWnd, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE);
         }
 
         public static WINDOW_STYLE SetWindowStyle(HWND hWnd, WINDOW_STYLE dwNewLong)
         {
-            return (WINDOW_STYLE)SetWindowLongPtr(hWnd, WINDOW_LONG_PTR_INDEX.GWL_STYLE, new IntPtr((int)dwNewLong));
+            return (WINDOW_STYLE)SetWindowLongPtr(hWnd, WINDOW_LONG_PTR_INDEX.GWL_STYLE, new IntPtr((long)dwNewLong));
         }
 
         public static WINDOW_EX_STYLE SetWindowStyleEx(HWND hWnd, WINDOW_EX_STYLE dwNewLong)
         {
-            return (WINDOW_EX_STYLE)SetWindowLongPtr(hWnd, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, new IntPtr((int)dwNewLong));
+            return (WINDOW_EX_STYLE)SetWindowLongPtr(hWnd, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, new IntPtr((long)dwNewLong));
         }
 
         [DllImport("user32.dll", EntryPoint = "GetWindowLongW", SetLastError = true)]
@@ -363,6 +361,21 @@ namespace Windows.Win32
 
             return default;
         }
+
+        public enum PreferredAppMode
+        {
+            Default = 0,
+            AllowDark = 1,
+            ForceDark = 2,
+            ForceLight = 3,
+            Max = 4
+        }
+
+        [DllImport("uxtheme.dll", EntryPoint = "#135", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern int SetPreferredAppMode(PreferredAppMode preferredAppMode);
+
+        [DllImport("uxtheme.dll", EntryPoint = "#136", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern void FlushMenuThemes();
     }
 
     internal struct COLORREF
@@ -396,5 +409,27 @@ namespace Windows.Win32
         VREDRAW = 0x0200,
         VALIDRECTS = 0x0400,
         REDRAW = HREDRAW | VREDRAW,
+    }
+
+    internal class DeleteDCSafeHandle : SafeHandle
+    {
+#pragma warning disable SA1310
+        private static readonly IntPtr INVALID_HANDLE_VALUE = new IntPtr(-1L);
+#pragma warning restore SA1310
+
+        internal DeleteDCSafeHandle()
+            : base(INVALID_HANDLE_VALUE, true)
+        {
+        }
+
+        internal DeleteDCSafeHandle(IntPtr preexistingHandle, bool ownsHandle = true)
+            : base(INVALID_HANDLE_VALUE, ownsHandle)
+        {
+            this.SetHandle(preexistingHandle);
+        }
+
+        public override bool IsInvalid => this.handle.ToInt64() == -1L || this.handle.ToInt64() == 0L;
+
+        protected override bool ReleaseHandle() => PInvoke.DeleteDC((HDC)this.handle);
     }
 }

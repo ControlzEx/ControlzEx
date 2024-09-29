@@ -1,35 +1,31 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+
 <Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
     <!-- Project properties -->
-  <PropertyGroup>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <PropertyGroup>
+        <IsTestProject>true</IsTestProject>
+        <IsPackable>false</IsPackable>
+        <NoWarn>$(NoWarn);SA0001</NoWarn>
+    </PropertyGroup>
 
-    <IsTestProject>true</IsTestProject>
-    <IsPackable>false</IsPackable>
-    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <ItemGroup>
+        <ProjectReference Include="..\ControlzEx\ControlzEx.csproj" />
+    </ItemGroup>
 
-    <NoWarn>$(NoWarn);SA0001</NoWarn>
-  </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="NUnit" />
+        <PackageReference Include="NUnit3TestAdapter" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\ControlzEx\ControlzEx.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="XAMLTools.MSBuild" PrivateAssets="All" IncludeAssets="build" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="NUnit3TestAdapter" />
-
-    <PackageReference Include="NUnit" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="XAMLTools.MSBuild" PrivateAssets="All" IncludeAssets="build" />
-  </ItemGroup>
-
-  <ItemGroup>
-      <XAMLColorSchemeGeneratorItems Include="Themes\Themes\Theme.Template.xaml">
-        <ParametersFile>Themes\Themes\GeneratorParameters.json</ParametersFile>
-        <OutputPath>Themes\Themes</OutputPath>
-    </XAMLColorSchemeGeneratorItems>
-  </ItemGroup>
+    <ItemGroup>
+        <XAMLColorSchemeGeneratorItems Include="Themes\Themes\Theme.Template.xaml">
+            <ParametersFile>Themes\Themes\GeneratorParameters.json</ParametersFile>
+            <OutputPath>Themes\Themes</OutputPath>
+        </XAMLColorSchemeGeneratorItems>
+    </ItemGroup>
 </Project>

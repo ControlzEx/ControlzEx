@@ -1,11 +1,10 @@
-﻿#nullable enable
-namespace ControlzEx.Theming
+﻿namespace ControlzEx.Theming
 {
     using System.Collections.Generic;
     using System.Diagnostics;
     using JetBrains.Annotations;
 
-    // This class has to be kept in sync with https://github.com/batzen/XamlColorSchemeGenerator/blob/develop/src/ThemeGenerator.cs
+    // This class has to be kept in sync with https://github.com/batzen/XAMLTools/blob/develop/src/XAMLTools.Core/XAMLColorSchemeGenerator/ThemeGenerator.cs
     // Please do not remove unused code/properties here as it makes syncing more difficult.
     [PublicAPI]
     public class ThemeGenerator
@@ -37,13 +36,30 @@ namespace ControlzEx.Theming
             templateContent = templateContent.Replace("{{AlternativeColorScheme}}", alternativeColorScheme);
             templateContent = templateContent.Replace("{{IsHighContrast}}", isHighContrast.ToString());
 
-            foreach (var valueSource in valueSources)
+            bool contentChanged;
+
+            // Loop till content does not change anymore.
+            do
             {
-                foreach (var value in valueSource)
+                contentChanged = false;
+
+                foreach (var valueSource in valueSources)
                 {
-                    templateContent = templateContent.Replace($"{{{{{value.Key}}}}}", value.Value);
+                    foreach (var value in valueSource)
+                    {
+                        var finalValue = value.Value;
+                        var newTemplateContent = templateContent.Replace($"{{{{{value.Key}}}}}", finalValue);
+
+                        if (templateContent != newTemplateContent)
+                        {
+                            contentChanged = true;
+                        }
+
+                        templateContent = newTemplateContent;
+                    }
                 }
             }
+            while (contentChanged is true);
 
             return templateContent;
         }

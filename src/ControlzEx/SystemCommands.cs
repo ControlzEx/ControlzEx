@@ -135,6 +135,11 @@
             }
 
             var hmenu = PInvoke.GetSystemMenu(new HWND(hwnd), false);
+            if (hmenu.IsNull)
+            {
+                return;
+            }
+
             var flags = PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_MENUDROPALIGNMENT);
             var tpmparams = new TPMPARAMS
             {

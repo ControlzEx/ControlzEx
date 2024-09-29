@@ -31,8 +31,6 @@ namespace ControlzEx.Showcase
 
             this.Colors = GetColors().ToList();
             this.Brushes = GetBrushes().ToList();
-
-            //WindowEffectManager.UpdateWindowEffect(this, this.IsActive);
         }
 
         public List<Color> Colors
@@ -48,20 +46,6 @@ namespace ControlzEx.Showcase
         }
 
         public int LoadedCount { get; set; }
-
-        protected override void OnActivated(EventArgs e)
-        {
-            base.OnActivated(e);
-
-            //WindowEffectManager.UpdateWindowEffect(this, this.IsActive);
-        }
-
-        protected override void OnDeactivated(EventArgs e)
-        {
-            base.OnDeactivated(e);
-
-            //WindowEffectManager.UpdateWindowEffect(this, this.IsActive);
-        }
 
         public static IEnumerable<Color> GetColors()
         {
@@ -319,6 +303,36 @@ namespace ControlzEx.Showcase
             {
                 this.ButtonOpenChildWindowOnClick(this, null);
             }
+        }
+
+        private void HandleClearBackgroundClick(object sender, RoutedEventArgs e)
+        {
+            this.backgroundComboBox.Text = null;
+        }
+
+        private void HandleTransparentBackgroundClick(object sender, RoutedEventArgs e)
+        {
+            this.backgroundComboBox.Text = "Transparent";
+        }
+
+        private void HandleClearCaptionColorClick(object sender, RoutedEventArgs e)
+        {
+            this.captionColorComboBox.Text = null;
+        }
+
+        private void HandleTransparentCaptionColorClick(object sender, RoutedEventArgs e)
+        {
+            this.captionColorComboBox.Text = "Transparent";
+        }
+
+        private void HandleClearNCNonActiveBrushClick(object sender, RoutedEventArgs e)
+        {
+            this.NCNonActiveBrushComboBox.Text = null;
+        }
+
+        private void HandleTransparentNCNonActiveBrushClick(object sender, RoutedEventArgs e)
+        {
+            this.NCNonActiveBrushComboBox.Text = "Transparent";
         }
 
         private void HandleClearGlowColorClick(object sender, RoutedEventArgs e)

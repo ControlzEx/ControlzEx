@@ -24,7 +24,8 @@ namespace ControlzEx.Behaviors
 
         private const SET_WINDOW_POS_FLAGS SwpFlags = SET_WINDOW_POS_FLAGS.SWP_FRAMECHANGED | SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOZORDER | SET_WINDOW_POS_FLAGS.SWP_NOOWNERZORDER | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE;
 
-        private WindowState lastMenuState;
+        private WindowState lastWindowStateForSystemMenu;
+        private ResizeMode lastResizeModeForSystemMenu;
         private WINDOWPOS lastWindowpos;
 
 #pragma warning disable 414
@@ -93,10 +94,11 @@ namespace ControlzEx.Behaviors
             this.UpdateMinimizeSystemMenu(this.EnableMinimize);
             this.UpdateMaxRestoreSystemMenu(this.EnableMaxRestore);
             this.UpdateWindowStyle();
+            this.UpdateGlassFrameThickness();
 
             // Mitigation for https://github.com/dotnet/wpf/issues/5853
             // This forces WPF to render a bit earlier, which reduces the time we see a blank white window on show
-            PInvoke.SetWindowPos(this.windowHandle, HWND.Null, 0, 0, 0, 0, SET_WINDOW_POS_FLAGS.SWP_DRAWFRAME | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOOWNERZORDER | SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOZORDER);
+            this.ForceNativeWindowRedraw();
 
             if (this.hwndSource.IsDisposed)
             {
@@ -118,6 +120,13 @@ namespace ControlzEx.Behaviors
         [SecurityCritical]
         private IntPtr WindowProc(IntPtr hwnd, int msg, nuint wParam, nint lParam, ref bool handled)
         {
+            if (this.hwndSource is null
+                || this.hwndSource.IsDisposed
+                || this.isCleanedUp)
+            {
+                return IntPtr.Zero;
+            }
+
             var message = (WM)msg;
 
             //System.Diagnostics.Trace.WriteLine($"{DateTime.Now} {hwnd} {message} {wParam} {lParam}");
@@ -188,10 +197,10 @@ namespace ControlzEx.Behaviors
         [SecurityCritical]
         private IntPtr _HandleNCUAHDRAWCAPTION(WM uMsg, nuint wParam, nint lParam, out bool handled)
         {
-            if (this.AssociatedObject.ShowInTaskbar == false
+            if (this.AssociatedObject.ShowInTaskbar is false
                 && this._GetHwndState() == WindowState.Minimized)
             {
-                // Minimize the window with ShowInTaskbar == false might cause Windows to redraw the caption.
+                // Minimize the window with ShowInTaskbar is false might cause Windows to redraw the caption.
                 using (new SuppressRedrawScope(this.windowHandle))
                 {
                     handled = true;
@@ -241,7 +250,7 @@ namespace ControlzEx.Behaviors
 
             this.IsNCActive = wParam != 0;
 
-            if (this.IsNCActive == false)
+            if (this.IsNCActive is false)
             {
                 this.nonClientControlManager?.ClearTrackedControl();
             }
@@ -271,7 +280,7 @@ namespace ControlzEx.Behaviors
             PInvoke.SHAppBarMessage((int)PInvoke.ABMsg.ABM_GETTASKBARPOS, ref abd);
             var autoHide = Convert.ToBoolean(PInvoke.SHAppBarMessage((int)PInvoke.ABMsg.ABM_GETSTATE, ref abd));
 
-            if (autoHide == false)
+            if (autoHide is false)
             {
                 return area;
             }
@@ -315,9 +324,16 @@ namespace ControlzEx.Behaviors
 
             handled = true;
 
+            var wParamIsTrue = wParam != 0;
+
             var hwndState = this._GetHwndState();
 
-            if (hwndState == WindowState.Maximized)
+            if (hwndState is WindowState.Maximized
+                && this.UseNativeCaptionButtons)
+            {
+                // todo: window content shifts up by the resize border thickness... if we change the nc-area the caption buttons stop responding...
+            }
+            else if (hwndState is WindowState.Maximized)
             {
                 // We have to get the monitor preferably from the window position as the info for the window handle might not yet be updated.
                 // As we update lastWindowpos in WINDOWPOSCHANGING we have the right "future" position and thus can get the correct monitor from that.
@@ -336,7 +352,7 @@ namespace ControlzEx.Behaviors
                 rc.bottom = monitorRect.bottom;
 
                 // monitor and work area will be equal if taskbar is hidden
-                if (this.IgnoreTaskbarOnMaximize == false
+                if (this.IgnoreTaskbarOnMaximize is false
                     && monitorInfo.rcMonitor.GetHeight() == monitorInfo.rcWork.GetHeight()
                     && monitorInfo.rcMonitor.GetWidth() == monitorInfo.rcWork.GetWidth())
                 {
@@ -344,26 +360,22 @@ namespace ControlzEx.Behaviors
                 }
 
                 Marshal.StructureToPtr(rc, lParam, true);
-            }
-            else if (OSVersionHelper.IsWindows10_OrGreater
+            } // Only do this for Win 11 or greater, or when the native caption buttons should be used, where we might want to keep the native window border
+            else if ((OSVersionHelper.IsWindows11_OrGreater || this.UseNativeCaptionButtons)
                      && PInvoke.GetWindowStyle(this.windowHandle).HasFlag(WINDOW_STYLE.WS_CAPTION))
             {
                 var rcBefore = Marshal.PtrToStructure<RECT>(lParam);
                 PInvoke.DefWindowProc(this.windowHandle, (uint)uMsg, wParam, lParam);
                 var rc = Marshal.PtrToStructure<RECT>(lParam);
                 rc.top = rcBefore.top; // Remove titlebar
-                Marshal.StructureToPtr(rc, lParam, true);
-            }
-            else if (this.AssociatedObject.AllowsTransparency == false
-                     && this._GetHwndState() == WindowState.Normal
-                     && wParam != 0)
-            {
-                var rc = (RECT)Marshal.PtrToStructure(lParam, typeof(RECT))!;
 
-                // We have to add or remove one pixel on any side of the window to force a flicker free resize.
-                // Removing pixels would result in a smaller client area.
-                // Adding pixels does not seem to really increase the client area.
-                rc.bottom += 1;
+                // Workaround for a bug in Windows.
+                // If we are using the DWM border (Win 11 and above), the window is inactive and there is a child window the top border is not drawn at all or only partially drawn.
+                // Removing 1 px from the top solves that issue.
+                rc.left += (int)this.NCPadding.Left;
+                rc.top += (int)this.NCPadding.Top;
+                rc.right -= (int)this.NCPadding.Right;
+                rc.bottom -= (int)this.NCPadding.Bottom;
 
                 Marshal.StructureToPtr(rc, lParam, true);
             }
@@ -375,7 +387,7 @@ namespace ControlzEx.Behaviors
             // client area. So we simply ask for a redraw (WVR_REDRAW)
 
             var retVal = IntPtr.Zero;
-            if (wParam != 0) // wParam == TRUE
+            if (wParamIsTrue) // wParam == TRUE
             {
                 // Using the combination of WVR.VALIDRECTS and WVR.REDRAW gives the smoothest
                 // resize behavior we can achieve here.
@@ -434,15 +446,21 @@ namespace ControlzEx.Behaviors
             // We always want to handle hit-testing
             handled = true;
 
-            var hitTestResult = this.GetHitTestResult(lParam);
+            var hitTestResult = this.GetHitTestResult(uMsg, wParam, lParam);
+
+            if (hitTestResult is HT.TOP
+                && this.AssociatedObject.WindowState is WindowState.Maximized)
+            {
+                hitTestResult = HT.CAPTION;
+            }
 
             return new IntPtr((int)hitTestResult);
         }
 
-        private HT GetHitTestResult(nint lParam)
+        private unsafe HT GetHitTestResult(WM uMsg, nuint wParam, nint lParam)
         {
             if (NonClientControlManager.GetControlUnderMouse(this.AssociatedObject, lParam, out var htFromNcControlManager) is not null
-                && htFromNcControlManager != HT.CAPTION)
+                && htFromNcControlManager is not HT.CAPTION)
             {
                 return htFromNcControlManager;
             }
@@ -453,41 +471,64 @@ namespace ControlzEx.Behaviors
             var mousePosScreen = Utility.GetPoint(lParam);
             var windowRect = this._GetWindowRect();
 
-            var preventResize = this._GetHwndState() == WindowState.Maximized || this.AssociatedObject.ResizeMode is ResizeMode.NoResize;
+            var preventResize = this._GetHwndState() is WindowState.Maximized || this.AssociatedObject.ResizeMode is ResizeMode.NoResize or ResizeMode.CanMinimize;
             var htFromTestNca = preventResize
                 ? HT.CLIENT
                 : this._HitTestNca(DpiHelper.DeviceRectToLogical(windowRect, dpi.DpiScaleX, dpi.DpiScaleY),
                                    DpiHelper.DevicePixelsToLogical(mousePosScreen, dpi.DpiScaleX, dpi.DpiScaleY));
 
-            if (htFromTestNca != HT.CLIENT
-                || this.AssociatedObject.ResizeMode == ResizeMode.CanResizeWithGrip)
+            if (htFromTestNca is not HT.CLIENT
+                || this.AssociatedObject.ResizeMode is ResizeMode.CanResizeWithGrip)
             {
-                var mousePosWindow = this.AssociatedObject.PointFromScreen(mousePosScreen);
-
-                // If the app is asking for content to be treated as client then that takes precedence over _everything_, even DWM caption buttons.
-                // This allows apps to set the glass frame to be non-empty, still cover it with WPF content to hide all the glass,
-                // yet still get DWM to draw a drop shadow.
-                var inputElement = this.AssociatedObject.InputHitTest(mousePosWindow);
-                if (inputElement is not null)
+                // Prevent race conditions during window closing. The associated PresentationSource is cleared by WPF before the window is really closed.
+                if (PresentationSource.FromVisual(this.AssociatedObject) is not null)
                 {
-                    if (WindowChrome.GetIsHitTestVisibleInChrome(inputElement))
-                    {
-                        return HT.CLIENT;
-                    }
+                    var mousePosWindow = this.AssociatedObject.PointFromScreen(mousePosScreen);
 
-                    if (this.AssociatedObject.ResizeMode == ResizeMode.CanResizeWithGrip)
+                    // If the app is asking for content to be treated as client then that takes precedence over _everything_, even DWM caption buttons.
+                    // This allows apps to set the glass frame to be non-empty, still cover it with WPF content to hide all the glass,
+                    // yet still get DWM to draw a drop shadow.
+                    var inputElement = this.AssociatedObject.InputHitTest(mousePosWindow);
+                    if (inputElement is not null)
                     {
-                        var direction = WindowChrome.GetResizeGripDirection(inputElement);
-                        if (direction != ResizeGripDirection.None)
+                        if (WindowChrome.GetIsHitTestVisibleInChrome(inputElement))
                         {
-                            return this._GetHTFromResizeGripDirection(direction);
+                            return HT.CLIENT;
+                        }
+
+                        if (this.AssociatedObject.ResizeMode is ResizeMode.CanResizeWithGrip)
+                        {
+                            var direction = WindowChrome.GetResizeGripDirection(inputElement);
+                            if (direction is not ResizeGripDirection.None)
+                            {
+                                return this._GetHTFromResizeGripDirection(direction);
+                            }
                         }
                     }
                 }
             }
 
-            if (htFromNcControlManager != HT.NOWHERE
-                && htFromTestNca == HT.CLIENT)
+            // It's not opted out, so offer up the hittest to DWM, then to our custom non-client area logic.
+            if (this.UseNativeCaptionButtons
+                && htFromTestNca is HT.CLIENT or HT.CAPTION or HT.TOP
+                && htFromNcControlManager is HT.NOWHERE or HT.CAPTION)
+            {
+#if NETCOREAPP
+                PInvoke.DwmDefWindowProc(this.windowHandle, (uint)uMsg, wParam, lParam, out var lRet);
+#else
+                LRESULT lRet;
+                PInvoke.DwmDefWindowProc(this.windowHandle, (uint)uMsg, wParam, lParam, &lRet);
+#endif
+
+                if (lRet.Value != IntPtr.Zero)
+                {
+                    // If DWM claims to have handled this, then respect their call.
+                    return (HT)lRet.Value;
+                }
+            }
+
+            if (htFromNcControlManager is not HT.NOWHERE
+                && htFromTestNca is HT.CLIENT)
             {
                 return htFromNcControlManager;
             }
@@ -727,7 +768,7 @@ namespace ControlzEx.Behaviors
 
         private unsafe IntPtr _HandleNCMOUSEMOVE(WM uMsg, nuint wParam, nint lParam, out bool handled)
         {
-            if (this.isTrackingMouseEvents == false)
+            if (this.isTrackingMouseEvents is false)
             {
                 var settings = new TRACKMOUSEEVENT
                 {
@@ -778,13 +819,15 @@ namespace ControlzEx.Behaviors
                     && this._GetHwndState() == WindowState.Maximized)
                 {
                     structure.styleNew |= (uint)WINDOW_STYLE.WS_OVERLAPPED;
-                    //structure.styleNew &= (uint)~WINDOW_STYLE.WS_CAPTION;
-                    //structure.styleNew &= (uint)~WINDOW_STYLE.WS_SYSMENU; // todo: must be removed for mica effect
+                }
+
+                if (this.UseNativeCaptionButtons)
+                {
+                    structure.styleNew |= (uint)WINDOW_STYLE.WS_SYSMENU;
                 }
                 else
                 {
-                    //structure.styleNew |= (uint)(WINDOW_STYLE.WS_OVERLAPPED | WINDOW_STYLE.WS_CAPTION);
-                    //structure.styleNew &= (uint)~WINDOW_STYLE.WS_SYSMENU; // todo: must be removed for mica effect
+                    structure.styleNew &= (uint)~WINDOW_STYLE.WS_SYSMENU;
                 }
 
                 Marshal.StructureToPtr(structure, lParam, fDeleteOld: true);
@@ -905,9 +948,11 @@ namespace ControlzEx.Behaviors
             var state = assumeState ?? this._GetHwndState();
 
             if (assumeState is not null
-                || this.lastMenuState != state)
+                || this.lastWindowStateForSystemMenu != state
+                || this.lastResizeModeForSystemMenu != this.AssociatedObject.ResizeMode)
             {
-                this.lastMenuState = state;
+                this.lastWindowStateForSystemMenu = state;
+                this.lastResizeModeForSystemMenu = this.AssociatedObject.ResizeMode;
 
                 var menuHandle = PInvoke.GetSystemMenu(this.windowHandle, false);
                 if (menuHandle != IntPtr.Zero)
@@ -955,10 +1000,9 @@ namespace ControlzEx.Behaviors
             {
                 this._ModifyStyle(WINDOW_STYLE.WS_CAPTION, 0);
             }
-            else
+            else if (this.AssociatedObject.WindowStyle is not WindowStyle.None)
             {
-                //this._ModifyStyle(WINDOW_STYLE.WS_SYSMENU, WINDOW_STYLE.WS_CAPTION);
-                //this._ModifyStyle(0, WINDOW_STYLE.WS_CAPTION); // todo: mica
+                this._ModifyStyle(0, WINDOW_STYLE.WS_CAPTION);
             }
         }
 
@@ -979,11 +1023,11 @@ namespace ControlzEx.Behaviors
             var uCol = 1;
             var onTopResizeBorder = false;
 
-            // Only get this once from the property to improve performance
+            // Only get these properties once to improve performance
             var resizeBorderThickness = this.ResizeBorderThickness;
 
             // Allow resize of up to some pixels inside the window itself
-            onTopResizeBorder = mousePosition.Y <= (windowRect.Top + this.ResizeBorderThickness.Top);
+            onTopResizeBorder = mousePosition.Y <= (windowRect.Top + resizeBorderThickness.Top);
 
             // Determine if the point is at the top or bottom of the window.
             uRow = GetHTRow(windowRect, mousePosition, resizeBorderThickness);
@@ -995,7 +1039,7 @@ namespace ControlzEx.Behaviors
             // then resize left-right rather than diagonally.
             if (uRow == 0
                 && uCol != 1
-                && onTopResizeBorder == false)
+                && onTopResizeBorder is false)
             {
                 uRow = 1;
             }
@@ -1012,12 +1056,6 @@ namespace ControlzEx.Behaviors
             }
 
             var ht = hitTestBorders[uRow, uCol];
-
-            if ((ht is HT.TOPLEFT or HT.TOP or HT.TOPRIGHT)
-                && onTopResizeBorder == false)
-            {
-                ht = HT.CAPTION;
-            }
 
             return ht;
 

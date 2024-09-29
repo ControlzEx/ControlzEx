@@ -152,7 +152,7 @@ namespace ControlzEx.Behaviors
         /// <summary>Identifies the <see cref="DWMSupportsBorderColor"/> dependency property key.</summary>
         // ReSharper disable once InconsistentNaming
         private static readonly DependencyPropertyKey DWMSupportsBorderColorPropertyKey =
-            DependencyProperty.RegisterReadOnly(nameof(DWMSupportsBorderColor), typeof(bool), typeof(GlowWindowBehavior), new PropertyMetadata(BooleanBoxes.FalseBox));
+            DependencyProperty.RegisterReadOnly(nameof(DWMSupportsBorderColor), typeof(bool), typeof(GlowWindowBehavior), new PropertyMetadata(BooleanBoxes.Box(FeatureSupport.IsWindowBorderColorSupported)));
 
         /// <summary>Identifies the <see cref="DWMSupportsBorderColor"/> dependency property.</summary>
         public static readonly DependencyProperty DWMSupportsBorderColorProperty = DWMSupportsBorderColorPropertyKey.DependencyProperty;
@@ -581,7 +581,11 @@ namespace ControlzEx.Behaviors
             else
             {
                 this.StopTimer();
-                this.IsGlowVisible = shouldShowGlow;
+
+                using (this.DeferGlowChanges())
+                {
+                    this.IsGlowVisible = shouldShowGlow;
+                }
             }
         }
 

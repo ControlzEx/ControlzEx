@@ -6,44 +6,85 @@
         <IsBuildingWpfTempProj Condition="$(MSBuildProjectName.Contains('_wpftmp')) != 'true'">false</IsBuildingWpfTempProj>
         <IsBuildingWpfTempProj Condition="$(MSBuildProjectName.Contains('_wpftmp')) == 'true'">true</IsBuildingWpfTempProj>
         <DisableWinExeOutputInference>true</DisableWinExeOutputInference>
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+        <CheckEolTargetFramework>false</CheckEolTargetFramework>
+        <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
     </PropertyGroup>
 
     <!-- Project properties -->
     <PropertyGroup>
-        <TargetFrameworks>net462;netcoreapp3.1;net5.0-windows</TargetFrameworks>
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <TargetFrameworks>net8.0-windows;net6.0-windows;net462</TargetFrameworks>
+        <LangVersion>latestmajor</LangVersion>
+
+        <IsBuildingForLegacyFramework>false</IsBuildingForLegacyFramework>
+        <IsBuildingForLegacyFramework Condition="'$(TargetFramework)' == 'net462'">true</IsBuildingForLegacyFramework>
+
         <OutputPath Condition="$(IsBuildingWpfTempProj) != 'true'">$(MSBuildThisFileDirectory)\bin\$(Configuration)\$(MSBuildProjectName)</OutputPath>
         <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
         <GenerateDocumentationFile>false</GenerateDocumentationFile>
-        <AutoGenerateBindingRedirects Condition=" $(TargetFramework.StartsWith('net4')) ">true</AutoGenerateBindingRedirects>
-        <LangVersion>9.0</LangVersion>
-        <DebugSymbols>true</DebugSymbols>
-        <DebugType>embedded</DebugType>
+        <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
+        <AutoGenerateBindingRedirects Condition="'$(IsBuildingForLegacyFramework)' == 'true'">true</AutoGenerateBindingRedirects>
+
+        <UseWPF>true</UseWPF>
+
         <!-- CA1021: Avoid out parameters -->
         <!-- CA1045: Do not pass types by reference -->
         <!-- CA1051: Do not declare visible instance fields -->
         <!-- CA1307: Specify StringComparison for clarity -->
-        <!-- CA1401: P/Invokes should not be visible -->
         <!-- CS1591: -->
         <!-- AD0001: Disabled because it throws an NRE -->
-        <NoWarn>$(NoWarn);CA1021;CA1045;CA1051;CA1307;CA1401;CS1591;AD0001</NoWarn>
+        <NoWarn>$(NoWarn);CA1021;CA1045;CA1051;CA1307;CS1591;AD0001</NoWarn>
         <NoError>$(NoError);</NoError>
-        <UseWPF>true</UseWPF>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\ControlzEx.ruleset</CodeAnalysisRuleSet>
     </PropertyGroup>
 
+    <!-- AssemblyInfo -->
     <PropertyGroup>
-      <DefineConstants Condition="'$(TargetFramework)' == 'net5.0-windows'">$(DefineConstants);NET5_0_OR_GREATER</DefineConstants>
+        <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+
+        <Company>https://github.com/ControlzEx/ControlzEx</Company>
+        <Product>ControlzEx</Product>
+        <Copyright>Copyright © 2015 - $([System.DateTime]::Today.ToString(yyyy)) Jan Karger, Bastian Schmidt, James Willock</Copyright>
+
+        <Version Condition="'$(Version)' == ''">7.0.0.0</Version>
+        <AssemblyVersion Condition="'$(AssemblyVersion)' == ''">7.0.0.0</AssemblyVersion>
+        <FileVersion Condition="'$(FileVersion)' == ''">7.0.0.0</FileVersion>
+        <InformationalVersion Condition="'$(InformationalVersion)' == ''">SRC</InformationalVersion>
+    </PropertyGroup>
+
+    <!-- Sign assembly -->
+    <PropertyGroup>
+        <SignAssembly>True</SignAssembly>
+        <AssemblyOriginatorKeyFile>$(MSBuildProjectDirectory)\..\SharedKey.snk</AssemblyOriginatorKeyFile>
+        <DelaySign>false</DelaySign>
+        <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
+    </PropertyGroup>
+
+    <!-- SourceLink -->
+    <PropertyGroup>
+        <!-- Optional: Declare that the Repository URL can be published to NuSpec -->
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <!-- Optional: Embed source files that are not tracked by the source control manager to the PDB -->
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <!-- By using EmbedAllSources we don't need SourceLink itself -->
+        <!-- https://github.com/dotnet/sourcelink/blob/master/docs/README.md#embedallsources -->
+        <EmbedAllSources>true</EmbedAllSources>
+    </PropertyGroup>
+
+    <!-- PDB-Options -->
+    <PropertyGroup>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>Embedded</DebugType>
     </PropertyGroup>
 
     <!-- Add the references for all projects and targets -->
     <ItemGroup>
         <PackageReference Include="JetBrains.Annotations" PrivateAssets="All" IncludeAssets="build;compile" />
         <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" />
-
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all" IncludeAssets="build;analyzers" Condition="$(DefineConstants.Contains(NETCOREAPP))" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all" IncludeAssets="build;analyzers" />
         <PackageReference Include="StyleCop.Analyzers" PrivateAssets="all" IncludeAssets="build;analyzers" />
-        <PackageReference Include="WpfAnalyzers"  PrivateAssets="all" IncludeAssets="build;analyzers" />
+        <PackageReference Include="WpfAnalyzers" PrivateAssets="all" IncludeAssets="build;analyzers" />
     </ItemGroup>
 
     <ItemGroup>
@@ -57,25 +98,7 @@
         </Compile>
     </ItemGroup>
 
-    <!-- SourceLink -->
-    <PropertyGroup>
-        <!-- Optional: Declare that the Repository URL can be published to NuSpec -->
-        <PublishRepositoryUrl>true</PublishRepositoryUrl>
-        <!-- Optional: Embed source files that are not tracked by the source control manager to the PDB -->
-        <EmbedUntrackedSources>true</EmbedUntrackedSources>
-        <!-- https://github.com/dotnet/sourcelink/blob/master/docs/README.md#embedallsources -->
-        <EmbedAllSources>true</EmbedAllSources>
-    </PropertyGroup>
-
     <ItemGroup>
         <SourceRoot Include="$(MSBuildThisFileDirectory)/" />
     </ItemGroup>
-
-    <!-- Sign assembly -->
-    <PropertyGroup>
-      <SignAssembly>True</SignAssembly>
-      <AssemblyOriginatorKeyFile>$(MSBuildProjectDirectory)\..\SharedKey.snk</AssemblyOriginatorKeyFile>
-      <DelaySign>false</DelaySign>
-      <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
-    </PropertyGroup>
 </Project>

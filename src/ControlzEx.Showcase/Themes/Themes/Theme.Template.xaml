@@ -103,5 +103,19 @@
     <SolidColorBrush x:Key="ControlzEx.Brushes.Control.BorderBrush" Color="{StaticResource Gray6}" options:Freeze="True" />
     <SolidColorBrush x:Key="ControlzEx.Brushes.Control.Disabled.BorderBrush" Color="{StaticResource Gray5}" options:Freeze="True" />
 
+    <!-- Button -->
+    <SolidColorBrush x:Key="Control.Background" Color="{StaticResource WhiteColor}" />
+    <SolidColorBrush x:Key="Control.Foreground" Color="{StaticResource BlackColor}" />
+    <SolidColorBrush x:Key="Control.Border" Color="{StaticResource BlackColor}" />
+    <SolidColorBrush x:Key="Control.MouseOver.Background" Color="{StaticResource Gray7}" />
+    <SolidColorBrush x:Key="Control.MouseOver.Foreground" Color="{StaticResource BlackColor}" />
+    <SolidColorBrush x:Key="Control.MouseOver.Border" Color="{StaticResource BlackColor}" />
+    <SolidColorBrush x:Key="Control.Pressed.Background" Color="{StaticResource Gray6}" />
+    <SolidColorBrush x:Key="Control.Pressed.Foreground" Color="{StaticResource Gray6}" />
+    <SolidColorBrush x:Key="Control.Pressed.Border" Color="{StaticResource BlackColor}" />
+    <SolidColorBrush x:Key="Control.Disabled.Background" Color="{StaticResource Gray4}" />
+    <SolidColorBrush x:Key="Control.Disabled.Border" Color="{StaticResource BlackColor}" />
+    <SolidColorBrush x:Key="Control.Disabled.Foreground" Color="{StaticResource BlackColor}" />
+
     <!-- END BRUSHES -->
 </ResourceDictionary>

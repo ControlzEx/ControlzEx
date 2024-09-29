@@ -34,11 +34,9 @@ namespace ControlzEx.Tests.Theming
         [Test]
         public void ChangeThemeForWindowShouldThrowArgumentNullException()
         {
-            using (var window = new TestWindow())
-            {
-                Assert.Throws<ArgumentNullException>(() => this.testThemeManager.ChangeTheme((Window)null, this.testThemeManager.GetTheme("Light.Red")));
-                Assert.Throws<ArgumentNullException>(() => this.testThemeManager.ChangeTheme(Application.Current.MainWindow, this.testThemeManager.GetTheme("UnknownTheme")));
-            }
+            using var window = new TestWindow();
+            Assert.Throws<ArgumentNullException>(() => this.testThemeManager.ChangeTheme((Window)null, this.testThemeManager.GetTheme("Light.Red")));
+            Assert.Throws<ArgumentNullException>(() => this.testThemeManager.ChangeTheme(Application.Current.MainWindow, this.testThemeManager.GetTheme("UnknownTheme")));
         }
 
         [Test]
@@ -105,14 +103,13 @@ namespace ControlzEx.Tests.Theming
         [Test]
         public void ChangingAppThemeChangesWindowTheme()
         {
-            using (var window = new TestWindow())
-            {
-                var expectedTheme = this.testThemeManager.GetTheme("Dark.Teal");
-                this.testThemeManager.ChangeTheme(Application.Current, expectedTheme);
+            using var window = new TestWindow();
 
-                Assert.That(this.testThemeManager.DetectTheme(Application.Current), Is.EqualTo(expectedTheme));
-                Assert.That(this.testThemeManager.DetectTheme(window), Is.EqualTo(expectedTheme));
-            }
+            var expectedTheme = this.testThemeManager.GetTheme("Dark.Teal");
+            this.testThemeManager.ChangeTheme(Application.Current, expectedTheme);
+
+            Assert.That(this.testThemeManager.DetectTheme(Application.Current), Is.EqualTo(expectedTheme));
+            Assert.That(this.testThemeManager.DetectTheme(window), Is.EqualTo(expectedTheme));
         }
 
         [Test]
@@ -131,16 +128,15 @@ namespace ControlzEx.Tests.Theming
             }
 
             {
-                using (var window = new TestWindow())
-                {
-                    var currentTheme = this.testThemeManager.DetectTheme(window);
+                using var window = new TestWindow();
 
-                    Assert.That(currentTheme, Is.Not.Null);
-                    this.testThemeManager.ChangeThemeBaseColor(window, this.testThemeManager.GetInverseTheme(currentTheme).BaseColorScheme);
+                var currentTheme = this.testThemeManager.DetectTheme(window);
 
-                    Assert.That(this.testThemeManager.DetectTheme(window).BaseColorScheme, Is.Not.EqualTo(currentTheme.BaseColorScheme));
-                    Assert.That(this.testThemeManager.DetectTheme(window).ColorScheme, Is.EqualTo(currentTheme.ColorScheme));
-                }
+                Assert.That(currentTheme, Is.Not.Null);
+                this.testThemeManager.ChangeThemeBaseColor(window, this.testThemeManager.GetInverseTheme(currentTheme).BaseColorScheme);
+
+                Assert.That(this.testThemeManager.DetectTheme(window).BaseColorScheme, Is.Not.EqualTo(currentTheme.BaseColorScheme));
+                Assert.That(this.testThemeManager.DetectTheme(window).ColorScheme, Is.EqualTo(currentTheme.ColorScheme));
             }
 
             {
@@ -172,16 +168,15 @@ namespace ControlzEx.Tests.Theming
             }
 
             {
-                using (var window = new TestWindow())
-                {
-                    var currentTheme = this.testThemeManager.DetectTheme(window);
+                using var window = new TestWindow();
 
-                    Assert.That(currentTheme, Is.Not.Null);
-                    this.testThemeManager.ChangeThemeColorScheme(window, "Green");
+                var currentTheme = this.testThemeManager.DetectTheme(window);
 
-                    Assert.That(this.testThemeManager.DetectTheme(window).BaseColorScheme, Is.EqualTo(currentTheme.BaseColorScheme));
-                    Assert.That(this.testThemeManager.DetectTheme(window).ColorScheme, Is.EqualTo("Green"));
-                }
+                Assert.That(currentTheme, Is.Not.Null);
+                this.testThemeManager.ChangeThemeColorScheme(window, "Green");
+
+                Assert.That(this.testThemeManager.DetectTheme(window).BaseColorScheme, Is.EqualTo(currentTheme.BaseColorScheme));
+                Assert.That(this.testThemeManager.DetectTheme(window).ColorScheme, Is.EqualTo("Green"));
             }
 
             {
@@ -215,16 +210,15 @@ namespace ControlzEx.Tests.Theming
             }
 
             {
-                using (var window = new TestWindow())
-                {
-                    var currentTheme = this.testThemeManager.DetectTheme(window);
+                using var window = new TestWindow();
 
-                    Assert.That(currentTheme, Is.Not.Null);
-                    this.testThemeManager.ChangeTheme(window, ThemeManager.BaseColorLight, "Green");
+                var currentTheme = this.testThemeManager.DetectTheme(window);
 
-                    Assert.That(this.testThemeManager.DetectTheme(window).BaseColorScheme, Is.EqualTo(ThemeManager.BaseColorLight));
-                    Assert.That(this.testThemeManager.DetectTheme(window).ColorScheme, Is.EqualTo("Green"));
-                }
+                Assert.That(currentTheme, Is.Not.Null);
+                this.testThemeManager.ChangeTheme(window, ThemeManager.BaseColorLight, "Green");
+
+                Assert.That(this.testThemeManager.DetectTheme(window).BaseColorScheme, Is.EqualTo(ThemeManager.BaseColorLight));
+                Assert.That(this.testThemeManager.DetectTheme(window).ColorScheme, Is.EqualTo("Green"));
             }
 
             {
@@ -280,7 +274,7 @@ namespace ControlzEx.Tests.Theming
 
             var inverseTheme = this.testThemeManager.GetInverseTheme(theme);
 
-            Assert.Null(inverseTheme);
+            Assert.That(inverseTheme, Is.Null);
         }
 
         [Test]
@@ -310,7 +304,7 @@ namespace ControlzEx.Tests.Theming
 
             var inverseTheme = this.testThemeManager.GetInverseTheme(theme);
 
-            Assert.AreEqual(inverseTheme.BaseColorScheme, inverseBaseColor);
+            Assert.That(inverseTheme.BaseColorScheme, Is.EqualTo(inverseBaseColor));
         }
 
         [Test]
@@ -318,7 +312,7 @@ namespace ControlzEx.Tests.Theming
         {
             var theme = this.testThemeManager.GetTheme("Dark.Blue");
 
-            Assert.NotNull(theme);
+            Assert.That(theme, Is.Not.Null);
             Assert.That(theme.GetAllResources().First().Source.ToString(), Is.EqualTo("pack://application:,,,/ControlzEx.Tests;component/Themes/Themes/Dark.Blue.xaml").IgnoreCase);
         }
 
@@ -332,7 +326,7 @@ namespace ControlzEx.Tests.Theming
 
             var theme = this.testThemeManager.GetTheme(dic);
 
-            Assert.NotNull(theme);
+            Assert.That(theme, Is.Not.Null);
             Assert.That(theme.Name, Is.EqualTo("Dark.Blue"));
         }
 
@@ -576,13 +570,15 @@ namespace ControlzEx.Tests.Theming
             this.testThemeManager.ChangeTheme(Application.Current, RuntimeThemeGenerator.Current.GenerateRuntimeTheme(ThemeManager.BaseColorLight, Colors.Red));
 
             var detected = this.testThemeManager.DetectTheme(Application.Current);
-            Assert.NotNull(detected);
+
+            Assert.That(detected, Is.Not.Null);
             Assert.That(detected.Name, Is.EqualTo("Light.Runtime_#FFFF0000"));
 
             this.testThemeManager.ChangeTheme(Application.Current, RuntimeThemeGenerator.Current.GenerateRuntimeTheme(ThemeManager.BaseColorDark, Colors.Green));
 
             detected = this.testThemeManager.DetectTheme(Application.Current);
-            Assert.NotNull(detected);
+
+            Assert.That(detected, Is.Not.Null);
             Assert.That(detected.Name, Is.EqualTo("Dark.Runtime_#FF008000"));
 
             this.testThemeManager.ChangeTheme(Application.Current, applicationTheme);
@@ -597,7 +593,8 @@ namespace ControlzEx.Tests.Theming
             this.testThemeManager.ChangeTheme(Application.Current, lightRedTheme);
 
             var detected = this.testThemeManager.DetectTheme(Application.Current);
-            Assert.NotNull(detected);
+
+            Assert.That(detected, Is.Not.Null);
             Assert.That(detected.ColorScheme, Is.EqualTo(Colors.Red.ToString()));
 
             {
