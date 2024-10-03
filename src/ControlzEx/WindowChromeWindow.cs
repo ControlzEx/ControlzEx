@@ -87,7 +87,6 @@ namespace ControlzEx
             BindingOperations.SetBinding(behavior, WindowChromeBehavior.UseNativeCaptionButtonsProperty, new Binding { Path = new PropertyPath(UseNativeCaptionButtonsProperty), Source = this });
             BindingOperations.SetBinding(behavior, WindowChromeBehavior.CaptionButtonsSizeProperty, new Binding { Path = new PropertyPath(CaptionButtonsSizeProperty), Source = this, Mode = BindingMode.TwoWay });
             BindingOperations.SetBinding(behavior, WindowChromeBehavior.GlassFrameThicknessProperty, new Binding { Path = new PropertyPath(GlassFrameThicknessProperty), Source = this });
-            BindingOperations.SetBinding(behavior, WindowChromeBehavior.NCPaddingProperty, new Binding { Path = new PropertyPath(NCPaddingProperty), Source = this });
 
             this.SetBinding(IsNCActiveProperty, new Binding { Path = new PropertyPath(WindowChromeBehavior.IsNCActiveProperty), Source = behavior });
 
@@ -190,7 +189,7 @@ namespace ControlzEx
         }
 
         /// <summary>Identifies the <see cref="KeepBorderOnMaximize"/> dependency property.</summary>
-        public static readonly DependencyProperty KeepBorderOnMaximizeProperty = DependencyProperty.Register(nameof(KeepBorderOnMaximize), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(BooleanBoxes.TrueBox));
+        public static readonly DependencyProperty KeepBorderOnMaximizeProperty = DependencyProperty.Register(nameof(KeepBorderOnMaximize), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(BooleanBoxes.FalseBox));
 
         /// <summary>Identifies the <see cref="ShowMinButton"/> dependency property.</summary>
         public static readonly DependencyProperty ShowMinButtonProperty = DependencyProperty.Register(nameof(ShowMinButton), typeof(bool), typeof(WindowChromeWindow), new PropertyMetadata(BooleanBoxes.TrueBox));
@@ -290,14 +289,6 @@ namespace ControlzEx
         {
             get => (Thickness)this.GetValue(GlassFrameThicknessProperty);
             set => this.SetValue(GlassFrameThicknessProperty, value);
-        }
-
-        public static readonly DependencyProperty NCPaddingProperty = DependencyProperty.Register(nameof(NCPadding), typeof(Thickness), typeof(WindowChromeWindow), new PropertyMetadata(default(Thickness)));
-
-        public Thickness NCPadding
-        {
-            get => (Thickness)this.GetValue(NCPaddingProperty);
-            set => this.SetValue(NCPaddingProperty, value);
         }
 
         public static readonly DependencyProperty CaptionButtonsSizeProperty = DependencyProperty.Register(nameof(CaptionButtonsSize), typeof(Size), typeof(WindowChromeWindow), new PropertyMetadata(default(Size)));
@@ -424,44 +415,28 @@ namespace ControlzEx
         /// <summary>
         /// Updates the padding used for the window content.
         /// </summary>
-        protected virtual unsafe void UpdatePadding()
+        protected virtual void UpdatePadding()
         {
-            if (this.WindowState is WindowState.Maximized
-                && this.UseNativeCaptionButtons
-                && this.IgnoreTaskbarOnMaximize is false)
+            if (this.WindowState is WindowState.Normal)
             {
-                var hWnd = (HWND)new WindowInteropHelper(this).Handle;
-                RECT rc = default;
-                PInvoke.AdjustWindowRect(&rc, PInvoke.GetWindowStyle(hWnd), false);
-                var borderThickness = Math.Abs(rc.X);
-                this.SetCurrentValue(PaddingProperty, new Thickness(borderThickness));
-                this.SetCurrentValue(NCPaddingProperty, emptyContentPadding);
+                if ((this.IsActive
+                    && this.GlowColor is not null)
+                    ||
+                    (this.IsActive is false
+                    && this.NonActiveGlowColor is not null))
+                {
+                    this.SetCurrentValue(PaddingProperty, defaultContentPadding);
+                    return;
+                }
+
                 return;
             }
 
-            if (OSVersionHelper.IsWindows11_OrGreater
-                && this.DWMSupportsBorderColor
-                && this.PreferDWMBorderColor
-                && this.WindowState is WindowState.Normal)
+            if (this.UseNativeCaptionButtons
+                && this.IgnoreTaskbarOnMaximize is false
+                && this.WindowState is WindowState.Maximized)
             {
-                this.SetCurrentValue(PaddingProperty, emptyContentPadding);
-                this.SetCurrentValue(NCPaddingProperty, defaultContentPadding);
-                return;
-            }
-
-            this.SetCurrentValue(NCPaddingProperty, emptyContentPadding);
-
-            if (this.IsActive
-                && this.GlowColor is not null)
-            {
-                this.SetCurrentValue(PaddingProperty, defaultContentPadding);
-                return;
-            }
-
-            if (this.IsActive == false
-                && this.NonActiveGlowColor is not null)
-            {
-                this.SetCurrentValue(PaddingProperty, defaultContentPadding);
+                this.SetCurrentValue(PaddingProperty, new Thickness(0, WindowChromeBehavior.GetDefaultResizeBorderThickness().Top, 0, 0));
                 return;
             }
 

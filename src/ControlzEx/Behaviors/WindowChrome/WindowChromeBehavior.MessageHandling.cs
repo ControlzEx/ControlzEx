@@ -28,9 +28,7 @@ namespace ControlzEx.Behaviors
         private ResizeMode lastResizeModeForSystemMenu;
         private WINDOWPOS lastWindowpos;
 
-#pragma warning disable 414
         private bool isDragging;
-#pragma warning restore 414
 
         private NonClientControlManager? nonClientControlManager;
 
@@ -318,83 +316,80 @@ namespace ControlzEx.Behaviors
         [SecurityCritical]
         private IntPtr _HandleNCCALCSIZE(WM uMsg, nuint wParam, nint lParam, out bool handled)
         {
+            handled = true;
+
+            if (wParam is 0)
+            {
+                return IntPtr.Zero;
+            }
+
             // lParam is an [in, out] that can be either a RECT* (wParam == FALSE) or an NCCALCSIZE_PARAMS*.
             // Since the first field of NCCALCSIZE_PARAMS is a RECT and is the only field we care about
             // we can unconditionally treat it as a RECT.
+            var originalSize = Marshal.PtrToStructure<RECT>(lParam);
 
-            handled = true;
+            var defResult = PInvoke.DefWindowProc(this.windowHandle, (uint)uMsg, wParam, lParam);
+            if (defResult.Value is not 0)
+            {
+                return defResult.Value;
+            }
 
-            var wParamIsTrue = wParam != 0;
+            var newSize = Marshal.PtrToStructure<RECT>(lParam);
+            // Re-apply the original top from before the size of the default frame was applied.
+            // This removes the titlebar.
+            newSize.top = originalSize.top;
 
             var hwndState = this._GetHwndState();
 
-            if (hwndState is WindowState.Maximized
-                && this.UseNativeCaptionButtons)
+            if (hwndState is WindowState.Maximized)
             {
-                // todo: window content shifts up by the resize border thickness... if we change the nc-area the caption buttons stop responding...
-            }
-            else if (hwndState is WindowState.Maximized)
-            {
-                // We have to get the monitor preferably from the window position as the info for the window handle might not yet be updated.
-                // As we update lastWindowpos in WINDOWPOSCHANGING we have the right "future" position and thus can get the correct monitor from that.
-                var monitor = MonitorHelper.MonitorFromWindowPosOrWindow(this.lastWindowpos, this.windowHandle);
-                var monitorInfo = PInvoke.GetMonitorInfo(monitor);
-                //System.Diagnostics.Trace.WriteLine(monitorInfo.rcWork);
-
-                var monitorRect = this.IgnoreTaskbarOnMaximize
-                    ? monitorInfo.rcMonitor
-                    : monitorInfo.rcWork;
-
-                var rc = Marshal.PtrToStructure<RECT>(lParam);
-                rc.left = monitorRect.left;
-                rc.top = monitorRect.top;
-                rc.right = monitorRect.right;
-                rc.bottom = monitorRect.bottom;
-
-                // monitor and work area will be equal if taskbar is hidden
+                // Increasing top with native caption buttons does not work as that causes the buttons to be unresponsive
                 if (this.IgnoreTaskbarOnMaximize is false
-                    && monitorInfo.rcMonitor.GetHeight() == monitorInfo.rcWork.GetHeight()
-                    && monitorInfo.rcMonitor.GetWidth() == monitorInfo.rcWork.GetWidth())
+                    && this.UseNativeCaptionButtons is false)
                 {
-                    rc = AdjustWorkingAreaForAutoHide(monitor, rc);
+                    newSize.top += (int)GetDefaultResizeBorderThickness().Top;
                 }
 
-                Marshal.StructureToPtr(rc, lParam, true);
-            } // Only do this for Win 11 or greater, or when the native caption buttons should be used, where we might want to keep the native window border
-            else if ((OSVersionHelper.IsWindows11_OrGreater || this.UseNativeCaptionButtons)
-                     && PInvoke.GetWindowStyle(this.windowHandle).HasFlag(WINDOW_STYLE.WS_CAPTION))
-            {
-                var rcBefore = Marshal.PtrToStructure<RECT>(lParam);
-                PInvoke.DefWindowProc(this.windowHandle, (uint)uMsg, wParam, lParam);
-                var rc = Marshal.PtrToStructure<RECT>(lParam);
-                rc.top = rcBefore.top; // Remove titlebar
+                // Handle FullScreen and autohide
+                {
+                    // We have to get the monitor preferably from the window position as the info for the window handle might not yet be updated.
+                    // As we update lastWindowpos in WINDOWPOSCHANGING we have the right "future" position and thus can get the correct monitor from that.
+                    var monitor = MonitorHelper.MonitorFromWindowPosOrWindow(this.lastWindowpos, this.windowHandle);
+                    var monitorInfo = PInvoke.GetMonitorInfo(monitor);
+                    //System.Diagnostics.Trace.WriteLine(monitorInfo.rcWork);
 
-                // Workaround for a bug in Windows.
-                // If we are using the DWM border (Win 11 and above), the window is inactive and there is a child window the top border is not drawn at all or only partially drawn.
-                // Removing 1 px from the top solves that issue.
-                rc.left += (int)this.NCPadding.Left;
-                rc.top += (int)this.NCPadding.Top;
-                rc.right -= (int)this.NCPadding.Right;
-                rc.bottom -= (int)this.NCPadding.Bottom;
+                    if (this.IgnoreTaskbarOnMaximize)
+                    {
+                        var monitorRect = monitorInfo.rcMonitor;
 
-                Marshal.StructureToPtr(rc, lParam, true);
+                        newSize.left = monitorRect.left;
+                        newSize.top = monitorRect.top;
+                        newSize.right = monitorRect.right;
+                        newSize.bottom = monitorRect.bottom;
+                    } // monitor and work area will be equal if taskbar is hidden
+                    else if (monitorInfo.rcMonitor.GetHeight() == monitorInfo.rcWork.GetHeight()
+                        && monitorInfo.rcMonitor.GetWidth() == monitorInfo.rcWork.GetWidth())
+                    {
+                        newSize = AdjustWorkingAreaForAutoHide(monitor, newSize);
+                    }
+                }
             }
+            else if (PInvoke.GetWindowStyle(this.windowHandle).HasFlag(WINDOW_STYLE.WS_CAPTION))
+            {
+                if (OSVersionHelper.IsWindows11_OrGreater is false)
+                {
+                    // Windows 10:
+                    // We have to add or remove one pixel on any side of the window to force a flicker free resize.
+                    // Removing pixels would result in a smaller client area.
+                    // Adding pixels does not seem to really increase the client area.
+                    newSize.bottom += 1;
+                }
+            }
+
+            Marshal.StructureToPtr(newSize, lParam, true);
 
             // Per MSDN for NCCALCSIZE, always return 0 when wParam == FALSE
-            //
-            // Returning 0 when wParam == TRUE is not appropriate - it will preserve
-            // the old client area and align it with the upper-left corner of the new
-            // client area. So we simply ask for a redraw (WVR_REDRAW)
-
-            var retVal = IntPtr.Zero;
-            if (wParamIsTrue) // wParam == TRUE
-            {
-                // Using the combination of WVR.VALIDRECTS and WVR.REDRAW gives the smoothest
-                // resize behavior we can achieve here.
-                retVal = new IntPtr((int)(WVR.VALIDRECTS | WVR.REDRAW));
-            }
-
-            return retVal;
+            return (IntPtr)(WVR.REDRAW | WVR.VALIDRECTS);
         }
 
         private HT _GetHTFromResizeGripDirection(ResizeGripDirection direction)

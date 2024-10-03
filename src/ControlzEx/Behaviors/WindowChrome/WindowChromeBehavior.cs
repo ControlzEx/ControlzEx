@@ -125,7 +125,7 @@ namespace ControlzEx.Behaviors
         /// <summary>
         /// <see cref="DependencyProperty"/> for <see cref="KeepBorderOnMaximize"/>.
         /// </summary>
-        public static readonly DependencyProperty KeepBorderOnMaximizeProperty = DependencyProperty.Register(nameof(KeepBorderOnMaximize), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(BooleanBoxes.TrueBox, OnKeepBorderOnMaximizeChanged));
+        public static readonly DependencyProperty KeepBorderOnMaximizeProperty = DependencyProperty.Register(nameof(KeepBorderOnMaximize), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(BooleanBoxes.FalseBox, OnKeepBorderOnMaximizeChanged));
 
         // ReSharper disable once InconsistentNaming
         private static readonly DependencyPropertyKey IsNCActivePropertyKey = DependencyProperty.RegisterReadOnly(nameof(IsNCActive), typeof(bool), typeof(WindowChromeBehavior), new PropertyMetadata(BooleanBoxes.FalseBox));
@@ -314,20 +314,6 @@ namespace ControlzEx.Behaviors
             }
 
             DwmHelper.ExtendFrameIntoClientArea(this.windowHandle, this.GlassFrameThickness);
-        }
-
-        public static readonly DependencyProperty NCPaddingProperty = DependencyProperty.Register(nameof(NCPadding), typeof(Thickness), typeof(WindowChromeBehavior), new PropertyMetadata(default(Thickness), OnNCPaddingChanged));
-
-        public Thickness NCPadding
-        {
-            get => (Thickness)this.GetValue(NCPaddingProperty);
-            set => this.SetValue(NCPaddingProperty, value);
-        }
-
-        private static void OnNCPaddingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var behavior = (WindowChromeBehavior)d;
-            behavior._OnChromePropertyChangedThatRequiresRepaint();
         }
 
         /// <inheritdoc />
