@@ -69,7 +69,7 @@
         </ObjectDataProvider>
     </controlzEx:WindowChromeWindow.Resources>
 
-    <Grid SnapsToDevicePixels="True">
+    <Grid x:Name="ContentGrid" SnapsToDevicePixels="True">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="30" />
@@ -881,6 +881,55 @@
                                         <Button Padding="4"
                                                 Click="ButtonResetMaxSizesOnClick"
                                                 Content="Reset" />
+                                    </StackPanel>
+
+                                    <Label>
+                                        Padding
+                                    </Label>
+                                    <StackPanel Margin="4"
+                                                VerticalAlignment="Center"
+                                                Orientation="Horizontal">
+                                        <TextBox MinWidth="70"
+                                                 Margin="0 0 2 0"
+                                                 Padding="2"
+                                                 VerticalAlignment="Center"
+                                                 IsReadOnly="True"
+                                                 Text="{Binding ElementName=Window, Path=Padding, Mode=OneWay}" />
+                                    </StackPanel>
+
+                                    <Label>
+                                        CaptionButtonsSize
+                                    </Label>
+                                    <StackPanel Margin="4"
+                                                VerticalAlignment="Center"
+                                                Orientation="Horizontal">
+                                        <TextBox MinWidth="70"
+                                                 Margin="0 0 2 0"
+                                                 Padding="2"
+                                                 VerticalAlignment="Center"
+                                                 IsReadOnly="True"
+                                                 Text="{Binding ElementName=Window, Path=CaptionButtonsSize, Mode=OneWay}" />
+                                    </StackPanel>
+
+                                    <Label>
+                                        Size (Content)
+                                    </Label>
+                                    <StackPanel Margin="4"
+                                                VerticalAlignment="Center"
+                                                Orientation="Horizontal">
+                                        <TextBox MinWidth="35"
+                                                 Margin="0 0 2 0"
+                                                 Padding="2"
+                                                 VerticalAlignment="Center"
+                                                 IsReadOnly="True"
+                                                 Text="{Binding ElementName=ContentGrid, Path=ActualWidth, Mode=OneWay}" />
+
+                                        <TextBox MinWidth="35"
+                                                 Margin="0 0 2 0"
+                                                 Padding="2"
+                                                 VerticalAlignment="Center"
+                                                 IsReadOnly="True"
+                                                 Text="{Binding ElementName=ContentGrid, Path=ActualHeight, Mode=OneWay}" />
                                     </StackPanel>
 
                                     <Label>
