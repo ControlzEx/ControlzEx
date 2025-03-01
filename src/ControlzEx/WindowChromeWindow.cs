@@ -43,11 +43,6 @@ namespace ControlzEx
             this.windowHandle = new HWND(new WindowInteropHelper(this).Handle);
             this.hwndSource = HwndSource.FromHwnd(this.windowHandle);
 
-            if (this.hwndSource?.CompositionTarget is { } compositionTarget)
-            {
-                compositionTarget.BackgroundColor = Colors.Transparent;
-            }
-
             this.UpdateCaptionColor();
 
             if (this.AllowsTransparency is false)
