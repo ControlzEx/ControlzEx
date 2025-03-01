@@ -4,13 +4,11 @@
     Shared Controlz for WPF
   </p>
   <p>
-    Supporting .NET Framework (4.5.2, 4.6.2 and greater), .NET Core (3.1) and .NET 5 (on Windows)
+    Supporting .NET Framework (4.6.2 and greater) and .NET (6 and greater)
   </p>
   <a href="https://github.com/ControlzEx/ControlzEx">
     <img alt="ControlzEx" with="200" height="200" src="logo-mini.png">
   </a>
-
-[![Join the chat at https://gitter.im/ControlzEx/ControlzEx](https://img.shields.io/badge/GITTER-join%20chat-green.svg?style=flat-square)](https://gitter.im/ControlzEx/ControlzEx?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 [![Build status](https://img.shields.io/appveyor/ci/punker76/controlzex.svg?style=flat-square)](https://ci.appveyor.com/project/punker76/controlzex)
 [![Release](https://img.shields.io/github/release/ControlzEx/ControlzEx.svg?style=flat-square)](https://github.com/ControlzEx/ControlzEx/releases/latest)
@@ -25,8 +23,12 @@
 
 ## Let's get started
 
+- A history of changes is maintained in the [Changelog](Changelog.md).
+- The roadmap is done by [milestones](../../milestones).
 - [Releases and Release Notes](../../releases)
-- [Building](../../wiki/Home) the ControlzEx solution
+- Development requirements
+  - .NET SDK 8.0.401 or later
+  - An IDE that supports the required .NET SDK (for example Rider 2024.1, Visual Studio 2022 (17.10) or later)
 
 ## TextBoxInputMaskBehavior
 
@@ -146,6 +148,7 @@ This can be turned off by setting `PreferDWMBorder` to `false`.
 ControlzEx provides a custom chrome for WPF windows and some other deeper fixes for it.
 
 What it does provide:
+
 - Draw anywhere inside the window (including the titlebar)
 - Supports every `WindowStyle` (`None`, `SingleBorderWindow`, `ThreeDBorderWindow` and `ToolWindow`)
 - Supports jitter free window resizes
