@@ -1,5 +1,11 @@
 # Changelog for ControlzEx
 
+## 7.0.1 (preview)
+
+### Bug fixes
+
+- [#206](../../issues/206) - Maximized windows with WindowStyle=None do not fill screen
+
 ## 7.0.0
 
 ### Breaking changes
