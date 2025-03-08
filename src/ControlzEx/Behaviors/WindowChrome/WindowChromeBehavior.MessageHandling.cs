@@ -335,9 +335,18 @@ namespace ControlzEx.Behaviors
             }
 
             var newSize = Marshal.PtrToStructure<RECT>(lParam);
-            // Re-apply the original top from before the size of the default frame was applied.
-            // This removes the titlebar.
-            newSize.top = originalSize.top;
+
+            var windowStyle = this.AssociatedObject.WindowStyle;
+            if (windowStyle is not WindowStyle.None)
+            {
+                // Re-apply the original top from before the size of the default frame was applied.
+                // This removes the titlebar.
+                newSize.top = originalSize.top;
+            }
+            else
+            {
+                newSize = originalSize;
+            }
 
             var hwndState = this._GetHwndState();
 
@@ -345,7 +354,8 @@ namespace ControlzEx.Behaviors
             {
                 // Increasing top with native caption buttons does not work as that causes the buttons to be unresponsive
                 if (this.IgnoreTaskbarOnMaximize is false
-                    && this.UseNativeCaptionButtons is false)
+                    && this.UseNativeCaptionButtons is false
+                    && windowStyle is not WindowStyle.None)
                 {
                     newSize.top += (int)GetDefaultResizeBorderThickness().Top;
                 }
@@ -991,7 +1001,7 @@ namespace ControlzEx.Behaviors
         private void UpdateWindowStyle()
         {
             if (this.IgnoreTaskbarOnMaximize
-                && this._GetHwndState() == WindowState.Maximized)
+                && this._GetHwndState() is WindowState.Maximized)
             {
                 this._ModifyStyle(WINDOW_STYLE.WS_CAPTION, 0);
             }
