@@ -905,16 +905,12 @@ namespace ControlzEx.Behaviors
         private WindowState _GetHwndState()
         {
             var wpl = PInvoke.GetWindowPlacement(this.windowHandle);
-            switch (wpl.showCmd)
+            return wpl.showCmd switch
             {
-                case SHOW_WINDOW_CMD.SW_SHOWMINIMIZED:
-                    return WindowState.Minimized;
-
-                case SHOW_WINDOW_CMD.SW_SHOWMAXIMIZED:
-                    return WindowState.Maximized;
-            }
-
-            return WindowState.Normal;
+                SHOW_WINDOW_CMD.SW_SHOWMINIMIZED => WindowState.Minimized,
+                SHOW_WINDOW_CMD.SW_SHOWMAXIMIZED => WindowState.Maximized,
+                _ => WindowState.Normal
+            };
         }
 
         /// <summary>

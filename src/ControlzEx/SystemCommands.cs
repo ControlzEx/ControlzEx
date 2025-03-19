@@ -127,14 +127,15 @@
         [SecuritySafeCritical]
         public static unsafe void ShowSystemMenuPhysicalCoordinates(HwndSource source, Point physicalScreenLocation)
         {
-            var hwnd = source.Handle;
+            var handle = source.Handle;
 
-            if (WindowHelper.IsWindowHandleValid(hwnd) == false)
+            if (WindowHelper.IsWindowHandleValid(handle) == false)
             {
                 return;
             }
 
-            var hmenu = PInvoke.GetSystemMenu(new HWND(hwnd), false);
+            var hwnd = new HWND(handle);
+            var hmenu = PInvoke.GetSystemMenu(hwnd, false);
             if (hmenu.IsNull)
             {
                 return;
@@ -145,10 +146,10 @@
             {
                 cbSize = (uint)Marshal.SizeOf<TPMPARAMS>()
             };
-            var cmd = PInvoke.TrackPopupMenuEx(hmenu, (uint)(TRACK_POPUP_MENU_FLAGS.TPM_LEFTBUTTON | TRACK_POPUP_MENU_FLAGS.TPM_RETURNCMD | (TRACK_POPUP_MENU_FLAGS)flags), (int)physicalScreenLocation.X, (int)physicalScreenLocation.Y, new(hwnd), &tpmparams);
+            var cmd = PInvoke.TrackPopupMenuEx(hmenu, (uint)(TRACK_POPUP_MENU_FLAGS.TPM_LEFTBUTTON | TRACK_POPUP_MENU_FLAGS.TPM_RETURNCMD | (TRACK_POPUP_MENU_FLAGS)flags), (int)physicalScreenLocation.X, (int)physicalScreenLocation.Y, hwnd, &tpmparams);
             if (cmd.Value != 0)
             {
-                PInvoke.PostMessage(hwnd, WM.SYSCOMMAND, (nuint)cmd.Value, default);
+                PInvoke.PostMessage(handle, WM.SYSCOMMAND, (nuint)cmd.Value, default);
             }
         }
     }
