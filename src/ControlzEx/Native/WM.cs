@@ -107,7 +107,7 @@ namespace Windows.Win32
         XBUTTONDBLCLK = 0x020D,
         MOUSEHWHEEL = 0x020E,
         PARENTNOTIFY = 0x0210,
-
+        ENTERMENULOOP = 0x0211,
         SIZING = 0x0214,
 
         CAPTURECHANGED = 0x0215,
