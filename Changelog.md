@@ -5,6 +5,7 @@
 ### Bug fixes
 
 - [#206](../../issues/206) - Maximized windows with WindowStyle=None do not fill screen
+- [#209](../../issues/209) - Window Menu issue
 
 ## 7.0.0
 

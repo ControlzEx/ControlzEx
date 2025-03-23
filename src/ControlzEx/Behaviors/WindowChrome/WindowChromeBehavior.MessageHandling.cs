@@ -78,19 +78,16 @@ namespace ControlzEx.Behaviors
         [SecurityCritical]
         private void _ApplyNewCustomChrome()
         {
-            if (this.windowHandle == HWND.Null
-                || this.hwndSource is null
-                || this.hwndSource.IsDisposed
-                || this.hwndSource.CompositionTarget is null)
+            if (this.IsWindowUsable() is false)
             {
-                // Not yet hooked.
                 return;
             }
 
             // Force this the first time.
+            this.UpdateNativeCaptionButtons(forceRedraw: false);
+            this.UpdateMinimizeSystemMenu(this.EnableMinimize, updateSystemMenu: false);
+            this.UpdateMaxRestoreSystemMenu(this.EnableMaxRestore, updateSystemMenu: false);
             this._UpdateSystemMenu(this.AssociatedObject.WindowState);
-            this.UpdateMinimizeSystemMenu(this.EnableMinimize);
-            this.UpdateMaxRestoreSystemMenu(this.EnableMaxRestore);
             this.UpdateWindowStyle();
             this.UpdateGlassFrameThickness();
 
@@ -118,9 +115,7 @@ namespace ControlzEx.Behaviors
         [SecurityCritical]
         private IntPtr WindowProc(IntPtr hwnd, int msg, nuint wParam, nint lParam, ref bool handled)
         {
-            if (this.hwndSource is null
-                || this.hwndSource.IsDisposed
-                || this.isCleanedUp)
+            if (this.IsWindowUsable() is false)
             {
                 return IntPtr.Zero;
             }
@@ -184,6 +179,9 @@ namespace ControlzEx.Behaviors
                     return this._HandleNCMOUSELEAVE(message, wParam, lParam, out handled);
                 case WM.MOUSELEAVE:
                     return this._HandleMOUSELEAVE(message, wParam, lParam, out handled);
+                case WM.ENTERMENULOOP:
+                    this._UpdateSystemMenu(this.AssociatedObject.WindowState);
+                    return IntPtr.Zero;
             }
 
             return IntPtr.Zero;
@@ -824,15 +822,6 @@ namespace ControlzEx.Behaviors
                     && this._GetHwndState() == WindowState.Maximized)
                 {
                     structure.styleNew |= (uint)WINDOW_STYLE.WS_OVERLAPPED;
-                }
-
-                if (this.UseNativeCaptionButtons)
-                {
-                    structure.styleNew |= (uint)WINDOW_STYLE.WS_SYSMENU;
-                }
-                else
-                {
-                    structure.styleNew &= (uint)~WINDOW_STYLE.WS_SYSMENU;
                 }
 
                 Marshal.StructureToPtr(structure, lParam, fDeleteOld: true);

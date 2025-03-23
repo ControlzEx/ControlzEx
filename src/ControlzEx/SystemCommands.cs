@@ -138,7 +138,24 @@
             var hmenu = PInvoke.GetSystemMenu(hwnd, false);
             if (hmenu.IsNull)
             {
-                return;
+                // If we couldn't get a menu, we have to enable the system menu style if it's not present
+                var dwStyle = PInvoke.GetWindowStyle(hwnd);
+                if (dwStyle.HasFlag(WINDOW_STYLE.WS_SYSMENU))
+                {
+                    return;
+                }
+
+                var dwNewStyle = dwStyle | WINDOW_STYLE.WS_SYSMENU;
+                // Enable system menu
+                PInvoke.SetWindowStyle(hwnd, dwNewStyle);
+                hmenu = PInvoke.GetSystemMenu(hwnd, false);
+                // Enable system menu if it wasn't present before
+                PInvoke.SetWindowStyle(hwnd, dwStyle);
+
+                if (hmenu.IsNull)
+                {
+                    return;
+                }
             }
 
             var flags = PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_MENUDROPALIGNMENT);
