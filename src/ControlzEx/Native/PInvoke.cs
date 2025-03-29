@@ -4,16 +4,18 @@
 // ReSharper disable once CheckNamespace
 namespace Windows.Win32
 {
-    using System;
-    using System.ComponentModel;
-    using System.Runtime.CompilerServices;
-    using System.Runtime.InteropServices;
-    using System.Windows;
-    using System.Windows.Media;
+    using global::System;
+    using global::System.ComponentModel;
+    using global::System.Runtime.CompilerServices;
+    using global::System.Runtime.InteropServices;
+    using global::System.Windows;
+    using global::System.Windows.Media;
 
     using Windows.Win32.Foundation;
     using Windows.Win32.Graphics.Gdi;
     using Windows.Win32.UI.WindowsAndMessaging;
+
+    using DrawingPoint = global::System.Drawing.Point;
 
     internal partial class PInvoke
     {
@@ -232,9 +234,9 @@ namespace Windows.Win32
             return rect;
         }
 
-        public static unsafe System.Drawing.Point GetCursorPos()
+        public static unsafe DrawingPoint GetCursorPos()
         {
-            var rect = default(System.Drawing.Point);
+            var rect = default(DrawingPoint);
             var result = GetCursorPos(&rect);
             return rect;
         }
@@ -270,7 +272,7 @@ namespace Windows.Win32
 
         public static unsafe void RaiseMouseMessage(IntPtr hWnd, WM msg, nuint wParam, nint lParam, bool send = true)
         {
-            var mousePoint = default(System.Drawing.Point);
+            var mousePoint = default(DrawingPoint);
             mousePoint.X = GetXLParam((int)lParam);
             mousePoint.Y = GetYLParam((int)lParam);
             var point = mousePoint;

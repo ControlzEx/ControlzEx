@@ -78,19 +78,16 @@ namespace ControlzEx.Behaviors
         [SecurityCritical]
         private void _ApplyNewCustomChrome()
         {
-            if (this.windowHandle == HWND.Null
-                || this.hwndSource is null
-                || this.hwndSource.IsDisposed
-                || this.hwndSource.CompositionTarget is null)
+            if (this.IsWindowUsable() is false)
             {
-                // Not yet hooked.
                 return;
             }
 
             // Force this the first time.
+            this.UpdateNativeCaptionButtons(forceRedraw: false);
+            this.UpdateMinimizeSystemMenu(this.EnableMinimize, updateSystemMenu: false);
+            this.UpdateMaxRestoreSystemMenu(this.EnableMaxRestore, updateSystemMenu: false);
             this._UpdateSystemMenu(this.AssociatedObject.WindowState);
-            this.UpdateMinimizeSystemMenu(this.EnableMinimize);
-            this.UpdateMaxRestoreSystemMenu(this.EnableMaxRestore);
             this.UpdateWindowStyle();
             this.UpdateGlassFrameThickness();
 
@@ -118,9 +115,7 @@ namespace ControlzEx.Behaviors
         [SecurityCritical]
         private IntPtr WindowProc(IntPtr hwnd, int msg, nuint wParam, nint lParam, ref bool handled)
         {
-            if (this.hwndSource is null
-                || this.hwndSource.IsDisposed
-                || this.isCleanedUp)
+            if (this.IsWindowUsable() is false)
             {
                 return IntPtr.Zero;
             }
@@ -184,6 +179,9 @@ namespace ControlzEx.Behaviors
                     return this._HandleNCMOUSELEAVE(message, wParam, lParam, out handled);
                 case WM.MOUSELEAVE:
                     return this._HandleMOUSELEAVE(message, wParam, lParam, out handled);
+                case WM.ENTERMENULOOP:
+                    this._UpdateSystemMenu(this.AssociatedObject.WindowState);
+                    return IntPtr.Zero;
             }
 
             return IntPtr.Zero;
@@ -335,9 +333,18 @@ namespace ControlzEx.Behaviors
             }
 
             var newSize = Marshal.PtrToStructure<RECT>(lParam);
-            // Re-apply the original top from before the size of the default frame was applied.
-            // This removes the titlebar.
-            newSize.top = originalSize.top;
+
+            var windowStyle = this.AssociatedObject.WindowStyle;
+            if (windowStyle is not WindowStyle.None)
+            {
+                // Re-apply the original top from before the size of the default frame was applied.
+                // This removes the titlebar.
+                newSize.top = originalSize.top;
+            }
+            else
+            {
+                newSize = originalSize;
+            }
 
             var hwndState = this._GetHwndState();
 
@@ -345,7 +352,8 @@ namespace ControlzEx.Behaviors
             {
                 // Increasing top with native caption buttons does not work as that causes the buttons to be unresponsive
                 if (this.IgnoreTaskbarOnMaximize is false
-                    && this.UseNativeCaptionButtons is false)
+                    && this.UseNativeCaptionButtons is false
+                    && windowStyle is not WindowStyle.None)
                 {
                     newSize.top += (int)GetDefaultResizeBorderThickness().Top;
                 }
@@ -816,15 +824,6 @@ namespace ControlzEx.Behaviors
                     structure.styleNew |= (uint)WINDOW_STYLE.WS_OVERLAPPED;
                 }
 
-                if (this.UseNativeCaptionButtons)
-                {
-                    structure.styleNew |= (uint)WINDOW_STYLE.WS_SYSMENU;
-                }
-                else
-                {
-                    structure.styleNew &= (uint)~WINDOW_STYLE.WS_SYSMENU;
-                }
-
                 Marshal.StructureToPtr(structure, lParam, fDeleteOld: true);
             }
 
@@ -895,16 +894,12 @@ namespace ControlzEx.Behaviors
         private WindowState _GetHwndState()
         {
             var wpl = PInvoke.GetWindowPlacement(this.windowHandle);
-            switch (wpl.showCmd)
+            return wpl.showCmd switch
             {
-                case SHOW_WINDOW_CMD.SW_SHOWMINIMIZED:
-                    return WindowState.Minimized;
-
-                case SHOW_WINDOW_CMD.SW_SHOWMAXIMIZED:
-                    return WindowState.Maximized;
-            }
-
-            return WindowState.Normal;
+                SHOW_WINDOW_CMD.SW_SHOWMINIMIZED => WindowState.Minimized,
+                SHOW_WINDOW_CMD.SW_SHOWMAXIMIZED => WindowState.Maximized,
+                _ => WindowState.Normal
+            };
         }
 
         /// <summary>
@@ -991,7 +986,7 @@ namespace ControlzEx.Behaviors
         private void UpdateWindowStyle()
         {
             if (this.IgnoreTaskbarOnMaximize
-                && this._GetHwndState() == WindowState.Maximized)
+                && this._GetHwndState() is WindowState.Maximized)
             {
                 this._ModifyStyle(WINDOW_STYLE.WS_CAPTION, 0);
             }

@@ -10,7 +10,7 @@ assignees: ''
 ## Describe the bug
 
 <!--
-A clear and concise description of what the bug is. Questions about usage are better asked in the Gitter https://gitter.im/ControlzEx/ControlzEx room.
+A clear and concise description of what the bug is.
 -->
 
 ## Steps to reproduce
@@ -41,11 +41,10 @@ If it's possible follow these guidelines for a good sample and I will most likel
 
 ## Environment
 
-```
-ControlzEx version: v4.x.x
-Windows build number: Win10 1909 [Version 10.0.x.x]
-Visual Studio: 2019 16.x.x
-Target Framework: .Net Core 3.1 (v4.x.x)
+```text
+- ControlzEx: __?.?__
+- Windows __?__
+- .NET __?.?__
 ```
 
 ## Screenshots
