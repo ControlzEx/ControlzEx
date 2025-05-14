@@ -1,5 +1,4 @@
 # http://www.appveyor.com/docs/appveyor-yml
-
 branches:
   only:
     - develop
@@ -48,7 +47,3 @@ artifacts:
 
 nuget:
   disable_publish_on_pr: true
-
-skip_commits:
-  files:
-    - '**/*.md'
