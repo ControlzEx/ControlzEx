@@ -33,7 +33,8 @@
         <!-- CA1307: Specify StringComparison for clarity -->
         <!-- CS1591: -->
         <!-- AD0001: Disabled because it throws an NRE -->
-        <NoWarn>$(NoWarn);CA1021;CA1045;CA1051;CA1307;CS1591;AD0001</NoWarn>
+        <!-- NU1510: -->
+        <NoWarn>$(NoWarn);CA1021;CA1045;CA1051;CA1307;CS1591;AD0001;NU1510</NoWarn>
         <NoError>$(NoError);</NoError>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\ControlzEx.ruleset</CodeAnalysisRuleSet>
