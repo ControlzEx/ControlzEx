@@ -1,5 +1,11 @@
 # Changelog for ControlzEx
 
+## 7.0.2
+
+### Bug fixes
+
+- [#213](../../issues/213) - Window border disappears when restored after starting maximized
+
 ## 7.0.1
 
 ### Bug fixes
