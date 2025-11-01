@@ -1,5 +1,12 @@
 # Changelog for ControlzEx
 
+## vNext
+
+### Maintenance
+
+- [#218](../../issues/218) - Remove workaround fro already added member (thanks @DoctorKrolic)
+- [#219](../../issues/219) - Remove unused box type (thanks @DoctorKrolic)
+
 ## 7.0.2
 
 ### Bug fixes
