@@ -2,6 +2,10 @@
 
 ## vNext
 
+### Bug fixes
+
+- [#216](../../issues/216) - KeyboardNavigationEx.AlwaysShowFocusVisual may cause the application to get stuck in an infinite focus loop (thanks @myd7349)
+
 ### Maintenance
 
 - [#218](../../issues/218) - Remove workaround fro already added member (thanks @DoctorKrolic)
