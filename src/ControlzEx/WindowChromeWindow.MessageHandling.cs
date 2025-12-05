@@ -100,8 +100,8 @@ namespace ControlzEx
                     if (PInvoke.GetClientRect(this.windowHandle, &rect) == true)
                     {
                         var brush = WindowsThemeHelper.AppsUseLightTheme()
-                            ? new HBRUSH(PInvoke.GetStockObject(GET_STOCK_OBJECT_FLAGS.WHITE_BRUSH))
-                            : new HBRUSH(PInvoke.GetStockObject(GET_STOCK_OBJECT_FLAGS.BLACK_BRUSH));
+                            ? new HBRUSH((IntPtr)PInvoke.GetStockObject(GET_STOCK_OBJECT_FLAGS.WHITE_BRUSH))
+                            : new HBRUSH((IntPtr)PInvoke.GetStockObject(GET_STOCK_OBJECT_FLAGS.BLACK_BRUSH));
                         var dc = new HDC(new IntPtr((nint)wParam));
 
                         if (PInvoke.FillRect(dc, &rect, brush) != 0)
