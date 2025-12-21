@@ -6,7 +6,7 @@
 #tool dotnet:?package=AzureSignTool&version=4.0.1
 #tool dotnet:?package=GitReleaseManager.Tool&version=0.15.0
 
-#tool nuget:?package=GitVersion.Tool&version=6.5.1
+#tool dotnet:?package=GitVersion.Tool&version=6.5.1
 
 ///////////////////////////////////////////////////////////////////////////////
 // ARGUMENTS
