@@ -1,10 +1,11 @@
 # Changelog for ControlzEx
 
-## vNext
+## 7.0.3 (preview)
 
 ### Bug fixes
 
 - [#216](../../issues/216) - KeyboardNavigationEx.AlwaysShowFocusVisual may cause the application to get stuck in an infinite focus loop (thanks @myd7349)
+- [#222](../../issues/222) - Non-client area hit test feature doesn't work properly when view box is involved
 
 ### Maintenance
 
