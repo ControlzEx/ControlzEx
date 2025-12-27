@@ -5,6 +5,12 @@ branches:
     - main
     - /\d*\.\d*\.\d*/
 
+image: Visual Studio 2022
+test: false
+
+pull_requests:
+  do_not_increment_build_number: false
+
 environment:
   azure-key-vault-url:
     secure: 1mKS/HfCVq+iYNRVSrrN8NEowOkKt3knrpMzw+SOy3g=
@@ -16,20 +22,15 @@ environment:
     secure: CUpRJxMLeUZwNPMcqI0wECaWfy5AMnWn1UZhBd9WnQ3Z16lJP1Vzrkf24mccbhUD
   azure-key-vault-certificate:
     secure: BSPdW2TgnQtoQXXbeDECug==
-
-image: Visual Studio 2022
-test: false
+  IGNORE_NORMALISATION_GIT_HEAD_MOVE: 1
 
 install:
   - ps: Invoke-WebRequest 'https://dot.net/v1/dotnet-install.ps1' -OutFile 'dotnet-install.ps1'
-  - ps: ./dotnet-install.ps1 -Version 10.0.100 -InstallDir "C:\Program Files\dotnet"
-
-pull_requests:
-  do_not_increment_build_number: false
+  - ps: ./dotnet-install.ps1 -JSonFile ./global.json -InstallDir "C:\Program Files\dotnet"
 
 build_script:
   - ps: dotnet --info
-  - ps: gitversion /version
+  - ps: git status
   - ps: .\build.ps1 --target=CI -v verbose
 
 after_build:
