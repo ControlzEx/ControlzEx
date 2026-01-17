@@ -17,7 +17,7 @@
         <PackageProjectUrl>https://github.com/ControlzEx/ControlzEx</PackageProjectUrl>
         <PackageIcon>logo-mini.png</PackageIcon>
         <PackageTags>WPF;UI;Metro;Modern;Material;XAML;Toolkit;Library;.NET;OSS;OpenSource;WindowChrome</PackageTags>
-        <PackageReleaseNotes>https://github.com/ControlzEx/ControlzEx/releases</PackageReleaseNotes>
+        <PackageReleaseNotes>https://github.com/ControlzEx/ControlzEx/blob/develop/Changelog.md</PackageReleaseNotes>
         <RepositoryUrl>https://github.com/ControlzEx/ControlzEx.git</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <GenerateLibraryLayout>true</GenerateLibraryLayout>
