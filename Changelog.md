@@ -1,6 +1,6 @@
 # Changelog for ControlzEx
 
-## 7.0.3 (preview)
+## 7.0.3
 
 ### Bug fixes
 
