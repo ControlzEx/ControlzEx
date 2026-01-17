@@ -27,8 +27,8 @@
 - The roadmap is done by [milestones](../../milestones).
 - [Releases and Release Notes](../../releases)
 - Development requirements
-  - .NET SDK 8.0.401 or later
-  - An IDE that supports the required .NET SDK (for example Rider 2024.1, Visual Studio 2022 (17.10) or later)
+  - .NET SDK 10.0.100 or later
+  - An IDE that supports the required .NET SDK
 
 ## TextBoxInputMaskBehavior
 

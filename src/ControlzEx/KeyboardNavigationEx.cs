@@ -59,7 +59,7 @@
         /// <param name="element">The element which will be focused.</param>
         public static void Focus(UIElement? element)
         {
-            element?.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+            element?.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() =>
             {
                 var keybHack = Instance;
                 var alwaysShowFocusVisual = keybHack.AlwaysShowFocusVisualInternal;
