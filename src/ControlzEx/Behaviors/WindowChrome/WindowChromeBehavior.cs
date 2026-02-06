@@ -359,8 +359,10 @@ namespace ControlzEx.Behaviors
         /// </summary>
         public static Thickness GetDefaultResizeBorderThickness()
         {
-            var dpiX = PInvoke.GetDeviceCaps(PInvoke.GetDC(default), GET_DEVICE_CAPS_INDEX.LOGPIXELSX);
-            var dpiY = PInvoke.GetDeviceCaps(PInvoke.GetDC(default), GET_DEVICE_CAPS_INDEX.LOGPIXELSY);
+            using var defaultDC = new DeleteDCSafeHandle(PInvoke.GetDC(default));
+            var defaultDCHandle = defaultDC.DangerousGetHandle();
+            var dpiX = PInvoke.GetDeviceCaps((HDC)defaultDCHandle, GET_DEVICE_CAPS_INDEX.LOGPIXELSX);
+            var dpiY = PInvoke.GetDeviceCaps((HDC)defaultDCHandle, GET_DEVICE_CAPS_INDEX.LOGPIXELSY);
             var xframe = PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXFRAME);
             var yframe = PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CYFRAME);
             var padding = PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXPADDEDBORDER);

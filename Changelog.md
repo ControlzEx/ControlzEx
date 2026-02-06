@@ -1,5 +1,11 @@
 # Changelog for ControlzEx
 
+## 7.0.4 (preview)
+
+### Bug fixes
+
+- [#223](../../issues/223) - GDI leak in WindowChromeWindow
+
 ## 7.0.3
 
 ### Bug fixes

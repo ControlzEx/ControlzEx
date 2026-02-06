@@ -71,21 +71,13 @@ namespace Windows.Win32
             SelectObject(hdc, new HGDIOBJ(handle.DangerousGetHandle()));
         }
 
-        internal static HGDIOBJ SelectObject(SafeHandle hdc, HGDIOBJ h)
+        private static HGDIOBJ SelectObject(SafeHandle hdc, HGDIOBJ h)
         {
             var hdcAddRef = false;
             try
             {
-                HDC hdcLocal;
-                if (hdc is object)
-                {
-                    hdc.DangerousAddRef(ref hdcAddRef);
-                    hdcLocal = (HDC)hdc.DangerousGetHandle();
-                }
-                else
-                {
-                    hdcLocal = default;
-                }
+                hdc.DangerousAddRef(ref hdcAddRef);
+                var hdcLocal = (HDC)hdc.DangerousGetHandle();
 
                 var result = SelectObject(hdcLocal, h);
                 return result;
@@ -94,7 +86,7 @@ namespace Windows.Win32
             {
                 if (hdcAddRef)
                 {
-                    hdc!.DangerousRelease();
+                    hdc.DangerousRelease();
                 }
             }
         }
