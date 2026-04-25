@@ -12,6 +12,7 @@ namespace ControlzEx.Controls.Internal
     using System.Windows.Media;
     using ControlzEx.Behaviors;
     using ControlzEx.Helpers;
+    using ControlzEx.Internal;
     using ControlzEx.Native;
     using global::Windows.Win32;
     using global::Windows.Win32.Foundation;
@@ -433,9 +434,9 @@ namespace ControlzEx.Controls.Internal
                     return false;
                 }
 
-                if (this.ScreenDc.DangerousGetHandle() != IntPtr.Zero
-                    && this.WindowDc.DangerousGetHandle() != IntPtr.Zero
-                    && this.BackgroundDc.DangerousGetHandle() != IntPtr.Zero)
+                if (this.ScreenDc.DangerousGetHandle().IsZero() is false
+                    && this.WindowDc.DangerousGetHandle().IsZero() is false
+                    && this.BackgroundDc.DangerousGetHandle().IsZero() is false)
                 {
                     return this.windowBitmap is not null;
                 }
@@ -478,14 +479,14 @@ namespace ControlzEx.Controls.Internal
                 this.WindowDc = PInvoke.CreateCompatibleDC(this.ScreenDc);
             }
 
-            if (this.WindowDc.DangerousGetHandle() == IntPtr.Zero)
+            if (this.WindowDc.DangerousGetHandle().IsZero())
             {
                 return;
             }
 
             this.BackgroundDc = PInvoke.CreateCompatibleDC(this.ScreenDc);
 
-            if (this.BackgroundDc.DangerousGetHandle() == IntPtr.Zero)
+            if (this.BackgroundDc.DangerousGetHandle().IsZero())
             {
                 return;
             }
@@ -503,7 +504,7 @@ namespace ControlzEx.Controls.Internal
             desktopDC ??= new DeleteDCSafeHandle(PInvoke.GetDC(default));
 
             this.ScreenDc = desktopDC;
-            if (this.ScreenDc.DangerousGetHandle() == IntPtr.Zero)
+            if (this.ScreenDc.DangerousGetHandle().IsZero())
             {
                 this.ScreenDc?.Dispose();
                 this.ScreenDc = null;
