@@ -226,7 +226,67 @@ namespace ControlzEx.Behaviors
         {
             handled = false;
 
+            // WS_SYSMENU is removed when native caption buttons are not used,
+            // so DefWindowProc would not show the system menu for ALT+Space.
+            if ((SC)(wParam & 0xFFF0) is SC.KEYMENU
+                && lParam == ' ')
+            {
+                handled = true;
+
+                var physicalScreenLocation = this._GetKeyboardSystemMenuLocation();
+                ControlzEx.SystemCommands.ShowSystemMenuPhysicalCoordinates(this.windowHandle, physicalScreenLocation);
+            }
+
             return IntPtr.Zero;
+        }
+
+        /// <summary>
+        /// Gets the location, in physical screen coordinates, at which DefWindowProc shows the system menu for ALT+Space.
+        /// </summary>
+        /// <remarks>
+        /// Windows only uses the window rect and the window style for this, not the client area.
+        /// The menu is placed inside the window frame, below a caption with the default caption height.
+        /// </remarks>
+        /// <SecurityNote>
+        ///   Critical : Calls critical methods
+        /// </SecurityNote>
+        [SecurityCritical]
+        private unsafe Point _GetKeyboardSystemMenuLocation()
+        {
+            var windowRect = PInvoke.GetWindowRect(this.windowHandle);
+            var style = PInvoke.GetWindowStyle(this.windowHandle);
+            var exStyle = PInvoke.GetWindowStyleEx(this.windowHandle);
+
+            RECT frame = default;
+            int captionHeight;
+            if (OSVersionHelper.IsWindows10_1607_OrGreater)
+            {
+#pragma warning disable CA1416 // Guarded by IsWindows10_1607_OrGreater
+                var dpi = PInvoke.GetDpiForWindow(this.windowHandle);
+                PInvoke.AdjustWindowRectExForDpi(&frame, style, false, exStyle, dpi);
+                captionHeight = PInvoke.GetSystemMetricsForDpi(SYSTEM_METRICS_INDEX.SM_CYCAPTION, dpi);
+#pragma warning restore CA1416
+            }
+            else
+            {
+                PInvoke.AdjustWindowRectEx(&frame, style, false, exStyle);
+                captionHeight = PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CYCAPTION);
+            }
+
+            // frame now contains the non-client offsets (negative left/top, positive right/bottom).
+            // Its top already includes the caption if WS_CAPTION is set, but Windows adds the caption height in any case.
+            var top = windowRect.top - frame.top - 1;
+            if (style.HasFlag(WINDOW_STYLE.WS_CAPTION) is false)
+            {
+                top += captionHeight;
+            }
+
+            if (exStyle.HasFlag(WINDOW_EX_STYLE.WS_EX_LAYOUTRTL))
+            {
+                return new Point(windowRect.right - frame.right, top);
+            }
+
+            return new Point(windowRect.left - frame.left, top);
         }
 
         /// <SecurityNote>

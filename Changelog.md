@@ -1,5 +1,12 @@
 # Changelog for ControlzEx
 
+## 7.0.5 (preview)
+
+### Bug fixes
+
+- [#224](../../issues/224) - ALT+Space does not open the system menu for WindowChromeWindow/WindowChromeBehavior when native caption buttons are not used
+- System menu opened via right-click ignored the "right-handed" menu alignment setting (SM_MENUDROPALIGNMENT)
+
 ## 7.0.4
 
 ### Bug fixes

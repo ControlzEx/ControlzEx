@@ -1,5 +1,7 @@
 AlphaBlend
 AdjustWindowRect
+AdjustWindowRectEx
+AdjustWindowRectExForDpi
 BeginDeferWindowPos
 CreateCompatibleDC
 CreateDIBSection
@@ -20,11 +22,13 @@ GetCursorPos
 GetDC
 DeleteDC
 GetDeviceCaps
+GetDpiForWindow
 GetKeyState
 GetModuleHandle
 GetMonitorInfo
 GetSystemMenu
 GetSystemMetrics
+GetSystemMetricsForDpi
 GetWindowPlacement
 GetWindowRect
 IntersectRect

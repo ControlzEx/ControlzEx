@@ -36,6 +36,14 @@
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
 
+        <ObjectDataProvider x:Key="FlowDirectionEnumValues"
+                            MethodName="GetValues"
+                            ObjectType="{x:Type FlowDirection}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="FlowDirection" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
         <ObjectDataProvider x:Key="WindowStyleEnumValues"
                             MethodName="GetValues"
                             ObjectType="{x:Type WindowStyle}">
@@ -350,6 +358,13 @@
                                               VerticalAlignment="Center"
                                               ItemsSource="{Binding Source={StaticResource ResizeModeEnumValues}}"
                                               SelectedItem="{Binding ElementName=Window, Path=ResizeMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    <Label>
+                                        FlowDirection
+                                    </Label>
+                                    <ComboBox Margin="4"
+                                              VerticalAlignment="Center"
+                                              ItemsSource="{Binding Source={StaticResource FlowDirectionEnumValues}}"
+                                              SelectedItem="{Binding ElementName=Window, Path=FlowDirection, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                                     <Label>
                                         AllowsTransparency (next window)

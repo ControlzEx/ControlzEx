@@ -22,6 +22,11 @@ namespace ControlzEx.Helpers
         public static bool IsWindows10_OrGreater { get; } = IsWindowsNT && OSVersion >= new Version(10, 0);
 
         /// <summary>
+        /// Windows 10 Version 1607 Build 14393 or greater (Anniversary Update).
+        /// </summary>
+        public static bool IsWindows10_1607_OrGreater { get; } = IsWindowsNT && OSVersion >= new Version(10, 0, 14393);
+
+        /// <summary>
         /// Windows 10 19H1 Version 1903 Build 18362 or greater (May 2019 Update)-
         /// </summary>
         public static bool IsWindows10_1903_OrGreater { get; } = IsWindowsNT && OSVersion >= new Version(10, 0, 18362);

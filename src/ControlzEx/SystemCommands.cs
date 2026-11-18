@@ -125,16 +125,37 @@
         /// So you have to pass the final coordinates.
         /// </remarks>
         [SecuritySafeCritical]
-        public static unsafe void ShowSystemMenuPhysicalCoordinates(HwndSource source, Point physicalScreenLocation)
+        public static void ShowSystemMenuPhysicalCoordinates(HwndSource source, Point physicalScreenLocation)
         {
-            var handle = source.Handle;
+            ShowSystemMenuPhysicalCoordinates(new HWND(source.Handle), physicalScreenLocation);
+        }
 
-            if (WindowHelper.IsWindowHandleValid(handle) == false)
+        /// <summary>Display the system menu at a specified location.</summary>
+        /// <param name="hwnd">The window for which the system menu should be displayed.</param>
+        /// <param name="physicalScreenLocation">The location to display the system menu, in physical screen coordinates.</param>
+        [SecuritySafeCritical]
+        internal static void ShowSystemMenuPhysicalCoordinates(HWND hwnd, Point physicalScreenLocation)
+        {
+            // SM_MENUDROPALIGNMENT is non-zero if drop-down menus are right-aligned with the corresponding menu-bar item.
+            var alignmentFlags = PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_MENUDROPALIGNMENT) != 0
+                ? TRACK_POPUP_MENU_FLAGS.TPM_RIGHTALIGN
+                : TRACK_POPUP_MENU_FLAGS.TPM_LEFTALIGN;
+
+            ShowSystemMenuPhysicalCoordinates(hwnd, physicalScreenLocation, alignmentFlags);
+        }
+
+        /// <summary>Display the system menu at a specified location.</summary>
+        /// <param name="hwnd">The window for which the system menu should be displayed.</param>
+        /// <param name="physicalScreenLocation">The location to display the system menu, in physical screen coordinates.</param>
+        /// <param name="alignmentFlags">The flags used to align the menu relative to <paramref name="physicalScreenLocation"/>.</param>
+        [SecurityCritical]
+        internal static unsafe void ShowSystemMenuPhysicalCoordinates(HWND hwnd, Point physicalScreenLocation, TRACK_POPUP_MENU_FLAGS alignmentFlags)
+        {
+            if (WindowHelper.IsWindowHandleValid(hwnd) == false)
             {
                 return;
             }
 
-            var hwnd = new HWND(handle);
             var hmenu = PInvoke.GetSystemMenu(hwnd, false);
             if (hmenu.IsNull)
             {
@@ -158,15 +179,14 @@
                 }
             }
 
-            var flags = PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_MENUDROPALIGNMENT);
             var tpmparams = new TPMPARAMS
             {
                 cbSize = (uint)Marshal.SizeOf<TPMPARAMS>()
             };
-            var cmd = PInvoke.TrackPopupMenuEx(hmenu, (uint)(TRACK_POPUP_MENU_FLAGS.TPM_LEFTBUTTON | TRACK_POPUP_MENU_FLAGS.TPM_RETURNCMD | (TRACK_POPUP_MENU_FLAGS)flags), (int)physicalScreenLocation.X, (int)physicalScreenLocation.Y, hwnd, &tpmparams);
+            var cmd = PInvoke.TrackPopupMenuEx(hmenu, (uint)(TRACK_POPUP_MENU_FLAGS.TPM_LEFTBUTTON | TRACK_POPUP_MENU_FLAGS.TPM_RETURNCMD | alignmentFlags), (int)physicalScreenLocation.X, (int)physicalScreenLocation.Y, hwnd, &tpmparams);
             if (cmd.Value != 0)
             {
-                PInvoke.PostMessage(handle, WM.SYSCOMMAND, (nuint)cmd.Value, default);
+                PInvoke.PostMessage(hwnd, WM.SYSCOMMAND, (nuint)cmd.Value, default);
             }
         }
     }

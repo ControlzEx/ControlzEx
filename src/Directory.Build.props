@@ -48,6 +48,8 @@
         <Product>ControlzEx</Product>
         <Copyright>Copyright © 2015 - $([System.DateTime]::Today.ToString(yyyy)) Jan Karger, Bastian Schmidt, James Willock</Copyright>
 
+        <DeterministicTimestamp>false</DeterministicTimestamp>
+
         <Version Condition="'$(Version)' == ''">7.0.0.0</Version>
         <AssemblyVersion Condition="'$(AssemblyVersion)' == ''">7.0.0.0</AssemblyVersion>
         <FileVersion Condition="'$(FileVersion)' == ''">7.0.0.0</FileVersion>
